@@ -47,9 +47,6 @@ const PremiumLoader = () => {
                                 {words[index]}
                             </motion.h1>
                         </AnimatePresence>
-                        <div className="absolute -bottom-12 left-0 right-0 text-center text-xs text-muted-foreground font-mono">
-                            v2.0 - HashRouter Active
-                        </div>
                     </div>
                 </motion.div>
             )}
