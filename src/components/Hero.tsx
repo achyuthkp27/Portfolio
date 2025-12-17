@@ -87,13 +87,14 @@ const Hero = () => {
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   variants={{
                     initial: {
-                      backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
-                      backgroundSize: "200% auto",
-                      backgroundPosition: "0% center"
+                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                      backgroundSize: "100% 100%",
+                      backgroundPosition: "center 0%"
                     },
                     hover: {
-                      backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
-                      backgroundPosition: "200% center",
+                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
+                      backgroundSize: "100% 200%",
+                      backgroundPosition: ["center 0%", "center 200%"],
                       transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
                     }
                   }}
@@ -109,13 +110,14 @@ const Hero = () => {
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   variants={{
                     initial: {
-                      backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
-                      backgroundSize: "200% auto",
-                      backgroundPosition: "0% center"
+                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                      backgroundSize: "100% 100%",
+                      backgroundPosition: "center 0%"
                     },
                     hover: {
-                      backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
-                      backgroundPosition: "200% center",
+                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
+                      backgroundSize: "100% 200%",
+                      backgroundPosition: ["center 0%", "center 200%"],
                       transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
                     }
                   }}
