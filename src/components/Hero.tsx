@@ -85,15 +85,14 @@ const Hero = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   style={{
-                    backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                    backgroundSize: "100% 100%",
-                    backgroundPosition: "center 0%"
+                    backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                    backgroundSize: "200% 100%",
+                    backgroundPosition: "100% 0%"
                   }}
                   variants={{
                     hover: {
-                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
-                      backgroundSize: "100% 200%",
-                      backgroundPosition: ["center 0%", "center 200%"],
+                      backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5) 40%, #ffffff 50%, rgba(255,255,255,0.5) 60%)",
+                      backgroundPosition: ["100% 0%", "-100% 0%"],
                       transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
                     }
                   }}
@@ -108,15 +107,14 @@ const Hero = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   style={{
-                    backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                    backgroundSize: "100% 100%",
-                    backgroundPosition: "center 0%"
+                    backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                    backgroundSize: "200% 100%",
+                    backgroundPosition: "100% 0%"
                   }}
                   variants={{
                     hover: {
-                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
-                      backgroundSize: "100% 200%",
-                      backgroundPosition: ["center 0%", "center 200%"],
+                      backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5) 40%, #ffffff 50%, rgba(255,255,255,0.5) 60%)",
+                      backgroundPosition: ["100% 0%", "-100% 0%"],
                       transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
                     }
                   }}
