@@ -80,13 +80,17 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_50%,#ffffff_100%)] bg-[length:200%_auto]"
-                  whileHover={{
-                    backgroundImage: "linear-gradient(90deg, #ffffff 0%, #666666 50%, #ffffff 100%)",
-                    backgroundPosition: ["0% center", "200% center"],
-                    transition: { duration: 2, repeat: Infinity, ease: "linear" }
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
+                  style={{
+                    backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
+                    backgroundSize: "200% auto",
+                    backgroundPosition: "0% center"
                   }}
-                  style={{ backgroundPosition: "0% center" }}
+                  whileHover={{
+                    backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
+                    backgroundPosition: "200% center",
+                    transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                  }}
                 >
                   CREATIVE
                 </motion.div>
@@ -96,13 +100,17 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_50%,#ffffff_100%)] bg-[length:200%_auto]"
-                  whileHover={{
-                    backgroundImage: "linear-gradient(90deg, #ffffff 0%, #666666 50%, #ffffff 100%)",
-                    backgroundPosition: ["0% center", "200% center"],
-                    transition: { duration: 2, repeat: Infinity, ease: "linear" }
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
+                  style={{
+                    backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
+                    backgroundSize: "200% auto",
+                    backgroundPosition: "0% center"
                   }}
-                  style={{ backgroundPosition: "0% center" }}
+                  whileHover={{
+                    backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
+                    backgroundPosition: "200% center",
+                    transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                  }}
                 >
                   DEVELOPER
                 </motion.div>
