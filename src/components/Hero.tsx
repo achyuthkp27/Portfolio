@@ -74,13 +74,19 @@ const Hero = () => {
               </motion.h2>
             </div>
 
-            <h1 className="font-display font-bold tracking-tighter leading-none mb-8 text-white/30 hover:text-white transition-colors duration-700 select-none">
+            <h1 className="font-display font-bold tracking-tighter leading-none mb-8 select-none">
               <div className="overflow-hidden">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight"
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_50%,#ffffff_100%)] bg-[length:200%_auto]"
+                  whileHover={{
+                    backgroundImage: "linear-gradient(90deg, #ffffff 0%, #666666 50%, #ffffff 100%)",
+                    backgroundPosition: ["0% center", "200% center"],
+                    transition: { duration: 2, repeat: Infinity, ease: "linear" }
+                  }}
+                  style={{ backgroundPosition: "0% center" }}
                 >
                   CREATIVE
                 </motion.div>
@@ -90,7 +96,13 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight"
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_50%,#ffffff_100%)] bg-[length:200%_auto]"
+                  whileHover={{
+                    backgroundImage: "linear-gradient(90deg, #ffffff 0%, #666666 50%, #ffffff 100%)",
+                    backgroundPosition: ["0% center", "200% center"],
+                    transition: { duration: 2, repeat: Infinity, ease: "linear" }
+                  }}
+                  style={{ backgroundPosition: "0% center" }}
                 >
                   DEVELOPER
                 </motion.div>
