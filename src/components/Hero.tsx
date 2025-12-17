@@ -76,7 +76,6 @@ const Hero = () => {
 
             <motion.h1
               className="font-display font-bold tracking-tighter leading-none mb-8 select-none cursor-default"
-              initial="initial"
               whileHover="hover"
             >
               <div className="overflow-hidden">
@@ -85,12 +84,12 @@ const Hero = () => {
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
+                  style={{
+                    backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                    backgroundSize: "100% 100%",
+                    backgroundPosition: "center 0%"
+                  }}
                   variants={{
-                    initial: {
-                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                      backgroundSize: "100% 100%",
-                      backgroundPosition: "center 0%"
-                    },
                     hover: {
                       backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
                       backgroundSize: "100% 200%",
@@ -108,12 +107,12 @@ const Hero = () => {
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
+                  style={{
+                    backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
+                    backgroundSize: "100% 100%",
+                    backgroundPosition: "center 0%"
+                  }}
                   variants={{
-                    initial: {
-                      backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                      backgroundSize: "100% 100%",
-                      backgroundPosition: "center 0%"
-                    },
                     hover: {
                       backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, #ffffff 50%, rgba(255,255,255,0.5) 100%)",
                       backgroundSize: "100% 200%",
