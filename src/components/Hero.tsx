@@ -156,21 +156,48 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.6 }}
             className="hidden lg:flex justify-center"
           >
-            <div className="relative w-80 h-80">
-              <div className="absolute inset-0 border border-white/10 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center">
+            <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
+              <motion.div
+                variants={{
+                  hover: { borderColor: "rgba(255,255,255,0.2)", backgroundColor: "rgba(255,255,255,0.05)" }
+                }}
+                className="absolute inset-0 border border-white/10 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center transition-colors duration-500"
+              >
                 <div className="text-center">
-                  <span className="block text-8xl font-display font-bold text-white mb-2">4+</span>
+                  <motion.span
+                    variants={{ hover: { scale: 1.1, color: "#ffffff" } }}
+                    transition={{ duration: 0.4 }}
+                    className="block text-8xl font-display font-bold text-white mb-2"
+                  >
+                    4+
+                  </motion.span>
                   <span className="text-sm font-mono uppercase tracking-widest text-white/50 border-t border-white/10 pt-4 block">
                     Years Experience
                   </span>
                 </div>
-              </div>
+              </motion.div>
               {/* Decorative corners */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40" />
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40" />
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40" />
-            </div>
+              <motion.div
+                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40"
+              />
+              <motion.div
+                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40"
+              />
+              <motion.div
+                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40"
+              />
+              <motion.div
+                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </motion.div>
