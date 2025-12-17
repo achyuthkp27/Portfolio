@@ -74,22 +74,28 @@ const Hero = () => {
               </motion.h2>
             </div>
 
-            <h1 className="font-display font-bold tracking-tighter leading-none mb-8 select-none">
+            <motion.h1
+              className="font-display font-bold tracking-tighter leading-none mb-8 select-none cursor-default"
+              initial="initial"
+              whileHover="hover"
+            >
               <div className="overflow-hidden">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
-                  style={{
-                    backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
-                    backgroundSize: "200% auto",
-                    backgroundPosition: "0% center"
-                  }}
-                  whileHover={{
-                    backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
-                    backgroundPosition: "200% center",
-                    transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                  variants={{
+                    initial: {
+                      backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
+                      backgroundSize: "200% auto",
+                      backgroundPosition: "0% center"
+                    },
+                    hover: {
+                      backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
+                      backgroundPosition: "200% center",
+                      transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                    }
                   }}
                 >
                   CREATIVE
@@ -101,21 +107,23 @@ const Hero = () => {
                   animate={{ y: 0 }}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
-                  style={{
-                    backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
-                    backgroundSize: "200% auto",
-                    backgroundPosition: "0% center"
-                  }}
-                  whileHover={{
-                    backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
-                    backgroundPosition: "200% center",
-                    transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                  variants={{
+                    initial: {
+                      backgroundImage: "linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3))",
+                      backgroundSize: "200% auto",
+                      backgroundPosition: "0% center"
+                    },
+                    hover: {
+                      backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.3) 0%, #ffffff 50%, rgba(255,255,255,0.3) 100%)",
+                      backgroundPosition: "200% center",
+                      transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
+                    }
                   }}
                 >
                   DEVELOPER
                 </motion.div>
               </div>
-            </h1>
+            </motion.h1>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
