@@ -37,6 +37,11 @@ const CustomCursor = () => {
         const moveCursor = (e: MouseEvent) => {
             cursorX.set(e.clientX);
             cursorY.set(e.clientY);
+
+            // Event Delegation for hover state
+            const target = e.target as HTMLElement;
+            const isInteractive = target.closest("a, button, [role='button'], input, textarea, select");
+            setIsHovered(!!isInteractive);
         };
 
         // Interaction handlers
@@ -45,42 +50,17 @@ const CustomCursor = () => {
             setShockwaves(prev => [...prev, { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
         };
         const onMouseUp = () => setIsClicked(false);
-        const onMouseEnter = () => setIsHovered(true);
-        const onMouseLeave = () => setIsHovered(false);
 
         // Attach listeners
         window.addEventListener("mousemove", moveCursor);
         window.addEventListener("mousedown", onMouseDown);
         window.addEventListener("mouseup", onMouseUp);
 
-        // Add hover effect to clickable elements
-        const handleLinkHover = () => {
-            const linkElements = document.querySelectorAll("a, button, [role='button'], input, textarea, select");
-            linkElements.forEach((el) => {
-                el.addEventListener("mouseenter", onMouseEnter);
-                el.addEventListener("mouseleave", onMouseLeave);
-            });
-            return () => {
-                linkElements.forEach((el) => {
-                    el.removeEventListener("mouseenter", onMouseEnter);
-                    el.removeEventListener("mouseleave", onMouseLeave);
-                });
-            };
-        };
-
-        const cleanupLinks = handleLinkHover();
-
-        // Observe DOM mutations to attach listeners to new elements
-        const observer = new MutationObserver(handleLinkHover);
-        observer.observe(document.body, { childList: true, subtree: true });
-
         return () => {
             window.removeEventListener("resize", checkMobile);
             window.removeEventListener("mousemove", moveCursor);
             window.removeEventListener("mousedown", onMouseDown);
             window.removeEventListener("mouseup", onMouseUp);
-            cleanupLinks();
-            observer.disconnect();
         };
     }, [cursorX, cursorY]);
 
