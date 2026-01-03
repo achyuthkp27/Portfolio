@@ -37,7 +37,51 @@
 <link href="https://fonts.googleapis.com/css2?family=Sekuya&display=swap" rel="stylesheet">
 
 <body>
-  <div id="root"></div>
+  <style>
+    body {
+      background-color: #000;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #app-shell-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #000;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .loader-text {
+      font-size: 2.25rem;
+      /* text-4xl */
+      font-weight: 700;
+      /* font-bold */
+      letter-spacing: -0.025em;
+      /* tracking-tight */
+      background: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 70%));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 1;
+    }
+
+    @media (min-width: 768px) {
+      .loader-text {
+        font-size: 3.75rem;
+        /* text-6xl */
+      }
+    }
+  </style>
+  <div id="root">
+    <div id="app-shell-loader">
+      <h1 class="loader-text">Developer</h1>
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

@@ -8,22 +8,23 @@ const PremiumLoader = () => {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
-        // Cycle through words
-        const interval = setInterval(() => {
-            setIndex((prev) => (prev + 1) % words.length);
-        }, 400);
+        // Time per word in milliseconds
+        const wordDuration = 300;
 
-        // Stop loading after 2.5s
+        // If we've reached the last word
+        if (index === words.length - 1) {
+            const timeout = setTimeout(() => {
+                setIsLoading(false);
+            }, 1000); // Keep the last word visible longer
+            return () => clearTimeout(timeout);
+        }
+
         const timeout = setTimeout(() => {
-            setIsLoading(false);
-            clearInterval(interval);
-        }, 2200);
+            setIndex((prev) => prev + 1);
+        }, wordDuration);
 
-        return () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        };
-    }, []);
+        return () => clearTimeout(timeout);
+    }, [index]);
 
     return (
         <AnimatePresence>
@@ -38,7 +39,7 @@ const PremiumLoader = () => {
                         <AnimatePresence mode="wait">
                             <motion.h1
                                 key={index}
-                                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+                                initial={index === 0 ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(10px)" }}
                                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                                 exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
                                 transition={{ duration: 0.2 }}

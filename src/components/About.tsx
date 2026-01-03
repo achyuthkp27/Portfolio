@@ -135,7 +135,7 @@ const About = () => {
                 className="p-8 border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
               >
                 <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-white mb-6 flex items-center gap-4">
-                  <span className="w-2 h-2 bg-white/50 rounded-full"></span>
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
                   {skillGroup.category}
                 </h3>
                 <div className="flex flex-wrap gap-2">
