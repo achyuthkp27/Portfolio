@@ -42,7 +42,7 @@ const CustomCursor = () => {
         // Interaction handlers
         const onMouseDown = (e: MouseEvent) => {
             setIsClicked(true);
-            setShockwaves(prev => [...prev, { id: Date.now(), x: e.clientX, y: e.clientY }]);
+            setShockwaves(prev => [...prev, { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
         };
         const onMouseUp = () => setIsClicked(false);
         const onMouseEnter = () => setIsHovered(true);
