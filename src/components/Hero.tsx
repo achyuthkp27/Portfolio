@@ -6,7 +6,7 @@ import MagneticButton from "./ui/MagneticButton";
 import SpaceScene from "./3d/SpaceScene";
 
 const Hero = () => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],

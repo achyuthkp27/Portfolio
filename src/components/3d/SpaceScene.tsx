@@ -40,7 +40,7 @@ const HeroObjectFixed = () => {
             const opacity1 = (1 - phase1) * 0.5; // Fade out as it expands
 
             shockwaveRef.current.scale.setScalar(scale1);
-            shockwaveRef.current.material.opacity = opacity1;
+            (shockwaveRef.current.material as THREE.MeshStandardMaterial).opacity = opacity1;
             shockwaveRef.current.rotation.z -= 0.01; // Slow spin
 
             // Loop 2 (Offset by 0.5 for continuous feel)
@@ -49,7 +49,7 @@ const HeroObjectFixed = () => {
             const opacity2 = (1 - phase2) * 0.3;
 
             shockwaveRef2.current.scale.setScalar(scale2);
-            shockwaveRef2.current.material.opacity = opacity2;
+            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).opacity = opacity2;
             shockwaveRef2.current.rotation.z += 0.01;
 
         } else {
@@ -61,9 +61,9 @@ const HeroObjectFixed = () => {
 
             // Hide Beams
             shockwaveRef.current.scale.setScalar(0.01);
-            shockwaveRef.current.material.opacity = 0;
+            (shockwaveRef.current.material as THREE.MeshStandardMaterial).opacity = 0;
             shockwaveRef2.current.scale.setScalar(0.01);
-            shockwaveRef2.current.material.opacity = 0;
+            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).opacity = 0;
         }
     });
 
