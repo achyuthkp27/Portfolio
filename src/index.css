@@ -116,6 +116,23 @@
     /* Firefox */
     -ms-overflow-style: none;
     /* IE 10+ */
+    cursor: default;
+    /* Fallback */
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    body {
+      cursor: none;
+    }
+
+    a,
+    button,
+    [role="button"],
+    input,
+    textarea,
+    select {
+      cursor: none;
+    }
   }
 
   body::-webkit-scrollbar {

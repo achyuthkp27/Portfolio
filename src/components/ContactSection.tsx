@@ -30,20 +30,16 @@ const ContactSection = () => {
       // Validate form data
       const validated = contactFormSchema.parse(formData);
 
-      // Construct WhatsApp message
-      const text = `*New Portfolio Contact*\n\n*Name:* ${validated.name}\n*Email:* ${validated.email}\n*Message:* ${validated.message}`;
-      const encodedText = encodeURIComponent(text);
+      // Construct Mailto link
+      const subject = `Portfolio Contact: ${validated.name}`;
+      const body = `Name: ${validated.name}\nEmail: ${validated.email}\n\nMessage:\n${validated.message}`;
+      const mailtoUrl = `mailto:kpachyuthz@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      // TODO: Replace with your actual WhatsApp number (International format without +)
-      const phoneNumber = "919999999999";
-
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
-
-      window.open(whatsappUrl, '_blank');
+      window.location.href = mailtoUrl;
 
       toast({
-        title: "Opening WhatsApp",
-        description: "Please send the pre-filled message to verify your contact request.",
+        title: "Opening Email Client",
+        description: "Please send the pre-filled email to verify your contact request.",
         variant: "default",
       });
 

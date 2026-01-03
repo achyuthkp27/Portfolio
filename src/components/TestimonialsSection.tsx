@@ -6,20 +6,20 @@ const testimonials = [
     {
         name: "Sarah Jenkins",
         role: "CTO, FinTech Sol",
-        content: "Achyuth transforming our legacy banking systems into modern microservices was a game changer. Performance increased by 300%.",
-        company: "FinTech Sol"
+        content: "Achyuth's expertise in microservices architecture significantly improved our system's scalability and performance.",
+        company: "FinTech Sol (Client)"
     },
     {
         name: "David Chen",
         role: "Product Manager",
-        content: "The level of detail in the UI while maintaining complex backend logic is rare. The dashboard he built is now used by our entire executive team.",
-        company: "DataFlow Inc"
+        content: "Delivered a complex dashboard with exceptional attention to detail.",
+        company: "DataFlow Inc (Client)"
     },
     {
         name: "Elena Rodriguez",
         role: "Startup Founder",
-        content: "We needed a MVP in 4 weeks. Achyuth delivered a scalable production-ready app in 3. Incredible speed and quality.",
-        company: "Nexus AI"
+        content: "Rapid delivery of a production-ready MVP that exceeded our expectations.",
+        company: "Nexus AI (Client)"
     },
 ];
 
