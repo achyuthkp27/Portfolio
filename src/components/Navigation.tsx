@@ -149,7 +149,7 @@ const Navigation = () => {
           x: isMobileMenuOpen ? 0 : "100%",
         }}
         transition={{ duration: 0.3 }}
-        className="fixed inset-0 z-40 md:hidden"
+        className={`fixed inset-0 z-40 md:hidden ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
       >
         <div className="absolute inset-0 bg-background/95 backdrop-blur-xl">
           <div className="flex flex-col items-center justify-center h-full gap-8">
