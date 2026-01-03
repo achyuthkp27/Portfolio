@@ -9,6 +9,7 @@ interface TextRevealProps {
     duration?: number;
     as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
     shouldSplit?: boolean;
+    scrollOffset?: any; // strict typing would be ["start end", "end start"] etc but simplified for now
 }
 
 const TextReveal = ({
@@ -18,13 +19,14 @@ const TextReveal = ({
     delay = 0,
     duration = 0.8,
     as: Component = "div",
-    shouldSplit = true
+    shouldSplit = true,
+    scrollOffset = ["start 0.9", "start 0.4"]
 }: TextRevealProps) => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
     const { scrollYProgress } = useScroll({
         target: ref,
-        offset: ["start 0.9", "start 0.4"]
+        offset: scrollOffset
     });
 
     if (type === "scrub" && typeof children === "string") {

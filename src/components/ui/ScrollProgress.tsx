@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
 interface Particle {
     id: number;
@@ -33,7 +33,6 @@ const ScrollProgress = () => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
             const deltaY = Math.abs(currentScrollY - lastScrollY.current);
-            const isScrollingDown = currentScrollY > lastScrollY.current; // Not strictly needed for horizontal but good context
 
             // Only spawn if scrolling significantly
             if (deltaY > 2) {
@@ -57,8 +56,8 @@ const ScrollProgress = () => {
             for (let i = 0; i < count; i++) {
                 newParticles.push({
                     id: Date.now() + Math.random(),
-                    x: tipX - (Math.random() * 20), // Spawn slightly behind the tip
-                    y: Math.random() * 4 + 2, // Random height within the thin bar (offset from top)
+                    x: tipX - (Math.random() * 10), // Spawn tighter behind the tip
+                    y: (Math.random() * 4) - 1, // Spawn from -1px to 3px (centered on 2px bar)
                     size: Math.random() * 2 + 0.5, // Tiny dust
                     opacity: Math.random() * 0.5 + 0.4,
                     color: colors[Math.floor(Math.random() * colors.length)],
@@ -92,22 +91,32 @@ const ScrollProgress = () => {
         return () => cancelAnimationFrame(animationFrameId);
     }, []);
 
+    // Transform for comet head position matching the bar
+    const x = useTransform(scrollYProgress, (v) => v * (typeof window !== 'undefined' ? window.innerWidth : 0));
+    const opacity = useTransform(scrollYProgress, [0, 0.01], [0, 1]);
+
     return (
-        <div ref={containerRef} className="fixed top-0 left-0 right-0 z-[100] h-3 pointer-events-none">
-            {/* The Main Progress Bar (The "Comet Head") */}
+        <div ref={containerRef} className="fixed top-0 left-0 right-0 z-[100] h-4 pointer-events-none">
+            {/* The Main Progress Bar (Beam) */}
             <motion.div
                 className="absolute top-0 left-0 bottom-0 bg-white shadow-[0_0_10px_white]"
                 style={{
                     scaleX,
                     transformOrigin: "left",
-                    borderRadius: "0 2px 2px 0", // Rounded tip
                     height: '2px', // Thin beam
                 }}
             />
 
-            {/* The Glowing Tip (Simulated by CSS at the end? Hard with scaleX. 
-               scaleX stretches element. Better to stick to simple bar + particles) 
-            */}
+            {/* The Comet Head (Glowing Tip) */}
+            <motion.div
+                className="absolute top-0 h-1 w-4 bg-white rounded-full shadow-[0_0_15px_2px_rgba(255,255,255,0.8)] blur-[1px]"
+                style={{
+                    left: 0,
+                    x,
+                    top: '-1px', // Center on the 2px bar
+                    opacity
+                }}
+            />
 
             {/* Particle Trail Container */}
             <div className="absolute inset-0 overflow-hidden">
@@ -122,7 +131,7 @@ const ScrollProgress = () => {
                             height: p.size,
                             backgroundColor: p.color,
                             opacity: p.opacity,
-                            boxShadow: `0 0 2px ${p.color}`
+                            boxShadow: `0 0 4px ${p.color}`
                         }}
                     />
                 ))}

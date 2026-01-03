@@ -1,0 +1,70 @@
+import { motion } from "framer-motion";
+import { Quote } from "lucide-react";
+import TextReveal from "@/components/ui/TextReveal";
+
+const testimonials = [
+    {
+        name: "Sarah Jenkins",
+        role: "CTO, FinTech Sol",
+        content: "Achyuth transforming our legacy banking systems into modern microservices was a game changer. Performance increased by 300%.",
+        company: "FinTech Sol"
+    },
+    {
+        name: "David Chen",
+        role: "Product Manager",
+        content: "The level of detail in the UI while maintaining complex backend logic is rare. The dashboard he built is now used by our entire executive team.",
+        company: "DataFlow Inc"
+    },
+    {
+        name: "Elena Rodriguez",
+        role: "Startup Founder",
+        content: "We needed a MVP in 4 weeks. Achyuth delivered a scalable production-ready app in 3. Incredible speed and quality.",
+        company: "Nexus AI"
+    },
+];
+
+const TestimonialsSection = () => {
+    return (
+        <section id="testimonials" className="py-24 px-6 md:px-12 relative overflow-hidden bg-transparent">
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="text-center mb-16">
+                    <TextReveal type="fade-up">
+                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
+                            [ SOCIAL_PROOF ]
+                        </span>
+                    </TextReveal>
+                    <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+                        <TextReveal type="blur-reveal" delay={0.2} as="span">Trusted By</TextReveal>{" "}
+                        <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Industry Leaders</TextReveal>
+                    </h2>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8">
+                    {testimonials.map((item, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.2 }}
+                            className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm relative group hover:bg-white/10 transition-colors"
+                        >
+                            <Quote className="w-8 h-8 text-white/20 mb-6 group-hover:text-white/40 transition-colors" />
+                            <p className="text-gray-300 mb-6 leading-relaxed">"{item.content}"</p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 border border-white/10" />
+                                <div>
+                                    <div className="text-white font-bold text-sm">{item.name}</div>
+                                    <div className="text-white/40 text-xs font-mono uppercase tracking-wider">{item.role}</div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default TestimonialsSection;

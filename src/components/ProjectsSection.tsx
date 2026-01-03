@@ -1,10 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ExternalLink, Github, Server, Database, MessageSquare, HardDrive, LayoutDashboard } from "lucide-react";
-import TextReveal from "./ui/TextReveal";
+import TextReveal from "@/components/ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";
-import SpaceBackground from "./3d/SpaceBackground";
 
 const projects = [
   {
@@ -69,9 +68,7 @@ const ProjectsSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="projects" className="py-32 px-6 md:px-12 relative overflow-hidden" ref={ref}>
-      {/* Background */}
-      <SpaceBackground />
+    <section id="projects" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
       <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto">

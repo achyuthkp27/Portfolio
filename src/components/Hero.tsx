@@ -3,9 +3,13 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import MagneticButton from "./ui/MagneticButton";
 
-import SpaceScene from "./3d/SpaceScene";
+import SpaceScene from "@/components/3d/SpaceScene";
+import DecryptText from "@/components/ui/DecryptText";
+
+import { useMobile } from "@/hooks/useMobile";
 
 const Hero = () => {
+  const isMobile = useMobile();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -19,8 +23,15 @@ const Hero = () => {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 bg-background overflow-hidden selection:bg-white/20">
-      {/* 3D Space Background */}
-      <SpaceScene />
+      {/* 3D Space Background - Desktop Only */}
+      {!isMobile && <SpaceScene />}
+
+      {/* Mobile Fallback Gradient */}
+      {isMobile && (
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+        </div>
+      )}
 
       {/* Technical Corner Labels - Social Links */}
       <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-50 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
@@ -123,9 +134,9 @@ const Hero = () => {
               {["Software Developer", "React Js", "Spring Boot", "Microservices", "AWS"].map((tag, i) => (
                 <span
                   key={tag}
-                  className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider"
+                  className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider group hover:bg-white/10 transition-colors"
                 >
-                  {tag}
+                  <DecryptText text={tag} />
                 </span>
               ))}
             </motion.div>

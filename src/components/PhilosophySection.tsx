@@ -75,6 +75,7 @@ const PhilosophySection = () => {
                 <TextReveal
                     type="scrub"
                     className="font-display text-2xl md:text-3xl lg:text-5xl font-light leading-tight text-white/40"
+                    scrollOffset={["start 0.6", "start 0.2"]}
                 >
                     Every line of code I write reflects a future I believe in.
                     Each architecture is a statement of intent—shaped, not rushed.

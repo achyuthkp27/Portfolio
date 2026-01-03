@@ -1,10 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Building2, GraduationCap, ChevronDown, Award, Server, Database, Cloud, Code } from "lucide-react";
-import TextReveal from "./ui/TextReveal";
+import TextReveal from "@/components/ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 import ShockwaveWrapper from "./ui/ShockwaveWrapper";
-import SpaceBackground from "./3d/SpaceBackground";
 
 const experiences = [
   {
@@ -47,9 +46,7 @@ const ExperienceTimeline = () => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <section id="experience" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black" ref={ref}>
-      {/* Background Grid */}
-      <SpaceBackground />
+    <section id="experience" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
       <div className="max-w-5xl mx-auto relative z-10">
         <ParallaxSection speed={0.1}>

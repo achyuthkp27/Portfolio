@@ -1,19 +1,25 @@
+import { Suspense, lazy } from "react";
 import { ThemeProvider } from "@/hooks/useTheme";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import About from "@/components/About";
-import ExperienceTimeline from "@/components/ExperienceTimeline";
-import SkillsSection from "@/components/SkillsSection";
-import ProjectsSection from "@/components/ProjectsSection";
-import ArchitectureGallery from "@/components/ArchitectureGallery";
-import AwardSection from "@/components/AwardSection";
-import EducationSection from "@/components/EducationSection";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/Footer";
 import SystemStatus from "@/components/SystemStatus";
-import PhilosophySection from "@/components/PhilosophySection";
+import SpaceBackground from "@/components/3d/SpaceBackground";
+
+// Lazy load below-the-fold heavy components
+const ProcessSection = lazy(() => import("@/components/ProcessSection"));
+const ExperienceTimeline = lazy(() => import("@/components/ExperienceTimeline"));
+const SkillsSection = lazy(() => import("@/components/SkillsSection"));
+const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
+const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
+const ArchitectureGallery = lazy(() => import("@/components/ArchitectureGallery"));
+const PhilosophySection = lazy(() => import("@/components/PhilosophySection"));
+const AwardSection = lazy(() => import("@/components/AwardSection"));
+const EducationSection = lazy(() => import("@/components/EducationSection"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
   return (
@@ -26,21 +32,29 @@ const Index = () => {
         Skip to main content
       </a>
 
-      <div className="min-h-screen bg-black text-white selection:bg-white/20">
+      {/* Global Background */}
+      <SpaceBackground />
+
+      <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
         <Navigation />
         <main id="main-content">
           <Hero />
           <SystemStatus />
           <Services />
           <About />
-          <ExperienceTimeline />
-          <SkillsSection />
-          <ProjectsSection />
-          <ArchitectureGallery />
-          <PhilosophySection />
-          <AwardSection />
-          <EducationSection />
-          <ContactSection />
+
+          <Suspense fallback={<div className="h-96 w-full flex items-center justify-center text-white/20 font-mono text-sm">LOADING_SECTOR...</div>}>
+            <ProcessSection />
+            <ExperienceTimeline />
+            <SkillsSection />
+            <ProjectsSection />
+            <TestimonialsSection />
+            <ArchitectureGallery />
+            <PhilosophySection />
+            <AwardSection />
+            <EducationSection />
+            <ContactSection />
+          </Suspense>
         </main>
         <Footer />
         <Toaster />

@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import { Code2, Server, Cloud, Zap } from "lucide-react";
-import SpaceBackground from "./3d/SpaceBackground";
+import TextReveal from "@/components/ui/TextReveal";
 
 const About = () => {
   const ref = useRef(null);
@@ -55,9 +55,7 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black" ref={ref}>
-      {/* Background Grid */}
-      <SpaceBackground />
+    <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
       <motion.div style={{ opacity, scale }} className="max-w-7xl mx-auto relative z-10">
         <motion.div
@@ -74,9 +72,9 @@ const About = () => {
                 [ PROFILE_DATA ]
               </span>
               <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight text-white tracking-tight">
-                TURNING IDEAS INTO
+                <TextReveal type="blur-reveal" delay={0.2} as="span">TURNING IDEAS INTO</TextReveal>
                 <br />
-                <span className="text-white/40">DIGITAL REALITY</span>
+                <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">DIGITAL REALITY</TextReveal>
               </h2>
             </motion.div>
 

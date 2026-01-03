@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import TextReveal from "./ui/TextReveal";
 import { ArrowUpRight, Code, Palette, Laptop } from "lucide-react";
 import SpotlightCard from "./ui/SpotlightCard";
-import SpaceBackground from "./3d/SpaceBackground";
 
 const services = [
     {
@@ -27,9 +26,7 @@ const services = [
 
 const Services = () => {
     return (
-        <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-black">
-            {/* Background Grid */}
-            <SpaceBackground />
+        <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent">
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-20">
