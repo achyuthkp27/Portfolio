@@ -4,6 +4,7 @@ import { Building2, GraduationCap, ChevronDown, Award, Server, Database, Cloud, 
 import TextReveal from "./ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 import ShockwaveWrapper from "./ui/ShockwaveWrapper";
+import SpaceBackground from "./3d/SpaceBackground";
 
 const experiences = [
   {
@@ -48,7 +49,7 @@ const ExperienceTimeline = () => {
   return (
     <section id="experience" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black" ref={ref}>
       {/* Background Grid */}
-      <div className="absolute inset-0 grid-pattern opacity-[0.03]" />
+      <SpaceBackground />
 
       <div className="max-w-5xl mx-auto relative z-10">
         <ParallaxSection speed={0.1}>

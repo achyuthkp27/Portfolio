@@ -24,7 +24,7 @@ const TextReveal = ({
     const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
     const { scrollYProgress } = useScroll({
         target: ref,
-        offset: ["start end", "end start"]
+        offset: ["start 0.9", "start 0.4"]
     });
 
     if (type === "scrub" && typeof children === "string") {

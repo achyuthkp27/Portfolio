@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import { Code2, Server, Cloud, Zap } from "lucide-react";
+import SpaceBackground from "./3d/SpaceBackground";
 
 const About = () => {
   const ref = useRef(null);
@@ -56,7 +57,7 @@ const About = () => {
   return (
     <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black" ref={ref}>
       {/* Background Grid */}
-      <div className="absolute inset-0 grid-pattern opacity-[0.03]" />
+      <SpaceBackground />
 
       <motion.div style={{ opacity, scale }} className="max-w-7xl mx-auto relative z-10">
         <motion.div

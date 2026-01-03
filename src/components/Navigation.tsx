@@ -44,6 +44,16 @@ const Navigation = () => {
     { label: "Contact", href: "#contact" },
   ];
 
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   return (
     <>
       <motion.nav
@@ -56,6 +66,10 @@ const Navigation = () => {
           {/* Logo / Name */}
           <motion.a
             href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             whileHover={{ scale: 1.05 }}
             className="font-display text-lg font-bold tracking-tight text-white"
           >
@@ -73,6 +87,7 @@ const Navigation = () => {
               >
                 <a
                   href={item.href}
+                  onClick={(e) => handleScroll(e, item.href)}
                   className={`text-xs font-mono tracking-widest uppercase transition-colors relative group ${activeSection === item.href.substring(1)
                     ? "text-white"
                     : "text-white/50 hover:text-white"
@@ -97,6 +112,7 @@ const Navigation = () => {
 
             <a
               href="#contact"
+              onClick={(e) => handleScroll(e, "#contact")}
               className="hidden md:block text-xs font-mono tracking-widest uppercase text-white/70 hover:text-white transition-colors border border-white/20 px-4 py-2 hover:bg-white/5"
             >
               [ GET_IN_TOUCH ]
@@ -121,10 +137,10 @@ const Navigation = () => {
               <motion.a
                 key={item.label}
                 href={item.href}
+                onClick={(e) => handleScroll(e, item.href)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isMobileMenuOpen ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.3, delay: 0.1 * index }}
-                onClick={() => setIsMobileMenuOpen(false)}
                 className="text-2xl font-display font-semibold text-foreground hover:text-primary transition-colors"
               >
                 {item.label}
@@ -132,10 +148,10 @@ const Navigation = () => {
             ))}
             <motion.a
               href="#contact"
+              onClick={(e) => handleScroll(e, "#contact")}
               initial={{ opacity: 0, y: 20 }}
               animate={isMobileMenuOpen ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.3, delay: 0.5 }}
-              onClick={() => setIsMobileMenuOpen(false)}
               className="mt-4 px-8 py-3 text-lg font-medium bg-gradient-cyber text-primary-foreground rounded-full"
             >
               Hire Me
