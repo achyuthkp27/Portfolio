@@ -1,4 +1,5 @@
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
@@ -11,6 +12,7 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const { theme, toggleTheme } = useTheme();
+  const { lenis } = useSmoothScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
@@ -60,7 +62,14 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      if (lenis) {
+        lenis.scrollTo(element, {
+          duration: 2.5,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // Keep expo ease out for nav clicks
+        });
+      } else {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
       setIsMobileMenuOpen(false);
     }
   };
@@ -104,7 +113,7 @@ const Navigation = () => {
                     : "text-white/50 hover:text-white"
                     }`}
                 >
-                  <span className="mr-1 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-500">/</span>
+                  <span className="mr-1 opacity-0 group-hover:opacity-100 transition-opacity text-primary">/</span>
                   {item.label}
                 </a>
               </motion.li>

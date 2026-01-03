@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useRef } from "react";
+import { useSmoothScroll } from "./ui/SmoothScroll";
 import MagneticButton from "./ui/MagneticButton";
 
 import SpaceScene from "@/components/3d/SpaceScene";
@@ -10,6 +11,7 @@ import { useMobile } from "@/hooks/useMobile";
 
 const Hero = () => {
   const isMobile = useMobile();
+  const { lenis } = useSmoothScroll();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -161,7 +163,10 @@ const Hero = () => {
                   href="#projects"
                   onClick={(e) => {
                     e.preventDefault();
-                    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                    const target = document.getElementById('projects');
+                    if (target) {
+                      lenis?.scrollTo(target, { duration: 1.5 });
+                    }
                   }}
                   className="group relative inline-flex items-center gap-4 px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-neutral-200"
                 >
@@ -175,7 +180,10 @@ const Hero = () => {
                   href="#contact"
                   onClick={(e) => {
                     e.preventDefault();
-                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                    const target = document.getElementById('contact');
+                    if (target) {
+                      lenis?.scrollTo(target, { duration: 1.5 });
+                    }
                   }}
                   className="group relative inline-flex items-center gap-4 px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-white/5"
                 >
