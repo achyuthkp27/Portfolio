@@ -27,13 +27,24 @@ const Navigation = () => {
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.2, rootMargin: "-10% 0px -10% 0px" } // Lower threshold and add margin
     );
 
     const sections = document.querySelectorAll("section[id]");
     sections.forEach((section) => observer.observe(section));
 
-    return () => sections.forEach((section) => observer.unobserve(section));
+    const handleScroll = () => {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+        setActiveSection("contact");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const navItems = [
