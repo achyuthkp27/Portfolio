@@ -24,7 +24,7 @@ const Hero = () => {
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 bg-background overflow-hidden selection:bg-white/20">
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 bg-background selection:bg-white/20">
       {/* 3D Space Background - Desktop Only */}
       {!isMobile && <SpaceScene />}
 
