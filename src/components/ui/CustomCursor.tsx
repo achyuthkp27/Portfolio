@@ -128,7 +128,7 @@ const CustomCursor = () => {
                     width: isHovered ? 60 : 24,
                     height: isHovered ? 60 : 24,
                     opacity: isHovered ? 1 : 0.5,
-                    backgroundColor: isHovered ? "hsl(var(--primary) / 0.1)" : "transparent",
+                    backgroundColor: isHovered ? "hsl(var(--primary) / 0.1)" : "hsl(var(--primary) / 0)",
                     scale: isClicked ? 0.8 : 1,
                 }}
                 transition={{
