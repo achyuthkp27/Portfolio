@@ -31,7 +31,8 @@ const ProcessSection = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="mb-16">
                     <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-                        <TextReveal type="blur-reveal">How I Work</TextReveal>
+                        <TextReveal type="blur-reveal" delay={0.2}>How I </TextReveal>
+                        <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Work</TextReveal>
                     </h2>
                     <p className="text-gray-400 max-w-2xl">
                         A systematic approach to building scalable software, ensuring quality at every step.

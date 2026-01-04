@@ -126,7 +126,7 @@ const SkillsSection = () => {
           </TextReveal>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
             <TextReveal type="blur-reveal" delay={0.2} as="span">Skills &</TextReveal>{" "}
-            <TextReveal type="blur-reveal" delay={0.3} shouldSplit={false} as="span" className="text-white/80 inline-block">Technologies</TextReveal>
+            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Technologies</TextReveal>
           </h2>
           <TextReveal type="fade-up" delay={0.4} as="p" className="mt-4 text-gray-400 max-w-2xl mx-auto">
             A comprehensive toolkit for building enterprise-grade backend systems

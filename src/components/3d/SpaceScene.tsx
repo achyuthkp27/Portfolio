@@ -7,13 +7,10 @@ import * as THREE from "three";
 // import studio from "@theatre/studio"; // Dynamically imported below
 
 // Initialize Theater Project
-const demoSheet = getProject("Portfolio Animation", {
-    state: {
-        "sheetsById": {},
-        "definitionVersion": "0.4.0",
-        "revisionHistory": []
-    }
-}).sheet("Hero Scene");
+// Initialize Theater Project
+// We rely on local storage (Studio) during dev. 
+// User should export state to a JSON file for production.
+const demoSheet = getProject("Portfolio Animation").sheet("Hero Scene");
 
 const HeroObjectFixed = () => {
     const groupRef = useRef<THREE.Group>(null);
