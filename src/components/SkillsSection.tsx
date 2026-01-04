@@ -107,11 +107,6 @@ const SkillsSection = () => {
 
   return (
     <section id="skills" className="py-32 px-6 md:px-12 relative overflow-hidden" ref={ref}>
-      {/* Background */}
-      <SpaceBackground />
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-white/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-white/5 rounded-full blur-[120px] pointer-events-none" />
-
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -120,8 +115,8 @@ const SkillsSection = () => {
           className="text-center mb-16"
         >
           <TextReveal type="fade-up">
-            <span className="inline-block px-4 py-2 text-xs font-mono tracking-wider uppercase text-white bg-white/5 rounded-full border border-white/10 mb-6">
-              Technical Arsenal
+            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
+              [ TECHNICAL_ARSENAL ]
             </span>
           </TextReveal>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white">

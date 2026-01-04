@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const SystemStatus = () => {
     return (
-        <div className="w-full bg-black border-y border-white/10 overflow-hidden py-3 select-none">
+        <div className="w-full bg-transparent overflow-hidden py-3 select-none">
             <div className="flex items-center gap-12 whitespace-nowrap">
                 {/* Infinite Marquee Wrapper */}
                 <motion.div

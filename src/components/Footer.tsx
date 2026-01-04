@@ -10,7 +10,12 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-12 px-6 md:px-12 border-t border-white/10 bg-black">
+    <footer className="relative py-12 px-6 md:px-12 bg-transparent">
+      {/* Horizontal Light Saber Divider */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-white/10 overflow-hidden">
+        <div className="absolute top-0 left-0 h-full w-[200px] bg-gradient-to-r from-transparent via-white to-transparent animate-scan-beam-horizontal" />
+      </div>
+
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
           <a href="#" className="font-display text-lg font-bold tracking-tight text-white uppercase">

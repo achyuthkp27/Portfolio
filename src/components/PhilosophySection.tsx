@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import TextReveal from "./ui/TextReveal";
+import ParallaxSection from "./ui/ParallaxSection";
 
 const PhilosophySection = () => {
     return (
-        <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-black flex flex-col justify-center items-center min-h-[60vh]">
+        <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent flex flex-col justify-center items-center min-h-[60vh]">
             {/* Top Status Bar - Centered */}
             <div className="absolute top-20 left-0 w-full flex justify-center">
                 <TextReveal type="fade-up" delay={0.2}>
@@ -38,37 +39,41 @@ const PhilosophySection = () => {
             {/* Two-Column Manifesto Section */}
             <div className="max-w-6xl mx-auto mt-32 grid md:grid-cols-2 gap-16 items-start w-full">
                 {/* Left Column */}
-                <TextReveal type="blur-reveal" delay={0.2}>
-                    <h3 className="font-display text-5xl md:text-7xl font-bold leading-tight text-white/40">
-                        Unseen <br />
-                        <span className="text-white">Complexity.</span>
-                    </h3>
-                </TextReveal>
-
-                {/* Right Column */}
-                <div className="space-y-8">
-                    <TextReveal type="fade-up" delay={0.4}>
-                        <h3 className="font-display text-5xl md:text-7xl font-bold leading-tight text-white">
-                            Institutional-<br />
-                            Grade Systems.
+                <ParallaxSection speed={0.2} className="relative z-10">
+                    <TextReveal type="blur-reveal" delay={0.2}>
+                        <h3 className="font-display text-5xl md:text-7xl font-bold leading-tight text-white/40">
+                            Unseen <br />
+                            <span className="text-white">Complexity.</span>
                         </h3>
                     </TextReveal>
+                </ParallaxSection>
 
-                    <TextReveal type="fade-up" delay={0.6} className="text-lg md:text-xl text-white/60 leading-relaxed max-w-lg">
-                        <span className="block mb-6 border-l-2 border-white/20 pl-6">
-                            Standard solutions were designed to suffice, even those widely adopted. Downtime, latency & security gaps were once the norm.
-                        </span>
-                        <span>
-                            I <span className="line-through text-white/30 decoration-white/30">maintain</span> <span className="text-white font-bold">rewrite</span> the standards once taken for granted.
-                        </span>
-                    </TextReveal>
+                {/* Right Column */}
+                <ParallaxSection speed={0.5} className="md:mt-20">
+                    <div className="space-y-8">
+                        <TextReveal type="fade-up" delay={0.4}>
+                            <h3 className="font-display text-5xl md:text-7xl font-bold leading-tight text-white">
+                                Institutional-<br />
+                                Grade Systems.
+                            </h3>
+                        </TextReveal>
 
-                    <TextReveal type="fade-up" delay={0.8} className="pt-12 border-t border-white/10">
-                        <p className="text-[10px] md:text-xs font-mono tracking-[0.1em] text-white/40 uppercase leading-loose">
-                            THROUGH DISTRIBUTED SYSTEMS, SECURE KAFKA PIPELINES, AND THE POWER OF SPRING BOOT, EVERY TRANSACTION IS FAST, SECURE, AND BUILT FOR SCALE.
-                        </p>
-                    </TextReveal>
-                </div>
+                        <TextReveal type="fade-up" delay={0.6} className="text-lg md:text-xl text-white/60 leading-relaxed max-w-lg">
+                            <span className="block mb-6 border-l-2 border-white/20 pl-6">
+                                Standard solutions were designed to suffice, even those widely adopted. Downtime, latency & security gaps were once the norm.
+                            </span>
+                            <span>
+                                I <span className="line-through text-white/30 decoration-white/30">maintain</span> <span className="text-white font-bold">rewrite</span> the standards once taken for granted.
+                            </span>
+                        </TextReveal>
+
+                        <TextReveal type="fade-up" delay={0.8} className="pt-12 border-t border-white/10">
+                            <p className="text-[10px] md:text-xs font-mono tracking-[0.1em] text-white/40 uppercase leading-loose">
+                                THROUGH DISTRIBUTED SYSTEMS, SECURE KAFKA PIPELINES, AND THE POWER OF SPRING BOOT, EVERY TRANSACTION IS FAST, SECURE, AND BUILT FOR SCALE.
+                            </p>
+                        </TextReveal>
+                    </div>
+                </ParallaxSection>
             </div>
 
             <div className="max-w-4xl mx-auto mt-32 relative z-10 text-center md:text-left">

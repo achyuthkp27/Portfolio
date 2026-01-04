@@ -2,7 +2,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
-import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";
 import { projects } from "@/data/projects";
 import { Link } from "react-router-dom";
@@ -24,8 +23,8 @@ const ProjectsSection = () => {
           className="text-center"
         >
           <TextReveal type="fade-up">
-            <span className="inline-block px-4 py-2 text-xs font-mono tracking-wider uppercase text-primary bg-primary/10 rounded-full border border-primary/30 mb-6 backdrop-blur-md">
-              Portfolio
+            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
+              [ PORTFOLIO_INDEX ]
             </span>
           </TextReveal>
           <h2 className="font-display text-4xl md:text-5xl font-bold">

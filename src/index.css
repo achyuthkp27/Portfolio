@@ -359,4 +359,51 @@
   .animate-scan-beam {
     animation: scan-beam 4s ease-in-out infinite;
   }
+
+  @keyframes scan-beam-horizontal {
+    0% {
+      left: -200px;
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    90% {
+      opacity: 1;
+    }
+
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+
+  .animate-scan-beam-horizontal {
+    animation: scan-beam-horizontal 6s ease-in-out infinite;
+  }
+
+  @keyframes icon-glow {
+
+    0%,
+    100% {
+      transform: scale(1);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    15% {
+      transform: scale(1.15);
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      background-color: rgba(0, 0, 0, 1);
+    }
+
+    30% {
+      transform: scale(1);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+  }
 }

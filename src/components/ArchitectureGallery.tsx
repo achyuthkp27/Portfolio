@@ -12,9 +12,9 @@ const ArchitectureGallery = () => {
     const opacity = useTransform(scrollYProgress, [0, 0.2, 0.9, 1], [0, 1, 1, 0]);
 
     return (
-        <section ref={containerRef} className="py-32 px-6 md:px-12 relative overflow-hidden bg-background">
+        <section ref={containerRef} className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent">
             {/* Grid Background */}
-            <div className="absolute inset-0 grid-pattern opacity-[0.03]" />
+
 
             <motion.div style={{ opacity }} className="max-w-7xl mx-auto relative z-10 space-y-32">
 

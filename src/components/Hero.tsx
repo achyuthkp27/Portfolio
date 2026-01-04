@@ -1,15 +1,16 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, lazy, Suspense } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import MagneticButton from "./ui/MagneticButton";
 
-import SpaceScene from "@/components/3d/SpaceScene";
-import DecryptText from "@/components/ui/DecryptText";
-
 import { useMobile } from "@/hooks/useMobile";
 
+import DecryptText from "@/components/ui/DecryptText";
+
 import { useLoading } from "@/context/LoadingContext";
+
+const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
 // Increased delays to sync with 1s curtain reveal
 const Hero = () => {
@@ -28,7 +29,7 @@ const Hero = () => {
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 bg-background selection:bg-white/20">
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
       {/* 3D Space Background - Desktop Only */}
       {!isMobile && <SpaceScene />}
 

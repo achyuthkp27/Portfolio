@@ -34,6 +34,8 @@ const Index = () => {
 
       {/* Global Background */}
       <SpaceBackground />
+      {/* Global Fixed Grid Pattern covering the entire viewport continuously */}
+      <div className="fixed inset-0 grid-pattern opacity-[0.03] z-0 pointer-events-none" />
 
       <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
         <Navigation />

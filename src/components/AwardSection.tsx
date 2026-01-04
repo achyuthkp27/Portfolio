@@ -10,8 +10,8 @@ const AwardSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="awards" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black" ref={ref}>
-      <div className="absolute inset-0 grid-pattern opacity-[0.03]" />
+    <section id="awards" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
+
 
       <div className="max-w-4xl mx-auto relative z-10">
         <motion.div

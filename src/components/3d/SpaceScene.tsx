@@ -143,11 +143,8 @@ const HeroObjectFixed = () => {
 const Scene = () => {
     return (
         <>
-            <e.pointLight theatreKey="GreenLight" position={[10, 10, 10]} intensity={2} color="#4ade80" />
-            <e.pointLight theatreKey="BlueLight" position={[-10, 0, -10]} intensity={1} color="#3b82f6" />
-
-            <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-
+            {/* Lights and Stars moved to Global SpaceBackground for continuity */}
+            {/* <Stars ... /> */}
             <HeroObjectFixed />
 
             <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />

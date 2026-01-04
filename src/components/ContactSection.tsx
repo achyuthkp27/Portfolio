@@ -85,7 +85,7 @@ const ContactSection = () => {
   return (
     <section id="contact" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
       {/* Background */}
-      <div className="absolute inset-0 grid-pattern opacity-[0.03]" />
+
 
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
