@@ -21,6 +21,8 @@ const queryClient = new QueryClient();
 
 // Lazy load the project detail page
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
+const BlogList = lazy(() => import("@/pages/BlogList"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -29,6 +31,8 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/project/:slug" element={<Suspense fallback={<div>Loading project...</div>}><ProjectDetail /></Suspense>} />
+        <Route path="/blog" element={<Suspense fallback={<div>Loading blog...</div>}><BlogList /></Suspense>} />
+        <Route path="/blog/:slug" element={<Suspense fallback={<div>Loading article...</div>}><BlogPost /></Suspense>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
