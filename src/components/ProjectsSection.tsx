@@ -34,7 +34,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
 
         {/* Header Section with Metadata */}
         <div className="relative p-6 border-b border-white/5 bg-white/[0.02]">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex flex-wrap justify-between items-start mb-4 gap-y-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-white/70 group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20 group-hover:text-emerald-400 transition-all duration-500">
                 <FolderOpen className="w-5 h-5" />

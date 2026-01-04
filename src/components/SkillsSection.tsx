@@ -93,7 +93,7 @@ const SkillsSection = () => {
                   <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-emerald-500/50 transition-colors duration-500" />
 
                   {/* Header */}
-                  <div className="flex justify-between items-start mb-8">
+                  <div className="flex flex-wrap justify-between items-start mb-8 gap-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20 transition-colors duration-500">
                         <category.icon className="w-5 h-5 text-white/70 group-hover:text-emerald-400 transition-colors duration-500" />
