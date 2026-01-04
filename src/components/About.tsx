@@ -58,15 +58,15 @@ const About = () => {
     <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
       <motion.div style={{ opacity, scale }} className="max-w-7xl mx-auto relative z-10">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-          className="grid lg:grid-cols-2 gap-16 lg:gap-24"
-        >
-          {/* Left column */}
-          <div className="space-y-12">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+          {/* Left column - Slide from Left */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="space-y-12"
+          >
             <motion.div variants={itemVariants}>
               <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-8 bg-white/5">
                 [ PROFILE_DATA ]
@@ -120,16 +120,19 @@ const About = () => {
                 </motion.div>
               ))}
             </motion.div>
-          </div>
+          </motion.div>
 
-          {/* Right column - Skills */}
-          <div className="space-y-6">
+          {/* Right column - Slide from Right */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="space-y-6"
+          >
             {skills.map((skillGroup, groupIndex) => (
               <motion.div
                 key={skillGroup.category}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 + groupIndex * 0.15 }}
                 className="p-8 border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
               >
@@ -154,8 +157,8 @@ const About = () => {
                 </div>
               </motion.div>
             ))}
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </motion.div>
     </section>
   );

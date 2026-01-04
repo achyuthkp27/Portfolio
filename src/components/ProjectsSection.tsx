@@ -96,8 +96,8 @@ const ProjectsSection = () => {
           {projects.map((project, index) => (
             <ParallaxSection key={project.title} speed={0.1 + (index % 3) * 0.1} className="h-full">
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
                 whileHover={{ y: -10 }}
                 className="group h-full"

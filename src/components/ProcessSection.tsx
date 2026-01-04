@@ -47,10 +47,10 @@ const ProcessSection = () => {
                     {steps.map((step, i) => (
                         <motion.div
                             key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.2 }}
+                            transition={{ delay: i * 0.2, type: "spring", stiffness: 100 }}
                             className="relative z-10"
                         >
                             <div className="w-24 h-24 bg-neutral-900 border border-white/10 rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0 relative group hover:border-white/30 transition-colors">
