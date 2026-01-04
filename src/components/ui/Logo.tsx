@@ -11,7 +11,7 @@ export const Logo = ({ className = "" }: { className?: string }) => {
 
             <img
                 src="/images/logo.jpg"
-                alt="Logo"
+                alt="Achyuth KP Portfolio Logo"
                 className="w-full h-full object-contain rounded-xl relative z-10"
             />
         </motion.div>

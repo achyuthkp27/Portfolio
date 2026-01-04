@@ -4,9 +4,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { HelmetProvider } from "react-helmet-async";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 import PremiumLoader from "@/components/PremiumLoader";
+import Analytics from "@/components/Analytics";
 import SmoothScroll from "./components/ui/SmoothScroll";
 import CustomCursor from "./components/ui/CustomCursor";
 import ScrollProgress from "./components/ui/ScrollProgress";
@@ -16,12 +19,16 @@ import { LoadingProvider } from "./context/LoadingContext";
 
 const queryClient = new QueryClient();
 
+// Lazy load the project detail page
+const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
+        <Route path="/project/:slug" element={<Suspense fallback={<div>Loading project...</div>}><ProjectDetail /></Suspense>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -31,22 +38,25 @@ const AnimatedRoutes = () => {
 
 const App = () => (
   <ErrorBoundary>
-    <LoadingProvider>
-      <PremiumLoader />
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <CustomCursor />
-          <ScrollProgress />
-          <HashRouter>
-            <SmoothScroll>
-              <AnimatedRoutes />
-            </SmoothScroll>
-          </HashRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </LoadingProvider>
+    <HelmetProvider>
+      <LoadingProvider>
+        <PremiumLoader />
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <CustomCursor />
+            <ScrollProgress />
+            <Analytics />
+            <HashRouter>
+              <SmoothScroll>
+                <AnimatedRoutes />
+              </SmoothScroll>
+            </HashRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </LoadingProvider>
+    </HelmetProvider>
   </ErrorBoundary>
 );
 

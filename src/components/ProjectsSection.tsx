@@ -1,67 +1,11 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ExternalLink, Github, Server, Database, MessageSquare, HardDrive, LayoutDashboard } from "lucide-react";
+import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";
-
-const projects = [
-  {
-    title: "Banking API Platform",
-    description: "High-volume microservices powering corporate, retail, and mobile banking transactions with 99.9% uptime.",
-    problem: "Legacy monolithic banking system couldn't scale with growing user base",
-    solution: "Decomposed into 25+ microservices with event-driven architecture",
-    outcome: "3x improvement in transaction throughput, 40% reduction in latency",
-    tags: ["Spring Boot", "PostgreSQL", "Kafka", "Redis", "AWS"],
-    icon: Server,
-    color: "white",
-    gradient: "from-white/10 to-white/5",
-  },
-  {
-    title: "Centralized Logging System",
-    description: "Real-time monitoring toolkit with ELK Stack and Kafka for enterprise-wide observability.",
-    problem: "Debugging production issues took hours due to scattered logs",
-    solution: "Implemented centralized logging with Elasticsearch, Logstash, and Kibana",
-    outcome: "25% faster issue resolution, improved system reliability",
-    tags: ["ELK Stack", "Kafka", "Spring Boot", "Docker"],
-    icon: Database,
-    color: "white",
-    gradient: "from-white/10 to-white/5",
-  },
-  {
-    title: "Distributed Notification Engine",
-    description: "Scalable event-driven notification system handling millions of messages daily.",
-    problem: "Synchronous notifications causing bottlenecks and poor UX",
-    solution: "Built async notification engine with Kafka consumers and retry mechanisms",
-    outcome: "10x throughput improvement, zero message loss guarantee",
-    tags: ["Kafka", "Spring Boot", "Redis", "PostgreSQL"],
-    icon: MessageSquare,
-    color: "white",
-    gradient: "from-white/10 to-white/5",
-  },
-  {
-    title: "Secure File Storage (MinIO)",
-    description: "Enterprise file storage solution with granular access policies and AWS S3 compatibility.",
-    problem: "Document management scattered across multiple systems",
-    solution: "Unified storage layer with MinIO, access policies, and CDN integration",
-    outcome: "Centralized document management, 50% cost reduction vs S3",
-    tags: ["MinIO", "AWS S3", "Spring Boot", "IAM"],
-    icon: HardDrive,
-    color: "white",
-    gradient: "from-white/10 to-white/5",
-  },
-  {
-    title: "Microservice Monitoring Dashboard",
-    description: "ReactJS dashboard for real-time monitoring of distributed microservices health and metrics.",
-    problem: "No visibility into microservice health and performance",
-    solution: "Built React dashboard with real-time metrics, alerts, and health checks",
-    outcome: "Proactive issue detection, reduced MTTR by 60%",
-    tags: ["ReactJS", "Spring Boot", "WebSocket", "Chart.js"],
-    icon: LayoutDashboard,
-    color: "white",
-    gradient: "from-white/10 to-white/5",
-  },
-];
+import { projects } from "@/data/projects";
+import { Link } from "react-router-dom";
 
 const ProjectsSection = () => {
   const ref = useRef(null);
@@ -139,9 +83,12 @@ const ProjectsSection = () => {
 
                   {/* Content */}
                   <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="font-display text-xl font-bold mb-2 text-white group-hover:text-white/90 transition-colors">
-                      {project.title}
-                    </h3>
+                    <Link to={`/project/${project.slug}`}>
+                      <h3 className="font-display text-xl font-bold mb-2 text-white group-hover:text-primary transition-colors cursor-pointer flex items-center gap-2">
+                        {project.title}
+                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </h3>
+                    </Link>
                     <p className="text-gray-300 text-sm mb-6 leading-relaxed border-b border-white/5 pb-4">{project.description}</p>
 
                     {/* Problem → Solution → Outcome */}
