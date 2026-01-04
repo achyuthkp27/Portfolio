@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import About from "@/components/About";
+import AboutMeSection from "@/components/AboutMeSection";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/Footer";
 import SystemStatus from "@/components/SystemStatus";
@@ -45,6 +46,7 @@ const Index = () => {
           <SystemStatus />
           <Services />
           <About />
+          <AboutMeSection />
 
           <Suspense fallback={<div className="h-96 w-full flex items-center justify-center text-white/20 font-mono text-sm">LOADING_SECTOR...</div>}>
             <ProcessSection />

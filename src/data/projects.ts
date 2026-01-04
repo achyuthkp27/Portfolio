@@ -1,4 +1,9 @@
 import { Server, Database, MessageSquare, HardDrive, LayoutDashboard } from "lucide-react";
+import bankingImg from "@/assets/images/projects/banking-platform.jpg";
+import loggingImg from "@/assets/images/projects/logging-system.jpg";
+import notificationImg from "@/assets/images/projects/notification-engine.jpg";
+import storageImg from "@/assets/images/projects/secure-storage.jpg";
+import dashboardImg from "@/assets/images/projects/monitoring-dashboard.jpg";
 
 export interface Project {
     slug: string; // URL friendly identifier
@@ -11,6 +16,7 @@ export interface Project {
     icon: any;
     color: string;
     gradient: string;
+    image?: string; // New field for cover image
     // Extended fields for Case Study
     fullDescription?: string;
     challenges?: string[];
@@ -34,6 +40,7 @@ export const projects: Project[] = [
         icon: Server,
         color: "white",
         gradient: "from-white/10 to-white/5",
+        image: bankingImg,
         fullDescription: "A mission-critical digital transformation project for a Tier-1 bank, migrating a 15-year-old monolith to a modern cloud-native microservices architecture. The system handles millions of daily transactions across retail and corporate channels, ensuring strict consistency and regulatory compliance.",
         challenges: [
             "Zero-downtime migration requirement",
@@ -58,6 +65,7 @@ export const projects: Project[] = [
         icon: Database,
         color: "white",
         gradient: "from-white/10 to-white/5",
+        image: loggingImg,
         fullDescription: "An observability platform built to ingest, index, and visualize logs from over 50+ distributed services. It processes terabytes of log data daily, providing developers and SREs with real-time insights into system health.",
         challenges: [
             "Handling log spikes during peak traffic",
@@ -75,6 +83,7 @@ export const projects: Project[] = [
         icon: MessageSquare,
         color: "white",
         gradient: "from-white/10 to-white/5",
+        image: notificationImg,
         fullDescription: "A centralized notification hub that abstracts SMS, Email, and Push Notification providers. It features intelligent routing, rate limiting, and a robust retry mechanism to guarantee delivery.",
         challenges: [
             "Preventing spam/duplicate notifications",
@@ -92,6 +101,7 @@ export const projects: Project[] = [
         icon: HardDrive,
         color: "white",
         gradient: "from-white/10 to-white/5",
+        image: storageImg,
         fullDescription: "A self-hosted, S3-compatible object storage service designed for banking documents. It enforces strict access control lists (ACLs) and encryption at rest.",
         challenges: [
             "Migrating petabytes of existing data",
@@ -109,6 +119,7 @@ export const projects: Project[] = [
         icon: LayoutDashboard,
         color: "white",
         gradient: "from-white/10 to-white/5",
+        image: dashboardImg,
         fullDescription: "A custom ops dashboard that aggregates metrics from Prometheus and health checks from Spring Boot Actuator, visualizing them in real-time using WebSockets.",
         challenges: [
             "Reducing visualization latency",
