@@ -38,7 +38,7 @@ const PhilosophySection = () => {
             {/* Two-Column Manifesto Section */}
             <div className="max-w-6xl mx-auto mt-32 grid md:grid-cols-2 gap-16 items-start w-full">
                 {/* Left Column */}
-                <TextReveal type="fade-up" delay={0.2}>
+                <TextReveal type="blur-reveal" delay={0.2}>
                     <h3 className="font-display text-5xl md:text-7xl font-bold leading-tight text-white/40">
                         Unseen <br />
                         <span className="text-white">Complexity.</span>

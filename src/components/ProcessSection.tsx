@@ -30,11 +30,9 @@ const ProcessSection = () => {
         <section className="py-24 px-6 md:px-12 relative bg-transparent border-y border-white/5">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-16">
-                    <TextReveal type="fade-up">
-                        <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-                            How I Work
-                        </h2>
-                    </TextReveal>
+                    <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+                        <TextReveal type="blur-reveal">How I Work</TextReveal>
+                    </h2>
                     <p className="text-gray-400 max-w-2xl">
                         A systematic approach to building scalable software, ensuring quality at every step.
                     </p>

@@ -50,9 +50,9 @@ const App = () => (
             <Toaster />
             <Sonner />
             <CustomCursor />
-            <ScrollProgress />
-            <Analytics />
             <HashRouter>
+              <ScrollProgress />
+              <Analytics />
               <SmoothScroll>
                 <AnimatedRoutes />
               </SmoothScroll>

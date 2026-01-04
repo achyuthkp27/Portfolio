@@ -35,9 +35,10 @@ const Services = () => {
                             [ CREATIVE_ENGINEERING ]
                         </span>
                     </TextReveal>
-                    <TextReveal type="mask-up" as="h2" className="font-display text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight">
-                        DESIGN <span className="text-white/40">& CODE</span>
-                    </TextReveal>
+                    <h2 className="font-display text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight">
+                        <TextReveal type="blur-reveal" as="span">DESIGN</TextReveal>{" "}
+                        <TextReveal type="blur-reveal" as="span" className="text-white/40">& CODE</TextReveal>
+                    </h2>
                     <div className="max-w-2xl text-xl text-gray-400">
                         <TextReveal type="scrub" className="leading-relaxed font-light">
                             I combine technical expertise with design sensibilities to deliver comprehensive digital solutions. From concept to code, everything is crafted with precision.

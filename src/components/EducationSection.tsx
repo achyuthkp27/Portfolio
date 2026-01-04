@@ -27,7 +27,7 @@ const EducationSection = () => {
           </TextReveal>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white tracking-tight">
             <TextReveal type="blur-reveal" delay={0.2} as="span">EDUCATION</TextReveal>{" "}
-            <TextReveal type="blur-reveal" delay={0.3} shouldSplit={false} as="span" className="text-white/40 inline-block">HISTORY</TextReveal>
+            <TextReveal type="blur-reveal" delay={0.3} as="span" className="text-white/40 inline-block">HISTORY</TextReveal>
           </h2>
         </motion.div>
 

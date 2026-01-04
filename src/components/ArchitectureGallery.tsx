@@ -22,11 +22,11 @@ const ArchitectureGallery = () => {
                 <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
                     <div>
                         <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.9]">
-                            <TextReveal type="fade-up" delay={0.1}>
+                            <TextReveal type="blur-reveal" delay={0.1}>
                                 Unseen
                             </TextReveal>
                             <br />
-                            <TextReveal type="fade-up" delay={0.2} className="text-white/50">
+                            <TextReveal type="blur-reveal" delay={0.3} className="text-white/50">
                                 Reliability.
                             </TextReveal>
                         </h2>
@@ -34,11 +34,11 @@ const ArchitectureGallery = () => {
 
                     <div className="space-y-12">
                         <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tighter text-white leading-[0.9]">
-                            <TextReveal type="fade-up" delay={0.3}>
+                            <TextReveal type="blur-reveal" delay={0.4}>
                                 Engineered-
                             </TextReveal>
                             <br />
-                            <TextReveal type="fade-up" delay={0.4} className="text-white/50">
+                            <TextReveal type="blur-reveal" delay={0.6} className="text-white/50">
                                 Precision.
                             </TextReveal>
                         </h2>
@@ -61,28 +61,28 @@ const ArchitectureGallery = () => {
 
                 {/* Section 2: Backing the Titans (Center alignment) */}
                 <div className="flex flex-col items-center text-center py-20 border-y border-white/5 bg-white/[0.01]">
-    <TextReveal type="fade-up" className="mb-6">
-        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 bg-white/5">
-            [ MY_FUTURE_VISION ]
-        </span>
-    </TextReveal>
+                    <TextReveal type="fade-up" className="mb-6">
+                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 bg-white/5">
+                            [ MY_FUTURE_VISION ]
+                        </span>
+                    </TextReveal>
 
-    <h2 className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
-        <TextReveal type="blur-reveal" delay={0.2}>I Build for a Future</TextReveal>
-        <br />
-        <TextReveal type="blur-reveal" delay={0.4} className="text-white/40">Where Intelligence</TextReveal>
-        <br />
-        <TextReveal type="blur-reveal" delay={0.6}>Becomes the New</TextReveal>
-        <br />
-        <TextReveal type="blur-reveal" delay={0.6}>Infrastructure</TextReveal>
-    </h2>
+                    <h2 className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
+                        <TextReveal type="blur-reveal" delay={0.2}>I Build for a Future</TextReveal>
+                        <br />
+                        <TextReveal type="blur-reveal" delay={0.4} className="text-white/40">Where Intelligence</TextReveal>
+                        <br />
+                        <TextReveal type="blur-reveal" delay={0.6}>Becomes the New</TextReveal>
+                        <br />
+                        <TextReveal type="blur-reveal" delay={0.6}>Infrastructure</TextReveal>
+                    </h2>
 
-    <TextReveal type="fade-up" delay={0.8}>
-        <p className="text-xs md:text-sm font-mono text-gray-500 uppercase tracking-[0.3em]">
-            I USE GEN AI TO DESIGN SYSTEMS THAT LEARN, ADAPT, AND SCALE BEYOND TRADITIONAL LIMITS
-        </p>
-    </TextReveal>
-</div>
+                    <TextReveal type="fade-up" delay={0.8}>
+                        <p className="text-xs md:text-sm font-mono text-gray-500 uppercase tracking-[0.3em]">
+                            I USE GEN AI TO DESIGN SYSTEMS THAT LEARN, ADAPT, AND SCALE BEYOND TRADITIONAL LIMITS
+                        </p>
+                    </TextReveal>
+                </div>
 
             </motion.div>
         </section>

@@ -23,7 +23,7 @@ const TextReveal = ({
     scrollOffset = ["start 0.9", "start 0.4"]
 }: TextRevealProps) => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
+    const isInView = useInView(ref, { once: true, margin: "-5% 0px" });
     const { scrollYProgress } = useScroll({
         target: ref,
         offset: scrollOffset

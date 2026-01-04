@@ -26,7 +26,8 @@ const AwardSection = () => {
             </span>
           </TextReveal>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white tracking-tight">
-            HONORS & <span className="text-white/40">AWARDS</span>
+            <TextReveal type="blur-reveal" as="span">HONORS &</TextReveal>{" "}
+            <TextReveal type="blur-reveal" as="span" className="text-white/40">AWARDS</TextReveal>
           </h2>
         </motion.div>
 
@@ -46,17 +47,23 @@ const AwardSection = () => {
                 </div>
 
                 <div className="flex-1">
-                  <span className="inline-block px-3 py-1 text-[10px] font-mono border border-white/10 text-white/60 rounded-full mb-6 bg-white/5 uppercase tracking-wider">
-                    Q1 2024 // FIS GLOBAL
-                  </span>
+                  <TextReveal type="fade-up" delay={0.3}>
+                    <span className="inline-block px-3 py-1 text-[10px] font-mono border border-white/10 text-white/60 rounded-full mb-6 bg-white/5 uppercase tracking-wider">
+                      Q1 2024 // FIS GLOBAL
+                    </span>
+                  </TextReveal>
                   <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-white uppercase tracking-tight">
-                    Above and Beyond Individual Award
+                    <TextReveal type="blur-reveal" delay={0.4}>
+                      Above and Beyond Individual Award
+                    </TextReveal>
                   </h3>
-                  <p className="text-gray-400 leading-relaxed max-w-2xl mx-auto border-t border-white/10 pt-6 mt-2">
-                    Recognized for exceptional contributions to the banking microservices platform,
-                    demonstrating technical excellence, proactive problem-solving, and leadership
-                    in delivering high-impact solutions.
-                  </p>
+                  <div className="text-gray-400 leading-relaxed max-w-2xl mx-auto border-t border-white/10 pt-6 mt-2">
+                    <TextReveal type="fade-up" delay={0.6}>
+                      Recognized for exceptional contributions to the banking microservices platform,
+                      demonstrating technical excellence, proactive problem-solving, and leadership
+                      in delivering high-impact solutions.
+                    </TextReveal>
+                  </div>
                 </div>
               </div>
             </div>
