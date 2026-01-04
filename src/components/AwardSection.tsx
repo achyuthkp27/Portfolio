@@ -52,7 +52,7 @@ const AwardSection = () => {
                       Q1 2024 // FIS GLOBAL
                     </span>
                   </TextReveal>
-                  <h3 className="font-display text-2xl md:text-3xl font-bold mb-4 text-white uppercase tracking-tight">
+                  <h3 className="font-display text-xl md:text-3xl font-bold mb-4 text-white uppercase tracking-tight">
                     <TextReveal type="blur-reveal" delay={0.4}>
                       Above and Beyond Individual Award
                     </TextReveal>

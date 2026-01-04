@@ -47,6 +47,11 @@ const ProcessSection = () => {
                 </div>
 
                 <div className="grid md:grid-cols-4 gap-8 relative">
+                    {/* Connecting Line (Mobile) */}
+                    <div className="md:hidden absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-white/10 overflow-hidden z-0">
+                        <div className="absolute top-0 left-0 w-full h-[200px] bg-gradient-to-b from-transparent via-white to-transparent animate-scan-beam-vertical opacity-100" />
+                    </div>
+
                     {/* Connecting Line (Desktop) */}
                     <div className="hidden md:block absolute top-20 left-0 w-full h-px bg-white/10 overflow-hidden z-0">
                         <div className="absolute top-0 left-0 h-full w-[200px] bg-gradient-to-r from-transparent via-white to-transparent animate-scan-beam-horizontal opacity-100" />

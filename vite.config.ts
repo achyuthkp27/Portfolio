@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
           'radix-vendor': Object.keys(dependencies).filter(
             (key) => key.startsWith('@radix-ui/')
           ),
+          'theatre-vendor': ['@theatre/core', '@theatre/r3f'],
         },
       },
     },

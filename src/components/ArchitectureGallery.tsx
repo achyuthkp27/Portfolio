@@ -67,7 +67,7 @@ const ArchitectureGallery = () => {
                         </span>
                     </TextReveal>
 
-                    <h2 className="font-display text-5xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
+                    <h2 className="font-display text-4xl md:text-8xl font-bold tracking-tighter text-white leading-none mb-8">
                         <TextReveal type="blur-reveal" delay={0.2}>I Build for a Future</TextReveal>
                         <br />
                         <TextReveal type="blur-reveal" delay={0.4} className="text-white/40">Where Intelligence</TextReveal>

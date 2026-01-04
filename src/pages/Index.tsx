@@ -19,6 +19,7 @@ const ArchitectureGallery = lazy(() => import("@/components/ArchitectureGallery"
 const PhilosophySection = lazy(() => import("@/components/PhilosophySection"));
 const AwardSection = lazy(() => import("@/components/AwardSection"));
 const EducationSection = lazy(() => import("@/components/EducationSection"));
+const BlogSection = lazy(() => import("@/components/BlogSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
@@ -55,6 +56,7 @@ const Index = () => {
             <PhilosophySection />
             <AwardSection />
             <EducationSection />
+            <BlogSection />
             <ContactSection />
           </Suspense>
         </main>

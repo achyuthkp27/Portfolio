@@ -406,4 +406,28 @@
       box-shadow: none;
     }
   }
+
+  @keyframes scan-beam-vertical {
+    0% {
+      top: -100px;
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    90% {
+      opacity: 1;
+    }
+
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+
+  .animate-scan-beam-vertical {
+    animation: scan-beam-vertical 6s ease-in-out infinite;
+  }
 }

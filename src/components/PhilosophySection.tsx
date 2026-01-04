@@ -3,18 +3,27 @@ import TextReveal from "./ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 
 const PhilosophySection = () => {
+    // Calculate dynamic age
+    const dob = new Date("1999-11-27");
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+
     return (
         <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent flex flex-col justify-center items-center min-h-[60vh]">
             {/* Top Status Bar - Centered */}
             <div className="absolute top-20 left-0 w-full flex justify-center">
                 <TextReveal type="fade-up" delay={0.2}>
-                    <div className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-white/40 flex items-center gap-4">
+                    <div className="text-[8px] md:text-xs font-mono tracking-[0.2em] uppercase text-white/40 flex flex-wrap justify-center items-center gap-2 md:gap-4 max-w-[90vw]">
                         <span>ACCESS</span>
                         <span className="text-white/20">{'>>'}</span>
                         <span>INTO</span>
                         <span className="text-white/20">_</span>
                         <span className="text-white">AKP</span>
-                        <span className="text-white/20">[25]</span>
+                        <span className="text-white/20">[{age}]</span>
                         <span>IS</span>
                         <span className="text-white/20">_</span>
                         <span>PENDING</span>

@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import { useRef, lazy, Suspense } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import MagneticButton from "./ui/MagneticButton";
+import ExperienceTimer from "./ui/ExperienceTimer";
 
 import { useMobile } from "@/hooks/useMobile";
 
@@ -18,6 +19,16 @@ const Hero = () => {
   const isMobile = useMobile();
   const { lenis } = useSmoothScroll();
   const ref = useRef<HTMLElement>(null);
+
+  // Dynamic Experience Calculation (Start: July 2021)
+  const startDate = new Date("2021-07-01");
+  const today = new Date();
+  let exp = today.getFullYear() - startDate.getFullYear();
+  const m = today.getMonth() - startDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < startDate.getDate())) {
+    exp--;
+  }
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -203,7 +214,7 @@ const Hero = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={!isLoading ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1, delay: 0.8 }}
-            className="hidden lg:flex justify-center pointer-events-auto"
+            className="flex justify-center pointer-events-auto mt-12 lg:mt-0"
           >
             <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
               <motion.div
@@ -212,39 +223,28 @@ const Hero = () => {
                 }}
                 className="absolute inset-0 border border-white/10 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center transition-colors duration-500"
               >
-                <div className="text-center">
-                  <motion.span
-                    variants={{ hover: { scale: 1.1, color: "#ffffff" } }}
-                    transition={{ duration: 0.4 }}
-                    className="block text-8xl font-display font-bold text-white mb-2"
-                  >
-                    4+
-                  </motion.span>
-                  <span className="text-sm font-mono uppercase tracking-widest text-white/50 border-t border-white/10 pt-4 block">
-                    Years Experience
-                  </span>
-                </div>
+                <ExperienceTimer startDate={startDate} />
               </motion.div>
               {/* Decorative corners */}
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40"
+                className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40"
+                className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40"
+                className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40"
+                className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40 pointer-events-none"
               />
             </motion.div>
           </motion.div>
