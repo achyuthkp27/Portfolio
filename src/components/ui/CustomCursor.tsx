@@ -67,7 +67,7 @@ const CustomCursor = () => {
     if (isMobile) return null;
 
     return (
-        <div className="fixed inset-0 pointer-events-none z-[9999] overflow-visible">
+        <div className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none">
             {/* Shockwaves */}
             <AnimatePresence>
                 {shockwaves.map((wave) => (

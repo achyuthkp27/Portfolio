@@ -25,7 +25,7 @@ const ParallaxStars = () => {
 const SpaceBackground = () => {
     return (
         <div className="fixed inset-0 z-[-1] pointer-events-none bg-black">
-            <Canvas gl={{ preserveDrawingBuffer: true }} style={{ pointerEvents: 'none' }}>
+            <Canvas style={{ pointerEvents: 'none' }}>
                 <ParallaxStars />
             </Canvas>
         </div>

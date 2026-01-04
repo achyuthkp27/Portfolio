@@ -35,9 +35,9 @@ const ScrollProgress = () => {
             const deltaY = Math.abs(currentScrollY - lastScrollY.current);
 
             // Only spawn if scrolling significantly
-            if (deltaY > 2) {
-                spawnParticles(deltaY);
-            }
+            // if (deltaY > 2) {
+            //     spawnParticles(deltaY);
+            // }
             lastScrollY.current = currentScrollY;
         };
 

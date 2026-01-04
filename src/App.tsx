@@ -12,6 +12,7 @@ import CustomCursor from "./components/ui/CustomCursor";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { LoadingProvider } from "./context/LoadingContext";
 
 const queryClient = new QueryClient();
 
@@ -30,20 +31,22 @@ const AnimatedRoutes = () => {
 
 const App = () => (
   <ErrorBoundary>
-    <PremiumLoader />
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <CustomCursor />
-        <ScrollProgress />
-        <HashRouter>
-          <SmoothScroll>
-            <AnimatedRoutes />
-          </SmoothScroll>
-        </HashRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <LoadingProvider>
+      <PremiumLoader />
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <CustomCursor />
+          <ScrollProgress />
+          <HashRouter>
+            <SmoothScroll>
+              <AnimatedRoutes />
+            </SmoothScroll>
+          </HashRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </LoadingProvider>
   </ErrorBoundary>
 );
 

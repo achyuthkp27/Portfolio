@@ -1,21 +1,21 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useLoading } from "@/context/LoadingContext";
 
 const words = ["Developer", "Designer", "Creator", "Engineer", "Innovator", "Problem Solver"];
 
 const PremiumLoader = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const { isLoading, setIsLoading } = useLoading();
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
-        // Time per word in milliseconds
-        const wordDuration = 300;
+        const wordDuration = 400; // Increased from 300ms for better readability
 
-        // If we've reached the last word
         if (index === words.length - 1) {
+            // End loader after the last word
             const timeout = setTimeout(() => {
                 setIsLoading(false);
-            }, 1000); // Keep the last word visible longer
+            }, 1000);
             return () => clearTimeout(timeout);
         }
 
@@ -31,8 +31,8 @@ const PremiumLoader = () => {
             {isLoading && (
                 <motion.div
                     initial={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                    exit={{ y: "-100%" }}
+                    transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
                     className="fixed inset-0 z-50 flex items-center justify-center bg-background"
                 >
                     <div className="relative">

@@ -9,7 +9,11 @@ import DecryptText from "@/components/ui/DecryptText";
 
 import { useMobile } from "@/hooks/useMobile";
 
+import { useLoading } from "@/context/LoadingContext";
+
+// Increased delays to sync with 1s curtain reveal
 const Hero = () => {
+  const { isLoading } = useLoading();
   const isMobile = useMobile();
   const { lenis } = useSmoothScroll();
   const ref = useRef<HTMLElement>(null);
@@ -51,8 +55,8 @@ const Hero = () => {
           <div className="flex flex-col text-left">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.5 }}
               className="mb-8 pointer-events-auto"
             >
               <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-sm">
@@ -69,8 +73,8 @@ const Hero = () => {
             <div className="mb-2 pointer-events-auto">
               <motion.h2
                 initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                animate={!isLoading ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.6 }}
                 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tight"
               >
                 ACHYUTH KP
@@ -84,8 +88,8 @@ const Hero = () => {
               <div className="overflow-hidden">
                 <motion.div
                   initial={{ y: "100%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                  animate={!isLoading ? { y: 0 } : {}}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   style={{
                     backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
@@ -106,8 +110,8 @@ const Hero = () => {
               <div className="overflow-hidden ml-12">
                 <motion.div
                   initial={{ y: "100%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+                  animate={!isLoading ? { y: 0 } : {}}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
                   style={{
                     backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
@@ -129,8 +133,8 @@ const Hero = () => {
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.9 }}
               className="flex flex-wrap gap-3 mb-8 pointer-events-auto"
             >
               {["Software Developer", "React Js", "Spring Boot", "Microservices", "AWS"].map((tag, i) => (
@@ -145,8 +149,8 @@ const Hero = () => {
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 1.0 }}
               className="text-sm md:text-lg font-mono text-gray-400 max-w-lg mb-12 leading-relaxed tracking-wide uppercase pointer-events-auto"
             >
               Engineering scalable systems with precision, performance, and a product mindset.
@@ -154,8 +158,8 @@ const Hero = () => {
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1 }}
+              animate={!isLoading ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.8, delay: 1.1 }}
               className="flex flex-wrap items-center gap-6 pointer-events-auto"
             >
               <MagneticButton>
@@ -165,7 +169,7 @@ const Hero = () => {
                     e.preventDefault();
                     const target = document.getElementById('projects');
                     if (target) {
-                      lenis?.scrollTo(target, { duration: 1.5 });
+                      target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
                   className="group relative inline-flex items-center gap-4 px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-neutral-200"
@@ -182,7 +186,7 @@ const Hero = () => {
                     e.preventDefault();
                     const target = document.getElementById('contact');
                     if (target) {
-                      lenis?.scrollTo(target, { duration: 1.5 });
+                      target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
                   className="group relative inline-flex items-center gap-4 px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-white/5"
@@ -196,8 +200,8 @@ const Hero = () => {
           {/* Right side Experience Card */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
+            animate={!isLoading ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1, delay: 0.8 }}
             className="hidden lg:flex justify-center pointer-events-auto"
           >
             <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
@@ -249,8 +253,8 @@ const Hero = () => {
       {/* Simple Line Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        animate={!isLoading ? { opacity: 1 } : {}}
+        transition={{ delay: 2.2, duration: 1 }}
         className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[1px] bg-gradient-to-b from-transparent to-white/20"
       />
     </section>

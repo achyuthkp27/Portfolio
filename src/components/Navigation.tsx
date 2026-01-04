@@ -62,14 +62,8 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     const element = document.getElementById(targetId);
     if (element) {
-      if (lenis) {
-        lenis.scrollTo(element, {
-          duration: 2.5,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // Keep expo ease out for nav clicks
-        });
-      } else {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+      // Native smooth scroll fallback
+      element.scrollIntoView({ behavior: "smooth" });
       setIsMobileMenuOpen(false);
     }
   };

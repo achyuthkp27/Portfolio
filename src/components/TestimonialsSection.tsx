@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
+import SpotlightCard from "./ui/SpotlightCard";
 
 const testimonials = [
     {
@@ -44,21 +45,26 @@ const TestimonialsSection = () => {
                     {testimonials.map((item, i) => (
                         <motion.div
                             key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.2 }}
-                            className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm relative group hover:bg-white/10 transition-colors"
+                            initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6, delay: i * 0.2 }}
+                            className="h-full"
                         >
-                            <Quote className="w-8 h-8 text-white/20 mb-6 group-hover:text-white/40 transition-colors" />
-                            <p className="text-gray-300 mb-6 leading-relaxed">"{item.content}"</p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 border border-white/10" />
-                                <div>
-                                    <div className="text-white font-bold text-sm">{item.name}</div>
-                                    <div className="text-white/40 text-xs font-mono uppercase tracking-wider">{item.role}</div>
+                            <SpotlightCard
+                                className="h-full flex flex-col p-8 border border-white/10 bg-black/40 glass-card"
+                                spotlightColor="rgba(255, 255, 255, 0.1)"
+                            >
+                                <Quote className="w-8 h-8 text-white/20 mb-6 group-hover:text-white/40 transition-colors" />
+                                <p className="text-gray-300 mb-6 leading-relaxed flex-grow">"{item.content}"</p>
+                                <div className="flex items-center gap-4 mt-auto">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 border border-white/10" />
+                                    <div>
+                                        <div className="text-white font-bold text-sm">{item.name}</div>
+                                        <div className="text-white/40 text-xs font-mono uppercase tracking-wider">{item.role}</div>
+                                    </div>
                                 </div>
-                            </div>
+                            </SpotlightCard>
                         </motion.div>
                     ))}
                 </div>
