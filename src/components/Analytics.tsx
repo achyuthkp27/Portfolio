@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
-const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
+import { usePostHog } from 'posthog-js/react';
 
 const Analytics = () => {
     const location = useLocation();
+    const posthog = usePostHog();
 
     useEffect(() => {
-        // Basic pageview tracking logic
-        // If GA_TRACKING_ID is present, we would initialize window.gtag here
-        if (GA_TRACKING_ID && typeof window !== 'undefined') {
-            console.log(`[Analytics] Page View: ${location.pathname}`);
-            // window.gtag('config', GA_TRACKING_ID, { page_path: location.pathname });
+        if (typeof window !== 'undefined' && posthog) {
+            posthog.capture('$pageview', {
+                $current_url: window.location.href,
+                $pathname: location.pathname,
+            });
         }
-    }, [location]);
+    }, [location, posthog]);
 
     return null; // This component doesn't render anything
 };

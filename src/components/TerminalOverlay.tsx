@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Terminal, X } from "lucide-react";
+import { usePostHog } from 'posthog-js/react';
 
 export default function TerminalOverlay() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ export default function TerminalOverlay() {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const posthog = usePostHog();
 
   // Key sequence detector for ">_"
   useEffect(() => {
@@ -31,6 +33,10 @@ export default function TerminalOverlay() {
         setIsOpen(true);
         setInput(""); // Ensure the input is strictly empty when opening
         keyBuffer = "";
+        
+        posthog?.capture('terminal_opened', { 
+            method: 'keyboard_shortcut' 
+        });
       }
     };
     

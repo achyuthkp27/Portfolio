@@ -1,13 +1,55 @@
 import { Activity, GitCommit } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const GITHUB_USERNAME = "achyuthkp27";
+const CACHE_KEY = "github_yearly_commits";
+const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+
 export default function ActivityWidget() {
   const [isVisible, setIsVisible] = useState(false);
+  const [commits, setCommits] = useState<number | string>("350+");
 
   useEffect(() => {
-    // Small delay to animate in after initial load
+    // Show widget after 2 seconds
     const timer = setTimeout(() => setIsVisible(true), 2000);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchCommits = async () => {
+      try {
+        // Check Cache
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { count, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_DURATION) {
+            setCommits(count);
+            return;
+          }
+        }
+
+        const year = new Date().getFullYear();
+        // Fetch from GitHub Search API (requires the cloak-preview header)
+        const res = await fetch(`https://api.github.com/search/commits?q=author:${GITHUB_USERNAME}+committer-date:>${year}-01-01`, {
+          headers: {
+            Accept: "application/vnd.github.cloak-preview"
+          }
+        });
+        
+        if (!res.ok) throw new Error("Rate limited or failed");
+        
+        const data = await res.json();
+        if (data.total_count !== undefined) {
+          setCommits(data.total_count);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ count: data.total_count, timestamp: Date.now() }));
+        }
+      } catch (error) {
+        console.warn("Failed to fetch live commits. Using fallback.");
+        // Leave it as "350+" if we get rate limited
+      }
+    };
+
+    fetchCommits();
   }, []);
 
   if (!isVisible) return null;
@@ -34,10 +76,16 @@ export default function ActivityWidget() {
 
           <div className="w-px h-6 bg-white/10 mx-1" />
 
-          <div className="flex items-center gap-1.5 text-white/60 hover:text-white transition-colors cursor-pointer" title="Mocked Git Commits (Today)">
+          <a 
+            href={`https://github.com/${GITHUB_USERNAME}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 text-white/60 hover:text-emerald-400 transition-colors cursor-pointer" 
+            title={`Total Commits this Year: ${commits} (Live)`}
+          >
             <GitCommit className="w-3.5 h-3.5" />
-            <span className="text-xs font-mono">4</span>
-          </div>
+            <span className="text-xs font-mono">{commits}</span>
+          </a>
         </div>
       </div>
     </div>

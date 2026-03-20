@@ -1,14 +1,25 @@
 import { createClient } from "@sanity/client";
-import createImageUrlBuilder from "@sanity/image-url";
+import imageUrlBuilder from "@sanity/image-url";
+
+const isConfigured = import.meta.env.VITE_SANITY_PROJECT_ID !== undefined;
 
 export const client = createClient({
-    projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "your_project_id",
+    projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "demo-project-id",
     dataset: "production",
     useCdn: true, // set to `false` to bypass the edge cache
     apiVersion: "2023-05-03",
 });
 
-const builder = createImageUrlBuilder(client);
+// Intercept fetch if not configured to prevent 403 console network logs
+const originalFetch = client.fetch.bind(client);
+client.fetch = async (query: string, params?: any, options?: any) => {
+    if (!isConfigured) {
+        return Promise.reject(new Error("Sanity not configured. Gracefully falling back to local files."));
+    }
+    return originalFetch(query, params, options);
+};
+
+const builder = imageUrlBuilder(client);
 
 export function urlFor(source: any) {
     return builder.image(source);

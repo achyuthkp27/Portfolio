@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
-import { Home, Briefcase, Mail, FileText, Code, User } from "lucide-react";
+import { Home, Briefcase, Mail, FileText, Code, User, Monitor, Terminal, Palette } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const posthog = usePostHog();
 
   // Toggle the menu when ⌘K is pressed
   useEffect(() => {
+    // Load initial theme
+    const savedTheme = localStorage.getItem("portfolio-theme") || "titan";
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -23,6 +29,13 @@ export function CommandMenu() {
   const runCommand = (command: () => void) => {
     setOpen(false);
     command();
+  };
+
+  const setTheme = (theme: string) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('portfolio-theme', theme);
+    setOpen(false);
+    posthog?.capture('theme_changed', { theme_id: theme });
   };
 
   if (!open) return null;
@@ -56,6 +69,20 @@ export function CommandMenu() {
               </Command.Item>
               <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => document.getElementById("contact")?.scrollIntoView(), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <Mail className="h-4 w-4" /> Contact
+              </Command.Item>
+            </Command.Group>
+
+            <Command.Separator className="my-1 h-px bg-white/10" />
+
+            <Command.Group heading="Themes" className="text-xs font-mono text-white/40 px-2 pt-3 pb-1 uppercase tracking-wider">
+              <Command.Item onSelect={() => setTheme('titan')} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
+                <Monitor className="h-4 w-4" /> Default (Titan)
+              </Command.Item>
+              <Command.Item onSelect={() => setTheme('matrix')} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
+                <Terminal className="h-4 w-4" /> Matrix Protocol
+              </Command.Item>
+              <Command.Item onSelect={() => setTheme('synthwave')} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
+                <Palette className="h-4 w-4" /> Synthwave 1984
               </Command.Item>
             </Command.Group>
 

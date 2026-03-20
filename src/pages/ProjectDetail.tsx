@@ -1,30 +1,76 @@
 import { useParams, Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2 } from "lucide-react";
-import { projects } from "@/data/projects";
+import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, FolderOpen } from "lucide-react";
+import * as Icons from "lucide-react";
+import { projects as fallbackProjects, Project } from "@/data/projects";
+import { client, urlFor } from "@/lib/sanity";
+import { useEffect, useState } from "react";
 import SEO from "@/components/SEO";
 import TextReveal from "@/components/ui/TextReveal";
 
 const ProjectDetail = () => {
     const { slug } = useParams();
-    const project = projects.find((p) => p.slug === slug);
+    const [project, setProject] = useState<Project | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { scrollY } = useScroll();
     const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
     const heroScale = useTransform(scrollY, [0, 300], [1, 1.1]);
 
+    useEffect(() => {
+        client.fetch(`*[_type == "project" && slug.current == $slug][0]`, { slug })
+            .then((data) => {
+                if (data) {
+                    setProject({
+                        ...data,
+                        slug: data.slug.current,
+                        icon: (Icons as any)[data.iconName] || Icons.FolderOpen,
+                        image: data.mainImage ? urlFor(data.mainImage).url() : undefined
+                    });
+                } else {
+                    setProject(fallbackProjects.find((p) => p.slug === slug) || null);
+                }
+                setIsLoading(false);
+            })
+            .catch(() => {
+                setProject(fallbackProjects.find((p) => p.slug === slug) || null);
+                setIsLoading(false);
+            });
+    }, [slug]);
+
+    if (isLoading) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="min-h-screen flex items-center justify-center font-mono text-white/50 bg-background"
+            >
+                DECRYPTING_FILE...
+            </motion.div>
+        );
+    }
+
     if (!project) {
         return (
-            <div className="min-h-screen flex items-center justify-center text-white">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold mb-4">Project Not Found</h1>
-                    <Link to="/" className="text-primary hover:underline">Return Home</Link>
-                </div>
-            </div>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="min-h-screen flex items-center justify-center text-white bg-background flex-col"
+            >
+                <h1 className="text-4xl font-bold mb-4 font-display">Project Not Found</h1>
+                <Link to="/" className="text-emerald-500 hover:underline inline-flex items-center gap-2">
+                    <ArrowLeft className="w-4 h-4" /> Return Home
+                </Link>
+            </motion.div>
         );
     }
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
             <SEO
                 title={project.title}
                 description={project.description}
@@ -59,7 +105,7 @@ const ProjectDetail = () => {
                             transition={{ duration: 0.6 }}
                             className="inline-flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-8 backdrop-blur-sm"
                         >
-                            <project.icon className={`w-12 h-12 text-${project.color}`} />
+                            {project.icon ? <project.icon className={`w-12 h-12 text-${project.color}`} /> : <FolderOpen className={`w-12 h-12 text-${project.color}`} />}
                         </motion.div>
 
                         <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight">
@@ -202,7 +248,7 @@ const ProjectDetail = () => {
                     </div>
                 </section>
             </div>
-        </>
+        </motion.div>
     );
 };
 

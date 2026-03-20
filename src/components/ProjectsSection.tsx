@@ -1,10 +1,13 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ExternalLink, Github, ArrowUpRight, FolderOpen } from "lucide-react";
+import * as Icons from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
 import SpotlightCard from "./ui/SpotlightCard";
-import { projects } from "@/data/projects";
+import { projects as fallbackProjects, Project } from "@/data/projects";
+import { client, urlFor } from "@/lib/sanity";
 import { Link } from "react-router-dom";
+import ProjectGallery3D from "./3d/ProjectGallery3D";
 
 const ProjectCard = ({ project, index }: { project: any, index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -121,6 +124,30 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
 const ProjectsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    client.fetch(`*[_type == "project"] | order(order asc)`)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const mapped = data.map((p: any) => ({
+            ...p,
+            slug: p.slug?.current || p.slug,
+            icon: (Icons as any)[p.iconName] || Icons.FolderOpen,
+            image: p.mainImage ? urlFor(p.mainImage).url() : undefined
+          }));
+          setProjects(mapped);
+        } else {
+          setProjects(fallbackProjects);
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setProjects(fallbackProjects);
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
     <section id="projects" className="relative bg-transparent py-32 px-6 md:px-12" ref={ref}>
@@ -149,11 +176,24 @@ const ProjectsSection = () => {
           </TextReveal>
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* 3D Immersive Gallery (Desktop Only) */}
+        {!isLoading && projects.length > 0 && (
+          <div className="hidden xl:block mb-32 rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10">
+            <ProjectGallery3D projects={projects} />
+          </div>
+        )}
+
+        {/* Projects Grid (Universal Fallback) */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
+          {isLoading ? (
+            <div className="col-span-full h-40 flex items-center justify-center font-mono text-white/50 animate-pulse">
+              LOADING_ARCHIVES...
+            </div>
+          ) : (
+            projects.map((project, index) => (
+              <ProjectCard key={project.slug} project={project} index={index} />
+            ))
+          )}
         </div>
       </div>
     </section>

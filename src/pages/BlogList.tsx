@@ -44,7 +44,12 @@ const BlogList = () => {
     }, []);
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
             <SEO title="Blog | Achyuth KP" description="Thoughts on software engineering, architecture, and design." />
 
             <div className="min-h-screen pt-32 px-6 pb-20 bg-background relative overflow-hidden">
@@ -106,7 +111,7 @@ const BlogList = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </motion.div>
     );
 };
 

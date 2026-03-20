@@ -12,6 +12,7 @@ import DecryptText from "@/components/ui/DecryptText";
 import { useLoading } from "@/context/LoadingContext";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
+const MobileSpaceScene = lazy(() => import("@/components/3d/MobileSpaceScene"));
 
 // Increased delays to sync with 1s curtain reveal
 const Hero = () => {
@@ -41,14 +42,17 @@ const Hero = () => {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
-      {/* 3D Space Background - Desktop Only */}
-      {!isMobile && <SpaceScene />}
-
-      {/* Mobile Fallback Gradient */}
-      {isMobile && (
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
-        </div>
+      {/* 3D Space Background (Adaptive) */}
+      {isMobile ? (
+        <Suspense fallback={
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+          </div>
+        }>
+          <MobileSpaceScene />
+        </Suspense>
+      ) : (
+        <SpaceScene />
       )}
 
       {/* Technical Corner Labels - Social Links */}

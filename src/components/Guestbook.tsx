@@ -237,7 +237,7 @@ export default function Guestbook() {
           {/* Messages (3D Cylindrical Scroll) */}
           <div 
             ref={cylinderRef}
-            className="md:col-span-3 h-[400px] relative w-full select-none touch-none cursor-grab active:cursor-grabbing overflow-hidden rounded-xl"
+            className="md:col-span-3 h-[400px] relative w-full select-none touch-none cursor-grab active:cursor-grabbing rounded-xl"
             style={{ perspective: 1000 }}
             onPointerDown={(e) => {
                 const startY = e.clientY;
@@ -306,14 +306,13 @@ export default function Guestbook() {
                       return (
                         <div 
                           key={entry.id}
-                          className="absolute left-0 right-0 top-1/2 -mt-[4.5rem] p-5 border border-white/10 bg-[#080808] rounded-xl flex items-start gap-4 shadow-2xl transition-colors"
+                          className="absolute left-6 right-6 lg:left-10 lg:right-10 top-1/2 -mt-[4.5rem] p-5 border bg-black/90 backdrop-blur-md rounded-xl flex items-start gap-4 shadow-2xl transition-colors"
                           style={{
-                              // Stamp each card in a circle
-                              transform: `rotateX(${-itemAngle}deg) translateZ(200px)`,
+                              transform: `rotateX(${-itemAngle}deg) translateZ(160px)`,
                               backfaceVisibility: "hidden",
                               opacity: isVisible ? opacity : 0,
                               pointerEvents: distanceFromActive < 20 ? 'auto' : 'none',
-                              border: distanceFromActive < 15 ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.05)'
+                              border: distanceFromActive < 15 ? '1px solid rgba(255,255,255,0.2)' : '1px solid rgba(255,255,255,0.05)'
                           }}
                         >
                           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/5">
