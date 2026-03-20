@@ -5,13 +5,15 @@ interface SEOProps {
     description?: string;
     image?: string;
     url?: string;
+    type?: string;
 }
 
 const SEO = ({
     title = "Achyuth KP | Creative Developer",
     description = "Portfolio of Achyuth KP - A Creative Developer specializing in scalable web/mobile applications, microservices, and immersive 3D experiences.",
     image = "/og-image.png",
-    url = "https://achyuthkp27.github.io/Portfolio/"
+    url = "https://achyuthkp27.github.io/Portfolio/",
+    type = "website"
 }: SEOProps) => {
     const fullTitle = title === "Achyuth KP | Creative Developer" ? title : `${title} | Achyuth KP`;
 
@@ -23,7 +25,7 @@ const SEO = ({
             <meta name="description" content={description} />
 
             {/* Open Graph / Facebook */}
-            <meta property="og:type" content="website" />
+            <meta property="og:type" content={type} />
             <meta property="og:url" content={url} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />

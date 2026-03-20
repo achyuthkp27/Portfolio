@@ -1,29 +1,13 @@
-import { motion, useScroll, useTransform, useSpring, useMotionTemplate } from "framer-motion";
+import { motion, useScroll, useSpring, useMotionTemplate, useReducedMotion } from "framer-motion";
 import { useRef, useState } from "react";
 import TextReveal from "./ui/TextReveal";
 import { ArrowRight, Code, Cpu, Palette } from "lucide-react";
 
-// Images Import
-import creativeImg from "@/assets/images/persona/creative.jpg";
-import portraitImg from "@/assets/images/persona/portrait.jpg";
-import suitImg from "@/assets/images/projects/monitoring-dashboard.jpg"; // Using Suit as Operator
-import bankingImg from "@/assets/images/projects/banking-platform.jpg";
-import loggingImg from "@/assets/images/projects/logging-system.jpg";
-import notificationImg from "@/assets/images/projects/notification-engine.jpg";
-import storageImg from "@/assets/images/projects/secure-storage.jpg";
-
 const AboutMeSection = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const imageContainerRef = useRef<HTMLDivElement>(null); // Ref for scrolling on mobile
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"],
-    });
-
-    const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-    const y2 = useTransform(scrollYProgress, [0, 1], [0, 100]);
-    const rotate = useTransform(scrollYProgress, [0, 1], [0, 5]);
-
+    const shouldReduceMotion = useReducedMotion();
+    
     const [activePersona, setActivePersona] = useState<"operator" | "creator" | "human">("human");
 
     // Mouse tracking for magnetic effect
@@ -38,48 +22,57 @@ const AboutMeSection = () => {
 
     const handlePersonaClick = (id: string) => {
         setActivePersona(id as any);
-        // On mobile, scroll image into view if controls are below
+        // On mobile, scroll content into view if controls are below
         if (window.innerWidth < 1024 && imageContainerRef.current) {
             imageContainerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     };
 
-    const maskImage = useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
-    const style = { maskImage, WebkitMaskImage: maskImage };
+    const maskImage = shouldReduceMotion ? undefined : useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
+    const style = shouldReduceMotion ? {} : { maskImage, WebkitMaskImage: maskImage };
 
     const personas = [
+        {
+            id: "human",
+            title: "THE HUMAN",
+            subtitle: "Simply, Achyuth",
+            description: "A curious mind exploring the intersection of technology, art, and human connection.",
+            icon: Code,
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+            border: "border-emerald-500/20",
+            gradientVia: "via-emerald-400",
+            glowBg: "bg-emerald-400",
+            ringBorder: "border-emerald-400",
+            keywords: ['EMPATHY', 'CURIOSITY', 'COLLABORATION', 'LEARNING']
+        },
         {
             id: "operator",
             title: "THE OPERATOR",
             subtitle: "Architect of Systems",
             description: "Executing precise, scalable solutions for enterprise-grade infrastructure. Zero tolerance for inefficiency.",
-            image: suitImg,
             icon: Cpu,
             color: "text-blue-400",
             bg: "bg-blue-500/10",
-            border: "border-blue-500/20"
+            border: "border-blue-500/20",
+            gradientVia: "via-blue-400",
+            glowBg: "bg-blue-400",
+            ringBorder: "border-blue-400",
+            keywords: ['ARCHITECTURE', 'SCALABILITY', 'INFRASTRUCTURE', 'SECURITY']
         },
         {
             id: "creator",
             title: "THE CREATOR",
             subtitle: "Visionary Artist",
             description: "Pushing boundaries of visual design and interactive experiences. Where code meets chaos.",
-            image: creativeImg,
             icon: Palette,
             color: "text-orange-400",
             bg: "bg-orange-500/10",
-            border: "border-orange-500/20"
-        },
-        {
-            id: "human",
-            title: "THE HUMAN",
-            subtitle: "Simply, Achyuth",
-            description: "A curious mind exploring the intersection of technology, art, and human connection.",
-            image: portraitImg,
-            icon: Code,
-            color: "text-emerald-400",
-            bg: "bg-emerald-500/10",
-            border: "border-emerald-500/20"
+            border: "border-orange-500/20",
+            gradientVia: "via-orange-400",
+            glowBg: "bg-orange-400",
+            ringBorder: "border-orange-400",
+            keywords: ['UI/UX_DESIGN', 'INTERACTIVE', 'AESTHETICS', 'MOTION']
         }
     ];
 
@@ -146,7 +139,7 @@ const AboutMeSection = () => {
                                 {activePersona === persona.id && (
                                     <motion.div
                                         layoutId="activeGlow"
-                                        className={`absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-${persona.color.replace('text-', '')} to-transparent opacity-50`}
+                                        className={`absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent ${persona.gradientVia} to-transparent opacity-50`}
                                     />
                                 )}
                             </motion.div>
@@ -174,52 +167,69 @@ const AboutMeSection = () => {
                         </div>
                     </div>
 
-                    {/* Right Column - Visual Showcase */}
+                    {/* Right Column - Visual Showcase abstract replacement */}
                     <div
                         ref={imageContainerRef}
-                        className="relative aspect-[3/4] w-full max-w-lg mx-auto rounded-2xl overflow-hidden border border-white/10 bg-black/40 order-1 lg:order-2"
+                        className="relative aspect-[3/4] w-full max-w-lg mx-auto rounded-2xl overflow-hidden border border-white/10 bg-black/40 order-1 lg:order-2 flex items-center justify-center p-6"
                         onMouseMove={onMouseMove}
                     >
-
                         {/* Background Grid */}
                         <div className="absolute inset-0 grid-pattern opacity-20" />
 
-                        {/* Images Stack */}
-                        <div className="absolute inset-0 w-full h-full">
+                        {/* Content Stack */}
+                        <div className="absolute inset-0 w-full h-full flex items-center justify-center">
                             {personas.map((persona) => (
                                 <motion.div
                                     key={persona.id}
-                                    initial={{ opacity: 0 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{
                                         opacity: activePersona === persona.id ? 1 : 0,
+                                        scale: activePersona === persona.id ? 1 : 0.95,
                                         zIndex: activePersona === persona.id ? 10 : 0
                                     }}
                                     transition={{ duration: 0.5 }}
-                                    className="absolute inset-0 w-full h-full group"
+                                    className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 pointer-events-none group"
                                 >
-                                    <img
-                                        src={persona.image}
-                                        alt={persona.title}
-                                        className="w-full h-full object-cover object-top transition-all duration-700 grayscale group-hover:grayscale-0"
-                                    />
-                                    {/* Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                    {/* Glowing Background Effect */}
+                                    <div className={`absolute inset-0 opacity-10 blur-[100px] transition-opacity duration-1000 ${persona.glowBg}`} />
 
-                                    {/* Content Overlay */}
-                                    <div className="absolute bottom-0 left-0 w-full p-8 md:p-12">
-                                        <motion.div
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: activePersona === persona.id ? 0 : 20, opacity: activePersona === persona.id ? 1 : 0 }}
-                                            transition={{ delay: 0.3, duration: 0.5 }}
-                                        >
-                                            <h2 className="font-display text-4xl font-bold text-white mb-2 tracking-tight">
-                                                {persona.subtitle}
-                                            </h2>
-                                            <p className="text-white/70 text-sm leading-relaxed border-l-2 border-white/20 pl-4">
-                                                {persona.description}
-                                            </p>
-                                        </motion.div>
-                                    </div>
+                                    {/* Persona Icon */}
+                                    <motion.div 
+                                        initial={{ y: 20 }}
+                                        animate={{ y: activePersona === persona.id ? 0 : 20 }}
+                                        transition={{ delay: 0.2, duration: 0.5 }}
+                                        className="relative w-32 h-32 rounded-full border border-white/10 flex items-center justify-center mb-8 bg-black/50 backdrop-blur-md overflow-hidden"
+                                    >
+                                        {/* Radar/Pulse rings */}
+                                        <div className={`absolute inset-0 border ${persona.ringBorder} rounded-full opacity-20 animate-[ping_3s_linear_infinite]`} />
+                                        <div className={`absolute inset-4 border ${persona.ringBorder} rounded-full opacity-40 animate-[spin_10s_linear_infinite] border-dashed`} />
+                                        
+                                        <persona.icon className={`w-12 h-12 ${persona.color}`} />
+                                    </motion.div>
+
+                                    {/* Persona Content */}
+                                    <motion.div
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: activePersona === persona.id ? 0 : 20, opacity: activePersona === persona.id ? 1 : 0 }}
+                                        transition={{ delay: 0.3, duration: 0.5 }}
+                                        className="relative z-10 w-full"
+                                    >
+                                        <h2 className="font-display text-3xl font-bold text-white mb-4 tracking-tight">
+                                            {persona.title}
+                                        </h2>
+                                        <p className="text-white/70 text-sm leading-relaxed mb-8 max-w-[280px] mx-auto">
+                                            {persona.description}
+                                        </p>
+
+                                        {/* Capabilities / Keywords grid */}
+                                        <div className="grid grid-cols-2 gap-2 w-full max-w-[280px] mx-auto">
+                                            {persona.keywords.map((keyword) => (
+                                                <div key={keyword} className="border border-white/5 bg-white/5 rounded px-2 py-2 text-[10px] font-mono text-white/50 tracking-wider">
+                                                    {keyword}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </motion.div>
                                 </motion.div>
                             ))}
                         </div>
@@ -232,51 +242,15 @@ const AboutMeSection = () => {
 
                         {/* Decorative UI Elements */}
                         <div className="absolute top-6 right-6 z-30 flex gap-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                            <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                            <div className="w-2 h-2 rounded-full bg-green-500" />
+                            <div className="w-2 h-2 rounded-full bg-red-500/50 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
+                            <div className="w-2 h-2 rounded-full bg-green-500/50" />
                         </div>
 
                         <div className="absolute bottom-6 right-6 z-30 font-mono text-[10px] text-white/30 hidden md:block">
-                            COORD: {Math.random().toFixed(4)} . {Math.random().toFixed(4)}
+                            SYS.ID: {Math.random().toString(36).substring(2, 8).toUpperCase()}
                         </div>
-
                     </div>
-                </div>
-            </div>
-
-            {/* Visual Manifest - Horizontal Scroll of other artistic shots */}
-            <div className="mt-32 max-w-[1920px] mx-auto">
-                <div className="flex items-center gap-4 mb-8 px-4 md:px-0 max-w-7xl mx-auto">
-                    <div className="h-[1px] bg-white/10 flex-1" />
-                    <span className="text-xs font-mono text-white/40 uppercase tracking-widest">[ VISUAL_MANIFEST ]</span>
-                    <div className="h-[1px] bg-white/10 flex-1" />
-                </div>
-
-                <div className="flex gap-6 overflow-x-auto pb-8 no-scrollbar md:justify-center px-6">
-                    {[
-                        { src: bankingImg, label: "DEFENSE_HK" },
-                        { src: loggingImg, label: "DATA_SKIN" },
-                        { src: notificationImg, label: "HAZARD_LVL" },
-                        { src: storageImg, label: "ORGANIC_SYS" },
-                    ].map((item, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 + (i * 0.1) }}
-                            whileHover={{ y: -10 }}
-                            className="relative min-w-[200px] md:min-w-[250px] aspect-[3/4] rounded-lg overflow-hidden border border-white/5 group cursor-none"
-                        >
-                            <img src={item.src} alt={item.label} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                            <div className="absolute bottom-4 left-4">
-                                <span className="text-[10px] font-mono text-white/40 group-hover:text-emerald-400 transition-colors bg-black/50 px-2 py-1 rounded backdrop-blur-sm border border-white/5">
-                                    {item.label}
-                                </span>
-                            </div>
-                        </motion.div>
-                    ))}
                 </div>
             </div>
         </section>

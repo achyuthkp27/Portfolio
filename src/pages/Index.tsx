@@ -22,6 +22,7 @@ const AwardSection = lazy(() => import("@/components/AwardSection"));
 const EducationSection = lazy(() => import("@/components/EducationSection"));
 const BlogSection = lazy(() => import("@/components/BlogSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
+const Guestbook = lazy(() => import("@/components/Guestbook"));
 
 const Index = () => {
   return (
@@ -59,6 +60,7 @@ const Index = () => {
             <AwardSection />
             <EducationSection />
             <BlogSection />
+            <Guestbook />
             <ContactSection />
           </Suspense>
         </main>

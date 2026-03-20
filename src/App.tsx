@@ -16,6 +16,9 @@ import ScrollProgress from "./components/ui/ScrollProgress";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { LoadingProvider } from "./context/LoadingContext";
+import { CommandMenu } from "./components/ui/CommandMenu";
+import TerminalOverlay from "./components/TerminalOverlay";
+import ActivityWidget from "./components/ActivityWidget";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +54,9 @@ const App = () => (
             <Sonner />
             <CustomCursor />
             <HashRouter>
+              <CommandMenu />
+              <TerminalOverlay />
+              <ActivityWidget />
               <ScrollProgress />
               <Analytics />
               <SmoothScroll>
