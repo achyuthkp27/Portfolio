@@ -24,6 +24,63 @@ const INITIAL_MESSAGES: GuestbookEntry[] = [
   }
 ];
 
+// Global audio context for performance and browser limits
+let audioCtx: AudioContext | null = null;
+const playTickSound = () => {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) {
+      audioCtx = new Ctx();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    
+    // Creating a highly mechanical "tick" using two layers
+    const t = audioCtx.currentTime;
+    
+    // Layer 1: The sharp, high-frequency "snap" (mimics the plastic/metal mechanism clicking)
+    const snapOsc = audioCtx.createOscillator();
+    const snapGain = audioCtx.createGain();
+    snapOsc.type = 'sine';
+    // Start very high and drop extremely fast (10ms)
+    snapOsc.frequency.setValueAtTime(1000, t);
+    snapOsc.frequency.exponentialRampToValueAtTime(100, t + 0.01);
+    
+    // Fast attack, extremely fast release (10ms)
+    snapGain.gain.setValueAtTime(0, t);
+    snapGain.gain.linearRampToValueAtTime(0.3, t + 0.001);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.01);
+    
+    snapOsc.connect(snapGain);
+    snapGain.connect(audioCtx.destination);
+    
+    // Layer 2: The low-frequency body / thump (gives it the haptic feel)
+    const thumpOsc = audioCtx.createOscillator();
+    const thumpGain = audioCtx.createGain();
+    thumpOsc.type = 'sine';
+    // Steady low frequency
+    thumpOsc.frequency.setValueAtTime(150, t);
+    
+    // Slightly longer release for the body (20ms)
+    thumpGain.gain.setValueAtTime(0, t);
+    thumpGain.gain.linearRampToValueAtTime(0.4, t + 0.001);
+    thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+    
+    thumpOsc.connect(thumpGain);
+    thumpGain.connect(audioCtx.destination);
+    
+    // Start and stop both layers abruptly
+    snapOsc.start(t);
+    snapOsc.stop(t + 0.015);
+    thumpOsc.start(t);
+    thumpOsc.stop(t + 0.025);
+  } catch (e) {
+    // Ignore audio fail, fail silently if audio not allowed
+  }
+};
+
 export default function Guestbook() {
   const [entries, setEntries] = useState<GuestbookEntry[]>(INITIAL_MESSAGES);
   const [name, setName] = useState("");
@@ -37,6 +94,22 @@ export default function Guestbook() {
     const el = cylinderRef.current;
     if (!el) return;
 
+    // Listen passively but we need to unlock audioContext
+    const unlockAudio = () => {
+        if (!audioCtx) {
+            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+            if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx?.state === 'suspended') {
+            audioCtx.resume();
+        }
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+    };
+
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation(); 
@@ -44,11 +117,14 @@ export default function Guestbook() {
       // Calculate new angle, clamped between 0 and max angle based on items
       setDrumAngle((prev) => {
           const maxAngle = Math.max(0, (entries.length - 1) * 45); // 45 degrees per item
-          // Scroll speed factor
           let newAngle = prev + e.deltaY * 0.15;
-          // Soft clamping
           if (newAngle < -20) newAngle = -20;
           if (newAngle > maxAngle + 20) newAngle = maxAngle + 20;
+          
+          if (Math.round(prev / 45) !== Math.round(newAngle / 45)) {
+              playTickSound();
+          }
+
           return newAngle;
       });
     };
@@ -167,10 +243,23 @@ export default function Guestbook() {
                 const startY = e.clientY;
                 const startAngle = drumAngle;
                 
+                // Pre-initialize audio context on click
+                if (!audioCtx) {
+                    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+                    if (Ctx) audioCtx = new Ctx();
+                }
+                if (audioCtx?.state === 'suspended') audioCtx.resume();
+                
+                let lastAngle = startAngle;
+
                 const handlePointerMove = (moveEvent: PointerEvent) => {
                     const delta = moveEvent.clientY - startY;
-                    // Adjust drag sensitivity
-                    setDrumAngle(startAngle + delta * 0.4);
+                    const newAngle = startAngle + delta * 0.4;
+                    if (Math.round(lastAngle / 45) !== Math.round(newAngle / 45)) {
+                        playTickSound();
+                    }
+                    lastAngle = newAngle;
+                    setDrumAngle(newAngle);
                 };
                 
                 const handlePointerUp = () => {

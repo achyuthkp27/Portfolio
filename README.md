@@ -24,6 +24,11 @@ Designed to be more than just a resume, this portfolio is an experience—demons
 - **⚡ High Performance**: Powered by Vite for lightning-fast HMR and optimized production builds.
 - **🌐 3D Integration**: Interactive 3D elements using React Three Fiber.
 - **🎬 Advanced Animations**: Complex orchestrations with Framer Motion and GSAP.
+- **💻 Interactive Easter Eggs**: A fully functional retro Terminal (triggered via `>_`) with simulated system commands.
+- **🎧 Generative Audio**: Zero-copyright, procedural Web Audio API acid-house loops that react to 3D object hover states.
+- **📖 3D Guestbook**: A persistent, interactive 3D Rolodex-style guestbook featuring mechanical haptic audio feedback.
+- **⌨️ Command Palette**: Global quick-navigation system (Cmd+K) using `cmdk`.
+- **📡 Live Activity Widget**: Persistent system status indicator for immersive world-building.
 - **📱 Fully Responsive**: Mobile-first architecture ensuring perfect rendering on any screen size.
 - **♿ Accessible**: Built with accessibility best practices (ARIA, semantic HTML).
 - **🔧 Type-Safe**: 100% TypeScript codebase for strict type checking and maintainability.
