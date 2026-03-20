@@ -1,7 +1,5 @@
 import { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
-import { ThemeProvider } from "@/hooks/useTheme";
-import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import AboutMeSection from "@/components/AboutMeSection";
@@ -31,23 +29,13 @@ const Index = () => {
       exit={{ opacity: 0, filter: "blur(10px)" }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      <ThemeProvider>
-        {/* Skip Navigation Link for Accessibility */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-6 focus:py-3 focus:bg-white focus:text-black focus:font-mono focus:text-xs focus:uppercase focus:tracking-widest"
-        >
-          Skip to main content
-        </a>
+      {/* Global Background */}
+      <SpaceBackground />
+      {/* Global Fixed Grid Pattern covering the entire viewport continuously */}
+      <div className="fixed inset-0 grid-pattern opacity-[0.03] z-0 pointer-events-none" />
 
-        {/* Global Background */}
-        <SpaceBackground />
-        {/* Global Fixed Grid Pattern covering the entire viewport continuously */}
-        <div className="fixed inset-0 grid-pattern opacity-[0.03] z-0 pointer-events-none" />
-
-        <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
-          <Navigation />
-          <main id="main-content">
+      <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
+        <main id="main-content">
             <Hero />
             <SystemStatus />
             <Services />
@@ -69,8 +57,7 @@ const Index = () => {
           </main>
           <Footer />
           <Toaster />
-        </div>
-      </ThemeProvider>
+      </div>
     </motion.div>
   );
 };

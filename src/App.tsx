@@ -13,12 +13,14 @@ import Analytics from "@/components/Analytics";
 import SmoothScroll from "./components/ui/SmoothScroll";
 import CustomCursor from "./components/ui/CustomCursor";
 import ScrollProgress from "./components/ui/ScrollProgress";
+import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { LoadingProvider } from "./context/LoadingContext";
 import { CommandMenu } from "./components/ui/CommandMenu";
 import TerminalOverlay from "./components/TerminalOverlay";
 import ActivityWidget from "./components/ActivityWidget";
+import { ThemeProvider } from "@/hooks/useTheme";
 
 const queryClient = new QueryClient();
 
@@ -54,14 +56,17 @@ const App = () => (
             <Sonner />
             <CustomCursor />
             <HashRouter>
+              <ThemeProvider>
               <CommandMenu />
               <TerminalOverlay />
               <ActivityWidget />
               <ScrollProgress />
               <Analytics />
+              <Navigation />
               <SmoothScroll>
                 <AnimatedRoutes />
               </SmoothScroll>
+              </ThemeProvider>
             </HashRouter>
           </TooltipProvider>
         </QueryClientProvider>

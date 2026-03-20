@@ -3,6 +3,7 @@ import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
+import { useLocation } from "react-router-dom";
 
 import Logo from "./ui/Logo";
 import MagneticButton from "./ui/MagneticButton";
@@ -13,6 +14,8 @@ const Navigation = () => {
   const { scrollY } = useScroll();
   const { theme, toggleTheme } = useTheme();
   const { lenis } = useSmoothScroll();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/" || location.pathname === "";
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
@@ -21,33 +24,39 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.2, rootMargin: "-10% 0px -10% 0px" } // Lower threshold and add margin
-    );
+    // Only track active sections on the home page
+    if (!isHomePage) {
+      setActiveSection("");
+      return;
+    }
 
-    const sections = document.querySelectorAll("section[id]");
-    sections.forEach((section) => observer.observe(section));
+    const updateActiveSection = () => {
+      const sections = document.querySelectorAll("section[id]");
+      const scrollPos = window.scrollY + window.innerHeight / 3;
 
-    const handleScroll = () => {
+      // Check if at the very bottom of the page
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
         setActiveSection("contact");
+        return;
       }
+
+      let currentSection = "";
+      sections.forEach((section) => {
+        const el = section as HTMLElement;
+        if (el.offsetTop <= scrollPos) {
+          currentSection = el.id;
+        }
+      });
+
+      setActiveSection(currentSection);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Run once on mount
+    updateActiveSection();
 
-    return () => {
-      sections.forEach((section) => observer.unobserve(section));
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    return () => window.removeEventListener("scroll", updateActiveSection);
+  }, [isHomePage]);
 
   const navItems = [
     { label: "About", href: "#about" },
@@ -107,7 +116,7 @@ const Navigation = () => {
                     : "text-white/50 hover:text-white"
                     }`}
                 >
-                  <span className="mr-1 opacity-0 group-hover:opacity-100 transition-opacity text-primary">/</span>
+                  <span className="mr-1 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400">/</span>
                   {item.label}
                 </a>
               </motion.li>

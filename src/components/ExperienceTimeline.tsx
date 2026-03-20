@@ -1,9 +1,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Building2, GraduationCap, ChevronDown, Award, Server, Database, Cloud, Code } from "lucide-react";
+import { Building2, GraduationCap, ChevronDown } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
-import ShockwaveWrapper from "./ui/ShockwaveWrapper";
 
 const experiences = [
   {

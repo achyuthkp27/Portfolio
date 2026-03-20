@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, FileText, Heart } from "lucide-react";
+import { Github, Linkedin, Mail, FileText } from "lucide-react";
 
 const Footer = () => {
   const socialLinks = [

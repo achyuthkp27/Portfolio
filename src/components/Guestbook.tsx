@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, User, MessageSquare } from "lucide-react";
+import { Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "./ui/TextReveal";
 

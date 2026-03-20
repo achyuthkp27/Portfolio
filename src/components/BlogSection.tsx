@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "@/components/ui/TextReveal";
-import { ArrowUpRight, Terminal, X, ExternalLink, BookOpen, Clock } from "lucide-react";
+import { Terminal, X, ExternalLink, BookOpen, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface BlogPost {

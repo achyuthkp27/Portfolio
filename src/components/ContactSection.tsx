@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Mail, MapPin, Send, Linkedin, Github, FileText, AlertCircle } from "lucide-react";
+import { Mail, Send, Linkedin, Github, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 import TextReveal from "./ui/TextReveal";
@@ -87,7 +87,7 @@ const ContactSection = () => {
       {/* Dynamic Cursor Spotlight Effect */}
       <div className="absolute inset-0 opacity-0 group-hover/contact:opacity-100 transition-opacity duration-1000 pointer-events-none z-0"
            style={{
-             background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 255, 0.03) 0%, transparent 40%)'
+             background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.03) 0%, transparent 40%)'
            }} 
            onMouseMove={(e) => {
              const rect = e.currentTarget.getBoundingClientRect();
@@ -132,25 +132,30 @@ const ContactSection = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center gap-6 p-8 border border-white/10 bg-black/40 hover:bg-white/[0.02] hover:border-cyan-500/30 transition-all duration-700 group/item relative overflow-hidden"
+                whileHover={{ x: 6, scale: 1.01 }}
+                className="flex items-center gap-6 p-7 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm hover:bg-emerald-500/[0.04] hover:border-emerald-500/20 transition-all duration-500 group/item relative overflow-hidden"
               >
-                {/* Horizontal Scan Effect */}
-                <div className="absolute top-0 bottom-0 left-0 w-[2px] bg-cyan-500 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-[600%] transition-all duration-[1.5s] ease-in-out pointer-events-none" />
+                {/* Subtle background glow on hover */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.06] to-transparent opacity-0 group-hover/item:opacity-100 blur-xl transition-opacity duration-700 pointer-events-none" />
                 
-                <div className="w-14 h-14 flex items-center justify-center border border-white/10 bg-white/5 text-white/40 group-hover:text-cyan-400 group-hover:border-cyan-500/50 transition-all duration-500 relative">
-                   {/* Mechanical corner decor */}
-                   <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/20 group-hover:border-cyan-400 transition-colors" />
-                   <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/20 group-hover:border-cyan-400 transition-colors" />
-                   <item.icon className="w-6 h-6" />
+                {/* Elegant left accent line */}
+                <div className="absolute left-0 top-[20%] bottom-[20%] w-[2px] rounded-full bg-emerald-500/0 group-hover/item:bg-emerald-500/60 group-hover/item:shadow-[0_0_8px_rgba(16,185,129,0.4)] transition-all duration-500" />
+                
+                {/* Icon container with glow */}
+                <div className="relative w-12 h-12 rounded-lg flex items-center justify-center border border-white/[0.08] bg-white/[0.03] text-white/30 group-hover/item:text-emerald-400 group-hover/item:border-emerald-500/30 group-hover/item:bg-emerald-500/[0.08] group-hover/item:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-500">
+                   <item.icon className="w-5 h-5" />
                 </div>
                 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] group-hover/item:text-cyan-500/60 transition-colors">
-                      {item.label}_CHANNEL
-                    </span>
-                  </div>
-                  <p className="text-white font-display text-xl md:text-2xl font-bold tracking-tighter group-hover/item:text-white/90 transition-colors">{item.value}</p>
+                <div className="flex-1 relative z-10">
+                  <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.3em] group-hover/item:text-emerald-400/50 transition-colors duration-500">
+                    {item.label}_CHANNEL
+                  </span>
+                  <p className="text-white/80 font-display text-lg md:text-xl font-semibold tracking-tight group-hover/item:text-white transition-colors duration-300">{item.value}</p>
+                </div>
+
+                {/* Hover arrow indicator */}
+                <div className="text-white/0 group-hover/item:text-emerald-400/60 transition-all duration-500 transform translate-x-2 group-hover/item:translate-x-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </div>
               </motion.a>
             ))}
@@ -174,7 +179,7 @@ const ContactSection = () => {
               <div className="space-y-12 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="group">
-                    <label htmlFor="name" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-cyan-400 transition-colors">
+                    <label htmlFor="name" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       <span>{'>'} IDENTITY_VERIFICATION</span>
                       <span className="text-[8px] opacity-20">AUTH_REQ</span>
                     </label>
@@ -184,13 +189,13 @@ const ContactSection = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-cyan-500/50 transition-all duration-500 placeholder:text-white/5"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 transition-all duration-500 placeholder:text-white/5"
                       placeholder="ENTER_SENDER_NAME"
                     />
                   </div>
 
                   <div className="group">
-                    <label htmlFor="email" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-cyan-400 transition-colors">
+                    <label htmlFor="email" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       <span>{'>'} RETURN_ADDRESS</span>
                       <span className="text-[8px] opacity-20">IPV6_LINK</span>
                     </label>
@@ -200,14 +205,14 @@ const ContactSection = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-cyan-500/50 transition-all duration-500 placeholder:text-white/5"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 transition-all duration-500 placeholder:text-white/5"
                       placeholder="USER@HOST.COM"
                     />
                   </div>
                 </div>
 
                 <div className="group">
-                  <label htmlFor="message" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-cyan-400 transition-colors">
+                  <label htmlFor="message" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                     <span>{'>'} PACKET_DATA_STREAM</span>
                     <span className="text-[8px] opacity-20">LZW_COMPRESSED</span>
                   </label>
@@ -217,7 +222,7 @@ const ContactSection = () => {
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required
                     rows={6}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-cyan-500/50 resize-none transition-all duration-500 placeholder:text-white/5"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 resize-none transition-all duration-500 placeholder:text-white/5"
                     placeholder="INITIATING_MESSAGE_PAYLOAD..."
                   />
                 </div>
@@ -226,9 +231,9 @@ const ContactSection = () => {
                   type="submit"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-6 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-cyan-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn"
+                  className="w-full py-6 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-emerald-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn"
                 >
-                  <div className="absolute inset-0 bg-white group-hover/btn:bg-cyan-400 transition-colors" />
+                  <div className="absolute inset-0 bg-white group-hover/btn:bg-emerald-400 transition-colors" />
                   <span className="relative z-10 flex items-center gap-3">
                     EXECUTE_TRANSMISSION <Send className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </span>
@@ -236,8 +241,8 @@ const ContactSection = () => {
               </div>
 
               {/* Decorative side lines */}
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent" />
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent" />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent" />
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent" />
             </form>
           </div>
         </div>

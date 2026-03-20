@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Award, Star, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 import TextReveal from "./ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";

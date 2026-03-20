@@ -1,13 +1,20 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { GraduationCap, MapPin, Calendar } from "lucide-react";
 import TextReveal from "./ui/TextReveal";
 import ParallaxSection from "./ui/ParallaxSection";
-import SpotlightCard from "./ui/SpotlightCard";
 
 const EducationSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Pre-compute random barcode widths/opacities to avoid render instability
+  const barcodeValues = useMemo(() =>
+    [...Array(6)].map(() => ({
+      width: Math.random() * 60 + 40,
+      opacity: Math.random() * 0.5 + 0.2,
+    })), []
+  );
 
   return (
     <section id="education" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
@@ -66,11 +73,11 @@ const EducationSection = () => {
                     
                     {/* Simulated Fingerprint / Barcode block */}
                     <div className="flex flex-col gap-1 w-20">
-                      {[...Array(6)].map((_, i) => (
+                      {barcodeValues.map((bar, i) => (
                         <div 
                           key={i} 
                           className="h-1 bg-blue-500/30 rounded-full" 
-                          style={{ width: `${Math.random() * 60 + 40}%`, opacity: Math.random() * 0.5 + 0.2 }}
+                          style={{ width: `${bar.width}%`, opacity: bar.opacity }}
                         />
                       ))}
                       <span className="text-[8px] font-mono text-blue-400/50 mt-2 text-center uppercase tracking-widest">

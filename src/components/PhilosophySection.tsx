@@ -1,7 +1,7 @@
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useRef } from "react";
 import TextReveal from "./ui/TextReveal";
-import { Server, Shield, Zap, Sparkles, Terminal, Activity, Globe } from "lucide-react";
+import { Server, Shield, Zap, Sparkles, Terminal, Activity } from "lucide-react";
 
 // Interactive Bento Card with Flashlight Effect
 const BentoCard = ({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
