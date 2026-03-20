@@ -439,6 +439,24 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  @keyframes progress-grow {
+    0% {
+      width: 0%;
+      left: 0;
+    }
+    50% {
+      width: 100%;
+      left: 0;
+    }
+    100% {
+      width: 0%;
+      left: 100%;
+    }
+  }
+
+  .animate-progress-grow {
+    animation: progress-grow 2s ease-in-out infinite;
+  }
 }
 
 /* Custom Interactive Themes */

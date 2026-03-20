@@ -26,7 +26,7 @@ const services = [
 
 const Services = () => {
     return (
-        <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent">
+        <section className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent">
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="mb-20">
@@ -35,8 +35,8 @@ const Services = () => {
                             [ CREATIVE_ENGINEERING ]
                         </span>
                     </TextReveal>
-                    <h2 className="font-display text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight">
-                        <TextReveal type="blur-reveal" as="span">DESIGN</TextReveal>{" "}
+                    <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 text-white tracking-tighter uppercase leading-none">
+                        <TextReveal type="blur-reveal" as="span">DESIGN</TextReveal><br />
                         <TextReveal type="blur-reveal" as="span" className="text-white/40">& CODE</TextReveal>
                     </h2>
                     <div className="max-w-2xl text-xl text-gray-400">

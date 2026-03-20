@@ -17,35 +17,37 @@ const skillCategories = [
   { id: "06", title: "DevOps & Tools", icon: GitBranch, color: "rose", skills: [{ name: "Git", level: 95 }, { name: "Docker", level: 80 }, { name: "ELK Stack", level: 85 }, { name: "JasperSoft Studio", level: 75 }, { name: "Minio", level: 80 }] },
 ];
 
-const SkillBar = ({ name, level, delay, color }: { name: string; level: number; delay: number; color: string }) => {
+const SkillToken = ({ name, level, delay }: { name: string; level: number; delay: number }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  
+  // Convert 100-based scale to 5 mastery blocks
+  const blocks = Math.max(1, Math.round(level / 20));
 
   return (
-    <div ref={ref} className="group/skill">
-      <div className="flex justify-between items-end mb-2">
-        <span className="text-sm font-mono text-white/60 group-hover/skill:text-emerald-400 transition-colors duration-300">
-          {">"} {name}
-        </span>
-        <span className="text-[10px] font-mono text-white/30 group-hover/skill:text-emerald-500/70 transition-colors duration-300">
-          {level}%_EFF
-        </span>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+      animate={isInView ? { opacity: 1, scale: 1, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
+      className="group/token relative px-3 py-2.5 bg-black/40 border border-white/5 rounded-md hover:border-emerald-500/40 hover:bg-emerald-900/20 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-4 overflow-hidden cursor-crosshair shadow-lg"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent -translate-x-[150%] group-hover/token:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+      
+      <span className="font-mono text-[11px] font-bold tracking-wide text-white/50 group-hover/token:text-emerald-300 transition-colors z-10 whitespace-nowrap">
+        {name}
+      </span>
+      
+      {/* HUD-style mastery blocks */}
+      <div className="flex gap-[2px] z-10">
+        {[...Array(5)].map((_, i) => (
+          <div 
+            key={i} 
+            className={`w-[3px] h-3 rounded-[1px] ${i < blocks ? 'bg-emerald-500/30 group-hover/token:bg-emerald-400 group-hover/token:shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-white/5 group-hover/token:bg-white/10'} transition-all duration-300`} 
+          />
+        ))}
       </div>
-      <div className="h-1 w-full bg-white/5 relative overflow-hidden">
-        {/* Scanning Line Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)] translate-x-[-100%] animate-[shimmer_2s_infinite] opacity-20 group-hover/skill:opacity-50 transition-opacity" />
-
-        {/* Progress Bar */}
-        <motion.div
-          initial={{ width: 0 }}
-          animate={isInView ? { width: `${level}%` } : {}}
-          transition={{ duration: 1.5, delay, ease: [0.22, 1, 0.36, 1] }}
-          className={`h-full bg-gradient-to-r from-white/10 to-white/40 group-hover/skill:from-emerald-900/50 group-hover/skill:to-emerald-400 relative transition-colors duration-300`}
-        >
-          <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-white/50 group-hover/skill:bg-emerald-300 shadow-[0_0_10px_rgba(255,255,255,0.5)] group-hover/skill:shadow-[0_0_10px_rgba(16,185,129,0.8)] transition-all duration-300" />
-        </motion.div>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -54,7 +56,7 @@ const SkillsSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="skills" className="py-32 px-6 md:px-12 relative overflow-hidden" ref={ref}>
+    <section id="skills" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden" ref={ref}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -67,8 +69,8 @@ const SkillsSection = () => {
               [ SYSTEM_DIAGNOSTICS ]
             </span>
           </TextReveal>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
-            <TextReveal type="blur-reveal" delay={0.2} as="span">Operational</TextReveal>{" "}
+          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
+            <TextReveal type="blur-reveal" delay={0.2} as="span">Operational</TextReveal><br />
             <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Capabilities</TextReveal>
           </h2>
         </motion.div>
@@ -113,14 +115,13 @@ const SkillsSection = () => {
                   </div>
 
                   {/* Skills List */}
-                  <div className="space-y-6">
+                  <div className="flex flex-wrap gap-2 md:gap-3">
                     {category.skills.map((skill, j) => (
-                      <SkillBar
+                      <SkillToken
                         key={skill.name}
                         name={skill.name}
                         level={skill.level}
                         delay={0.2 + i * 0.1 + j * 0.05}
-                        color={category.color}
                       />
                     ))}
                   </div>

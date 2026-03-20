@@ -12,7 +12,7 @@ const ArchitectureGallery = () => {
     const opacity = useTransform(scrollYProgress, [0, 0.2, 0.9, 1], [0, 1, 1, 0]);
 
     return (
-        <section ref={containerRef} className="py-32 px-6 md:px-12 relative overflow-hidden bg-transparent">
+        <section ref={containerRef} className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent">
             {/* Grid Background */}
 
 

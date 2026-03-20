@@ -41,7 +41,7 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
               </span>
               
               <div className="relative w-full">
-                <h3 className="font-display text-4xl md:text-6xl lg:text-7xl font-black text-white/70 group-hover:text-white tracking-tighter transition-all duration-700 group-hover:translate-x-4">
+                <h3 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white/70 group-hover:text-white tracking-tighter transition-all duration-700 group-hover:translate-x-4">
                   {formattedTitle}
                 </h3>
                 
@@ -119,7 +119,7 @@ const ProjectsSection = () => {
   }, [isLoading, projects, location.search]);
 
   return (
-    <section id="projects" className="relative bg-transparent py-32 md:py-48 px-6 md:px-12" ref={ref}>
+    <section id="projects" className="relative bg-transparent py-24 lg:py-28 px-6 md:px-12" ref={ref}>
       {/* Background Decor */}
       <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
 

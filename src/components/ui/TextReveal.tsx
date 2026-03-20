@@ -81,23 +81,27 @@ const TextReveal = ({
 
 
     if (type === "blur-reveal" && typeof children === "string" && shouldSplit) {
-        const characters = children.split("");
+        const words = children.split(" ");
         return (
-            <Component ref={ref} className={`inline-block ${className}`}>
-                {characters.map((char, i) => (
-                    <motion.span
-                        key={i}
-                        initial={{ opacity: 0, filter: "blur(10px)", scale: 1.2, y: 5 }}
-                        animate={isInView ? { opacity: 1, filter: "blur(0px)", scale: 1, y: 0 } : {}}
-                        transition={{
-                            duration: duration,
-                            delay: delay + (i * 0.03),
-                            ease: [0.22, 1, 0.36, 1]
-                        }}
-                        className="inline-block whitespace-pre"
-                    >
-                        {char}
-                    </motion.span>
+            <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.2em] ${className}`}>
+                {words.map((word, wordIndex) => (
+                    <span key={wordIndex} className="inline-block whitespace-nowrap">
+                        {word.split("").map((char, charIndex) => (
+                            <motion.span
+                                key={charIndex}
+                                initial={{ opacity: 0, filter: "blur(10px)", scale: 1.2, y: 5 }}
+                                animate={isInView ? { opacity: 1, filter: "blur(0px)", scale: 1, y: 0 } : {}}
+                                transition={{
+                                    duration: duration,
+                                    delay: delay + (wordIndex * 0.1) + (charIndex * 0.02),
+                                    ease: [0.22, 1, 0.36, 1]
+                                }}
+                                className="inline-block whitespace-pre"
+                            >
+                                {char}
+                            </motion.span>
+                        ))}
+                    </span>
                 ))}
             </Component>
         );

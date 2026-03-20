@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Send, User, MessageSquare } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import TextReveal from "./ui/TextReveal";
 
 interface GuestbookEntry {
   id: string;
@@ -21,6 +22,66 @@ const INITIAL_MESSAGES: GuestbookEntry[] = [
     name: "Sarah M.",
     message: "Incredible portfolio design. The animations are superb.",
     date: new Date(Date.now() - 172800000).toISOString()
+  },
+  {
+    id: "3",
+    name: "Elena R.",
+    message: "The attention to detail in the micro-interactions is phenomenal. Truly inspiring work.",
+    date: new Date(Date.now() - 259200000).toISOString()
+  },
+  {
+    id: "4",
+    name: "Marcus V.",
+    message: "A masterclass in modern web aesthetics. Love the dark mode execution and the glassmorphism effects.",
+    date: new Date(Date.now() - 345600000).toISOString()
+  },
+  {
+    id: "5",
+    name: "Jordan K.",
+    message: "Clean code, cleaner UI. One of the best developer portfolios I've come across this year.",
+    date: new Date(Date.now() - 432000000).toISOString()
+  },
+  {
+    id: "6",
+    name: "Satoshi N.",
+    message: "System integrity confirmed. The grid-pattern background and tactical UI elements are a nice touch.",
+    date: new Date(Date.now() - 518400000).toISOString()
+  },
+  {
+    id: "7",
+    name: "Liam S.",
+    message: "The attention to detail in the micro-animations is next level. Everything feels so responsive.",
+    date: new Date(Date.now() - 604800000).toISOString()
+  },
+  {
+    id: "8",
+    name: "Ava D.",
+    message: "One of the most unique developer portfolios I've seen. Love the immersive aesthetic.",
+    date: new Date(Date.now() - 691200000).toISOString()
+  },
+  {
+    id: "9",
+    name: "Noah W.",
+    message: "The performance is impressive given the level of animation. Great engineering work here.",
+    date: new Date(Date.now() - 777600000).toISOString()
+  },
+  {
+    id: "10",
+    name: "Sophia L.",
+    message: "The 'Case Files' theme is so well-executed. Moving between sections feels like an investigation.",
+    date: new Date(Date.now() - 864000000).toISOString()
+  },
+  {
+    id: "11",
+    name: "Ethan B.",
+    message: "Clean architecture, clean design. A true inspiration for other developers in the field.",
+    date: new Date(Date.now() - 950400000).toISOString()
+  },
+  {
+    id: "12",
+    name: "Isabella G.",
+    message: "Love how responsive the entire interface is. Works perfectly on my mobile and tablet.",
+    date: new Date(Date.now() - 1036800000).toISOString()
   }
 ];
 
@@ -174,52 +235,80 @@ export default function Guestbook() {
   };
 
   return (
-    <section className="py-24 px-6 md:px-12 relative overflow-hidden bg-transparent">
-      <div className="max-w-4xl mx-auto relative z-10">
+    <section id="guestbook" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent">
+      {/* Background Grid Pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-5 pointer-events-none" />
+      
+      <div className="max-w-6xl mx-auto relative z-10">
         
-        <div className="mb-12 flex items-center gap-4">
-          <MessageSquare className="text-white/40 w-6 h-6" />
-          <h2 className="font-display text-2xl font-bold text-white tracking-tight">
-            Guestbook_
-          </h2>
+        <div className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
+          <div>
+            <TextReveal type="fade-up">
+            <span className="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-mono tracking-[0.3em] uppercase text-emerald-400 border border-emerald-500/20 mb-6 bg-emerald-500/5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                SECURE_CHANNEL // DATA_TRACE
+              </span>
+            </TextReveal>
+            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
+              <TextReveal type="blur-reveal" delay={0.2} as="span">Guest</TextReveal><br/>
+              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">book</TextReveal>
+            </h2>
+          </div>
+          <div className="max-w-xs text-right">
+            <TextReveal type="fade-up" delay={0.6} className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] leading-relaxed">
+              Inject your credentials into the neural archive. Leave a permanent trace in the system hierarchy.
+            </TextReveal>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-5 gap-8">
           
-          {/* Form */}
+          {/* Form: Data Injection Port */}
           <div className="md:col-span-2">
-            <form onSubmit={handleSubmit} className="p-6 border border-white/10 bg-black/40 space-y-6">
-              <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="relative p-8 border border-white/10 bg-black/60 rounded-2xl overflow-hidden group/form shadow-2xl backdrop-blur-md">
+              {/* Scanning Line Animation */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent h-20 -top-full group-hover/form:top-full transition-all duration-[2000ms] pointer-events-none" />
+              
+              <div className="space-y-8 relative z-10">
                 <div className="group">
-                  <label className="block text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2 group-focus-within:text-white transition-colors">
-                    Alias
+                  <label className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-3 group-focus-within:text-cyan-400 transition-colors">
+                    <span>{'>'} SOURCE_ID</span>
+                    <span className="text-[8px] opacity-0 group-focus-within:opacity-100 transition-opacity">REQUIRED</span>
                   </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    maxLength={30}
-                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/50 transition-colors placeholder:text-white/20"
-                    placeholder="guest_user"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      maxLength={30}
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-all duration-500 placeholder:text-white/10 placeholder:font-mono"
+                      placeholder="ENTER_ALIAS..."
+                    />
+                    <div className="absolute inset-0 rounded-lg bg-cyan-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none blur-sm" />
+                  </div>
                 </div>
 
                 <div className="group relative">
-                  <label className="block text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2 group-focus-within:text-white transition-colors">
-                    Log Entry
+                  <label className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-3 group-focus-within:text-cyan-400 transition-colors">
+                    <span>{'>'} PACKET_PAYLOAD</span>
+                    <span className="text-[8px] opacity-0 group-focus-within:opacity-100 transition-opacity">ENCRYPTED</span>
                   </label>
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
-                    maxLength={100}
-                    rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-white/50 resize-none transition-colors placeholder:text-white/20"
-                    placeholder="Leave a trace..."
-                  />
-                  <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white/30">
-                    {message.length}/100
+                  <div className="relative">
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
+                      maxLength={100}
+                      rows={4}
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 resize-none transition-all duration-500 placeholder:text-white/10 placeholder:font-mono mb-2"
+                      placeholder="INITIATING_TRACE_INPUT..."
+                    />
+                    <div className="absolute inset-0 rounded-lg bg-cyan-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none blur-sm" />
+                    <div className="flex justify-between items-center text-[9px] font-mono text-white/20 px-1 uppercase tracking-widest">
+                      <span>STATUS: READY</span>
+                      <span>{message.length}/100 BITS</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -227,9 +316,19 @@ export default function Guestbook() {
               <button
                 type="submit"
                 disabled={isSubmitting || !name.trim() || !message.trim()}
-                className="w-full py-3 bg-white/10 hover:bg-white text-white hover:text-black font-mono text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-10 py-4 bg-white/5 border border-white/10 rounded-xl hover:bg-cyan-500 hover:border-cyan-400 text-white font-mono text-[11px] uppercase tracking-[0.3em] transition-all duration-500 flex flex-col items-center justify-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed group/btn overflow-hidden relative"
               >
-                {isSubmitting ? "Transmitting..." : "Sign Guestbook"} <Send className="w-3 h-3" />
+                {/* Submit Pulse Effect */}
+                <div className="absolute inset-0 bg-cyan-400 opacity-0 group-hover/btn:opacity-10 transition-opacity" />
+                
+                <span className="relative z-10 flex items-center gap-3">
+                  {isSubmitting ? "TRANSMITTING_PACKETS..." : "ENCRYPT & TRANSMIT"} 
+                  <Send className={`w-3.5 h-3.5 transition-transform duration-500 ${isSubmitting ? 'translate-x-[200px] opacity-0' : 'group-hover/btn:translate-x-1'}`} />
+                </span>
+
+                {isSubmitting && (
+                  <div className="absolute bottom-0 left-0 h-1 bg-white animate-[progress-grow_0.6s_ease-in-out_infinite]" style={{ width: '100%' }} />
+                )}
               </button>
             </form>
           </div>
@@ -306,29 +405,48 @@ export default function Guestbook() {
                       return (
                         <div 
                           key={entry.id}
-                          className="absolute left-6 right-6 lg:left-10 lg:right-10 top-1/2 -mt-[4.5rem] p-5 border bg-black/90 backdrop-blur-md rounded-xl flex items-start gap-4 shadow-2xl transition-colors"
+                          className="absolute left-6 right-6 lg:left-10 lg:right-10 top-1/2 -mt-[4.5rem] p-6 border bg-black/80 backdrop-blur-xl rounded-2xl flex items-start gap-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-700 group/card"
                           style={{
                               transform: `rotateX(${-itemAngle}deg) translateZ(160px)`,
                               backfaceVisibility: "hidden",
                               opacity: isVisible ? opacity : 0,
                               pointerEvents: distanceFromActive < 20 ? 'auto' : 'none',
-                              border: distanceFromActive < 15 ? '1px solid rgba(255,255,255,0.2)' : '1px solid rgba(255,255,255,0.05)'
+                              border: distanceFromActive < 15 ? '1px solid rgba(6,182,212,0.3)' : '1px solid rgba(255,255,255,0.05)'
                           }}
                         >
-                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/5">
-                            <User className="w-5 h-5 text-white/60" />
-                          </div>
+
+
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-white font-medium text-base truncate">{entry.name}</span>
-                              <span className="text-white/30 text-[10px] font-mono shrink-0">
-                                {new Date(entry.date).toLocaleDateString()}
-                              </span>
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex flex-col">
+                                <span className="text-white font-display font-bold text-lg uppercase tracking-tight group-hover/card:text-cyan-400 transition-colors">
+                                  {entry.name}
+                                </span>
+                                <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">
+                                  AUTH_ID: {entry.id.slice(-6)}
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <span className="block text-cyan-500/60 text-[10px] font-mono uppercase tracking-widest mb-1 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                                  VERIFIED
+                                </span>
+                                <span className="text-white/30 text-[9px] font-mono">
+                                  [{new Date(entry.date).toLocaleDateString()}]
+                                </span>
+                              </div>
                             </div>
-                            <p className="text-white/70 text-sm leading-relaxed break-words font-light">
-                              {entry.message}
-                            </p>
+                            
+                            <div className="relative">
+                                {/* Quote mark accent */}
+                                <div className="absolute -left-2 -top-1 text-cyan-500/20 text-3xl font-serif">"</div>
+                                <p className="text-white/60 text-sm md:text-base leading-relaxed break-words font-light pl-3 relative z-10 group-hover/card:text-white/90 transition-colors italic">
+                                  {entry.message}
+                                </p>
+                            </div>
                           </div>
+
+                          {/* Top edge trace effect */}
+                          <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent scale-x-0 group-hover/card:scale-x-150 transition-transform duration-1000" />
                         </div>
                       );
                   })}

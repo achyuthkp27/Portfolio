@@ -1,0 +1,24 @@
+name: Fetch Latest Blog Posts
+on:
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-blog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Fetch Medium Posts
+        run: node scripts/fetch-medium.cjs
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add public/data/blog.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update blog posts [skip ci]"
+          git push

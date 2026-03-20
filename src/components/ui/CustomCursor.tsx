@@ -137,7 +137,7 @@ const CustomCursor = () => {
                             cursorVariant === "hover" ? 60 : 24,
                     opacity: cursorVariant === "default" ? 0.5 : 1,
                     backgroundColor: cursorVariant === "view" ? "hsl(var(--primary))" : 
-                                     cursorVariant !== "default" ? "hsl(var(--primary) / 0.1)" : "transparent",
+                                     cursorVariant !== "default" ? "hsl(var(--primary) / 0.1)" : "hsl(var(--primary) / 0)",
                     borderRadius: cursorVariant === "magnetic" ? "12px" : "50%",
                     scale: isClicked ? 0.9 : 1,
                 }}
