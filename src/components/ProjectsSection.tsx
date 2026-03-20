@@ -1,122 +1,85 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { ExternalLink, Github, ArrowUpRight, FolderOpen } from "lucide-react";
-import * as Icons from "lucide-react";
+import { ExternalLink, Github, ArrowUpRight, FolderOpen, Star, GitFork } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
-import SpotlightCard from "./ui/SpotlightCard";
-import { projects as fallbackProjects, Project } from "@/data/projects";
-import { client, urlFor } from "@/lib/sanity";
-import { Link } from "react-router-dom";
-import ProjectGallery3D from "./3d/ProjectGallery3D";
+import { Link, useLocation } from "react-router-dom";
+import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
+import { useSmoothScroll } from "@/components/ui/SmoothScroll";
 
-const ProjectCard = ({ project, index }: { project: any, index: number }) => {
+const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Parse repo name into readable title
+  const formattedTitle = project.name.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      id={`project-card-${project.name}`}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: 0.1 * index }}
-      className="group h-full"
+      transition={{ duration: 0.8, delay: 0.1 * index, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="group relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <SpotlightCard
-        className="h-full flex flex-col glass-card border border-white/10 bg-black/40 relative overflow-hidden transition-all duration-500 hover:border-emerald-500/30"
-        spotlightColor="rgba(16, 185, 129, 0.1)" // Emerald spotlight
-      >
-        {/* Decorative Technical Corners */}
-        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/20 group-hover:border-emerald-500 transition-colors duration-500" />
-        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white/20 group-hover:border-emerald-500 transition-colors duration-500" />
-        <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white/20 group-hover:border-emerald-500 transition-colors duration-500" />
-        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/20 group-hover:border-emerald-500 transition-colors duration-500" />
+      <Link to={`/project/${project.name}`} className="block relative z-10 w-full overflow-hidden">
+        <div className="relative border-b border-white/5 py-10 md:py-16 px-4 md:px-8 transition-colors duration-700 group-hover:bg-white/[0.02]">
+          
+          {/* Background Hover Bloom */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          
+          {/* Scanning Line on Hover */}
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-1000 origin-left" />
 
-        {/* Scanning Line */}
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500/50 -translate-y-full group-hover:animate-[scan-vertical_2s_ease-in-out_infinite] opacity-0 group-hover:opacity-100" />
-
-        {/* Header Section with Metadata */}
-        <div className="relative p-6 border-b border-white/5 bg-white/[0.02]">
-          <div className="flex flex-wrap justify-between items-start mb-4 gap-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-white/70 group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20 group-hover:text-emerald-400 transition-all duration-500">
-                <FolderOpen className="w-5 h-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-mono text-white/40 group-hover:text-emerald-500/70 transition-colors duration-500 tracking-widest uppercase">CASE_ID: 00{index + 1}</span>
-                <span className="text-[10px] font-mono text-white/30 tracking-widest uppercase">CLEARANCE: LVL_5</span>
-              </div>
-            </div>
-            <div className="px-2 py-1 bg-white/5 border border-white/10 rounded flex items-center gap-1.5 transition-colors duration-500 group-hover:border-emerald-500/20">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/50 group-hover:bg-emerald-400 opacity-75 transition-colors duration-500"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/80 group-hover:bg-emerald-500 transition-colors duration-500"></span>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">
+            
+            {/* Left Side: Number & Title */}
+            <div className="flex items-start lg:items-center gap-6 md:gap-12 w-full lg:w-3/4">
+              <span className="font-mono text-2xl md:text-3xl text-white/10 font-light group-hover:text-emerald-500/40 transition-colors duration-500 mt-2 lg:mt-0 shrink-0">
+                {(index + 1).toString().padStart(2, '0')}
               </span>
-              <span className="text-[9px] font-mono text-white/40 group-hover:text-emerald-500/70 transition-colors duration-500 tracking-wider">ACTIVE</span>
+              
+              <div className="relative w-full">
+                <h3 className="font-display text-4xl md:text-6xl lg:text-7xl font-black text-white/70 group-hover:text-white tracking-tighter transition-all duration-700 group-hover:translate-x-4">
+                  {formattedTitle}
+                </h3>
+                
+                <div className="mt-6 flex flex-col md:flex-row md:items-center gap-4 text-gray-500 text-sm md:text-base max-w-2xl group-hover:text-gray-300 transition-all duration-700 delay-100 group-hover:translate-x-4">
+                  <p className="line-clamp-2 leading-relaxed">
+                    {project.description || "Experimental architecture. Classified repository details."}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <Link to={`/project/${project.slug}`} className="block relative z-10">
-            <h3 className="font-display text-2xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors duration-500 flex items-center gap-2">
-              {project.title}
-              <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 transform" />
-            </h3>
-          </Link>
-        </div>
+            {/* Right Side: Metrics & Arrow */}
+            <div className="flex items-center justify-between lg:justify-end w-full lg:w-1/4 gap-8 opacity-60 group-hover:opacity-100 transition-opacity duration-500">
+              
+              {/* Tech / Language */}
+              <div className="flex items-center gap-3">
+                {project.language && (
+                  <span className="px-3 py-1 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full text-white/60 group-hover:border-emerald-500/30 group-hover:text-emerald-400 group-hover:bg-emerald-500/5 transition-all duration-500">
+                    {project.language}
+                  </span>
+                )}
+                {project.stargazers_count > 0 && (
+                  <span className="flex items-center gap-1.5 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full px-3 py-1 text-white/60 group-hover:border-amber-500/30 group-hover:text-amber-400 group-hover:bg-amber-500/5 transition-all duration-500">
+                    <Star className="w-3 h-3 md:w-4 md:h-4" /> {project.stargazers_count}
+                  </span>
+                )}
+              </div>
 
-        {/* Links Overlay (Absolute Positioned for cleaner layouts) */}
-        <div className="absolute top-6 right-6 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-[-10px] group-hover:translate-y-0">
-          <motion.a
-            href="https://github.com/achyuthkp27"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1 }}
-            className="p-2 bg-black/80 border border-white/10 text-white rounded-sm hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all duration-300"
-          >
-            <Github className="w-4 h-4" />
-          </motion.a>
-          <motion.a
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1 }}
-            className="p-2 bg-black/80 border border-white/10 text-white rounded-sm hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all duration-300"
-          >
-            <ExternalLink className="w-4 h-4" />
-          </motion.a>
-        </div>
-
-        {/* Content Body */}
-        <div className="p-6 flex-1 flex flex-col space-y-6">
-          <p className="text-gray-400 text-sm leading-relaxed border-l-2 border-white/10 pl-4 group-hover:border-emerald-500/50 transition-colors duration-500">
-            {project.description}
-          </p>
-
-          <div className="space-y-3 font-mono text-xs">
-            <div className="flex items-start gap-4">
-              <span className="text-white/40 min-w-[60px] uppercase tracking-wider text-[10px] pt-0.5">Objective</span>
-              <span className="text-white/80">{project.problem.substring(0, 50)}...</span>
+              {/* Arrow */}
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-500 overflow-hidden relative shrink-0">
+                 <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white transform group-hover:translate-x-[150%] group-hover:translate-y-[-150%] transition-transform duration-500 ease-in-out" />
+                 <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-black absolute top-[150%] left-[-150%] transform group-hover:top-1/2 group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 transition-all duration-500 ease-in-out" />
+              </div>
             </div>
-            <div className="flex items-start gap-4">
-              <span className="text-white/40 min-w-[60px] uppercase tracking-wider text-[10px] pt-0.5">Status</span>
-              <span className="text-white/60 group-hover:text-emerald-400/80 transition-colors duration-500">Completed // Deployed</span>
-            </div>
-          </div>
 
-          <div className="mt-auto pt-6 border-t border-white/5">
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag: any) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 text-[10px] font-mono uppercase bg-white/5 text-white/50 border border-white/10 rounded-sm group-hover:bg-emerald-500/5 group-hover:text-emerald-400/70 group-hover:border-emerald-500/10 transition-all duration-500"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
-      </SpotlightCard>
+      </Link>
     </motion.div>
   );
 };
@@ -124,74 +87,77 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
 const ProjectsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<GitHubRepo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const location = useLocation();
+  const { lenis } = useSmoothScroll();
 
   useEffect(() => {
-    client.fetch(`*[_type == "project"] | order(order asc)`)
-      .then((data) => {
-        if (data && data.length > 0) {
-          const mapped = data.map((p: any) => ({
-            ...p,
-            slug: p.slug?.current || p.slug,
-            icon: (Icons as any)[p.iconName] || Icons.FolderOpen,
-            image: p.mainImage ? urlFor(p.mainImage).url() : undefined
-          }));
-          setProjects(mapped);
-        } else {
-          setProjects(fallbackProjects);
-        }
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setProjects(fallbackProjects);
-        setIsLoading(false);
-      });
+    fetchLatestRepositories(6).then((repos) => {
+      setProjects(repos);
+      setIsLoading(false);
+    });
   }, []);
 
-  return (
-    <section id="projects" className="relative bg-transparent py-32 px-6 md:px-12" ref={ref}>
-      {/* Background Decor */}
-      <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+  useEffect(() => {
+    if (!isLoading && projects.length > 0) {
+      const params = new URLSearchParams(location.search);
+      const scrollToSlug = params.get('scrollTo');
 
-      <div className="max-w-7xl mx-auto">
+      if (scrollToSlug) {
+        // Wait a tick for the DOM to fully paint the mapped project cards
+        setTimeout(() => {
+          const el = document.getElementById(`project-card-${scrollToSlug}`);
+          if (el) {
+            // Force native browser instant scroll jump, overriding Lenis
+            el.scrollIntoView({ behavior: 'instant', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+  }, [isLoading, projects, location.search]);
+
+  return (
+    <section id="projects" className="relative bg-transparent py-32 md:py-48 px-6 md:px-12" ref={ref}>
+      {/* Background Decor */}
+      <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="max-w-screen-2xl mx-auto">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="mb-32 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-12"
         >
-          <TextReveal type="fade-up">
-            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 border border-white/10 mb-6 bg-white/5 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400 transition-colors duration-300">
-              [ MISSION_ARCHIVES ]
-            </span>
-          </TextReveal>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
-            <TextReveal type="blur-reveal" delay={0.2} as="span">Selected</TextReveal>{" "}
-            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Case Files</TextReveal>
-          </h2>
-          <TextReveal type="fade-up" delay={0.4} as="p" className="mt-4 text-gray-400 max-w-2xl mx-auto backdrop-blur-sm">
-            Accessing classified records of enterprise-grade deployments.
+          <div>
+            <TextReveal type="fade-up">
+              <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-emerald-500 border border-emerald-500/20 rounded-full mb-8 bg-emerald-500/10 transition-colors duration-300">
+                [ LIVE_GITHUB_FEED ]
+              </span>
+            </TextReveal>
+            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter">
+              <TextReveal type="blur-reveal" delay={0.2} as="span">Selected</TextReveal><br/>
+              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Case Files</TextReveal>
+            </h2>
+          </div>
+          
+          <TextReveal type="fade-up" delay={0.6} as="p" className="text-gray-400 max-w-sm text-sm md:text-base leading-relaxed">
+            Continuously fetching the latest repository commits, architecture structures, and source codes from the public domains.
           </TextReveal>
         </motion.div>
 
-        {/* 3D Immersive Gallery (Desktop Only) */}
-        {!isLoading && projects.length > 0 && (
-          <div className="hidden xl:block mb-32 rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10">
-            <ProjectGallery3D projects={projects} />
-          </div>
-        )}
-
-        {/* Projects Grid (Universal Fallback) */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Dynamic GitHub Repos List */}
+        <div className="flex flex-col">
           {isLoading ? (
-            <div className="col-span-full h-40 flex items-center justify-center font-mono text-white/50 animate-pulse">
-              LOADING_ARCHIVES...
+            <div className="h-64 flex flex-col items-center justify-center font-mono text-white/50 gap-4">
+              <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
+              <span>SYNCING_REPOSITORIES...</span>
             </div>
           ) : (
             projects.map((project, index) => (
-              <ProjectCard key={project.slug} project={project} index={index} />
+              <ProjectCard key={project.name} project={project} index={index} />
             ))
           )}
         </div>
