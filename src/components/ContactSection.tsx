@@ -189,7 +189,7 @@ const ContactSection = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 transition-all duration-500 placeholder:text-white/5"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10"
                       placeholder="ENTER_SENDER_NAME"
                     />
                   </div>
@@ -205,7 +205,7 @@ const ContactSection = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 transition-all duration-500 placeholder:text-white/5"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10"
                       placeholder="USER@HOST.COM"
                     />
                   </div>
@@ -222,7 +222,7 @@ const ContactSection = () => {
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required
                     rows={6}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 resize-none transition-all duration-500 placeholder:text-white/5"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/10"
                     placeholder="INITIATING_MESSAGE_PAYLOAD..."
                   />
                 </div>
@@ -231,12 +231,16 @@ const ContactSection = () => {
                   type="submit"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-6 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-emerald-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn"
+                  className="w-full py-6 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-emerald-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn rounded-lg"
                 >
                   <div className="absolute inset-0 bg-white group-hover/btn:bg-emerald-400 transition-colors" />
+                  {/* Ripple overlay */}
+                  <div className="absolute inset-0 pointer-events-none" />
                   <span className="relative z-10 flex items-center gap-3">
                     EXECUTE_TRANSMISSION <Send className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </span>
+                  {/* Shimmer sweep */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 pointer-events-none" />
                 </motion.button>
               </div>
 

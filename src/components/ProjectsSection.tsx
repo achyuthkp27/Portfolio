@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useSpring, useMotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Github, ArrowUpRight, Star } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
@@ -26,11 +26,18 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
       <Link to={`/project/${project.name}`} className="block relative z-10 w-full overflow-hidden">
         <div className="relative border-b border-white/5 py-10 md:py-16 px-4 md:px-8 transition-colors duration-700 group-hover:bg-white/[0.02]">
           
+          {/* Animated reveal line */}
+          <motion.div
+            className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.1 * index, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "left" }}
+          />
+          
           {/* Background Hover Bloom */}
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-          
-          {/* Scanning Line on Hover */}
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-1000 origin-left" />
 
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">
             
@@ -59,8 +66,10 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
               {/* Tech / Language */}
               <div className="flex items-center gap-3">
                 {project.language && (
-                  <span className="px-3 py-1 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full text-white/60 group-hover:border-emerald-500/30 group-hover:text-emerald-400 group-hover:bg-emerald-500/5 transition-all duration-500">
-                    {project.language}
+                  <span className="px-3 py-1 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full text-white/60 group-hover:border-emerald-500/30 group-hover:text-emerald-400 group-hover:bg-emerald-500/5 transition-all duration-500 relative overflow-hidden">
+                    {/* Shimmer on hover */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <span className="relative z-10">{project.language}</span>
                   </span>
                 )}
                 {project.stargazers_count > 0 && (
@@ -70,11 +79,15 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
                 )}
               </div>
 
-              {/* Arrow */}
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-500 overflow-hidden relative shrink-0">
+              {/* Arrow with spring animation */}
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-500 overflow-hidden relative shrink-0 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
                  <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white transform group-hover:translate-x-[150%] group-hover:translate-y-[-150%] transition-transform duration-500 ease-in-out" />
                  <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-black absolute top-[150%] left-[-150%] transform group-hover:top-1/2 group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 transition-all duration-500 ease-in-out" />
-              </div>
+              </motion.div>
             </div>
 
           </div>

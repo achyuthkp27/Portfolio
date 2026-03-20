@@ -1,7 +1,7 @@
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect } from "react";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
 
@@ -24,7 +24,6 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    // Only track active sections on the home page
     if (!isHomePage) {
       setActiveSection("");
       return;
@@ -34,7 +33,6 @@ const Navigation = () => {
       const sections = document.querySelectorAll("section[id]");
       const scrollPos = window.scrollY + window.innerHeight / 3;
 
-      // Check if at the very bottom of the page
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
         setActiveSection("contact");
         return;
@@ -51,7 +49,6 @@ const Navigation = () => {
       setActiveSection(currentSection);
     };
 
-    // Run once on mount
     updateActiveSection();
 
     window.addEventListener("scroll", updateActiveSection, { passive: true });
@@ -71,7 +68,6 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     const element = document.getElementById(targetId);
     if (element) {
-      // Native smooth scroll fallback
       element.scrollIntoView({ behavior: "smooth" });
       setIsMobileMenuOpen(false);
     }
@@ -83,9 +79,24 @@ const Navigation = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 transition-all duration-300`}
+        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-all duration-500 ${
+          isScrolled
+            ? "py-4"
+            : "py-6"
+        }`}
       >
-        <div className="max-w-[1800px] mx-auto flex items-center justify-between">
+        {/* Glassmorphism Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isScrolled ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+          className="absolute inset-0 bg-black/60 backdrop-blur-xl border-b border-white/[0.06] pointer-events-none"
+        >
+          {/* Gradient shimmer line on bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+        </motion.div>
+
+        <div className="max-w-[1800px] mx-auto flex items-center justify-between relative z-10">
           {/* Logo / Name */}
           <motion.a
             href="#"
@@ -99,89 +110,114 @@ const Navigation = () => {
             ACHYUTH<span className="opacity-50">.DEV</span>
           </motion.a>
 
-          {/* Desktop Nav - Minimalist */}
-          <ul className="hidden md:flex items-center gap-10">
-            {navItems.map((item, index) => (
-              <motion.li
-                key={item.label}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
-              >
-                <a
-                  href={item.href}
-                  onClick={(e) => handleScroll(e, item.href)}
-                  className={`text-xs font-mono tracking-widest uppercase transition-colors relative group ${activeSection === item.href.substring(1)
-                    ? "text-white"
-                    : "text-white/50 hover:text-white"
-                    }`}
-                >
-                  <span className="mr-1 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400">/</span>
-                  {item.label}
-                </a>
-              </motion.li>
-            ))}
-          </ul>
+          {/* Desktop Nav — Pill-style active indicator */}
+          <div className="hidden md:flex items-center relative">
+            <ul className="flex items-center gap-1 p-1 bg-white/[0.03] border border-white/[0.06] rounded-full backdrop-blur-sm">
+              {navItems.map((item, index) => {
+                const isActive = activeSection === item.href.substring(1);
+                return (
+                  <motion.li
+                    key={item.label}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 0.1 * index }}
+                    className="relative"
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNavPill"
+                        className="absolute inset-0 bg-white/10 rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <a
+                      href={item.href}
+                      onClick={(e) => handleScroll(e, item.href)}
+                      className={`relative z-10 block px-4 py-1.5 text-[11px] font-mono tracking-widest uppercase transition-colors rounded-full ${
+                        isActive
+                          ? "text-white"
+                          : "text-white/40 hover:text-white/70"
+                      }`}
+                    >
+                      {item.label}
+                    </a>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          </div>
 
-          {/* Right side - Just CTA */}
+          {/* Right side - CTA */}
           <div className="flex items-center gap-4">
-            {/* Mobile Menu Button - Minimal */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-white hover:opacity-70 transition-opacity"
+              className="md:hidden text-white hover:opacity-70 transition-opacity font-mono text-xs tracking-widest uppercase"
             >
               {isMobileMenuOpen ? "CLOSE" : "MENU"}
             </button>
 
-            <a
-              href="#contact"
-              onClick={(e) => handleScroll(e, "#contact")}
-              className="hidden md:block text-xs font-mono tracking-widest uppercase text-white/70 hover:text-white transition-colors border border-white/20 px-4 py-2 hover:bg-white/5"
-            >
-              [ GET_IN_TOUCH ]
-            </a>
+            <MagneticButton>
+              <a
+                href="#contact"
+                onClick={(e) => handleScroll(e, "#contact")}
+                className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-white/70 hover:text-white transition-all border border-white/10 hover:border-emerald-500/30 px-5 py-2 rounded-full hover:bg-emerald-500/5 group relative overflow-hidden"
+              >
+                {/* Shimmer sweep */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                <span className="relative z-10">[ GET_IN_TOUCH ]</span>
+              </a>
+            </MagneticButton>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
-      <motion.div
-        initial={false}
-        animate={{
-          opacity: isMobileMenuOpen ? 1 : 0,
-          x: isMobileMenuOpen ? 0 : "100%",
-        }}
-        transition={{ duration: 0.3 }}
-        className={`fixed inset-0 z-40 md:hidden ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
-      >
-        <div className="absolute inset-0 bg-background/95 backdrop-blur-xl">
-          <div className="flex flex-col items-center justify-center h-full gap-8">
-            {navItems.map((item, index) => (
-              <motion.a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleScroll(e, item.href)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isMobileMenuOpen ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.3, delay: 0.1 * index }}
-                className="text-2xl font-display font-semibold text-foreground hover:text-primary transition-colors"
-              >
-                {item.label}
-              </motion.a>
-            ))}
-            <motion.a
-              href="#contact"
-              onClick={(e) => handleScroll(e, "#contact")}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isMobileMenuOpen ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.3, delay: 0.5 }}
-              className="mt-4 px-8 py-3 text-lg font-medium bg-gradient-cyber text-primary-foreground rounded-full"
-            >
-              Hire Me
-            </motion.a>
-          </div>
-        </div>
-      </motion.div>
+      {/* Mobile Menu — Improved stagger */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 md:hidden"
+          >
+            <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl">
+              <div className="flex flex-col items-center justify-center h-full gap-6">
+                {navItems.map((item, index) => (
+                  <motion.a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleScroll(e, item.href)}
+                    initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
+                    className={`text-3xl font-display font-semibold tracking-tight transition-colors ${
+                      activeSection === item.href.substring(1)
+                        ? "text-white"
+                        : "text-white/40 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </motion.a>
+                ))}
+                <motion.a
+                  href="#contact"
+                  onClick={(e) => handleScroll(e, "#contact")}
+                  initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, delay: 0.35 }}
+                  className="mt-6 px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase bg-white text-black hover:bg-emerald-400 transition-colors"
+                >
+                  Hire Me
+                </motion.a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

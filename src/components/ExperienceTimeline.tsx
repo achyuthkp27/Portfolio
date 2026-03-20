@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { Building2, GraduationCap, ChevronDown } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
@@ -69,8 +69,13 @@ const ExperienceTimeline = () => {
 
         {/* Timeline */}
         <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2 overflow-hidden">
+          {/* Timeline line with scroll fill */}
+          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2 overflow-visible">
+            {/* Scroll-driven fill */}
+            <motion.div
+              className="w-full bg-gradient-to-b from-emerald-500/60 via-emerald-500/30 to-transparent"
+              style={{ height: isInView ? "100%" : "0%" }}
+            />
             <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-white to-transparent animate-scan-beam" />
           </div>
 
@@ -86,9 +91,15 @@ const ExperienceTimeline = () => {
               >
                 {/* Timeline dot */}
                 <div className="absolute left-8 md:left-1/2 -translate-x-1/2 top-10 z-10 flex items-center justify-center">
-                  <div className={`w-4 h-4 rounded-full border-2 z-20 transition-all duration-500 flex items-center justify-center ${isExpanded ? 'border-emerald-400 bg-emerald-950 shadow-[0_0_15px_rgba(52,211,153,0.6)]' : 'border-white/30 bg-black group-hover/timeline:border-emerald-500/50 group-hover/timeline:shadow-[0_0_10px_rgba(52,211,153,0.2)]'}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 z-20 transition-all duration-500 flex items-center justify-center ${isExpanded ? 'border-emerald-400 bg-emerald-950 shadow-[0_0_15px_rgba(52,211,153,0.6)]' : 'border-white/30 bg-black group-hover/timeline:border-emerald-500/50 group-hover/timeline:shadow-[0_0_10px_rgba(52,211,153,0.2)]'}`}>
                     {isExpanded && <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />}
                   </div>
+                  {/* Pulsing ring for first (current) role */}
+                  {index === 0 && !isExpanded && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full border border-emerald-500/30 animate-ping" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Content card */}
@@ -135,10 +146,16 @@ const ExperienceTimeline = () => {
                       <div className="pt-6 border-t border-white/10 mt-6">
                         <ul className={`space-y-4 mb-8 ${index % 2 === 0 ? "md:text-right" : "text-left"}`}>
                           {exp.achievements.map((achievement, i) => (
-                            <li key={i} className={`text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
+                            <motion.li
+                              key={i}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={isExpanded ? { opacity: 1, y: 0 } : {}}
+                              transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
+                              className={`text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
+                            >
                               <span className="text-emerald-500 mt-1.5 text-[10px]">▹</span>
                               <span className="flex-1">{achievement}</span>
-                            </li>
+                            </motion.li>
                           ))}
                         </ul>
 
@@ -146,9 +163,10 @@ const ExperienceTimeline = () => {
                           {exp.technologies.map((tech) => (
                             <span
                               key={tech}
-                              className="px-2 py-1 text-[9px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full"
+                              className="px-2 py-1 text-[9px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
                             >
-                              {tech}
+                              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent -translate-x-full group-hover/tech:translate-x-full transition-transform duration-500 pointer-events-none" />
+                              <span className="relative z-10">{tech}</span>
                             </span>
                           ))}
                         </div>

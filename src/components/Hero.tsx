@@ -14,7 +14,6 @@ import { useLoading } from "@/context/LoadingContext";
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 const MobileSpaceScene = lazy(() => import("@/components/3d/MobileSpaceScene"));
 
-// Increased delays to sync with 1s curtain reveal
 const Hero = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
@@ -75,7 +74,7 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="mb-8 pointer-events-auto"
             >
-              <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-sm rounded-full">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
@@ -106,19 +105,7 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
-                  style={{
-                    backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                    backgroundSize: "200% 100%",
-                    backgroundPosition: "100% 0%"
-                  }}
-                  variants={{
-                    hover: {
-                      backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5) 40%, #ffffff 50%, rgba(255,255,255,0.5) 60%)",
-                      backgroundPosition: ["100% 0%", "-100% 0%"],
-                      transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
-                    }
-                  }}
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                 >
                   CREATIVE
                 </motion.div>
@@ -128,19 +115,8 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-transparent bg-clip-text"
-                  style={{
-                    backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5), rgba(255,255,255,0.5))",
-                    backgroundSize: "200% 100%",
-                    backgroundPosition: "100% 0%"
-                  }}
-                  variants={{
-                    hover: {
-                      backgroundImage: "linear-gradient(110deg, rgba(255,255,255,0.5) 40%, #ffffff 50%, rgba(255,255,255,0.5) 60%)",
-                      backgroundPosition: ["100% 0%", "-100% 0%"],
-                      transition: { duration: 1.5, repeat: Infinity, ease: "linear" }
-                    }
-                  }}
+                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
+                  style={{ animationDelay: "0.5s" }}
                 >
                   DEVELOPER
                 </motion.div>
@@ -156,9 +132,11 @@ const Hero = () => {
               {["Software Developer", "React Js", "Spring Boot", "Microservices", "AWS"].map((tag, i) => (
                 <span
                   key={tag}
-                  className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider group hover:bg-white/10 transition-colors"
+                  className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider group hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300 rounded-md relative overflow-hidden"
                 >
-                  <DecryptText text={tag} />
+                  {/* Shimmer sweep on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                  <span className="relative z-10"><DecryptText text={tag} /></span>
                 </span>
               ))}
             </motion.div>
@@ -188,8 +166,10 @@ const Hero = () => {
                       target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="group relative inline-flex items-center gap-4 px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-neutral-200"
+                  className="group relative inline-flex items-center gap-4 px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
                 >
+                  {/* White glow pulse on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-emerald-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="relative z-10 flex items-center gap-2">
                     View Projects <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </span>
@@ -205,15 +185,17 @@ const Hero = () => {
                       target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="group relative inline-flex items-center gap-4 px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:bg-white/5"
+                  className="group relative inline-flex items-center gap-4 px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
                 >
-                  Contact Me
+                  {/* Gradient border shine */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  <span className="relative z-10">Contact Me</span>
                 </a>
               </MagneticButton>
             </motion.div>
           </div>
 
-          {/* Right side Experience Card */}
+          {/* Right side Experience Card — improved corner animations */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={!isLoading ? { opacity: 1, x: 0 } : {}}
@@ -221,6 +203,9 @@ const Hero = () => {
             className="flex justify-center pointer-events-auto mt-12 lg:mt-0"
           >
             <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
+              {/* Ambient glow behind card */}
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
               <motion.div
                 variants={{
                   hover: { borderColor: "rgba(255,255,255,0.2)", backgroundColor: "rgba(255,255,255,0.05)" }
@@ -229,25 +214,25 @@ const Hero = () => {
               >
                 <ExperienceTimer startDate={startDate} />
               </motion.div>
-              {/* Decorative corners */}
+              {/* Decorative corners — smoother spring */}
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40 pointer-events-none"
               />
               <motion.div
                 variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40 pointer-events-none"
               />
             </motion.div>
