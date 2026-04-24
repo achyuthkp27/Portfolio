@@ -1,10 +1,8 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -21,8 +19,6 @@ import { CommandMenu } from "./components/ui/CommandMenu";
 import TerminalOverlay from "./components/TerminalOverlay";
 import ActivityWidget from "./components/ActivityWidget";
 import { ThemeProvider } from "@/hooks/useTheme";
-
-const queryClient = new QueryClient();
 
 // Lazy load the project detail page
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
@@ -50,13 +46,11 @@ const App = () => (
     <HelmetProvider>
       <LoadingProvider>
         <PremiumLoader />
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <CustomCursor />
-            <HashRouter>
-              <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <CustomCursor />
+          <HashRouter>
+            <ThemeProvider>
               <CommandMenu />
               <TerminalOverlay />
               <ActivityWidget />
@@ -66,10 +60,9 @@ const App = () => (
               <SmoothScroll>
                 <AnimatedRoutes />
               </SmoothScroll>
-              </ThemeProvider>
-            </HashRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
+            </ThemeProvider>
+          </HashRouter>
+        </TooltipProvider>
       </LoadingProvider>
     </HelmetProvider>
   </ErrorBoundary>

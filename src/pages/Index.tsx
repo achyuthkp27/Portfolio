@@ -1,7 +1,6 @@
-import { Suspense, lazy } from "react";
+import { lazy } from "react";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
-import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/Footer";
 import SystemStatus from "@/components/SystemStatus";
 import SpaceBackground from "@/components/3d/SpaceBackground";
@@ -93,7 +92,6 @@ const Index = () => {
             </LazySection>
           </main>
           <Footer />
-          <Toaster />
       </div>
     </motion.div>
   );

@@ -1,16 +1,8 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Stars, Float, PerspectiveCamera } from "@react-three/drei";
-import { getProject } from "@theatre/core";
-import { editable as e, SheetProvider } from "@theatre/r3f";
-import { useEffect, useRef, useState } from "react";
+import { Float, PerspectiveCamera } from "@react-three/drei";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { Volume2, VolumeX, Play, Pause } from "lucide-react";
-
-// Initialize Theater Project
-// Initialize Theater Project
-// We rely on local storage (Studio) during dev. 
-// User should export state to a JSON file for production.
-const demoSheet = getProject("Portfolio Animation").sheet("Hero Scene");
 
 export let isDJMuted = true;
 
@@ -182,7 +174,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             >
                 {/* Main Object */}
                 <group ref={groupRef}>
-                    <e.group theatreKey="HeroObject">
+                    <group>
                         <mesh scale={[2, 2, 1.5]}>
                             <icosahedronGeometry args={[1, 1]} />
                             <meshStandardMaterial
@@ -208,7 +200,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
                                 opacity={0.15}
                             />
                         </mesh>
-                    </e.group>
+                    </group>
                 </group>
 
                 {/* Expanding Beam 1 */}
@@ -259,37 +251,13 @@ const Scene = ({ animEnabled }: { animEnabled: boolean }) => {
 };
 
 const SpaceScene = () => {
-    useEffect(() => {
-        if (import.meta.env.DEV) {
-            import("@theatre/studio").then((module) => {
-                module.default.initialize();
-                // Check if project is ready before playing
-                demoSheet.project.ready.then(() => {
-                    // Animation controlled by animEnabled state
-                });
-            });
-        }
-    }, []);
-
     const [muted, setMuted] = useState(isDJMuted);
     const [animEnabled, setAnimEnabled] = useState(false);
-
-    useEffect(() => {
-        demoSheet.project.ready.then(() => {
-            if (animEnabled) {
-                demoSheet.sequence.play({ iterationCount: Infinity, range: [0, 10] });
-            } else {
-                demoSheet.sequence.pause();
-            }
-        });
-    }, [animEnabled]);
 
     return (
         <div className="absolute inset-0 z-0">
             <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]}>
-                <SheetProvider sheet={demoSheet}>
-                    <Scene animEnabled={animEnabled} />
-                </SheetProvider>
+                <Scene animEnabled={animEnabled} />
             </Canvas>
             
             <div className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-50 flex gap-4">
