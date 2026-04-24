@@ -353,7 +353,11 @@ export default function Guestbook() {
 
                 const handlePointerMove = (moveEvent: PointerEvent) => {
                     const delta = moveEvent.clientY - startY;
-                    const newAngle = startAngle + delta * 0.4;
+                    let newAngle = startAngle - delta * 0.4;
+                    const maxAngle = Math.max(0, (entries.length - 1) * 45);
+                    if (newAngle < -20) newAngle = -20;
+                    if (newAngle > maxAngle + 20) newAngle = maxAngle + 20;
+                    
                     if (Math.round(lastAngle / 45) !== Math.round(newAngle / 45)) {
                         playTickSound();
                     }
