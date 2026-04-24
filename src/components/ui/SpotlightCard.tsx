@@ -1,4 +1,4 @@
-import { useRef, useState, MouseEvent } from "react";
+import { useRef, useState, useEffect, MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform, HTMLMotionProps } from "framer-motion";
 
 interface SpotlightCardProps extends HTMLMotionProps<"div"> {
@@ -14,6 +14,8 @@ const SpotlightCard = ({
     ...props
 }: SpotlightCardProps) => {
     const divRef = useRef<HTMLDivElement>(null);
+    const rectRef = useRef<DOMRect | null>(null);
+    const isDesktopRef = useRef(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [opacity, setOpacity] = useState(0);
 
@@ -27,26 +29,28 @@ const SpotlightCard = ({
     const rotateX = useTransform(mouseY, [-0.5, 0.5], ["7deg", "-7deg"]);
     const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-7deg", "7deg"]);
 
-    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-        if (!divRef.current) return;
+    // Cache media query result once
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 768px)");
+        isDesktopRef.current = mq.matches;
+        const handler = (e: MediaQueryListEvent) => { isDesktopRef.current = e.matches; };
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+    }, []);
 
-        const div = divRef.current;
-        const rect = div.getBoundingClientRect();
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+        // Use cached rect instead of calling getBoundingClientRect every move
+        const rect = rectRef.current;
+        if (!rect) return;
 
         const xPos = e.clientX - rect.left;
         const yPos = e.clientY - rect.top;
 
         setPosition({ x: xPos, y: yPos });
 
-        // Calculate normalized position (-0.5 to 0.5)
-        const width = rect.width;
-        const height = rect.height;
-
-        const normalizedX = (xPos / width) - 0.5;
-        const normalizedY = (yPos / height) - 0.5;
-
-        // Disable tilt on mobile (simple check)
-        if (window.matchMedia("(min-width: 768px)").matches) {
+        if (isDesktopRef.current) {
+            const normalizedX = (xPos / rect.width) - 0.5;
+            const normalizedY = (yPos / rect.height) - 0.5;
             x.set(normalizedX);
             y.set(normalizedY);
         }
@@ -62,10 +66,13 @@ const SpotlightCard = ({
 
     const handleMouseEnter = () => {
         setOpacity(1);
+        // Cache rect once on enter — avoids layout thrashing on every mousemove
+        if (divRef.current) rectRef.current = divRef.current.getBoundingClientRect();
     }
 
     const handleMouseLeave = () => {
         setOpacity(0);
+        rectRef.current = null;
         x.set(0);
         y.set(0);
     }

@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef, ReactNode, MouseEvent } from "react";
+import { useRef, ReactNode, MouseEvent, useEffect } from "react";
 
 interface MagneticButtonProps {
     children: ReactNode;
@@ -9,6 +9,7 @@ interface MagneticButtonProps {
 
 const MagneticButton = ({ children, className = "", strength = 0.5 }: MagneticButtonProps) => {
     const ref = useRef<HTMLDivElement>(null);
+    const isMobileRef = useRef(false);
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -18,9 +19,17 @@ const MagneticButton = ({ children, className = "", strength = 0.5 }: MagneticBu
     const springX = useSpring(x, springConfig);
     const springY = useSpring(y, springConfig);
 
+    // Cache media query result once instead of checking on every mousemove
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 768px)");
+        isMobileRef.current = mq.matches;
+        const handler = (e: MediaQueryListEvent) => { isMobileRef.current = e.matches; };
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+    }, []);
+
     const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-        // Disable on mobile/touch (simple check)
-        if (window.matchMedia("(max-width: 768px)").matches) return;
+        if (isMobileRef.current) return;
 
         const { clientX, clientY } = e;
         const { left, top, width, height } = ref.current!.getBoundingClientRect();

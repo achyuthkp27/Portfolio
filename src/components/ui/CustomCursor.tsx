@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 
 const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () => void }) => (
@@ -14,73 +14,82 @@ const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () 
 
 const CustomCursor = () => {
     const [isMobile, setIsMobile] = useState(false);
-    const [cursorVariant, setCursorVariant] = useState("default");
-    const [magneticTarget, setMagneticTarget] = useState<DOMRect | null>(null);
+    const cursorVariantRef = useRef("default");
+    const magneticTargetRef = useRef<DOMRect | null>(null);
+    const [renderKey, setRenderKey] = useState(0);
     const [isClicked, setIsClicked] = useState(false);
     const [shockwaves, setShockwaves] = useState<{ id: number; x: number; y: number }[]>([]);
+    const rafIdRef = useRef<number>(0);
 
-    // Mouse position values
     const cursorX = useMotionValue(-100);
     const cursorY = useMotionValue(-100);
 
-    // Spring configuration for fluid follower
     const springConfig = { damping: 25, stiffness: 700 };
     const cursorXSpring = useSpring(cursorX, springConfig);
     const cursorYSpring = useSpring(cursorY, springConfig);
 
     useEffect(() => {
-        // Mobile check
         const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
         checkMobile();
         window.addEventListener("resize", checkMobile);
 
-        // Mouse hover scanning 
         const scanInteractions = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            const cursorElem = target.closest('[data-cursor]');
-
-            if (cursorElem) {
-                const type = cursorElem.getAttribute('data-cursor') || 'hover';
-                setCursorVariant(type);
-
-                if (type === 'magnetic') {
-                    const rect = cursorElem.getBoundingClientRect();
-                    setMagneticTarget(rect);
-
-                    // Apply magnetic parallax pull
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    const distanceX = e.clientX - centerX;
-                    const distanceY = e.clientY - centerY;
-                    
-                    cursorX.set(centerX + distanceX * 0.2);
-                    cursorY.set(centerY + distanceY * 0.2);
-                    return;
-                }
-                setMagneticTarget(null);
-            } else {
-                const isInteractive = target.closest("a, button, [role='button'], input, textarea, select");
-                setCursorVariant(isInteractive ? "hover" : "default");
-                setMagneticTarget(null);
-            }
-
-            // Normal tracking
             cursorX.set(e.clientX);
             cursorY.set(e.clientY);
+
+            cancelAnimationFrame(rafIdRef.current);
+            rafIdRef.current = requestAnimationFrame(() => {
+                const target = e.target as HTMLElement;
+                const cursorElem = target.closest('[data-cursor]');
+                let newVariant = "default";
+                let newMagneticTarget: DOMRect | null = null;
+
+                if (cursorElem) {
+                    const type = cursorElem.getAttribute('data-cursor') || 'hover';
+                    newVariant = type;
+
+                    if (type === 'magnetic') {
+                        const rect = cursorElem.getBoundingClientRect();
+                        newMagneticTarget = rect;
+
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        const distanceX = e.clientX - centerX;
+                        const distanceY = e.clientY - centerY;
+
+                        cursorX.set(centerX + distanceX * 0.2);
+                        cursorY.set(centerY + distanceY * 0.2);
+                    }
+                } else {
+                    const isInteractive = target.closest("a, button, [role='button'], input, textarea, select");
+                    newVariant = isInteractive ? "hover" : "default";
+                }
+
+                const variantChanged = newVariant !== cursorVariantRef.current;
+                cursorVariantRef.current = newVariant;
+                magneticTargetRef.current = newMagneticTarget;
+
+                if (variantChanged) {
+                    setRenderKey(n => n + 1);
+                }
+            });
         };
 
         const onMouseDown = (e: MouseEvent) => {
             setIsClicked(true);
-            setShockwaves(prev => [...prev, { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
+            setShockwaves(prev => {
+                const next = [...prev, { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }];
+                return next.slice(-3);
+            });
         };
         const onMouseUp = () => setIsClicked(false);
 
-        // Scan cursor state on mouse move
         window.addEventListener("mousemove", scanInteractions);
         window.addEventListener("mousedown", onMouseDown);
         window.addEventListener("mouseup", onMouseUp);
 
         return () => {
+            cancelAnimationFrame(rafIdRef.current);
             window.removeEventListener("resize", checkMobile);
             window.removeEventListener("mousemove", scanInteractions);
             window.removeEventListener("mousedown", onMouseDown);
@@ -89,6 +98,9 @@ const CustomCursor = () => {
     }, [cursorX, cursorY]);
 
     if (isMobile) return null;
+
+    const cursorVariant = cursorVariantRef.current;
+    const magneticTarget = magneticTargetRef.current;
 
     return (
         <div className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none">
@@ -114,7 +126,7 @@ const CustomCursor = () => {
                     y: cursorY,
                     translateX: "-50%",
                     translateY: "-50%",
-                    width: cursorVariant === 'default' ? 8 : 0, // Hide dot completely on hover contexts
+                    width: cursorVariant === 'default' ? 8 : 0,
                     height: cursorVariant === 'default' ? 8 : 0,
                 }}
             />

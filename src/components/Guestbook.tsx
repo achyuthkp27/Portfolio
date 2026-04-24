@@ -172,15 +172,11 @@ export default function Guestbook() {
     window.addEventListener('touchstart', unlockAudio);
 
     const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation(); 
-      
-      // Calculate new angle, clamped between 0 and max angle based on items
+      // Passive listener — does not block compositor thread for smooth scrolling
       setDrumAngle((prev) => {
-          const maxAngle = Math.max(0, (entries.length - 1) * 45); // 45 degrees per item
+          const maxAngle = Math.max(0, (entries.length - 1) * 45);
           let newAngle = prev + e.deltaY * 0.15;
-          if (newAngle < -20) newAngle = -20;
-          if (newAngle > maxAngle + 20) newAngle = maxAngle + 20;
+          newAngle = Math.max(-20, Math.min(maxAngle + 20, newAngle));
           
           if (Math.round(prev / 45) !== Math.round(newAngle / 45)) {
               playTickSound();
@@ -190,7 +186,7 @@ export default function Guestbook() {
       });
     };
 
-    el.addEventListener("wheel", handleWheel, { passive: false });
+    el.addEventListener("wheel", handleWheel, { passive: true });
     return () => el.removeEventListener("wheel", handleWheel);
   }, [entries.length]);
 

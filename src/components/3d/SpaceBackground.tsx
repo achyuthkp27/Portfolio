@@ -1,7 +1,8 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
+import { useMobile } from "@/hooks/useMobile";
 
 const ParallaxStars = () => {
     const group = useRef<THREE.Group>(null);
@@ -16,8 +17,8 @@ const ParallaxStars = () => {
 
     return (
         <group ref={group}>
-            {/* Richer Starfield matching Hero Scene */}
-            <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+            {/* Reduced particle count from 3000 → 1500 for GPU savings */}
+            <Stars radius={100} depth={50} count={1500} factor={4} saturation={0} fade speed={1} />
             {/* Ambient Lights for Depth */}
             <pointLight position={[10, 10, 10]} intensity={1.5} color="#4ade80" />
             <pointLight position={[-10, 0, -10]} intensity={1} color="#3b82f6" />
@@ -26,11 +27,39 @@ const ParallaxStars = () => {
 }
 
 const SpaceBackground = () => {
+    const isMobile = useMobile();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        if (isMobile || !containerRef.current) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0 }
+        );
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, [isMobile]);
+
+    if (isMobile) {
+        return (
+            <div className="fixed inset-0 z-[-1] pointer-events-none bg-black">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black" />
+            </div>
+        );
+    }
+
     return (
-        <div className="fixed inset-0 z-[-1] pointer-events-none bg-black">
-            <Canvas style={{ pointerEvents: 'none' }}>
-                <ParallaxStars />
-            </Canvas>
+        <div ref={containerRef} className="fixed inset-0 z-[-1] pointer-events-none bg-black">
+            {isVisible && (
+                <Canvas
+                    style={{ pointerEvents: 'none' }}
+                    gl={{ antialias: false, powerPreference: "high-performance" }}
+                    dpr={[1, 1.5]}
+                >
+                    <ParallaxStars />
+                </Canvas>
+            )}
         </div>
     );
 };

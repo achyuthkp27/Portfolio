@@ -1,5 +1,6 @@
 import { motion, useInView, useScroll, useTransform, MotionValue } from "framer-motion";
 import { useRef, ReactNode } from "react";
+import { useMobile } from "@/hooks/useMobile";
 
 interface TextRevealProps {
     children: ReactNode;
@@ -9,7 +10,7 @@ interface TextRevealProps {
     duration?: number;
     as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
     shouldSplit?: boolean;
-    scrollOffset?: any; // strict typing would be ["start end", "end start"] etc but simplified for now
+    scrollOffset?: any;
 }
 
 const TextReveal = ({
@@ -24,6 +25,7 @@ const TextReveal = ({
 }: TextRevealProps) => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-5% 0px" });
+    const isMobile = useMobile();
     const { scrollYProgress } = useScroll({
         target: ref,
         offset: scrollOffset
@@ -36,10 +38,6 @@ const TextReveal = ({
                 {words.map((word, i) => {
                     const start = i / words.length;
                     const end = start + (1 / words.length);
-                    // Create a dedicated component or hook call for transforms if needed, 
-                    // but for simplicity here we map directly within the loop if possible
-                    // However, hook calls inside loops are invalid. 
-                    // Strategy: Pass the progress to a child component for each word.
                     return (
                         <ScrubWord
                             key={i}
@@ -66,7 +64,7 @@ const TextReveal = ({
                             transition={{
                                 duration: duration,
                                 delay: delay + (i * 0.05),
-                                ease: [0.16, 1, 0.3, 1] // Matching Hero.tsx ease
+                                ease: [0.16, 1, 0.3, 1]
                             }}
                             className="inline-block origin-top-left"
                         >
@@ -78,10 +76,34 @@ const TextReveal = ({
         );
     }
 
-
-
     if (type === "blur-reveal" && typeof children === "string" && shouldSplit) {
         const words = children.split(" ");
+
+        // Mobile: word-level opacity animation instead of per-character blur
+        // filter: blur() is extremely expensive on mobile GPUs
+        if (isMobile) {
+            return (
+                <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.2em] ${className}`}>
+                    {words.map((word, wordIndex) => (
+                        <motion.span
+                            key={wordIndex}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{
+                                duration: 0.5,
+                                delay: delay + wordIndex * 0.05,
+                                ease: [0.22, 1, 0.36, 1]
+                            }}
+                            className="inline-block whitespace-nowrap"
+                        >
+                            {word}
+                        </motion.span>
+                    ))}
+                </Component>
+            );
+        }
+
+        // Desktop: per-character blur-reveal (premium effect)
         return (
             <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.2em] ${className}`}>
                 {words.map((word, wordIndex) => (
@@ -109,11 +131,11 @@ const TextReveal = ({
 
     // Fallback
     const initial = type === "blur-reveal"
-        ? { opacity: 0, filter: "blur(10px)", scale: 1.2, y: 5 }
+        ? { opacity: 0, filter: isMobile ? undefined : "blur(10px)", scale: isMobile ? 1 : 1.2, y: 5 }
         : { opacity: 0, y: 40 };
 
     const animate = type === "blur-reveal"
-        ? (isInView ? { opacity: 1, filter: "blur(0px)", scale: 1, y: 0 } : {})
+        ? (isInView ? { opacity: 1, filter: isMobile ? undefined : "blur(0px)", scale: 1, y: 0 } : {})
         : (isInView ? { opacity: 1, y: 0 } : {});
 
     return (

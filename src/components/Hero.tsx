@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { useRef, lazy, Suspense } from "react";
+import { useRef, lazy, Suspense, useMemo } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import MagneticButton from "./ui/MagneticButton";
 import ExperienceTimer from "./ui/ExperienceTimer";
@@ -19,6 +19,12 @@ const Hero = () => {
   const isMobile = useMobile();
   const { lenis } = useSmoothScroll();
   const ref = useRef<HTMLElement>(null);
+
+  // Detect low-end devices (≤2 cores) to skip 3D rendering entirely
+  const isLowEnd = useMemo(() => {
+    if (typeof navigator === 'undefined') return false;
+    return (navigator.hardwareConcurrency != null && navigator.hardwareConcurrency <= 2);
+  }, []);
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");
@@ -43,13 +49,20 @@ const Hero = () => {
     <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
       {/* 3D Space Background (Adaptive) */}
       {isMobile ? (
-        <Suspense fallback={
+        isLowEnd ? (
+          // Pure CSS gradient fallback for very low-end devices — zero GPU cost
           <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
           </div>
-        }>
-          <MobileSpaceScene />
-        </Suspense>
+        ) : (
+          <Suspense fallback={
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+            </div>
+          }>
+            <MobileSpaceScene />
+          </Suspense>
+        )
       ) : (
         <SpaceScene />
       )}

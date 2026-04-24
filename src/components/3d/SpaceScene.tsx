@@ -4,7 +4,7 @@ import { getProject } from "@theatre/core";
 import { editable as e, SheetProvider } from "@theatre/r3f";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 // Initialize Theater Project
 // Initialize Theater Project
@@ -88,7 +88,7 @@ const stopDJ = () => {
     }
 };
 
-const HeroObjectFixed = () => {
+const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     const groupRef = useRef<THREE.Group>(null);
     const shockwaveRef = useRef<THREE.Mesh>(null);
     const shockwaveRef2 = useRef<THREE.Mesh>(null); 
@@ -102,7 +102,7 @@ const HeroObjectFixed = () => {
 
         const time = state.clock.elapsedTime;
 
-        if (hovered) {
+        if (hovered && animEnabled) {
             // --- 0. Disco Light Colors ---
             // Cycles through vibrant HSL spectrum to mimic a disco club
             const hue = (time * 0.5) % 1; 
@@ -165,10 +165,20 @@ const HeroObjectFixed = () => {
     });
 
     return (
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+        <Float speed={animEnabled ? 2 : 0} rotationIntensity={animEnabled ? 0.5 : 0} floatIntensity={animEnabled ? 0.5 : 0}>
             <group
-                onPointerOver={() => { document.body.style.cursor = 'pointer'; setHovered(true); startDJ(); }}
-                onPointerOut={() => { document.body.style.cursor = 'auto'; setHovered(false); stopDJ(); }}
+                onPointerOver={() => { 
+                    if (window.innerWidth <= 1024 || !animEnabled) return;
+                    document.body.style.cursor = 'pointer'; 
+                    setHovered(true); 
+                    startDJ(); 
+                }}
+                onPointerOut={() => { 
+                    if (window.innerWidth <= 1024 || !animEnabled) return;
+                    document.body.style.cursor = 'auto'; 
+                    setHovered(false); 
+                    stopDJ(); 
+                }}
             >
                 {/* Main Object */}
                 <group ref={groupRef}>
@@ -236,12 +246,12 @@ const HeroObjectFixed = () => {
     );
 }
 
-const Scene = () => {
+const Scene = ({ animEnabled }: { animEnabled: boolean }) => {
     return (
         <>
             {/* Lights and Stars moved to Global SpaceBackground for continuity */}
             {/* <Stars ... /> */}
-            <HeroObjectFixed />
+            <HeroObjectFixed animEnabled={animEnabled} />
 
             <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
         </>
@@ -249,7 +259,6 @@ const Scene = () => {
 };
 
 const SpaceScene = () => {
-    // Enable studio only in development
     useEffect(() => {
         if (import.meta.env.DEV) {
             import("@theatre/studio").then((module) => {
@@ -263,30 +272,59 @@ const SpaceScene = () => {
     }, []);
 
     const [muted, setMuted] = useState(isDJMuted);
+    const [animEnabled, setAnimEnabled] = useState(true);
+
+    useEffect(() => {
+        demoSheet.project.ready.then(() => {
+            if (animEnabled) {
+                demoSheet.sequence.play({ iterationCount: Infinity, range: [0, 10] });
+            } else {
+                demoSheet.sequence.pause();
+            }
+        });
+    }, [animEnabled]);
 
     return (
         <div className="absolute inset-0 z-0">
             <Canvas gl={{ preserveDrawingBuffer: true, alpha: true }}>
                 <SheetProvider sheet={demoSheet}>
-                    <Scene />
+                    <Scene animEnabled={animEnabled} />
                 </SheetProvider>
             </Canvas>
             
-            <button
-                onClick={() => {
-                    const newMuted = !muted;
-                    setMuted(newMuted);
-                    isDJMuted = newMuted;
-                }}
-                className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-50 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 backdrop-blur-md transition-all group"
-                title={muted ? "Unmute DJ" : "Mute DJ"}
-            >
-                {muted ? (
-                    <VolumeX className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                ) : (
-                    <Volume2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                )}
-            </button>
+            <div className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-50 flex gap-4">
+                <button
+                    onClick={() => {
+                        const newAnim = !animEnabled;
+                        setAnimEnabled(newAnim);
+                        if (!newAnim) stopDJ();
+                    }}
+                    className="p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 backdrop-blur-md transition-all group"
+                    title={animEnabled ? "Pause Animation" : "Play Animation"}
+                >
+                    {animEnabled ? (
+                        <Pause className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    ) : (
+                        <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    )}
+                </button>
+                <button
+                    onClick={() => {
+                        const newMuted = !muted;
+                        setMuted(newMuted);
+                        isDJMuted = newMuted;
+                        if (newMuted) stopDJ();
+                    }}
+                    className="p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 backdrop-blur-md transition-all group"
+                    title={muted ? "Unmute DJ" : "Mute DJ"}
+                >
+                    {muted ? (
+                        <VolumeX className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    ) : (
+                        <Volume2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    )}
+                </button>
+            </div>
         </div>
     );
 };

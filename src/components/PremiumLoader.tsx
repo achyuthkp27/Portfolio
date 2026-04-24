@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/context/LoadingContext";
 import { useProgress } from "@react-three/drei";
+import { useMobile } from "@/hooks/useMobile";
 
 const words = ["Developer", "Designer", "Creator", "Engineer", "Innovator", "Problem Solver"];
 
@@ -9,6 +10,7 @@ const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
     const [index, setIndex] = useState(0);
     const { progress } = useProgress();
+    const isMobile = useMobile();
 
     // Word Flip Animation Sequence
     useEffect(() => {
@@ -48,7 +50,7 @@ const PremiumLoader = () => {
                 }
                 return prev;
             });
-        }, 30);
+        }, 50); // Reduced frequency to 50ms to free up CPU on low-end devices
         return () => clearInterval(interval);
     }, [progress, index]);
 
@@ -81,9 +83,12 @@ const PremiumLoader = () => {
                         <AnimatePresence mode="wait">
                             <motion.h1
                                 key={index}
-                                initial={index === 0 ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(10px)" }}
-                                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                                exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+                                initial={index === 0 
+                                    ? { opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" } 
+                                    : { opacity: 0, y: 20, filter: isMobile ? undefined : "blur(10px)" }
+                                }
+                                animate={{ opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" }}
+                                exit={{ opacity: 0, y: -20, filter: isMobile ? undefined : "blur(10px)" }}
                                 transition={{ duration: 0.2 }}
                                 className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center"
                             >

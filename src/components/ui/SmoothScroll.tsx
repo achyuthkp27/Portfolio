@@ -29,17 +29,18 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
             touchMultiplier: 2,
         });
 
-        // Sync with Framer Motion or other animation loops if necessary
-        // but basics:
+        let rafId: number;
+
         function raf(time: number) {
             lenisInstance.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
         }
 
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
         setLenis(lenisInstance);
 
         return () => {
+            cancelAnimationFrame(rafId);
             lenisInstance.destroy();
             setLenis(null);
         };

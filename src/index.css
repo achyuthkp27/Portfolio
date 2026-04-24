@@ -613,3 +613,25 @@
 [data-theme='synthwave'] .bg-emerald-500\/20 { background-color: rgba(0, 255, 255, 0.2) !important; }
 [data-theme='synthwave'] .bg-emerald-500\/10 { background-color: rgba(0, 255, 255, 0.1) !important; }
 [data-theme='synthwave'] .bg-zinc-950 { background-color: #1a0033 !important; }
+
+/* ── Mobile Performance Overrides ── */
+@media (max-width: 768px) {
+  /* Reduce expensive backdrop-blur on mobile GPUs */
+  .backdrop-blur-xl { backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; }
+  .backdrop-blur-md { backdrop-filter: blur(4px) !important; -webkit-backdrop-filter: blur(4px) !important; }
+  .backdrop-blur-2xl { backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; }
+  .glass, .glass-card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+  /* Disable noise overlay on mobile — SVG turbulence filter is extremely GPU-intensive */
+  .noise::after { display: none !important; }
+}
+
+/* ── Reduced Motion Support ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
