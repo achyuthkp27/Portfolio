@@ -121,6 +121,7 @@
     min-height: 100%;
     position: relative;
     touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Lenis Recommended CSS */
@@ -264,6 +265,16 @@
       linear-gradient(to right, hsl(var(--border) / 0.1) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(var(--border) / 0.1) 1px, transparent 1px);
     mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  }
+
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+  #main-content > section:first-child {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
   }
 
   .animate-float {
@@ -624,6 +635,24 @@
 
   /* Disable noise overlay on mobile — SVG turbulence filter is extremely GPU-intensive */
   .noise::after { display: none !important; }
+
+  .grid-pattern { display: none !important; }
+
+  .text-iridescent {
+    animation: none !important;
+    background-position: 50% 50%;
+  }
+
+  .animate-scan-beam,
+  .animate-scan-beam-horizontal,
+  .animate-scan-beam-vertical,
+  .animate-pulse-glow,
+  .animate-gradient,
+  .animate-gradient-y,
+  .animate-shimmer-iridescent,
+  .animate-watermark-float {
+    animation: none !important;
+  }
 }
 
 /* ── Reduced Motion Support ── */

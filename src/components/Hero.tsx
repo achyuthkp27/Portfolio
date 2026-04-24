@@ -13,7 +13,6 @@ import DecryptText from "@/components/ui/DecryptText";
 import { useLoading } from "@/context/LoadingContext";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
-const MobileSpaceScene = lazy(() => import("@/components/3d/MobileSpaceScene"));
 
 const Hero = () => {
   const { isLoading } = useLoading();
@@ -23,7 +22,6 @@ const Hero = () => {
   const ref = useRef<HTMLElement>(null);
 
   const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
-  const shouldRenderMobileScene = isLowEnd === false && isMobile;
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");
@@ -54,14 +52,6 @@ const Hero = () => {
           </div>
         }>
           <SpaceScene />
-        </Suspense>
-      ) : shouldRenderMobileScene ? (
-        <Suspense fallback={
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
-          </div>
-        }>
-          <MobileSpaceScene />
         </Suspense>
       ) : (
         <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
@@ -231,24 +221,24 @@ const Hero = () => {
               </motion.div>
               {/* Decorative corners — smoother spring */}
               <motion.div
-                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/40 pointer-events-none"
+                className="absolute top-0 left-0 w-full h-full origin-top-left scale-x-[0.05] scale-y-[0.05] border-t border-l border-white/40 pointer-events-none"
               />
               <motion.div
-                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/40 pointer-events-none"
+                className="absolute top-0 right-0 w-full h-full origin-top-right scale-x-[0.05] scale-y-[0.05] border-t border-r border-white/40 pointer-events-none"
               />
               <motion.div
-                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/40 pointer-events-none"
+                className="absolute bottom-0 left-0 w-full h-full origin-bottom-left scale-x-[0.05] scale-y-[0.05] border-b border-l border-white/40 pointer-events-none"
               />
               <motion.div
-                variants={{ hover: { width: "100%", height: "100%", borderColor: "rgba(255,255,255,0.8)" } }}
+                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/40 pointer-events-none"
+                className="absolute bottom-0 right-0 w-full h-full origin-bottom-right scale-x-[0.05] scale-y-[0.05] border-b border-r border-white/40 pointer-events-none"
               />
             </motion.div>
           </motion.div>

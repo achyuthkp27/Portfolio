@@ -21,14 +21,12 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           // Split vendor code for better caching
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          'react-vendor': ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-router-dom'],
           'ui-vendor': ['framer-motion', 'lucide-react'],
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
           'radix-vendor': Object.keys(dependencies).filter(
             (key) => key.startsWith('@radix-ui/')
           ),
-          'theatre-vendor': ['@theatre/core', '@theatre/r3f'],
         },
       },
     },

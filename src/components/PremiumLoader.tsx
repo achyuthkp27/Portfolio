@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/context/LoadingContext";
-import { useProgress } from "@react-three/drei";
 import { useMobile } from "@/hooks/useMobile";
 
 const words = ["Developer", "Designer", "Creator", "Engineer", "Innovator", "Problem Solver"];
@@ -9,7 +8,6 @@ const words = ["Developer", "Designer", "Creator", "Engineer", "Innovator", "Pro
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
     const [index, setIndex] = useState(0);
-    const { progress } = useProgress();
     const isMobile = useMobile();
 
     // Word Flip Animation Sequence
@@ -24,25 +22,23 @@ const PremiumLoader = () => {
         }
     }, [index]);
 
-    // Wait for BOTH words to finish AND 3D assets to load
+    // Wait for the word sequence to finish. 3D modules are lazy-loaded after first paint.
     useEffect(() => {
-        // Ensure the full word sequence plays, and 3D assets are loaded (or if progress sits at 0 because it loaded instantly)
-        if (index === words.length - 1 && (progress === 100 || progress === 0)) {
+        if (index === words.length - 1) {
             const timeout = setTimeout(() => {
                 setIsLoading(false);
             }, 800);
             return () => clearTimeout(timeout);
         }
-    }, [index, progress, setIsLoading]);
+    }, [index, setIsLoading]);
 
     // Graphically smooth the terminal progress bar so it rapidly ticks up instead of jumping
     const [displayProgress, setDisplayProgress] = useState(0);
     useEffect(() => {
         const interval = setInterval(() => {
             setDisplayProgress((prev) => {
-                const isDone = index === words.length - 1 && (progress === 100 || progress === 0);
-                // The target is either actual R3F progress, or a simulated minimum so the bar feels alive
-                const target = isDone ? 100 : Math.max(progress, Math.min(96, (index / words.length) * 100 + 15));
+                const isDone = index === words.length - 1;
+                const target = isDone ? 100 : Math.min(96, (index / words.length) * 100 + 15);
                 
                 if (prev < target) {
                     const step = Math.max(1, (target - prev) * 0.15);
@@ -52,7 +48,7 @@ const PremiumLoader = () => {
             });
         }, 50); // Reduced frequency to 50ms to free up CPU on low-end devices
         return () => clearInterval(interval);
-    }, [progress, index]);
+    }, [index]);
 
     // Safety fallback: Force unlock after 6 seconds in case 3D hangs
     useEffect(() => {

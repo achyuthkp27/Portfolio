@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
+import { useMobile } from "@/hooks/useMobile";
 
 const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () => void }) => (
     <motion.div
@@ -14,7 +15,7 @@ const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () 
 );
 
 const CustomCursor = () => {
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useMobile();
     const isLowEnd = useLowEndDevice();
     const cursorVariantRef = useRef("default");
     const magneticTargetRef = useRef<DOMRect | null>(null);
@@ -31,9 +32,16 @@ const CustomCursor = () => {
     const cursorYSpring = useSpring(cursorY, springConfig);
 
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
+        const canUseCustomCursor =
+            !isMobile &&
+            isLowEnd === false &&
+            window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+            !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (!canUseCustomCursor) {
+            document.documentElement.classList.remove("custom-cursor-enabled");
+            return;
+        }
 
         document.documentElement.classList.add("custom-cursor-enabled");
 
@@ -88,19 +96,18 @@ const CustomCursor = () => {
         };
         const onMouseUp = () => setIsClicked(false);
 
-        window.addEventListener("mousemove", scanInteractions);
-        window.addEventListener("mousedown", onMouseDown);
-        window.addEventListener("mouseup", onMouseUp);
+        window.addEventListener("mousemove", scanInteractions, { passive: true });
+        window.addEventListener("mousedown", onMouseDown, { passive: true });
+        window.addEventListener("mouseup", onMouseUp, { passive: true });
 
         return () => {
             cancelAnimationFrame(rafIdRef.current);
             document.documentElement.classList.remove("custom-cursor-enabled");
-            window.removeEventListener("resize", checkMobile);
             window.removeEventListener("mousemove", scanInteractions);
             window.removeEventListener("mousedown", onMouseDown);
             window.removeEventListener("mouseup", onMouseUp);
         };
-    }, [cursorX, cursorY]);
+    }, [cursorX, cursorY, isLowEnd, isMobile]);
 
     if (isMobile || isLowEnd !== false) return null;
 

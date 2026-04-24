@@ -17,8 +17,14 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
     const isLowEnd = useLowEndDevice();
 
     useEffect(() => {
-        // Initialize Lenis only on capable devices. Low-end or mobile devices should keep native scrolling.
-        if (isMobile || isLowEnd !== false) return;
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+        // Initialize Lenis only on capable pointer devices. Mobile and low-end devices keep native scrolling.
+        if (isMobile || isLowEnd !== false || reduceMotion || !finePointer) {
+            setLenis(null);
+            return;
+        }
 
         const lenisInstance = new Lenis({
             duration: 1.2,
@@ -45,7 +51,7 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
             lenisInstance.destroy();
             setLenis(null);
         };
-    }, [isMobile]);
+    }, [isMobile, isLowEnd]);
 
     return (
         <SmoothScrollContext.Provider value={{ lenis }}>

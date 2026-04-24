@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Terminal, X } from "lucide-react";
-import { usePostHog } from 'posthog-js/react';
+import { useAnalytics } from "@/lib/analytics";
 
 export default function TerminalOverlay() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function TerminalOverlay() {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const posthog = usePostHog();
+  const posthog = useAnalytics();
 
   // Key sequence detector for ">_"
   useEffect(() => {

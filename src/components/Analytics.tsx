@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePostHog } from 'posthog-js/react';
+import { useAnalytics } from '@/lib/analytics';
 
 const Analytics = () => {
     const location = useLocation();
-    const posthog = usePostHog();
+    const posthog = useAnalytics();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && posthog) {

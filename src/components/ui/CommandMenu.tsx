@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
 import { Home, Briefcase, Mail, FileText, Code, User, Monitor, Terminal, Palette } from "lucide-react";
-import { usePostHog } from "posthog-js/react";
+import { useAnalytics } from "@/lib/analytics";
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const posthog = usePostHog();
+  const posthog = useAnalytics();
 
   // Toggle the menu when ⌘K is pressed
   useEffect(() => {
