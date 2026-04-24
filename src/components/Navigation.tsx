@@ -29,31 +29,39 @@ const Navigation = () => {
       return;
     }
 
-    const updateActiveSection = () => {
-      const sections = document.querySelectorAll("section[id]");
-      const scrollPos = window.scrollY + window.innerHeight / 3;
+    const sections = Array.from(document.querySelectorAll("section[id]")) as HTMLElement[];
+    if (!sections.length) return;
 
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-        setActiveSection("contact");
-        return;
-      }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let nextActiveSection = "";
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            nextActiveSection = entry.target.id;
+          }
+        });
 
-      let currentSection = "";
-      sections.forEach((section) => {
-        const el = section as HTMLElement;
-        if (el.offsetTop <= scrollPos) {
-          currentSection = el.id;
+        if (nextActiveSection) {
+          setActiveSection(nextActiveSection);
         }
-      });
+      },
+      { rootMargin: "-35% 0px -55% 0px", threshold: 0.25 }
+    );
 
-      setActiveSection(currentSection);
+    sections.forEach((section) => observer.observe(section));
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+      observer.disconnect();
     };
-
-    updateActiveSection();
-
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    return () => window.removeEventListener("scroll", updateActiveSection);
   }, [isHomePage]);
+
+  const scrollToTarget = (element: HTMLElement) => {
+    if (lenis) {
+      lenis.scrollTo(element, { duration: 1.2, offset: 0 });
+    } else {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const navItems = [
     { label: "About", href: "#about" },
@@ -68,7 +76,7 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      scrollToTarget(element);
       setIsMobileMenuOpen(false);
     }
   };
@@ -102,7 +110,11 @@ const Navigation = () => {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              if (lenis) {
+                lenis.scrollTo(0, { duration: 1.2 });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
             }}
             whileHover={{ scale: 1.05 }}
             className="font-display text-lg font-bold tracking-tight text-white"

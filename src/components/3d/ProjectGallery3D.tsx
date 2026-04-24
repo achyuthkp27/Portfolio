@@ -4,6 +4,7 @@ import { ScrollControls, Scroll, Image as DreiImage, Text, useScroll } from '@re
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
 import { Link } from 'react-router-dom';
+import { useLowEndDevice } from '@/hooks/useLowEndDevice';
 
 function CarouselItem({ project, index, count }: { project: Project, index: number, count: number }) {
   const ref = useRef<any>(null);
@@ -103,6 +104,18 @@ function WebGLGallery({ projects }: { projects: Project[] }) {
 }
 
 export default function ProjectGallery3D({ projects }: { projects: Project[] }) {
+  const isLowEnd = useLowEndDevice();
+
+  if (isLowEnd !== false) {
+    return (
+      <div className="w-full h-[80vh] bg-black relative border-b border-t border-white/5 font-mono flex items-center justify-center text-center px-6">
+        <div className="max-w-2xl text-sm text-white/70 leading-relaxed">
+          The 3D gallery is disabled on low-end devices to preserve smooth scrolling and keep interactions responsive.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-[80vh] bg-black relative border-b border-t border-white/5 font-mono cursor-grab active:cursor-grabbing">
         {/* Helper UI */}

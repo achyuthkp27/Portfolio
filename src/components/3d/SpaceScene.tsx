@@ -286,7 +286,7 @@ const SpaceScene = () => {
 
     return (
         <div className="absolute inset-0 z-0">
-            <Canvas gl={{ preserveDrawingBuffer: true, alpha: true }}>
+            <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]}>
                 <SheetProvider sheet={demoSheet}>
                     <Scene animEnabled={animEnabled} />
                 </SheetProvider>

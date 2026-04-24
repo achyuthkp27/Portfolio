@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
 const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () => void }) => (
     <motion.div
@@ -14,15 +15,16 @@ const Shockwave = ({ x, y, onComplete }: { x: number; y: number; onComplete: () 
 
 const CustomCursor = () => {
     const [isMobile, setIsMobile] = useState(false);
+    const isLowEnd = useLowEndDevice();
     const cursorVariantRef = useRef("default");
     const magneticTargetRef = useRef<DOMRect | null>(null);
     const [renderKey, setRenderKey] = useState(0);
     const [isClicked, setIsClicked] = useState(false);
     const [shockwaves, setShockwaves] = useState<{ id: number; x: number; y: number }[]>([]);
-    const rafIdRef = useRef<number>(0);
 
     const cursorX = useMotionValue(-100);
     const cursorY = useMotionValue(-100);
+    const rafIdRef = useRef<number>(0);
 
     const springConfig = { damping: 25, stiffness: 700 };
     const cursorXSpring = useSpring(cursorX, springConfig);
@@ -33,6 +35,8 @@ const CustomCursor = () => {
         checkMobile();
         window.addEventListener("resize", checkMobile);
 
+        document.documentElement.classList.add("custom-cursor-enabled");
+
         const scanInteractions = (e: MouseEvent) => {
             cursorX.set(e.clientX);
             cursorY.set(e.clientY);
@@ -40,7 +44,7 @@ const CustomCursor = () => {
             cancelAnimationFrame(rafIdRef.current);
             rafIdRef.current = requestAnimationFrame(() => {
                 const target = e.target as HTMLElement;
-                const cursorElem = target.closest('[data-cursor]');
+                const cursorElem = target.closest('[data-cursor]') as HTMLElement | null;
                 let newVariant = "default";
                 let newMagneticTarget: DOMRect | null = null;
 
@@ -70,7 +74,7 @@ const CustomCursor = () => {
                 magneticTargetRef.current = newMagneticTarget;
 
                 if (variantChanged) {
-                    setRenderKey(n => n + 1);
+                    setRenderKey((n) => n + 1);
                 }
             });
         };
@@ -90,6 +94,7 @@ const CustomCursor = () => {
 
         return () => {
             cancelAnimationFrame(rafIdRef.current);
+            document.documentElement.classList.remove("custom-cursor-enabled");
             window.removeEventListener("resize", checkMobile);
             window.removeEventListener("mousemove", scanInteractions);
             window.removeEventListener("mousedown", onMouseDown);
@@ -97,7 +102,7 @@ const CustomCursor = () => {
         };
     }, [cursorX, cursorY]);
 
-    if (isMobile) return null;
+    if (isMobile || isLowEnd !== false) return null;
 
     const cursorVariant = cursorVariantRef.current;
     const magneticTarget = magneticTargetRef.current;

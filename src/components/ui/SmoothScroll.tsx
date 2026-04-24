@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState, createContext, useContext } from "react";
 import Lenis from "lenis";
 import { useMobile } from "@/hooks/useMobile";
+import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
 type SmoothScrollContextType = {
     lenis: Lenis | null;
@@ -13,11 +14,11 @@ export const useSmoothScroll = () => useContext(SmoothScrollContext);
 export const SmoothScroll = ({ children }: { children: ReactNode }) => {
     const [lenis, setLenis] = useState<Lenis | null>(null);
     const isMobile = useMobile();
+    const isLowEnd = useLowEndDevice();
 
     useEffect(() => {
-        // Initialize Lenis only on desktop/larger screens for performance
-        // (Or enable everywhere if desired, but disabling on mobile is often safer for native feel)
-        if (isMobile) return;
+        // Initialize Lenis only on capable devices. Low-end or mobile devices should keep native scrolling.
+        if (isMobile || isLowEnd !== false) return;
 
         const lenisInstance = new Lenis({
             duration: 1.2,

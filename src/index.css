@@ -146,16 +146,16 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    body {
+    html.custom-cursor-enabled body {
       cursor: none;
     }
 
-    a,
-    button,
-    [role="button"],
-    input,
-    textarea,
-    select {
+    html.custom-cursor-enabled body a,
+    html.custom-cursor-enabled body button,
+    html.custom-cursor-enabled body [role="button"],
+    html.custom-cursor-enabled body input,
+    html.custom-cursor-enabled body textarea,
+    html.custom-cursor-enabled body select {
       cursor: none;
     }
   }
