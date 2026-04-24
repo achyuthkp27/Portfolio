@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ScrollControls, Scroll, Image as DreiImage, Text, useScroll } from '@react-three/drei';
 import * as THREE from 'three';
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useLowEndDevice } from '@/hooks/useLowEndDevice';
 
 function CarouselItem({ project, index, count }: { project: Project, index: number, count: number }) {
-  const ref = useRef<any>(null);
+  const ref = useRef<THREE.Group>(null);
   const scroll = useScroll();
   const [hovered, hover] = useState(false);
   

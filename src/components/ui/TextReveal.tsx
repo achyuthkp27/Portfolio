@@ -10,7 +10,7 @@ interface TextRevealProps {
     duration?: number;
     as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
     shouldSplit?: boolean;
-    scrollOffset?: any;
+    scrollOffset?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const TextReveal = ({

@@ -89,7 +89,7 @@ const INITIAL_MESSAGES: GuestbookEntry[] = [
 let audioCtx: AudioContext | null = null;
 const playTickSound = () => {
   try {
-    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!Ctx) return;
     if (!audioCtx) {
       audioCtx = new Ctx();
@@ -158,7 +158,7 @@ export default function Guestbook() {
     // Listen passively but we need to unlock audioContext
     const unlockAudio = () => {
         if (!audioCtx) {
-            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+            const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
             if (Ctx) audioCtx = new Ctx();
         }
         if (audioCtx?.state === 'suspended') {
@@ -340,7 +340,7 @@ export default function Guestbook() {
                 
                 // Pre-initialize audio context on click
                 if (!audioCtx) {
-                    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+                    const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
                     if (Ctx) audioCtx = new Ctx();
                 }
                 if (audioCtx?.state === 'suspended') audioCtx.resume();

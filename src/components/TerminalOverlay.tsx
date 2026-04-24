@@ -42,7 +42,7 @@ export default function TerminalOverlay() {
     
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [posthog]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {

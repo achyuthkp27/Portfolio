@@ -8,7 +8,7 @@ import SEO from "@/components/SEO";
 
 const BlogPost = () => {
     const { slug } = useParams();
-    const [post, setPost] = useState<any>(null);
+    const [post, setPost] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const { scrollY } = useScroll();
     const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 

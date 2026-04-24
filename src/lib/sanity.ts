@@ -12,6 +12,7 @@ export const client = createClient({
 
 // Intercept fetch if not configured to prevent 403 console network logs
 const originalFetch = client.fetch.bind(client);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 client.fetch = async (query: string, params?: any, options?: any) => {
     if (!isConfigured) {
         return Promise.reject(new Error("Sanity not configured. Gracefully falling back to local files."));
@@ -21,12 +22,19 @@ client.fetch = async (query: string, params?: any, options?: any) => {
 
 const builder = imageUrlBuilder(client);
 
-export function urlFor(source: any) {
-    return builder.image(source);
+export interface SanityPost {
+    title: string;
+    publishedAt: string;
+    slug: { current: string };
+    mainImage?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    body?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    excerpt?: string;
+    name?: string;
+    authorImage?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 // Fallback data for when Sanity is not connected
-export const dummyPosts = [
+export const dummyPosts: SanityPost[] = [
     {
         slug: { current: "future-of-microservices" },
         title: "The Future of Microservices",
@@ -44,3 +52,8 @@ export const dummyPosts = [
         body: []
     }
 ];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function urlFor(source: any) {
+    return builder.image(source);
+}

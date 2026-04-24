@@ -1,4 +1,4 @@
-import { Server, Database, MessageSquare, HardDrive, LayoutDashboard } from "lucide-react";
+import { Server, Database, MessageSquare, HardDrive, LayoutDashboard, type LucideIcon } from "lucide-react";
 import bankingImg from "@/assets/images/projects/banking-platform.jpg";
 import loggingImg from "@/assets/images/projects/logging-system.jpg";
 import notificationImg from "@/assets/images/projects/notification-engine.jpg";
@@ -13,7 +13,7 @@ export interface Project {
     solution: string;
     outcome: string;
     tags: string[];
-    icon: any;
+    icon: LucideIcon;
     color: string;
     gradient: string;
     image?: string; // New field for cover image

@@ -23,10 +23,9 @@ const TextScramble = ({
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        let timeout: NodeJS.Timeout;
 
         // Start after delay
-        timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
             setIsScrambling(true);
             let iteration = 0;
 

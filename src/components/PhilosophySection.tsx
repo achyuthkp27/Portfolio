@@ -5,11 +5,11 @@ import { Server, Shield, Zap, Sparkles, Terminal, Activity } from "lucide-react"
 
 // Interactive Bento Card with Flashlight Effect
 const BentoCard = ({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
-    let mouseX = useMotionValue(0);
-    let mouseY = useMotionValue(0);
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
     function onMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-        let { left, top } = currentTarget.getBoundingClientRect();
+        const { left, top } = currentTarget.getBoundingClientRect();
         mouseX.set(clientX - left);
         mouseY.set(clientY - top);
     }
