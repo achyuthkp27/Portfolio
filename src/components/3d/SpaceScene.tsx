@@ -265,14 +265,14 @@ const SpaceScene = () => {
                 module.default.initialize();
                 // Check if project is ready before playing
                 demoSheet.project.ready.then(() => {
-                    demoSheet.sequence.play({ iterationCount: Infinity, range: [0, 10] });
+                    // Animation controlled by animEnabled state
                 });
             });
         }
     }, []);
 
     const [muted, setMuted] = useState(isDJMuted);
-    const [animEnabled, setAnimEnabled] = useState(true);
+    const [animEnabled, setAnimEnabled] = useState(false);
 
     useEffect(() => {
         demoSheet.project.ready.then(() => {

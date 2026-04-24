@@ -282,12 +282,29 @@ const AboutMeSection = () => {
     // Mouse tracking for flashlight / magnetic effect
     const mouseX = useSpring(0, { stiffness: 500, damping: 100 });
     const mouseY = useSpring(0, { stiffness: 500, damping: 100 });
+    const rectRef = useRef<DOMRect | null>(null);
 
-    const handleMouseMove = ({ currentTarget, clientX, clientY }: React.MouseEvent) => {
-        const { left, top } = currentTarget.getBoundingClientRect();
+    const handleMouseMove = ({ clientX, clientY }: React.MouseEvent) => {
+        if (!showcaseRef.current) return;
+        
+        if (!rectRef.current) {
+            rectRef.current = showcaseRef.current.getBoundingClientRect();
+        }
+        
+        const { left, top } = rectRef.current;
         mouseX.set(clientX - left);
         mouseY.set(clientY - top);
     };
+
+    useEffect(() => {
+        const resetRect = () => { rectRef.current = null; };
+        window.addEventListener("resize", resetRect);
+        window.addEventListener("scroll", resetRect, { passive: true });
+        return () => {
+            window.removeEventListener("resize", resetRect);
+            window.removeEventListener("scroll", resetRect);
+        };
+    }, []);
 
     const handlePersonaClick = (id: PersonaId) => {
         setActivePersona(id);

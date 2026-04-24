@@ -105,6 +105,20 @@ function WebGLGallery({ projects }: { projects: Project[] }) {
 
 export default function ProjectGallery3D({ projects }: { projects: Project[] }) {
   const isLowEnd = useLowEndDevice();
+  const [inView, setInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isLowEnd !== false) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: '200px' }
+    );
+    
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [isLowEnd]);
 
   if (isLowEnd !== false) {
     return (
@@ -117,7 +131,7 @@ export default function ProjectGallery3D({ projects }: { projects: Project[] }) 
   }
 
   return (
-    <div className="w-full h-[80vh] bg-black relative border-b border-t border-white/5 font-mono cursor-grab active:cursor-grabbing">
+    <div ref={containerRef} className="w-full h-[80vh] bg-black relative border-b border-t border-white/5 font-mono cursor-grab active:cursor-grabbing">
         {/* Helper UI */}
         <div className="absolute top-4 left-6 z-10 opacity-50 text-[10px] tracking-widest pointer-events-none">
             [ 3D_DATA_GALLERY_ACTIVE ]
@@ -126,11 +140,21 @@ export default function ProjectGallery3D({ projects }: { projects: Project[] }) 
             DRAG_TO_ROTATE // CLICK_TO_DEPLOY
         </div>
 
-        <Canvas camera={{ position: [0, 0, 8], fov: 35 }}>
-            <fog attach="fog" args={['#000', 8, 20]} />
-            <ambientLight intensity={0.5} />
-            <WebGLGallery projects={projects} />
-        </Canvas>
+        {inView && (
+          <Canvas 
+            camera={{ position: [0, 0, 8], fov: 35 }}
+            gl={{ 
+              antialias: false, 
+              powerPreference: "high-performance",
+              preserveDrawingBuffer: false 
+            }}
+            dpr={[1, 1.5]}
+          >
+              <fog attach="fog" args={['#000', 8, 20]} />
+              <ambientLight intensity={0.5} />
+              <WebGLGallery projects={projects} />
+          </Canvas>
+        )}
     </div>
   );
 }
