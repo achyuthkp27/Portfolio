@@ -30,20 +30,20 @@ const SystemStatus = () => {
 
 const ContentBlock = () => (
     <>
-        <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase">
+        <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
             INITIALIZING...
         </span>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-white/50 rounded-full animate-pulse"></span>
             SYSTEM_SECURE
         </span>
-        <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase">
+        <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
             AKP | ACHYUTH_CREATIVE
         </span>
-        <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase">
+        <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
              /// 001
         </span>
-        <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 uppercase">
+        <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
             EST. 2024
         </span>
     </>

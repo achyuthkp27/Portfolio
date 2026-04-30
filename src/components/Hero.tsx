@@ -76,7 +76,7 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.45, delay: 0.1 }}
               className="mb-8 pointer-events-auto"
             >
               <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-sm rounded-full">
@@ -94,7 +94,7 @@ const Hero = () => {
               <motion.h2
                 initial={{ opacity: 0, x: -20 }}
                 animate={!isLoading ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.8, delay: 0.6 }}
+                transition={{ duration: 0.45, delay: 0.16 }}
                 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tight"
               >
                 ACHYUTH KP
@@ -109,7 +109,7 @@ const Hero = () => {
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
-                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                 >
                   CREATIVE
@@ -119,7 +119,7 @@ const Hero = () => {
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
-                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.28 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                   style={{ animationDelay: "0.5s" }}
                 >
@@ -131,7 +131,7 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.9 }}
+              transition={{ duration: 0.4, delay: 0.38 }}
               className="flex flex-wrap gap-3 mb-8 pointer-events-auto"
             >
               {["Software Developer", "React Js", "Spring Boot", "Microservices", "AWS"].map((tag, i) => (
@@ -149,7 +149,7 @@ const Hero = () => {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 1.0 }}
+              transition={{ duration: 0.45, delay: 0.46 }}
               className="text-sm md:text-lg font-mono text-gray-400 max-w-lg mb-12 leading-relaxed tracking-wide uppercase pointer-events-auto"
             >
               Engineering scalable systems with precision, performance, and a product mindset.
@@ -158,7 +158,7 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={!isLoading ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.8, delay: 1.1 }}
+              transition={{ duration: 0.45, delay: 0.54 }}
               className="flex flex-wrap items-center gap-6 pointer-events-auto"
             >
               <MagneticButton>
@@ -204,7 +204,7 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={!isLoading ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1, delay: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.32 }}
             className="flex justify-center pointer-events-auto mt-12 lg:mt-0"
           >
             <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
@@ -249,7 +249,7 @@ const Hero = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={!isLoading ? { opacity: 1 } : {}}
-        transition={{ delay: 2.2, duration: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
         className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[1px] bg-gradient-to-b from-transparent to-white/20"
       />
     </section>

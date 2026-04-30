@@ -64,30 +64,48 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    .loader-text {
-      font-size: 2.25rem;
-      /* text-4xl */
-      font-weight: 700;
-      /* font-bold */
-      letter-spacing: -0.025em;
-      /* tracking-tight */
-      background: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 70%));
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      opacity: 1;
+    .shell-mark {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background:
+        radial-gradient(circle at center, rgba(16, 185, 129, 0.28), transparent 58%),
+        rgba(255, 255, 255, 0.02);
+      box-shadow:
+        0 0 30px rgba(16, 185, 129, 0.12),
+        inset 0 0 24px rgba(255, 255, 255, 0.03);
+      animation: shell-pulse 1.2s ease-in-out infinite alternate;
     }
 
-    @media (min-width: 768px) {
-      .loader-text {
-        font-size: 3.75rem;
-        /* text-6xl */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @keyframes shell-pulse {
+      from {
+        transform: scale(0.96);
+        opacity: 0.7;
+      }
+
+      to {
+        transform: scale(1.04);
+        opacity: 1;
       }
     }
   </style>
   <div id="root">
     <div id="app-shell-loader">
-      <h1 class="loader-text">Developer</h1>
+      <div class="shell-mark" aria-hidden="true"></div>
+      <span class="sr-only">Loading portfolio</span>
     </div>
   </div>
   <script type="module" src="/src/main.tsx"></script>

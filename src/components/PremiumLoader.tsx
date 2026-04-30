@@ -2,17 +2,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
+import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
-const words = ["Developer", "Designer", "Engineer", "Creator"];
+const words = ["Developer"];
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
     const [index, setIndex] = useState(0);
     const isMobile = useMobile();
+    const isLowEnd = useLowEndDevice();
+    const [shouldSkipLoader, setShouldSkipLoader] = useState(false);
+
+    useEffect(() => {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const narrowViewport = window.innerWidth < 768;
+        const lowEndDevice = isLowEnd === true;
+
+        if (narrowViewport || reduceMotion || lowEndDevice || isMobile) {
+            setShouldSkipLoader(true);
+            setIsLoading(false);
+        }
+    }, [isLowEnd, isMobile, setIsLoading]);
 
     // Word Flip Animation Sequence
     useEffect(() => {
-        const wordDuration = 280; 
+        if (shouldSkipLoader) return;
+        const wordDuration = 180;
 
         if (index < words.length - 1) {
             const timeout = setTimeout(() => {
@@ -20,21 +35,23 @@ const PremiumLoader = () => {
             }, wordDuration);
             return () => clearTimeout(timeout);
         }
-    }, [index]);
+    }, [index, shouldSkipLoader]);
 
     // Wait for the word sequence to finish. 3D modules are lazy-loaded after first paint.
     useEffect(() => {
+        if (shouldSkipLoader) return;
         if (index === words.length - 1) {
             const timeout = setTimeout(() => {
                 setIsLoading(false);
-            }, 500);
+            }, 250);
             return () => clearTimeout(timeout);
         }
-    }, [index, setIsLoading]);
+    }, [index, setIsLoading, shouldSkipLoader]);
 
     // Graphically smooth the terminal progress bar so it rapidly ticks up instead of jumping
     const [displayProgress, setDisplayProgress] = useState(0);
     useEffect(() => {
+        if (shouldSkipLoader) return;
         const interval = setInterval(() => {
             setDisplayProgress((prev) => {
                 const isDone = index === words.length - 1;
@@ -48,15 +65,20 @@ const PremiumLoader = () => {
             });
         }, 50); // Reduced frequency to 50ms to free up CPU on low-end devices
         return () => clearInterval(interval);
-    }, [index]);
+    }, [index, shouldSkipLoader]);
 
     // Safety fallback: Force unlock after 6 seconds in case 3D hangs
     useEffect(() => {
+        if (shouldSkipLoader) return;
         const fallback = setTimeout(() => {
             setIsLoading(false);
-        }, 4000);
+        }, 2500);
         return () => clearTimeout(fallback);
-    }, [setIsLoading]);
+    }, [setIsLoading, shouldSkipLoader]);
+
+    if (shouldSkipLoader) {
+        return null;
+    }
 
     const renderProgressBar = () => {
         const totalBars = 20;
@@ -72,7 +94,7 @@ const PremiumLoader = () => {
                 <motion.div
                     initial={{ opacity: 1 }}
                     exit={{ y: "-100%" }}
-                    transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
+                    transition={{ duration: 0.45, ease: [0.76, 0, 0.24, 1] }}
                     className="fixed inset-0 z-[200] flex items-center justify-center bg-background"
                 >
                     <div className="relative flex items-center justify-center">
@@ -93,10 +115,10 @@ const PremiumLoader = () => {
                         </AnimatePresence>
 
                         {/* Absolutely position the terminal loader so it doesn't push the text up */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
+                            transition={{ delay: 0.15 }}
                             className="absolute top-[100%] pt-12 left-1/2 -translate-x-1/2 font-mono text-emerald-500/80 text-sm tracking-widest whitespace-nowrap text-center"
                         >
                             <div className="mb-2 text-xs opacity-50">INITIALIZING_3D_ENGINE...</div>

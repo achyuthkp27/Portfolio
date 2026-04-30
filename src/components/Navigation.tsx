@@ -164,7 +164,6 @@ const Navigation = () => {
           {/* Logo / Name */}
           <motion.a
             href="#"
-            aria-label="Back to Top"
             onClick={(e) => {
               e.preventDefault();
               if (lenis) {
