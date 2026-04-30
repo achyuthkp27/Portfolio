@@ -11,6 +11,7 @@ const Services = lazy(() => import("@/components/Services"));
 const AboutMeSection = lazy(() => import("@/components/AboutMeSection"));
 const ProcessSection = lazy(() => import("@/components/ProcessSection"));
 const ExperienceTimeline = lazy(() => import("@/components/ExperienceTimeline"));
+const PhilosophySection = lazy(() => import("@/components/PhilosophySection"));
 const SkillsSection = lazy(() => import("@/components/SkillsSection"));
 const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
@@ -47,8 +48,12 @@ const Index = () => {
               <AboutMeSection />
             </LazySection>
 
-            <LazySection minHeight="1000px">
+            <LazySection sectionId="process" minHeight="1000px">
               <ProcessSection />
+            </LazySection>
+
+            <LazySection sectionId="philosophy" minHeight="800px">
+              <PhilosophySection />
             </LazySection>
 
             <LazySection sectionId="experience" minHeight="900px">
