@@ -263,7 +263,7 @@ export default function Guestbook() {
           <div className="md:col-span-2">
             <form onSubmit={handleSubmit} className="relative p-8 border border-white/10 bg-black/60 rounded-2xl overflow-hidden group/form shadow-2xl backdrop-blur-md">
               {/* Scanning Line Animation */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent h-20 -top-full group-hover/form:top-full transition-all duration-[2000ms] pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent h-20 -top-full group-hover/form:top-full transition-all duration-[2s] pointer-events-none" />
               
               <div className="space-y-8 relative z-10">
                 <div className="group">
