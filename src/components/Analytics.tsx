@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAnalytics } from '@/lib/analytics';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const Analytics = () => {
     const location = useLocation();
@@ -16,8 +17,14 @@ const Analytics = () => {
         }
     }, [location, posthog]);
 
-    return <VercelAnalytics />;
+    return (
+        <>
+            <VercelAnalytics />
+            <SpeedInsights />
+        </>
+    );
 };
+
 
 export default Analytics;
 
