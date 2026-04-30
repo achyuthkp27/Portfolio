@@ -20,7 +20,7 @@ import { useMobile } from "@/hooks/useMobile";
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const BlogList = lazy(() => import("@/pages/BlogList"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
-const Analytics = lazy(() => import("@/components/Analytics"));
+const Analytics = import.meta.env.DEV ? lazy(() => import("@/components/Analytics")) : null;
 const CustomCursor = lazy(() => import("@/components/ui/CustomCursor"));
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
 const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })));
@@ -51,15 +51,16 @@ const DeferredExperience = () => {
   useEffect(() => {
     if (isLoading) return;
 
-    let timeoutId: number | undefined;
-    let idleId: number | undefined;
+    let timeoutId: any;
+    let idleId: any;
 
     const mountEnhancements = () => setIsReady(true);
     const scheduleIdleMount = () => {
-      if ("requestIdleCallback" in window) {
-        idleId = window.requestIdleCallback(mountEnhancements, { timeout: 1200 });
+      const win = window as any;
+      if (win.requestIdleCallback) {
+        idleId = win.requestIdleCallback(mountEnhancements, { timeout: 1200 });
       } else {
-        idleId = window.setTimeout(mountEnhancements, 300);
+        idleId = setTimeout(mountEnhancements, 300);
       }
     };
 
@@ -70,10 +71,11 @@ const DeferredExperience = () => {
         window.clearTimeout(timeoutId);
       }
       if (idleId !== undefined) {
-        if ("cancelIdleCallback" in window) {
-          window.cancelIdleCallback(idleId);
+        const win = window as any;
+        if (win.cancelIdleCallback) {
+          win.cancelIdleCallback(idleId);
         } else {
-          window.clearTimeout(idleId);
+          clearTimeout(idleId);
         }
       }
     };
@@ -85,7 +87,7 @@ const DeferredExperience = () => {
 
   return (
     <Suspense fallback={null}>
-      <Analytics />
+      {Analytics ? <Analytics /> : null}
       {!isMobile && (
         <>
           <CustomCursor />
