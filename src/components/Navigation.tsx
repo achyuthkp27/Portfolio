@@ -29,10 +29,7 @@ const Navigation = () => {
       return;
     }
 
-    const sections = Array.from(document.querySelectorAll("section[id]")) as HTMLElement[];
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
+    const sectionObserver = new IntersectionObserver(
       (entries) => {
         let nextActiveSection = "";
         entries.forEach((entry) => {
@@ -48,10 +45,29 @@ const Navigation = () => {
       { rootMargin: "-35% 0px -55% 0px", threshold: 0.25 }
     );
 
-    sections.forEach((section) => observer.observe(section));
+    // Track which sections we're already observing
+    const observedIds = new Set<string>();
+
+    const observeAllSections = () => {
+      const sections = document.querySelectorAll("section[id]");
+      sections.forEach((section) => {
+        if (!observedIds.has(section.id)) {
+          observedIds.add(section.id);
+          sectionObserver.observe(section);
+        }
+      });
+    };
+
+    // Initial scan
+    observeAllSections();
+
+    // Re-scan whenever the DOM changes (LazySection mounting new sections)
+    const domObserver = new MutationObserver(() => observeAllSections());
+    domObserver.observe(document.body, { childList: true, subtree: true });
+
     return () => {
-      sections.forEach((section) => observer.unobserve(section));
-      observer.disconnect();
+      sectionObserver.disconnect();
+      domObserver.disconnect();
     };
   }, [isHomePage]);
 
@@ -74,11 +90,51 @@ const Navigation = () => {
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const targetId = href.replace("#", "");
-    const element = document.getElementById(targetId);
-    if (element) {
-      scrollToTarget(element);
-      setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false);
+
+    // Check if the real section already exists
+    const existingSection = document.querySelector(`section#${targetId}`) as HTMLElement | null;
+    if (existingSection) {
+      scrollToTarget(existingSection);
+      return;
     }
+
+    // Section not mounted yet — force ALL lazy sections to mount immediately.
+    // This ensures the page reaches its true height so scroll positions are accurate.
+    window.dispatchEvent(new Event("force-mount-sections"));
+
+    // Poll for the real <section> to appear (lazy import is async), then scroll.
+    // Once found, keep re-scrolling until the element is actually near the
+    // viewport top — this handles layout shifts from other sections still mounting.
+    let findAttempts = 0;
+    const poll = setInterval(() => {
+      findAttempts++;
+      const realSection = document.querySelector(`section#${targetId}`) as HTMLElement | null;
+
+      if (realSection) {
+        clearInterval(poll);
+        
+        let scrollRetries = 0;
+        const ensurePosition = () => {
+          if (scrollRetries >= 15) return; // 6s max (15 × 400ms)
+          scrollRetries++;
+
+          scrollToTarget(realSection);
+
+          setTimeout(() => {
+            const rect = realSection.getBoundingClientRect();
+            // If the section isn't within 50px of the top of the viewport, retry
+            if (Math.abs(rect.top) > 50) {
+              ensurePosition();
+            }
+          }, 400);
+        };
+
+        ensurePosition();
+      }
+
+      if (findAttempts > 25) clearInterval(poll);
+    }, 200);
   };
 
   return (

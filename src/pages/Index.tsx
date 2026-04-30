@@ -43,7 +43,7 @@ const Index = () => {
               <Services />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="about">
               <AboutMeSection />
             </LazySection>
 
@@ -51,19 +51,19 @@ const Index = () => {
               <ProcessSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="experience">
               <ExperienceTimeline />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="skills">
               <SkillsSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="projects">
               <ProjectsSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="testimonials">
               <TestimonialsSection />
             </LazySection>
 
@@ -71,23 +71,23 @@ const Index = () => {
               <ArchitectureGallery />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="awards">
               <AwardSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="education">
               <EducationSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="blog">
               <BlogSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="guestbook">
               <Guestbook />
             </LazySection>
 
-            <LazySection>
+            <LazySection sectionId="contact">
               <ContactSection />
             </LazySection>
           </main>
