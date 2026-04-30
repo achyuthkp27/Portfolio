@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { HelmetProvider } from "react-helmet-async";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 import PremiumLoader from "@/components/PremiumLoader";
@@ -118,6 +119,7 @@ const App = () => (
         </TooltipProvider>
       </LoadingProvider>
     </HelmetProvider>
+    <SpeedInsights />
   </ErrorBoundary>
 );
 
