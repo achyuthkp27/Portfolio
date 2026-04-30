@@ -60,13 +60,13 @@ const Hero = () => {
       )}
 
       {/* Technical Corner Labels - Social Links */}
-      <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-50 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-70 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ GITHUB: ACHYUTHKP27 ]
       </a>
-      <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-50 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-70 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ LINKEDIN: KPACHYUTH ]
       </a>
-      <a href="mailto:kpachyuthz@gmail.com" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-50 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="mailto:kpachyuthz@gmail.com" aria-label="Send Email" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-70 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ EMAIL: KPACHYUTHZ@GMAIL.COM ]
       </a>
 

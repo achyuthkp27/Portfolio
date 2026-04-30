@@ -164,6 +164,7 @@ const Navigation = () => {
           {/* Logo / Name */}
           <motion.a
             href="#"
+            aria-label="Back to Top"
             onClick={(e) => {
               e.preventDefault();
               if (lenis) {
@@ -220,6 +221,7 @@ const Navigation = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
               className="md:hidden text-white hover:opacity-70 transition-opacity font-mono text-xs tracking-widest uppercase"
             >
               {isMobileMenuOpen ? "CLOSE" : "MENU"}
@@ -272,6 +274,7 @@ const Navigation = () => {
                 ))}
                 <motion.a
                   href="#contact"
+                  aria-label="Hire Me"
                   onClick={(e) => handleScroll(e, "#contact")}
                   initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}

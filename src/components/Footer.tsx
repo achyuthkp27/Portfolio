@@ -30,17 +30,17 @@ const Footer = () => {
           <a href="#" className="font-display text-lg font-bold tracking-tight text-white uppercase">
             ACHYUTH<span className="text-white/40">.DEV</span>
           </a>
-          <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+          <p className="text-[10px] font-mono text-white/60 uppercase tracking-widest">
             © {new Date().getFullYear()} // SYSTEM_ONLINE
           </p>
         </div>
 
         {/* Colophon */}
-        <div className="hidden md:flex items-center gap-2 text-[9px] font-mono text-white/20 uppercase tracking-widest">
+        <div className="hidden md:flex items-center gap-2 text-[9px] font-mono text-white/40 uppercase tracking-widest">
           <span>BUILT_WITH</span>
-          <span className="text-white/10">|</span>
+          <span className="text-white/20">|</span>
           {["React", "Vite", "Tailwind", "Framer Motion"].map((tech, i) => (
-            <span key={tech} className="text-white/30 hover:text-white/60 transition-colors cursor-default">
+            <span key={tech} className="text-white/50 hover:text-white/80 transition-colors cursor-default">
               {tech}{i < 3 ? " ·" : ""}
             </span>
           ))}
@@ -54,6 +54,7 @@ const Footer = () => {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={link.label}
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: i * 0.1 }}

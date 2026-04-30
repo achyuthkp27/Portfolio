@@ -78,7 +78,11 @@ const ProjectDetail = () => {
             <div className="min-h-screen bg-background relative overflow-x-hidden">
                 {/* Navigation */}
                 <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-                    <button onClick={() => navigate(`/?scrollTo=${slug}`)} className="pointer-events-auto flex items-center gap-2 text-white/80 hover:text-white transition-colors group">
+                    <button 
+                      onClick={() => navigate(`/?scrollTo=${slug}`)} 
+                      aria-label="Back to Archives"
+                      className="pointer-events-auto flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
+                    >
                         <div className="p-2 rounded-full border border-white/10 bg-black/40 group-hover:bg-white/10 transition-colors">
                             <ArrowLeft className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" />
                         </div>
@@ -121,6 +125,7 @@ const ProjectDetail = () => {
                                 href={project.html_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label="View Source on GitHub"
                                 className="px-8 py-3 bg-white text-black font-bold rounded-full flex items-center gap-2 hover:bg-gray-200 transition-colors"
                             >
                                 <Github className="w-5 h-5" />
@@ -133,6 +138,7 @@ const ProjectDetail = () => {
                                     href={project.homepage}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    aria-label="View Live Demo"
                                     className="px-8 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold rounded-full flex items-center gap-2 hover:bg-emerald-500/20 transition-colors"
                                 >
                                     <ExternalLink className="w-5 h-5" />
@@ -154,8 +160,8 @@ const ProjectDetail = () => {
                                     
                                     {/* Tech Stack / Topics */}
                                     <div>
-                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6 flex items-center gap-3">
-                                            <span className="w-4 h-px bg-white/20" /> Topics
+                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 flex items-center gap-3">
+                                            <span className="w-4 h-px bg-white/30" /> Topics
                                         </h3>
                                         <div className="flex flex-wrap gap-2">
                                             {project.topics && project.topics.length > 0 ? (
@@ -172,13 +178,13 @@ const ProjectDetail = () => {
 
                                     {/* Meta Details */}
                                     <div>
-                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6 flex items-center gap-3">
-                                            <span className="w-4 h-px bg-white/20" /> Repository Metrics
+                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 flex items-center gap-3">
+                                            <span className="w-4 h-px bg-white/30" /> Repository Metrics
                                         </h3>
                                         
                                         <div className="space-y-6">
                                             <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/50 group-hover:text-emerald-400 transition-colors duration-300">
+                                                <div className="flex items-center gap-3 text-white/70 group-hover:text-emerald-400 transition-colors duration-300">
                                                     <Code2 className="w-4 h-4" />
                                                     <span className="text-[11px] font-mono uppercase tracking-widest">Language</span>
                                                 </div>
@@ -188,7 +194,7 @@ const ProjectDetail = () => {
                                             <div className="w-full h-px bg-white/5" />
 
                                             <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/50 group-hover:text-emerald-400 transition-colors duration-300">
+                                                <div className="flex items-center gap-3 text-white/70 group-hover:text-emerald-400 transition-colors duration-300">
                                                     <Calendar className="w-4 h-4" />
                                                     <span className="text-[11px] font-mono uppercase tracking-widest">Last Commit</span>
                                                 </div>

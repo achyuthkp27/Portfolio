@@ -128,6 +128,7 @@ const ContactSection = () => {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={item.label}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
