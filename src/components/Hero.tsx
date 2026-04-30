@@ -25,7 +25,7 @@ const Hero = () => {
   const [showSpaceScene, setShowSpaceScene] = useState(false);
 
   useEffect(() => {
-    if (!shouldRenderDesktopScene) return;
+    if (!shouldRenderDesktopScene || isLoading) return;
 
     let idleId: any;
     const mountScene = () => setShowSpaceScene(true);
@@ -48,7 +48,7 @@ const Hero = () => {
         }
       }
     };
-  }, [shouldRenderDesktopScene]);
+  }, [shouldRenderDesktopScene, isLoading]);
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");
