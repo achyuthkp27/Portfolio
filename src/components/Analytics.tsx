@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAnalytics } from '@/lib/analytics';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 const Analytics = () => {
     const location = useLocation();
@@ -15,7 +16,8 @@ const Analytics = () => {
         }
     }, [location, posthog]);
 
-    return null; // This component doesn't render anything
+    return <VercelAnalytics />;
 };
 
 export default Analytics;
+
