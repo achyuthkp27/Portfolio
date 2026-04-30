@@ -32,9 +32,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Preload critical font CSS to unblock LCP -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400&display=swap">
-<!-- Non-render-blocking font loading -->
+<!-- Single non-render-blocking font load (consolidated from two requests) -->
 <link
   href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
   rel="stylesheet"
@@ -45,13 +43,19 @@
 </noscript>
 
 <style>
+  /* Critical CSS — inlined to unblock FCP */
   body {
     background-color: #000;
     margin: 0;
     padding: 0;
     overflow: hidden;
+    color: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Shell loader — visible until React hydrates */
   #app-shell-loader {
     position: fixed;
     inset: 0;
@@ -60,7 +64,6 @@
     align-items: center;
     justify-content: center;
     background-color: #000;
-    /* Use system fonts for shell to avoid FOUT blocking FCP */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   }
 

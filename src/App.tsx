@@ -51,31 +51,56 @@ const DeferredExperience = () => {
   useEffect(() => {
     if (isLoading) return;
 
-    let timeoutId: any;
-    let idleId: any;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let idleId: ReturnType<typeof setTimeout> | number | undefined;
 
-    const mountEnhancements = () => setIsReady(true);
+    const mountEnhancements = () => {
+      setIsReady(true);
+      removeInteractionListeners();
+    };
+    const handleInteraction = () => mountEnhancements();
+
+    const addInteractionListeners = () => {
+      if (typeof window === "undefined") return;
+      const opts = { once: true, passive: true } as AddEventListenerOptions;
+      window.addEventListener("scroll", handleInteraction, opts);
+      window.addEventListener("mousemove", handleInteraction, opts);
+      window.addEventListener("keydown", handleInteraction, opts);
+      window.addEventListener("touchstart", handleInteraction, opts);
+    };
+
+    const removeInteractionListeners = () => {
+      if (typeof window === "undefined") return;
+      window.removeEventListener("scroll", handleInteraction);
+      window.removeEventListener("mousemove", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
+
     const scheduleIdleMount = () => {
-      const win = window as any;
-      if (win.requestIdleCallback) {
-        idleId = win.requestIdleCallback(mountEnhancements, { timeout: 1200 });
+      if (typeof window === "undefined") return;
+      if (typeof window.requestIdleCallback === "function") {
+        idleId = window.requestIdleCallback(mountEnhancements, { timeout: 12000 });
       } else {
-        idleId = setTimeout(mountEnhancements, 300);
+        idleId = setTimeout(mountEnhancements, 12000);
       }
     };
 
-    timeoutId = setTimeout(scheduleIdleMount, isMobile ? 1200 : 600);
+    addInteractionListeners();
+    if (typeof window !== "undefined") {
+      timeoutId = setTimeout(scheduleIdleMount, isMobile ? 10000 : 8000);
+    }
 
     return () => {
+      removeInteractionListeners();
       if (timeoutId !== undefined) {
         clearTimeout(timeoutId);
       }
       if (idleId !== undefined) {
-        const win = window as any;
-        if (win.cancelIdleCallback) {
-          win.cancelIdleCallback(idleId);
+        if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
+          window.cancelIdleCallback(idleId as number);
         } else {
-          clearTimeout(idleId);
+          clearTimeout(idleId as ReturnType<typeof setTimeout>);
         }
       }
     };

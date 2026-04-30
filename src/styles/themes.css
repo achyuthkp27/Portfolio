@@ -1,0 +1,50 @@
+/* ── Matrix Theme ── */
+[data-theme='matrix'] body { background-color: #030a05 !important; color: #00ff41 !important; }
+[data-theme='matrix'] .text-white { color: #00ff41 !important; }
+[data-theme='matrix'] .text-white\/90 { color: rgba(0, 255, 65, 0.9) !important; }
+[data-theme='matrix'] .text-white\/80 { color: rgba(0, 255, 65, 0.8) !important; }
+[data-theme='matrix'] .text-white\/70 { color: rgba(0, 255, 65, 0.7) !important; }
+[data-theme='matrix'] .text-white\/60 { color: rgba(0, 255, 65, 0.6) !important; }
+[data-theme='matrix'] .text-white\/50 { color: rgba(0, 255, 65, 0.5) !important; }
+[data-theme='matrix'] .text-white\/40 { color: rgba(0, 255, 65, 0.4) !important; }
+[data-theme='matrix'] .text-white\/30 { color: rgba(0, 255, 65, 0.3) !important; }
+[data-theme='matrix'] .bg-white { background-color: #00ff41 !important; color: #000 !important; }
+[data-theme='matrix'] .bg-white\/10 { background-color: rgba(0, 255, 65, 0.1) !important; }
+[data-theme='matrix'] .bg-white\/5 { background-color: rgba(0, 255, 65, 0.05) !important; }
+[data-theme='matrix'] .bg-black { background-color: #000 !important; }
+[data-theme='matrix'] .bg-black\/80 { background-color: rgba(0,0,0,0.8) !important; }
+[data-theme='matrix'] .bg-black\/90 { background-color: rgba(0,0,0,0.9) !important; }
+[data-theme='matrix'] .border-white\/20 { border-color: rgba(0, 255, 65, 0.2) !important; }
+[data-theme='matrix'] .border-white\/10 { border-color: rgba(0, 255, 65, 0.1) !important; }
+[data-theme='matrix'] .from-indigo-900\/20 { --tw-gradient-from: rgba(0, 255, 65, 0.1) !important; }
+[data-theme='matrix'] .text-emerald-400, [data-theme='matrix'] .text-emerald-500 { color: #00ff41 !important; }
+[data-theme='matrix'] .bg-emerald-500, [data-theme='matrix'] .bg-emerald-400 { background-color: #00ff41 !important; }
+[data-theme='matrix'] .bg-emerald-500\/20 { background-color: rgba(0, 255, 65, 0.2) !important; }
+[data-theme='matrix'] .bg-emerald-500\/10 { background-color: rgba(0, 255, 65, 0.1) !important; }
+[data-theme='matrix'] .bg-zinc-950 { background-color: #011406 !important; }
+
+/* ── Synthwave Theme ── */
+[data-theme='synthwave'] body { background-color: #0b001a !important; color: #ff00ff !important; }
+[data-theme='synthwave'] .text-white { color: #ff00ff !important; }
+[data-theme='synthwave'] .text-white\/90 { color: rgba(255, 0, 255, 0.9) !important; }
+[data-theme='synthwave'] .text-white\/80 { color: rgba(255, 0, 255, 0.8) !important; }
+[data-theme='synthwave'] .text-white\/70 { color: rgba(255, 0, 255, 0.7) !important; }
+[data-theme='synthwave'] .text-white\/60 { color: rgba(255, 0, 255, 0.6) !important; }
+[data-theme='synthwave'] .text-white\/50 { color: rgba(255, 0, 255, 0.5) !important; }
+[data-theme='synthwave'] .text-white\/40 { color: rgba(255, 0, 255, 0.4) !important; }
+[data-theme='synthwave'] .text-white\/30 { color: rgba(255, 0, 255, 0.3) !important; }
+[data-theme='synthwave'] .bg-white { background-color: #ff00ff !important; color: #000 !important; }
+[data-theme='synthwave'] .bg-white\/10 { background-color: rgba(255, 0, 255, 0.1) !important; }
+[data-theme='synthwave'] .bg-white\/5 { background-color: rgba(255, 0, 255, 0.05) !important; }
+[data-theme='synthwave'] .bg-black { background-color: #05000a !important; }
+[data-theme='synthwave'] .bg-black\/80 { background-color: rgba(5,0,10,0.8) !important; }
+[data-theme='synthwave'] .bg-black\/90 { background-color: rgba(5,0,10,0.9) !important; }
+[data-theme='synthwave'] .border-white\/20 { border-color: rgba(255, 0, 255, 0.2) !important; }
+[data-theme='synthwave'] .border-white\/10 { border-color: rgba(255, 0, 255, 0.1) !important; }
+[data-theme='synthwave'] .from-indigo-900\/20 { --tw-gradient-from: rgba(0, 255, 255, 0.15) !important; }
+[data-theme='synthwave'] .from-transparent { --tw-gradient-from: transparent !important; }
+[data-theme='synthwave'] .text-emerald-400, [data-theme='synthwave'] .text-emerald-500 { color: #00ffff !important; text-shadow: 0 0 10px rgba(0,255,255,0.5); }
+[data-theme='synthwave'] .bg-emerald-500, [data-theme='synthwave'] .bg-emerald-400 { background-color: #00ffff !important; box-shadow: 0 0 10px rgba(0,255,255,0.5); }
+[data-theme='synthwave'] .bg-emerald-500\/20 { background-color: rgba(0, 255, 255, 0.2) !important; }
+[data-theme='synthwave'] .bg-emerald-500\/10 { background-color: rgba(0, 255, 255, 0.1) !important; }
+[data-theme='synthwave'] .bg-zinc-950 { background-color: #1a0033 !important; }

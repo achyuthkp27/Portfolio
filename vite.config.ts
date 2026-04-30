@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { dependencies } from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -17,21 +16,24 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    modulePreload: false,
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split vendor code for better caching
+          // Core React — always needed on first load
           'react-vendor': ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          'radix-vendor': Object.keys(dependencies).filter(
-            (key) => key.startsWith('@radix-ui/')
-          ),
+          // Framer Motion — used by Hero and layout, separate from React core
+          'framer-motion': ['framer-motion'],
+          // Three.js core — only loaded when 3D scene mounts (lazy)
+          'three': ['three'],
+          // React Three Fiber + Drei — only loaded when 3D components mount (lazy)
+          'r3f': ['@react-three/fiber', '@react-three/drei'],
+          // lucide-react, radix-ui, form libs: removed from manual chunks
+          // so they tree-shake and bundle with their lazy-loaded consumers
         },
       },
     },
-    chunkSizeWarningLimit: 600, // Adjust warning threshold
-    sourcemap: true, // Generate source maps in production to satisfy Lighthouse source map audits
+    chunkSizeWarningLimit: 600,
+    sourcemap: false, // Omit source maps in production to reduce total download size
   },
 }));

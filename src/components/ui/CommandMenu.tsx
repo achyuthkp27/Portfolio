@@ -14,6 +14,10 @@ export function CommandMenu() {
     // Load initial theme
     const savedTheme = localStorage.getItem("portfolio-theme") || "titan";
     document.documentElement.setAttribute('data-theme', savedTheme);
+    // Lazy-load theme CSS if a custom theme is saved
+    if (savedTheme !== 'titan') {
+      import('@/styles/themes.css');
+    }
 
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -32,6 +36,10 @@ export function CommandMenu() {
   };
 
   const setTheme = (theme: string) => {
+    // Lazy-load theme CSS on first non-default theme activation
+    if (theme !== 'titan') {
+      import('@/styles/themes.css');
+    }
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('portfolio-theme', theme);
     setOpen(false);

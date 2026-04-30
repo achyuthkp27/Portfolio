@@ -42,7 +42,13 @@ const experiences = [
 const ExperienceTimeline = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+
+  const toggleExpanded = (index: number) => {
+    setExpandedItems((current) =>
+      current.includes(index) ? current.filter((id) => id !== index) : [...current, index]
+    );
+  };
 
   return (
     <section id="experience" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
@@ -80,7 +86,7 @@ const ExperienceTimeline = () => {
           </div>
 
           {experiences.map((exp, index) => {
-            const isExpanded = expandedIndex === index;
+            const isExpanded = expandedItems.includes(index);
             return (
               <motion.div
                 key={exp.company}
@@ -104,13 +110,14 @@ const ExperienceTimeline = () => {
 
                 {/* Content card */}
                 <motion.div
+                  layout
                   whileHover={{ x: index % 2 === 0 ? -8 : 8, scale: 1.01 }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className={`ml-20 md:ml-0 ${index % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
                 >
                   <div
                     className={`group relative p-8 cursor-pointer overflow-hidden transition-all duration-500 border rounded-xl bg-black/60 backdrop-blur-md ${isExpanded ? 'border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' : 'border-white/10 hover:border-emerald-500/30 hover:bg-white/5'}`}
-                    onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                    onClick={() => toggleExpanded(index)}
                   >
                     {/* Cinematic Bloom Background */}
                     <div className={`absolute -inset-32 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 rounded-full blur-3xl opacity-0 transition-opacity duration-700 pointer-events-none ${isExpanded ? 'opacity-100' : 'group-hover:opacity-40'}`} />
@@ -135,6 +142,7 @@ const ExperienceTimeline = () => {
 
                     {/* Expanded content */}
                     <motion.div
+                      layout
                       initial={false}
                       animate={{
                         height: isExpanded ? "auto" : 0,

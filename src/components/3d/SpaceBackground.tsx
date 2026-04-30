@@ -24,30 +24,54 @@ const SpaceBackground = () => {
     }, [isMobile, isLowEnd]);
 
     useEffect(() => {
-        if (isMobile || isLowEnd !== false) return;
+        if (isMobile || isLowEnd !== false || !isVisible || showCanvas) return;
 
-        let idleId: any;
-        const handleIdle = () => setShowCanvas(true);
+        let idleId: ReturnType<typeof setTimeout> | number | undefined;
+        const mountCanvas = () => setShowCanvas(true);
+        const handleInteraction = () => mountCanvas();
 
-        const win = typeof window !== "undefined" ? window as any : null;
-        if (!win) return;
+        const addInteractionListeners = () => {
+            if (typeof window === "undefined") return;
+            const opts = { once: true, passive: true } as AddEventListenerOptions;
+            window.addEventListener("scroll", handleInteraction, opts);
+            window.addEventListener("mousemove", handleInteraction, opts);
+            window.addEventListener("keydown", handleInteraction, opts);
+            window.addEventListener("touchstart", handleInteraction, opts);
+        };
 
-        if (win.requestIdleCallback) {
-            idleId = win.requestIdleCallback(handleIdle, { timeout: 1500 });
-        } else {
-            idleId = setTimeout(handleIdle, 1500);
+        const removeInteractionListeners = () => {
+            if (typeof window === "undefined") return;
+            window.removeEventListener("scroll", handleInteraction);
+            window.removeEventListener("mousemove", handleInteraction);
+            window.removeEventListener("keydown", handleInteraction);
+            window.removeEventListener("touchstart", handleInteraction);
+        };
+
+        const scheduleIdleMount = () => {
+            if (typeof window === "undefined") return;
+            if (typeof window.requestIdleCallback === "function") {
+                idleId = window.requestIdleCallback(mountCanvas, { timeout: 12000 });
+            } else {
+                idleId = setTimeout(mountCanvas, 12000);
+            }
+        };
+
+        addInteractionListeners();
+        if (typeof window !== "undefined") {
+            setTimeout(scheduleIdleMount, 10000);
         }
 
         return () => {
+            removeInteractionListeners();
             if (idleId !== undefined) {
-                if (win.cancelIdleCallback) {
-                    win.cancelIdleCallback(idleId);
+                if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
+                    window.cancelIdleCallback(idleId as number);
                 } else {
-                    clearTimeout(idleId);
+                    clearTimeout(idleId as ReturnType<typeof setTimeout>);
                 }
             }
         };
-    }, [isMobile, isLowEnd]);
+    }, [isMobile, isLowEnd, isVisible, showCanvas]);
 
     if (isMobile || isLowEnd !== false) {
         return (
