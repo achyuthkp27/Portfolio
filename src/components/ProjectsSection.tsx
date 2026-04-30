@@ -1,6 +1,6 @@
-import { motion, useInView, useSpring, useMotionValue } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { Github, ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
 import { Link, useLocation } from "react-router-dom";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";

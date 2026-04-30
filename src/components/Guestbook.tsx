@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import TextReveal from "./ui/TextReveal";
 import { SectionHeader } from "./ui/SectionHeader";
 

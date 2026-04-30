@@ -1,7 +1,7 @@
 import { motion, useSpring, useMotionTemplate, useReducedMotion } from "framer-motion";
 import { useRef, useState, useMemo, useEffect } from "react";
 import TextReveal from "./ui/TextReveal";
-import { ArrowRight, Code, Cpu, Palette, Server, Cloud, Zap, Globe, Award, TrendingUp, Activity } from "lucide-react";
+import { ArrowRight, Code, Cpu, Palette, Server, Cloud, Zap, Globe, Award, TrendingUp } from "lucide-react";
 import { SectionHeader } from "./ui/SectionHeader";
 import type { LucideIcon } from "lucide-react";
 

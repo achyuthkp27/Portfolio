@@ -83,7 +83,7 @@ const TextReveal = ({
         // filter: blur() is extremely expensive on mobile GPUs
         if (isMobile) {
             return (
-                <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.2em] ${className}`}>
+                <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.25em] ${className}`}>
                     {words.map((word, wordIndex) => (
                         <motion.span
                             key={wordIndex}
@@ -105,7 +105,7 @@ const TextReveal = ({
 
         // Desktop: per-character blur-reveal (premium effect)
         return (
-            <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.2em] ${className}`}>
+            <Component ref={ref} className={`inline-flex flex-wrap gap-x-[0.25em] ${className}`}>
                 {words.map((word, wordIndex) => (
                     <span key={wordIndex} className="inline-block whitespace-nowrap">
                         {word.split("").map((char, charIndex) => (

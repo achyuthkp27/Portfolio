@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { ArrowDown, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import ExperienceTimer from "./ui/ExperienceTimer";

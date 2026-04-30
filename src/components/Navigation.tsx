@@ -1,7 +1,7 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
 
