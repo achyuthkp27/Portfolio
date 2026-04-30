@@ -27,7 +27,7 @@ const Hero = () => {
   useEffect(() => {
     if (!shouldRenderDesktopScene) return;
 
-    let idleId: number | undefined;
+    let idleId: any;
     const mountScene = () => setShowSpaceScene(true);
 
     const win = typeof window !== "undefined" ? window as any : null;
