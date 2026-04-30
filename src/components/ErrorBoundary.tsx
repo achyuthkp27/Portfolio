@@ -24,8 +24,24 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         // Log error to console in development
         console.error('Error caught by boundary:', error, errorInfo);
 
-        // In production, you could send this to an error reporting service
-        // like Sentry, LogRocket, etc.
+        // Check if it's a chunk load error (common during new deployments)
+        const isChunkError = 
+            error.name === 'ChunkLoadError' || 
+            error.message.includes('Loading chunk') || 
+            error.message.includes('MIME type') ||
+            error.message.includes('Failed to fetch dynamically imported module');
+
+        if (isChunkError) {
+            console.log('Chunk load error detected. Attempting to recover...');
+            // Check if we've already tried to reload in the last 10 seconds to avoid infinite loops
+            const lastReload = sessionStorage.getItem('last-error-reload');
+            const now = Date.now();
+            
+            if (!lastReload || now - parseInt(lastReload) > 10000) {
+                sessionStorage.setItem('last-error-reload', now.toString());
+                window.location.reload();
+            }
+        }
     }
 
     handleReset = () => {
