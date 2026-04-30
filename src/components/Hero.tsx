@@ -102,6 +102,16 @@ const Hero = () => {
         [ EMAIL: KPACHYUTHZ@GMAIL.COM ]
       </a>
 
+      {/* Shortcut Hint - Relocated to avoid 3D control overlap */}
+      <div className="absolute top-32 right-6 md:right-12 flex flex-col items-end gap-2 font-mono text-[9px] text-white/20 tracking-[0.2em] hidden md:flex z-50 select-none">
+        <div className="flex items-center gap-2 px-2 py-1 border border-white/5 bg-white/[0.02] rounded backdrop-blur-sm group hover:border-emerald-500/30 hover:text-white/60 transition-all duration-500">
+          <span className="text-emerald-500/40 group-hover:text-emerald-400 transition-colors">⌘K</span> COMMAND_MENU
+        </div>
+        <div className="flex items-center gap-2 px-2 py-1 border border-white/5 bg-white/[0.02] rounded backdrop-blur-sm group hover:border-emerald-500/30 hover:text-white/60 transition-all duration-500">
+          <span className="text-emerald-500/40 group-hover:text-emerald-400 transition-colors">&gt;_</span> SYSTEM_TERMINAL
+        </div>
+      </div>
+
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col text-left">
