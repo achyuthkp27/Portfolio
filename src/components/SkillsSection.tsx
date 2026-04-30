@@ -4,7 +4,7 @@ import {
   Code2, Server, Database, Cloud, MessageSquare,
   GitBranch,
 } from "lucide-react";
-import TextReveal from "./ui/TextReveal";
+import { SectionHeader } from "./ui/SectionHeader";
 import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";
 
@@ -89,22 +89,12 @@ const SkillsSection = () => {
   return (
     <section id="skills" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden" ref={ref}>
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
-        >
-          <TextReveal type="fade-up">
-            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 border border-white/10 mb-6 bg-white/5 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400 transition-colors duration-300">
-              [ SYSTEM_DIAGNOSTICS ]
-            </span>
-          </TextReveal>
-          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-            <TextReveal type="blur-reveal" delay={0.2} as="span">Operational</TextReveal><br />
-            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Capabilities</TextReveal>
-          </h2>
-        </motion.div>
+        <SectionHeader 
+          label="[ SYSTEM_DIAGNOSTICS ]" 
+          titleMain="Operational" 
+          titleAccent="Capabilities" 
+          align="center"
+        />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {skillCategories.map((category, i) => {

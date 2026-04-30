@@ -1,9 +1,10 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Trophy } from "lucide-react";
-import TextReveal from "./ui/TextReveal";
-import ParallaxSection from "./ui/ParallaxSection";
+import { SectionHeader } from "./ui/SectionHeader";
 import SpotlightCard from "./ui/SpotlightCard";
+import ParallaxSection from "./ui/ParallaxSection";
+import TextReveal from "./ui/TextReveal";
 
 const AwardSection = () => {
   const ref = useRef(null);
@@ -12,24 +13,13 @@ const AwardSection = () => {
   return (
     <section id="awards" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
-
       <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <TextReveal type="fade-up">
-            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-              [ RECOGNITION_LOG ]
-            </span>
-          </TextReveal>
-          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-            <TextReveal type="blur-reveal" as="span">HONORS &</TextReveal><br />
-            <TextReveal type="blur-reveal" as="span" className="text-white/40">AWARDS</TextReveal>
-          </h2>
-        </motion.div>
+        <SectionHeader 
+          label="[ RECOGNITION_LOG ]" 
+          titleMain="HONORS &" 
+          titleAccent="AWARDS" 
+          align="center"
+        />
 
         {/* Award Card */}
         <ParallaxSection speed={0.3}>

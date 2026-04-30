@@ -5,6 +5,7 @@ import TextReveal from "@/components/ui/TextReveal";
 import { Link, useLocation } from "react-router-dom";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 import { useSmoothScroll } from "@/components/ui/SmoothScroll";
+import { SectionHeader } from "./ui/SectionHeader";
 
 const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -138,28 +139,13 @@ const ProjectsSection = () => {
 
       <div className="max-w-screen-2xl mx-auto">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="mb-32 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/10 pb-12"
-        >
-          <div>
-            <TextReveal type="fade-up">
-              <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-emerald-500 border border-emerald-500/20 rounded-full mb-8 bg-emerald-500/10 transition-colors duration-300">
-                [ LIVE_GITHUB_FEED ]
-              </span>
-            </TextReveal>
-            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter">
-              <TextReveal type="blur-reveal" delay={0.2} as="span">Selected</TextReveal><br/>
-              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Case Files</TextReveal>
-            </h2>
-          </div>
-          
-          <TextReveal type="fade-up" delay={0.6} as="p" className="text-gray-400 max-w-sm text-sm md:text-base leading-relaxed">
-            Continuously fetching the latest repository commits, architecture structures, and source codes from the public domains.
-          </TextReveal>
-        </motion.div>
+        <SectionHeader 
+          label="[ LIVE_GITHUB_FEED ]"
+          titleMain="Selected"
+          titleAccent="Case Files"
+          description="Continuously fetching the latest repository commits, architecture structures, and source codes from the public domains."
+          align="left"
+        />
 
         {/* Dynamic GitHub Repos List */}
         <div className="flex flex-col">

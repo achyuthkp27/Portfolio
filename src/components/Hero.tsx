@@ -2,7 +2,6 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
-import MagneticButton from "./ui/MagneticButton";
 import ExperienceTimer from "./ui/ExperienceTimer";
 
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
@@ -11,6 +10,7 @@ import { useMobile } from "@/hooks/useMobile";
 import DecryptText from "@/components/ui/DecryptText";
 
 import { useLoading } from "@/context/LoadingContext";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
@@ -27,24 +27,23 @@ const Hero = () => {
   useEffect(() => {
     if (!shouldRenderDesktopScene || isLoading) return;
 
-    let idleId: any;
+    let idleId: ReturnType<typeof setTimeout> | number | undefined;
     const mountScene = () => setShowSpaceScene(true);
 
-    const win = typeof window !== "undefined" ? window as any : null;
-    if (!win) return;
+    if (typeof window === "undefined") return;
 
-    if (win.requestIdleCallback) {
-      idleId = win.requestIdleCallback(mountScene, { timeout: 1500 });
+    if (typeof window.requestIdleCallback === "function") {
+      idleId = window.requestIdleCallback(mountScene, { timeout: 1500 });
     } else {
       idleId = setTimeout(mountScene, 1500);
     }
 
     return () => {
       if (idleId !== undefined) {
-        if (win.cancelIdleCallback) {
-          win.cancelIdleCallback(idleId);
+        if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
+          window.cancelIdleCallback(idleId as number);
         } else {
-          clearTimeout(idleId);
+          clearTimeout(idleId as ReturnType<typeof setTimeout>);
         }
       }
     };

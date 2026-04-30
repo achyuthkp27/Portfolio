@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import TextReveal from "@/components/ui/TextReveal";
 import { Terminal, X, ExternalLink, BookOpen, Clock } from "lucide-react";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useState, useEffect } from "react";
 
 interface BlogPost {
@@ -51,26 +51,13 @@ const BlogSection = () => {
             
             <div className="max-w-7xl mx-auto">
                 {/* Header: Asymmetrical Intelligence Lead */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
-                    <div className="relative">
-                        <TextReveal type="fade-up">
-                            <span className="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-mono tracking-[0.3em] uppercase text-emerald-400 border border-emerald-500/20 mb-6 bg-emerald-500/5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                SIGNAL_INTERCEPT // ARCHIVE.LOG
-                            </span>
-                        </TextReveal>
-                        <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-                            <TextReveal type="blur-reveal" delay={0.2} as="span">Technical</TextReveal><br />
-                            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Intelligence</TextReveal>
-                        </h2>
-                    </div>
-
-                    <div className="max-w-xs text-right">
-                        <TextReveal type="fade-up" delay={0.6} className="text-[10px] font-mono text-white/40 uppercase tracking-widest leading-relaxed">
-                            Captured transmission packets from Medium. Architectural evolution and system optimizations synchronized daily.
-                        </TextReveal>
-                    </div>
-                </div>
+                <SectionHeader 
+                    label="SIGNAL_INTERCEPT // ARCHIVE.LOG"
+                    titleMain="Technical"
+                    titleAccent="Intelligence"
+                    description="Captured transmission packets from Medium. Architectural evolution and system optimizations synchronized daily."
+                    align="left"
+                />
 
                 {/* Transmission Feed */}
                 <div className="relative flex flex-col gap-px bg-white/5 border-y border-white/5 overflow-hidden">

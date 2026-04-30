@@ -119,6 +119,10 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-5px)" },
         },
+        "scan-beam": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(1000%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -130,6 +134,7 @@ export default {
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "spin-slow": "spin-slow 20s linear infinite",
         "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
+        "scan-beam": "scan-beam 2s linear infinite",
       },
     },
   },

@@ -1,47 +1,19 @@
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import { Building2, GraduationCap, ChevronDown } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
-import ParallaxSection from "./ui/ParallaxSection";
-
-const experiences = [
-  {
-    company: "FIS Global",
-    role: "Software Engineer",
-    period: "2021 – Present",
-    type: "full-time",
-    icon: Building2,
-    color: "primary",
-    achievements: [
-      "Developed and maintained 25+ high-performance RESTful APIs using Spring Boot microservices for corporate, retail, and mobile banking platforms.",
-      "Led end-to-end implementation of ELK stack with Apache Kafka, achieving a 25% reduction in issue resolution time.",
-      "Enhanced API documentation using Swagger to improve developer collaboration and efficiency.",
-      "Contributed to code reviews and technical documentation, promoting best practices and knowledge-sharing.",
-      "Diagnosed and resolved complex technical issues through detailed debugging and analysis.",
-      "Optimized deployment processes for SIT, UAT, and Production, ensuring maximum system reliability.",
-      "Integrated frontend UI with ReactJS for seamless user experience across banking applications."
-    ],
-    technologies: ["Spring Boot", "Microservices", "Kafka", "ELK Stack", "ReactJS", "Docker", "AWS"],
-  },
-  {
-    company: "Aniworks",
-    role: "Intern",
-    period: "2020",
-    type: "internship",
-    icon: GraduationCap,
-    color: "accent",
-    achievements: [
-      "Worked across Web Development, AI, ML concepts",
-      "Collaborated on intern-level projects",
-      "Hands-on experience with real-world systems",
-    ],
-    technologies: ["Web Development", "AI/ML", "Python"],
-  },
-];
+import { ChevronDown } from "lucide-react";
+import { SectionHeader } from "./ui/SectionHeader";
+import { experiences } from "@/data/experience";
 
 const ExperienceTimeline = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end center"]
+  });
+
+  const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
 
   const toggleExpanded = (index: number) => {
@@ -54,44 +26,33 @@ const ExperienceTimeline = () => {
     <section id="experience" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
       <div className="max-w-5xl mx-auto relative z-10">
-        <ParallaxSection speed={0.1}>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-24"
-          >
-            <TextReveal type="fade-up">
-              <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-                [ EXPERIENCE_LOG ]
-              </span>
-            </TextReveal>
-            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 text-white tracking-tighter uppercase leading-none">
-              <TextReveal type="blur-reveal" delay={0.2} as="span">Professional</TextReveal><br/>
-              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40 inline-block">History</TextReveal>
-            </h2>
-          </motion.div>
-        </ParallaxSection>
+        <SectionHeader 
+          label="[ EXPERIENCE_LOG ]" 
+          titleMain="Professional" 
+          titleAccent="History" 
+          align="center"
+        />
 
         {/* Timeline */}
         <div className="relative">
-          {/* Timeline line with scroll fill */}
           <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2 overflow-visible">
-            {/* Scroll-driven fill */}
             <motion.div
-              className="w-full bg-gradient-to-b from-emerald-500/60 via-emerald-500/30 to-transparent"
-              style={{ height: isInView ? "100%" : "0%" }}
+              className="w-full bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent origin-top"
+              style={{ scaleY }}
             />
             <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-white to-transparent animate-scan-beam" />
           </div>
 
           {experiences.map((exp, index) => {
             const isExpanded = expandedItems.includes(index);
+            const Icon = exp.icon;
+
             return (
               <motion.div
-                key={exp.company}
-                initial={{ opacity: 0, y: 50 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                key={`${exp.company}-${index}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.2 }}
                 className={`relative mb-12 group/timeline ${index % 2 === 0 ? "md:pr-[50%] md:text-right" : "md:pl-[50%] md:ml-auto"}`}
               >
@@ -115,8 +76,12 @@ const ExperienceTimeline = () => {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className={`ml-20 md:ml-0 ${index % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
                 >
-                  <div
-                    className={`group relative p-8 cursor-pointer overflow-hidden transition-all duration-500 border rounded-xl bg-black/60 backdrop-blur-md ${isExpanded ? 'border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' : 'border-white/10 hover:border-emerald-500/30 hover:bg-white/5'}`}
+                  <button
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={`experience-panel-${index}`}
+                    id={`experience-toggle-${index}`}
+                    className={`group relative p-8 w-full text-left cursor-pointer overflow-hidden transition-all duration-500 border rounded-xl bg-black/60 backdrop-blur-md ${isExpanded ? 'border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' : 'border-white/10 hover:border-emerald-500/30 hover:bg-white/5'}`}
                     onClick={() => toggleExpanded(index)}
                   >
                     {/* Cinematic Bloom Background */}
@@ -125,7 +90,10 @@ const ExperienceTimeline = () => {
                     {/* Header */}
                     <div className={`relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-2 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
                       <div className={`flex flex-col ${index % 2 === 0 ? "md:items-end text-left md:text-right" : "text-left md:items-start"}`}>
-                        <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-widest">{exp.company}</h3>
+                        <div className={`flex items-center gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
+                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />
+                          <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-widest">{exp.company}</h3>
+                        </div>
                         <p className="text-emerald-400/90 font-mono text-xs md:text-sm tracking-widest uppercase mt-1">{exp.role}</p>
                       </div>
                       <div className="flex flex-row sm:flex-col items-center gap-3 self-end sm:self-auto">
@@ -140,47 +108,50 @@ const ExperienceTimeline = () => {
                       </div>
                     </div>
 
-                    {/* Expanded content */}
-                    <motion.div
-                      layout
-                      initial={false}
-                      animate={{
-                        height: isExpanded ? "auto" : 0,
-                        opacity: isExpanded ? 1 : 0,
-                      }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden relative z-10"
-                    >
-                      <div className="pt-6 border-t border-white/10 mt-6">
-                        <ul className={`space-y-4 mb-8 ${index % 2 === 0 ? "md:text-right" : "text-left"}`}>
-                          {exp.achievements.map((achievement, i) => (
-                            <motion.li
-                              key={i}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={isExpanded ? { opacity: 1, y: 0 } : {}}
-                              transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
-                              className={`text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
-                            >
-                              <span className="text-emerald-500 mt-1.5 text-[10px]">▹</span>
-                              <span className="flex-1">{achievement}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          key="expanded"
+                          id={`experience-panel-${index}`}
+                          aria-labelledby={`experience-toggle-${index}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden relative z-10"
+                        >
+                          <div className="pt-6 border-t border-white/10 mt-6">
+                            <ul className={`space-y-4 mb-8 ${index % 2 === 0 ? "md:text-right" : "text-left"}`}>
+                              {exp.achievements.map((achievement, i) => (
+                                <motion.li
+                                  key={i}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
+                                  className={`text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
+                                >
+                                  <span className="text-emerald-500 mt-1.5 text-[10px]">▹</span>
+                                  <span className="flex-1">{achievement}</span>
+                                </motion.li>
+                              ))}
+                            </ul>
 
-                        <div className={`flex flex-wrap gap-2 ${index % 2 === 0 ? "md:justify-end" : "justify-start"}`}>
-                          {exp.technologies.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-1 text-[9px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
-                            >
-                              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent -translate-x-full group-hover/tech:translate-x-full transition-transform duration-500 pointer-events-none" />
-                              <span className="relative z-10">{tech}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </div>
+                            <div className={`flex flex-wrap gap-2 ${index % 2 === 0 ? "md:justify-end" : "justify-start"}`}>
+                              {exp.technologies.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="px-2 py-1 text-[9px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
+                                >
+                                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent -translate-x-full group-hover/tech:translate-x-full transition-transform duration-500 pointer-events-none" />
+                                  <span className="relative z-10">{tech}</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </button>
                 </motion.div>
               </motion.div>
             );

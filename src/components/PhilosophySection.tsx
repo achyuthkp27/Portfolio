@@ -1,6 +1,6 @@
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useRef } from "react";
-import TextReveal from "./ui/TextReveal";
+import { SectionHeader } from "./ui/SectionHeader";
 import { Server, Shield, Zap, Sparkles, Terminal, Activity } from "lucide-react";
 
 // Interactive Bento Card with Flashlight Effect
@@ -56,15 +56,12 @@ const PhilosophySection = () => {
 
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col items-center mb-16 md:mb-24">
-                    <TextReveal type="fade-up">
-                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 border border-white/10 mb-6 bg-white/5">
-                            [ DIRECTIVE_LOGIC ]
-                        </span>
-                    </TextReveal>
-                    <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center tracking-tight">
-                        <TextReveal type="blur-reveal" delay={0.2} as="span">My Operational</TextReveal>{" "}
-                        <TextReveal type="blur-reveal" delay={0.3} as="span" className="text-white/40 italic">Manifesto.</TextReveal>
-                    </h2>
+                    <SectionHeader 
+                        label="[ DIRECTIVE_LOGIC ]" 
+                        titleMain="My Operational" 
+                        titleAccent="Manifesto." 
+                        align="center"
+                    />
                 </div>
 
                 {/* Bento Grid layout */}

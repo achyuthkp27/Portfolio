@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Search, PenTool, Code, Rocket, ChevronRight } from "lucide-react";
 import TextReveal from "@/components/ui/TextReveal";
+import { SectionHeader } from "./ui/SectionHeader";
 import SpotlightCard from "./ui/SpotlightCard";
 
 const steps = [
@@ -102,16 +103,13 @@ const ProcessSection = () => {
     return (
         <section className="py-24 px-6 md:px-12 relative bg-transparent" ref={ref}>
             <div className="max-w-7xl mx-auto">
-                <div className="mb-16">
-                    <TextReveal type="fade-up">
-                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-                            [ SYSTEM_WORKFLOW ]
-                        </span>
-                    </TextReveal>
-                    <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tighter">
-                        <TextReveal type="blur-reveal" delay={0.2}>How I </TextReveal>
-                        <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Work</TextReveal>
-                    </h2>
+                <div className="mb-16"> {/* Removed TextReveal from here */}
+                    <SectionHeader 
+                        label="[ SYSTEM_WORKFLOW ]" 
+                        titleMain="How I" 
+                        titleAccent="Work" 
+                        align="left"
+                    />
                     <p className="text-gray-400 max-w-2xl text-sm md:text-base leading-relaxed">
                         A systematic approach to building scalable software, ensuring quality at every step.
                     </p>

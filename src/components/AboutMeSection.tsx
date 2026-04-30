@@ -1,7 +1,8 @@
 import { motion, useSpring, useMotionTemplate, useReducedMotion } from "framer-motion";
 import { useRef, useState, useMemo, useEffect } from "react";
 import TextReveal from "./ui/TextReveal";
-import { ArrowRight, Code, Cpu, Palette, Server, Cloud, Zap, Globe, Award, TrendingUp } from "lucide-react";
+import { ArrowRight, Code, Cpu, Palette, Server, Cloud, Zap, Globe, Award, TrendingUp, Activity } from "lucide-react";
+import { SectionHeader } from "./ui/SectionHeader";
 import type { LucideIcon } from "lucide-react";
 
 // ─────────────────────────────────────────────
@@ -332,16 +333,13 @@ const AboutMeSection = () => {
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Section Header */}
                 <div className="mb-16 lg:mb-24 md:flex justify-between items-end">
-                    <div className="max-w-2xl">
-                        <TextReveal type="fade-up">
-                            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/40 border border-white/10 mb-6 bg-white/5">
-                                [ IDENTITY_MATRIX_V4.0 ]
-                            </span>
-                        </TextReveal>
-                        <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 leading-tight tracking-tighter uppercase">
-                            <TextReveal type="blur-reveal" delay={0.2}>The Mind Behind</TextReveal><br />
-                            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">the Machine</TextReveal>
-                        </h2>
+                    <div className="max-w-2xl"> {/* Removed TextReveal from here */}
+                        <SectionHeader 
+                            label="[ IDENTITY_MATRIX_V4.0 ]" 
+                            titleMain="The Mind Behind" 
+                            titleAccent="the Machine" 
+                            align="left"
+                        />
                     </div>
                     <div className="hidden md:block mb-4">
                         <div className="flex gap-4 text-white/40 text-[10px] font-mono font-bold tracking-widest">

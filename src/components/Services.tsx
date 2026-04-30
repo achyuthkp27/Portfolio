@@ -3,6 +3,7 @@ import { useRef } from "react";
 import TextReveal from "./ui/TextReveal";
 import { ArrowUpRight, Code, Palette, Laptop } from "lucide-react";
 import SpotlightCard from "./ui/SpotlightCard";
+import { SectionHeader } from "./ui/SectionHeader";
 
 const services = [
     {
@@ -63,16 +64,13 @@ const Services = () => {
         <section className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="mb-20">
-                    <TextReveal type="fade-up">
-                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-                            [ CREATIVE_ENGINEERING ]
-                        </span>
-                    </TextReveal>
-                    <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 text-white tracking-tighter uppercase leading-none">
-                        <TextReveal type="blur-reveal" as="span">DESIGN</TextReveal><br />
-                        <TextReveal type="blur-reveal" as="span" className="text-white/40">& CODE</TextReveal>
-                    </h2>
+                <div className="mb-20"> {/* Removed TextReveal from here */}
+                    <SectionHeader 
+                        label="[ CREATIVE_ENGINEERING ]" 
+                        titleMain="DESIGN" 
+                        titleAccent="& CODE" 
+                        align="left"
+                    />
                     <div className="max-w-2xl text-xl text-gray-400">
                         <TextReveal type="scrub" className="leading-relaxed font-light">
                             I combine technical expertise with design sensibilities to deliver comprehensive digital solutions. From concept to code, everything is crafted with precision.

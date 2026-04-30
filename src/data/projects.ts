@@ -5,26 +5,32 @@ import notificationImg from "@/assets/images/projects/notification-engine.jpg";
 import storageImg from "@/assets/images/projects/secure-storage.jpg";
 import dashboardImg from "@/assets/images/projects/monitoring-dashboard.jpg";
 
+export type ProjectCategory = 'Backend' | 'Infrastructure' | 'Full-stack' | 'DevOps';
+
+export interface ProjectArchitecture {
+    title: string;
+    description: string;
+    imageUrl?: string;
+}
+
 export interface Project {
     slug: string; // URL friendly identifier
     title: string;
     description: string;
+    category?: ProjectCategory;
     problem: string;
     solution: string;
     outcome: string;
     tags: string[];
+    featured?: boolean;
     icon: LucideIcon;
-    color: string;
-    gradient: string;
+    color?: string;
+    gradient?: string;
     image?: string; // New field for cover image
     // Extended fields for Case Study
     fullDescription?: string;
     challenges?: string[];
-    architecture?: {
-        title: string;
-        description: string;
-        imageUrl?: string;
-    }[];
+    architecture?: ProjectArchitecture[];
     gallery?: string[];
 }
 
@@ -33,13 +39,13 @@ export const projects: Project[] = [
         slug: "banking-api-platform",
         title: "Banking API Platform",
         description: "High-volume microservices powering corporate, retail, and mobile banking transactions with 99.9% uptime.",
+        category: "Backend",
         problem: "Legacy monolithic banking system couldn't scale with growing user base",
         solution: "Decomposed into 25+ microservices with event-driven architecture",
         outcome: "3x improvement in transaction throughput, 40% reduction in latency",
         tags: ["Spring Boot", "PostgreSQL", "Kafka", "Redis", "AWS"],
         icon: Server,
-        color: "white",
-        gradient: "from-white/10 to-white/5",
+        featured: true,
         image: bankingImg,
         fullDescription: "A mission-critical digital transformation project for a Tier-1 bank, migrating a 15-year-old monolith to a modern cloud-native microservices architecture. The system handles millions of daily transactions across retail and corporate channels, ensuring strict consistency and regulatory compliance.",
         challenges: [
@@ -63,8 +69,6 @@ export const projects: Project[] = [
         outcome: "25% faster issue resolution, improved system reliability",
         tags: ["ELK Stack", "Kafka", "Spring Boot", "Docker"],
         icon: Database,
-        color: "white",
-        gradient: "from-white/10 to-white/5",
         image: loggingImg,
         fullDescription: "An observability platform built to ingest, index, and visualize logs from over 50+ distributed services. It processes terabytes of log data daily, providing developers and SREs with real-time insights into system health.",
         challenges: [
@@ -81,8 +85,6 @@ export const projects: Project[] = [
         outcome: "10x throughput improvement, zero message loss guarantee",
         tags: ["Kafka", "Spring Boot", "Redis", "PostgreSQL"],
         icon: MessageSquare,
-        color: "white",
-        gradient: "from-white/10 to-white/5",
         image: notificationImg,
         fullDescription: "A centralized notification hub that abstracts SMS, Email, and Push Notification providers. It features intelligent routing, rate limiting, and a robust retry mechanism to guarantee delivery.",
         challenges: [
@@ -99,8 +101,6 @@ export const projects: Project[] = [
         outcome: "Centralized document management, 50% cost reduction vs S3",
         tags: ["MinIO", "AWS S3", "Spring Boot", "IAM"],
         icon: HardDrive,
-        color: "white",
-        gradient: "from-white/10 to-white/5",
         image: storageImg,
         fullDescription: "A self-hosted, S3-compatible object storage service designed for banking documents. It enforces strict access control lists (ACLs) and encryption at rest.",
         challenges: [
@@ -117,8 +117,6 @@ export const projects: Project[] = [
         outcome: "Proactive issue detection, reduced MTTR by 60%",
         tags: ["ReactJS", "Spring Boot", "WebSocket", "Chart.js"],
         icon: LayoutDashboard,
-        color: "white",
-        gradient: "from-white/10 to-white/5",
         image: dashboardImg,
         fullDescription: "A custom ops dashboard that aggregates metrics from Prometheus and health checks from Spring Boot Actuator, visualizing them in real-time using WebSockets.",
         challenges: [

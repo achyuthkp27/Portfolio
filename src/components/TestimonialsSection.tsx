@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
 import SpotlightCard from "./ui/SpotlightCard";
+import { SectionHeader } from "./ui/SectionHeader";
 
 const testimonials = [
     {
@@ -30,15 +30,12 @@ const TestimonialsSection = () => {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="text-center mb-16">
-                    <TextReveal type="fade-up">
-                        <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-                            [ SOCIAL_PROOF ]
-                        </span>
-                    </TextReveal>
-                    <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-                        <TextReveal type="blur-reveal" delay={0.2} as="span">Trusted By</TextReveal>{" "}
-                        <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Industry Leaders</TextReveal>
-                    </h2>
+                    <SectionHeader 
+                        label="[ SOCIAL_PROOF ]" 
+                        titleMain="Trusted By" 
+                        titleAccent="Industry Leaders" 
+                        align="center"
+                    />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8">

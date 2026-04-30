@@ -27,6 +27,8 @@ const SpaceBackground = () => {
         if (isMobile || isLowEnd !== false || !isVisible || showCanvas) return;
 
         let idleId: ReturnType<typeof setTimeout> | number | undefined;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
         const mountCanvas = () => setShowCanvas(true);
         const handleInteraction = () => mountCanvas();
 
@@ -58,11 +60,14 @@ const SpaceBackground = () => {
 
         addInteractionListeners();
         if (typeof window !== "undefined") {
-            setTimeout(scheduleIdleMount, 10000);
+            timeoutId = setTimeout(scheduleIdleMount, 10000);
         }
 
         return () => {
             removeInteractionListeners();
+            if (timeoutId !== undefined) {
+                clearTimeout(timeoutId);
+            }
             if (idleId !== undefined) {
                 if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
                     window.cancelIdleCallback(idleId as number);

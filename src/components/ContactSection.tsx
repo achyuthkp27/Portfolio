@@ -3,9 +3,9 @@ import { useRef, useState } from "react";
 import { Mail, Send, Linkedin, Github, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
-import TextReveal from "./ui/TextReveal";
-import ParallaxSection from "./ui/ParallaxSection";
 import MagneticButton from "./ui/MagneticButton";
+import { SectionHeader } from "./ui/SectionHeader";
+
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -85,7 +85,7 @@ const ContactSection = () => {
   return (
     <section id="contact" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent group/contact" ref={ref}>
       {/* Dynamic Cursor Spotlight Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover/contact:opacity-100 transition-opacity duration-1000 pointer-events-none z-0"
+      <div className="absolute inset-0 opacity-0 group-hover/contact:opacity-100 transition-opacity duration-1000 pointer-events-none z-0 will-change-transform"
            style={{
              background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.03) 0%, transparent 40%)'
            }} 
@@ -99,25 +99,13 @@ const ContactSection = () => {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12">
-          <div>
-            <TextReveal type="fade-up">
-              <span className="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-mono tracking-[0.3em] uppercase text-emerald-400 border border-emerald-500/20 mb-8 bg-emerald-500/5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                SATELLITE_UPLINK // ESTABLISHED
-              </span>
-            </TextReveal>
-            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-              <TextReveal type="blur-reveal" delay={0.2} as="span">Initiate</TextReveal><br/>
-              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">Contact</TextReveal>
-            </h2>
-          </div>
-          <div className="max-w-sm text-right">
-            <TextReveal type="fade-up" delay={0.6} className="text-[11px] font-mono text-white/30 uppercase tracking-[0.2em] leading-relaxed">
-              Establishing a high-bandwidth frequency for neural collaboration. Secure protocols active. Ready for packet transmission.
-            </TextReveal>
-          </div>
-        </div>
+        <SectionHeader 
+          label="SATELLITE_UPLINK // ESTABLISHED"
+          titleMain="Initiate"
+          titleAccent="Contact"
+          description="Establishing a high-bandwidth frequency for neural collaboration. Secure protocols active. Ready for packet transmission."
+          align="left"
+        />
 
         <div className="grid lg:grid-cols-5 gap-16 items-start">
           {/* Contact Info: Communication Nodes */}

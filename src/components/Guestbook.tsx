@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "./ui/TextReveal";
+import { SectionHeader } from "./ui/SectionHeader";
 
 interface GuestbookEntry {
   id: string;
@@ -87,23 +88,24 @@ const INITIAL_MESSAGES: GuestbookEntry[] = [
 
 // Global audio context for performance and browser limits
 let audioCtx: AudioContext | null = null;
+const getAudioCtx = () => {
+  const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
+  if (!Ctx) return null;
+  if (!audioCtx) audioCtx = new Ctx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+};
+
 const playTickSound = () => {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
   try {
-    const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
-    if (!Ctx) return;
-    if (!audioCtx) {
-      audioCtx = new Ctx();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    
     // Creating a highly mechanical "tick" using two layers
-    const t = audioCtx.currentTime;
+    const t = ctx.currentTime;
     
     // Layer 1: The sharp, high-frequency "snap" (mimics the plastic/metal mechanism clicking)
-    const snapOsc = audioCtx.createOscillator();
-    const snapGain = audioCtx.createGain();
+    const snapOsc = ctx.createOscillator();
+    const snapGain = ctx.createGain();
     snapOsc.type = 'sine';
     // Start very high and drop extremely fast (10ms)
     snapOsc.frequency.setValueAtTime(1000, t);
@@ -115,11 +117,11 @@ const playTickSound = () => {
     snapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.01);
     
     snapOsc.connect(snapGain);
-    snapGain.connect(audioCtx.destination);
+    snapGain.connect(ctx.destination);
     
     // Layer 2: The low-frequency body / thump (gives it the haptic feel)
-    const thumpOsc = audioCtx.createOscillator();
-    const thumpGain = audioCtx.createGain();
+    const thumpOsc = ctx.createOscillator();
+    const thumpGain = ctx.createGain();
     thumpOsc.type = 'sine';
     // Steady low frequency
     thumpOsc.frequency.setValueAtTime(150, t);
@@ -130,7 +132,7 @@ const playTickSound = () => {
     thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
     
     thumpOsc.connect(thumpGain);
-    thumpGain.connect(audioCtx.destination);
+    thumpGain.connect(ctx.destination);
     
     // Start and stop both layers abruptly
     snapOsc.start(t);
@@ -155,21 +157,8 @@ export default function Guestbook() {
     const el = cylinderRef.current;
     if (!el) return;
 
-    // Listen passively but we need to unlock audioContext
-    const unlockAudio = () => {
-        if (!audioCtx) {
-            const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
-            if (Ctx) audioCtx = new Ctx();
-        }
-        if (audioCtx?.state === 'suspended') {
-            audioCtx.resume();
-        }
-        window.removeEventListener('click', unlockAudio);
-        window.removeEventListener('touchstart', unlockAudio);
-    };
-
-    window.addEventListener('click', unlockAudio);
-    window.addEventListener('touchstart', unlockAudio);
+    window.addEventListener('click', getAudioCtx, { once: true });
+    window.addEventListener('touchstart', getAudioCtx, { once: true });
 
     const handleWheel = (e: WheelEvent) => {
       // Passive listener — does not block compositor thread for smooth scrolling
@@ -236,26 +225,13 @@ export default function Guestbook() {
       <div className="absolute inset-0 grid-pattern opacity-5 pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
-        
-        <div className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-12">
-          <div>
-            <TextReveal type="fade-up">
-            <span className="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-mono tracking-[0.3em] uppercase text-emerald-400 border border-emerald-500/20 mb-6 bg-emerald-500/5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                SECURE_CHANNEL // DATA_TRACE
-              </span>
-            </TextReveal>
-            <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-              <TextReveal type="blur-reveal" delay={0.2} as="span">Guest</TextReveal><br/>
-              <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40">book</TextReveal>
-            </h2>
-          </div>
-          <div className="max-w-xs text-right">
-            <TextReveal type="fade-up" delay={0.6} className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] leading-relaxed">
-              Inject your credentials into the neural archive. Leave a permanent trace in the system hierarchy.
-            </TextReveal>
-          </div>
-        </div>
+        <SectionHeader 
+          label="SECURE_CHANNEL // DATA_TRACE"
+          titleMain="Guest"
+          titleAccent="book"
+          description="Inject your credentials into the neural archive. Leave a permanent trace in the system hierarchy."
+          align="left"
+        />
 
         <div className="grid md:grid-cols-5 gap-8">
           
@@ -338,13 +314,7 @@ export default function Guestbook() {
                 const startY = e.clientY;
                 const startAngle = drumAngle;
                 
-                // Pre-initialize audio context on click
-                if (!audioCtx) {
-                    const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext; // eslint-disable-line @typescript-eslint/no-explicit-any
-                    if (Ctx) audioCtx = new Ctx();
-                }
-                if (audioCtx?.state === 'suspended') audioCtx.resume();
-                
+                getAudioCtx();
                 let lastAngle = startAngle;
 
                 const handlePointerMove = (moveEvent: PointerEvent) => {

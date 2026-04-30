@@ -1,8 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useMemo } from "react";
 import { GraduationCap, MapPin, Calendar } from "lucide-react";
-import TextReveal from "./ui/TextReveal";
+import { SectionHeader } from "./ui/SectionHeader";
 import ParallaxSection from "./ui/ParallaxSection";
+import TextReveal from "./ui/TextReveal";
 
 const EducationSection = () => {
   const ref = useRef(null);
@@ -19,24 +20,13 @@ const EducationSection = () => {
   return (
     <section id="education" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
-
       <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <TextReveal type="fade-up">
-            <span className="inline-block px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase text-white/50 border border-white/10 mb-6 bg-white/5">
-              [ ACADEMIC_RECORD ]
-            </span>
-          </TextReveal>
-          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter uppercase leading-none">
-            <TextReveal type="blur-reveal" delay={0.2} as="span">EDUCATION</TextReveal><br />
-            <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/40 inline-block">HISTORY</TextReveal>
-          </h2>
-        </motion.div>
+        <SectionHeader 
+          label="[ ACADEMIC_RECORD ]" 
+          titleMain="EDUCATION" 
+          titleAccent="HISTORY" 
+          align="center"
+        />
 
         <ParallaxSection speed={0.2}>
           <motion.div
