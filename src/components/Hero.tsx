@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { useRef, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import MagneticButton from "./ui/MagneticButton";
 import ExperienceTimer from "./ui/ExperienceTimer";
@@ -22,6 +22,33 @@ const Hero = () => {
   const ref = useRef<HTMLElement>(null);
 
   const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
+  const [showSpaceScene, setShowSpaceScene] = useState(false);
+
+  useEffect(() => {
+    if (!shouldRenderDesktopScene) return;
+
+    let idleId: number | undefined;
+    const mountScene = () => setShowSpaceScene(true);
+
+    const win = typeof window !== "undefined" ? window as any : null;
+    if (!win) return;
+
+    if (win.requestIdleCallback) {
+      idleId = win.requestIdleCallback(mountScene, { timeout: 1500 });
+    } else {
+      idleId = setTimeout(mountScene, 1500);
+    }
+
+    return () => {
+      if (idleId !== undefined) {
+        if (win.cancelIdleCallback) {
+          win.cancelIdleCallback(idleId);
+        } else {
+          clearTimeout(idleId);
+        }
+      }
+    };
+  }, [shouldRenderDesktopScene]);
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");
@@ -46,13 +73,19 @@ const Hero = () => {
     <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
       {/* 3D Space Background (Adaptive) */}
       {shouldRenderDesktopScene ? (
-        <Suspense fallback={
+        showSpaceScene ? (
+          <Suspense fallback={
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+            </div>
+          }>
+            <SpaceScene />
+          </Suspense>
+        ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
           </div>
-        }>
-          <SpaceScene />
-        </Suspense>
+        )
       ) : (
         <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
@@ -60,13 +93,13 @@ const Hero = () => {
       )}
 
       {/* Technical Corner Labels - Social Links */}
-      <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ GITHUB: ACHYUTHKP27 ]
       </a>
-      <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ LINKEDIN: KPACHYUTH ]
       </a>
-      <a href="mailto:kpachyuthz@gmail.com" aria-label="Send Email" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
+      <a href="mailto:kpachyuthz@gmail.com" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
         [ EMAIL: KPACHYUTHZ@GMAIL.COM ]
       </a>
 
