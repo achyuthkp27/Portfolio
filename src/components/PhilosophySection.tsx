@@ -1,6 +1,7 @@
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useRef } from "react";
 import { SectionHeader } from "./ui/SectionHeader";
+import TextReveal from "./ui/TextReveal";
 import { Server, Shield, Zap, Sparkles, Terminal, Activity } from "lucide-react";
 
 // Interactive Bento Card with Flashlight Effect
