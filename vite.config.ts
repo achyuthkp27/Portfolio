@@ -17,7 +17,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    modulePreload: false,
     rollupOptions: {
       output: {
         manualChunks: {
