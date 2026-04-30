@@ -272,7 +272,14 @@
     contain-intrinsic-size: auto 900px;
   }
 
-  #main-content > section:first-child {
+  /* LazySection wrapper divs also benefit from content-visibility */
+  #main-content > div {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+
+  #main-content > section:first-child,
+  #main-content > div:first-child {
     content-visibility: visible;
     contain-intrinsic-size: none;
   }
@@ -347,176 +354,9 @@
     }
   }
 
-  @keyframes scan-beam {
-    0% {
-      top: -200px;
-      opacity: 0;
-    }
-
-    10% {
-      opacity: 1;
-    }
-
-    90% {
-      opacity: 1;
-    }
-
-    100% {
-      top: 100%;
-      opacity: 0;
-    }
-  }
-
-  .animate-scan-beam {
-    animation: scan-beam 4s ease-in-out infinite;
-  }
-
-  @keyframes scan-beam-horizontal {
-    0% {
-      left: -200px;
-      opacity: 0;
-    }
-
-    10% {
-      opacity: 1;
-    }
-
-    90% {
-      opacity: 1;
-    }
-
-    100% {
-      left: 100%;
-      opacity: 0;
-    }
-  }
-
-  .animate-scan-beam-horizontal {
-    animation: scan-beam-horizontal 6s ease-in-out infinite;
-  }
-
-  @keyframes icon-glow {
-
-    0%,
-    100% {
-      transform: scale(1);
-      border-color: rgba(255, 255, 255, 0.1);
-      box-shadow: none;
-    }
-
-    15% {
-      transform: scale(1.15);
-      border-color: rgba(255, 255, 255, 1);
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-      background-color: rgba(0, 0, 0, 1);
-    }
-
-    30% {
-      transform: scale(1);
-      border-color: rgba(255, 255, 255, 0.1);
-      box-shadow: none;
-    }
-  }
-
-  @keyframes scan-beam-vertical {
-    0% {
-      top: -100px;
-      opacity: 0;
-    }
-
-    10% {
-      opacity: 1;
-    }
-
-    90% {
-      opacity: 1;
-    }
-
-    100% {
-      top: 100%;
-      opacity: 0;
-    }
-  }
-
-  .animate-scan-beam-vertical {
-    animation: scan-beam-vertical 6s ease-in-out infinite;
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  @keyframes progress-grow {
-    0% {
-      width: 0%;
-      left: 0;
-    }
-    50% {
-      width: 100%;
-      left: 0;
-    }
-    100% {
-      width: 0%;
-      left: 100%;
-    }
-  }
-
-  .animate-progress-grow {
-    animation: progress-grow 2s ease-in-out infinite;
-  }
-
-  /* ── Premium UI/UX Animations ── */
-
   @keyframes shimmer-iridescent {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
-  }
-
-  .animate-shimmer-iridescent {
-    background-size: 200% 100%;
-    animation: shimmer-iridescent 3s ease-in-out infinite;
-  }
-
-  @keyframes gradient-border-spin {
-    0% { --angle: 0deg; }
-    100% { --angle: 360deg; }
-  }
-
-  @keyframes reveal-line {
-    0% { transform: scaleX(0); }
-    100% { transform: scaleX(1); }
-  }
-
-  .animate-reveal-line {
-    animation: reveal-line 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    transform-origin: left;
-  }
-
-  @keyframes ripple-expand {
-    0% { transform: scale(0); opacity: 0.6; }
-    100% { transform: scale(4); opacity: 0; }
-  }
-
-  .animate-ripple {
-    animation: ripple-expand 0.6s ease-out forwards;
-  }
-
-  @keyframes focus-glow {
-    0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1); }
-    50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2), 0 0 20px rgba(16, 185, 129, 0.1); }
-  }
-
-  .focus-glow-ring:focus-within {
-    animation: focus-glow 2s ease-in-out infinite;
-  }
-
-  @keyframes slide-up-stagger {
-    0% { opacity: 0; transform: translateY(12px); }
-    100% { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes number-watermark-float {
@@ -528,9 +368,13 @@
     animation: number-watermark-float 6s ease-in-out infinite;
   }
 
-  @keyframes scroll-fill {
-    0% { height: 0%; }
-    100% { height: 100%; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   /* Gradient border utility */
@@ -643,9 +487,6 @@
     background-position: 50% 50%;
   }
 
-  .animate-scan-beam,
-  .animate-scan-beam-horizontal,
-  .animate-scan-beam-vertical,
   .animate-pulse-glow,
   .animate-gradient,
   .animate-gradient-y,

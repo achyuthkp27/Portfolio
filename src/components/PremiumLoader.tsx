@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
 
-const words = ["Developer", "Designer", "Creator", "Engineer", "Innovator", "Problem Solver"];
+const words = ["Developer", "Designer", "Engineer", "Creator"];
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
@@ -12,7 +12,7 @@ const PremiumLoader = () => {
 
     // Word Flip Animation Sequence
     useEffect(() => {
-        const wordDuration = 400; 
+        const wordDuration = 280; 
 
         if (index < words.length - 1) {
             const timeout = setTimeout(() => {
@@ -27,7 +27,7 @@ const PremiumLoader = () => {
         if (index === words.length - 1) {
             const timeout = setTimeout(() => {
                 setIsLoading(false);
-            }, 800);
+            }, 500);
             return () => clearTimeout(timeout);
         }
     }, [index, setIsLoading]);
@@ -54,7 +54,7 @@ const PremiumLoader = () => {
     useEffect(() => {
         const fallback = setTimeout(() => {
             setIsLoading(false);
-        }, 6000);
+        }, 4000);
         return () => clearTimeout(fallback);
     }, [setIsLoading]);
 

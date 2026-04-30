@@ -9,6 +9,8 @@ interface LazySectionProps {
   rootMargin?: string;
   /** The id of the section inside (e.g. "about"). Used as a scroll anchor before the real section mounts. */
   sectionId?: string;
+  /** Approximate rendered height of this section. Prevents CLS by reserving vertical space in the placeholder. */
+  minHeight?: string;
 }
 
 /**
@@ -32,6 +34,7 @@ export const LazySection = ({
   threshold = 0.01,
   rootMargin = "400px 0px",
   sectionId,
+  minHeight = "600px",
 }: LazySectionProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -50,13 +53,13 @@ export const LazySection = ({
   const shouldRender = inView || forceMounted;
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={{ minHeight: shouldRender ? undefined : minHeight }}>
       {shouldRender ? (
-        <Suspense fallback={fallback || <div className="h-96 w-full animate-pulse bg-white/5 rounded-xl" />}>
+        <Suspense fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}>
           {children}
         </Suspense>
       ) : (
-        fallback || <div id={sectionId} className="h-96 w-full" />
+        fallback || <div id={sectionId} style={{ minHeight }} className="w-full" />
       )}
     </div>
   );

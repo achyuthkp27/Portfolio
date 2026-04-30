@@ -39,55 +39,55 @@ const Index = () => {
             <Hero />
             <SystemStatus />
             
-            <LazySection rootMargin="100px 0px">
+            <LazySection rootMargin="100px 0px" minHeight="800px">
               <Services />
             </LazySection>
 
-            <LazySection sectionId="about">
+            <LazySection sectionId="about" minHeight="1200px">
               <AboutMeSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection minHeight="1000px">
               <ProcessSection />
             </LazySection>
 
-            <LazySection sectionId="experience">
+            <LazySection sectionId="experience" minHeight="900px">
               <ExperienceTimeline />
             </LazySection>
 
-            <LazySection sectionId="skills">
+            <LazySection sectionId="skills" minHeight="800px">
               <SkillsSection />
             </LazySection>
 
-            <LazySection sectionId="projects">
+            <LazySection sectionId="projects" minHeight="1000px">
               <ProjectsSection />
             </LazySection>
 
-            <LazySection sectionId="testimonials">
+            <LazySection sectionId="testimonials" minHeight="600px">
               <TestimonialsSection />
             </LazySection>
 
-            <LazySection>
+            <LazySection minHeight="700px">
               <ArchitectureGallery />
             </LazySection>
 
-            <LazySection sectionId="awards">
+            <LazySection sectionId="awards" minHeight="600px">
               <AwardSection />
             </LazySection>
 
-            <LazySection sectionId="education">
+            <LazySection sectionId="education" minHeight="700px">
               <EducationSection />
             </LazySection>
 
-            <LazySection sectionId="blog">
+            <LazySection sectionId="blog" minHeight="1000px">
               <BlogSection />
             </LazySection>
 
-            <LazySection sectionId="guestbook">
+            <LazySection sectionId="guestbook" minHeight="800px">
               <Guestbook />
             </LazySection>
 
-            <LazySection sectionId="contact">
+            <LazySection sectionId="contact" minHeight="800px">
               <ContactSection />
             </LazySection>
           </main>
