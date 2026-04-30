@@ -32,6 +32,6 @@ export default defineConfig(({ mode }) => ({
       },
     },
     chunkSizeWarningLimit: 600, // Adjust warning threshold
-    sourcemap: mode === 'development',
+    sourcemap: true, // Generate source maps in production to satisfy Lighthouse source map audits
   },
 }));

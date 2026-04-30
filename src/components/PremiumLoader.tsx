@@ -4,7 +4,7 @@ import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
-const words = ["Developer"];
+const words = ["Developer", "Designer", "Engineer", "Creator"];
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
@@ -27,7 +27,7 @@ const PremiumLoader = () => {
     // Word Flip Animation Sequence
     useEffect(() => {
         if (shouldSkipLoader) return;
-        const wordDuration = 180;
+        const wordDuration = 280;
 
         if (index < words.length - 1) {
             const timeout = setTimeout(() => {
@@ -43,36 +43,19 @@ const PremiumLoader = () => {
         if (index === words.length - 1) {
             const timeout = setTimeout(() => {
                 setIsLoading(false);
-            }, 250);
+            }, 500);
             return () => clearTimeout(timeout);
         }
     }, [index, setIsLoading, shouldSkipLoader]);
 
-    // Graphically smooth the terminal progress bar so it rapidly ticks up instead of jumping
-    const [displayProgress, setDisplayProgress] = useState(0);
-    useEffect(() => {
-        if (shouldSkipLoader) return;
-        const interval = setInterval(() => {
-            setDisplayProgress((prev) => {
-                const isDone = index === words.length - 1;
-                const target = isDone ? 100 : Math.min(96, (index / words.length) * 100 + 15);
-                
-                if (prev < target) {
-                    const step = Math.max(1, (target - prev) * 0.15);
-                    return Math.min(100, prev + step);
-                }
-                return prev;
-            });
-        }, 50); // Reduced frequency to 50ms to free up CPU on low-end devices
-        return () => clearInterval(interval);
-    }, [index, shouldSkipLoader]);
+
 
     // Safety fallback: Force unlock after 6 seconds in case 3D hangs
     useEffect(() => {
         if (shouldSkipLoader) return;
         const fallback = setTimeout(() => {
             setIsLoading(false);
-        }, 2500);
+        }, 4000);
         return () => clearTimeout(fallback);
     }, [setIsLoading, shouldSkipLoader]);
 
@@ -80,13 +63,7 @@ const PremiumLoader = () => {
         return null;
     }
 
-    const renderProgressBar = () => {
-        const totalBars = 20;
-        const p = Math.round(displayProgress);
-        const filledBars = Math.round((p / 100) * totalBars);
-        const emptyBars = Math.max(0, totalBars - filledBars);
-        return `[${'#'.repeat(filledBars)}${' '.repeat(emptyBars)}] ${p}%`;
-    };
+
 
     return (
         <AnimatePresence>
@@ -113,17 +90,6 @@ const PremiumLoader = () => {
                                 {words[index]}
                             </motion.h1>
                         </AnimatePresence>
-
-                        {/* Absolutely position the terminal loader so it doesn't push the text up */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.15 }}
-                            className="absolute top-[100%] pt-12 left-1/2 -translate-x-1/2 font-mono text-emerald-500/80 text-sm tracking-widest whitespace-nowrap text-center"
-                        >
-                            <div className="mb-2 text-xs opacity-50">INITIALIZING_3D_ENGINE...</div>
-                            <div className="whitespace-pre">{renderProgressBar()}</div>
-                        </motion.div>
                     </div>
                 </motion.div>
             )}

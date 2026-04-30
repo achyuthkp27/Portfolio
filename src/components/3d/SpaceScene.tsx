@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, PerspectiveCamera } from "@react-three/drei";
 import { useRef, useState } from "react";
 import * as THREE from "three";
@@ -86,10 +86,12 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     const shockwaveRef2 = useRef<THREE.Mesh>(null); 
     const mainMatRef = useRef<THREE.MeshStandardMaterial>(null);
     const innerMatRef = useRef<THREE.MeshStandardMaterial>(null);
+    const { invalidate } = useThree();
     
     const [hovered, setHovered] = useState(false);
 
     useFrame((state) => {
+        if (!animEnabled && !hovered) return;
         if (!groupRef.current || !shockwaveRef.current || !shockwaveRef2.current || !mainMatRef.current || !innerMatRef.current) return;
 
         const time = state.clock.elapsedTime;
@@ -154,6 +156,8 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             shockwaveRef2.current.scale.setScalar(0.01);
             (shockwaveRef2.current.material as THREE.MeshStandardMaterial).opacity = 0;
         }
+
+        invalidate();
     });
 
     return (
@@ -256,7 +260,7 @@ const SpaceScene = () => {
 
     return (
         <div className="absolute inset-0 z-0">
-            <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]}>
+            <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]} frameloop="demand">
                 <Scene animEnabled={animEnabled} />
             </Canvas>
             

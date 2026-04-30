@@ -64,11 +64,11 @@ const DeferredExperience = () => {
       }
     };
 
-    timeoutId = window.setTimeout(scheduleIdleMount, isMobile ? 1200 : 600);
+    timeoutId = setTimeout(scheduleIdleMount, isMobile ? 1200 : 600);
 
     return () => {
       if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
       }
       if (idleId !== undefined) {
         const win = window as any;
