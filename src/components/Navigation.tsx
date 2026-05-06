@@ -104,37 +104,12 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     setIsMobileMenuOpen(false);
 
-    let targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
+    const targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
 
     if (targetElement) {
-      // Start the initial scroll animation
+      // Start the smooth scroll animation.
+      // We rely entirely on the placeholder minHeight accuracy now to prevent layout shifts.
       scrollToTarget(targetElement as HTMLElement);
-
-      // Dynamically track the target's position as lazy sections above it mount and shift the layout
-      let scrollRetries = 0;
-      const poll = setInterval(() => {
-        // Re-query in case the placeholder was just replaced by the fully rendered section
-        targetElement = document.querySelector(`section#${targetId}`) || document.getElementById(targetId);
-        
-        if (targetElement) {
-          const rect = targetElement.getBoundingClientRect();
-          // If the target has drifted significantly (layout shift), update Lenis's target trajectory!
-          // Stop tracking if it's within 100px (arrived) or too far away (user manually scrolled away)
-          if (Math.abs(rect.top) > 100 && Math.abs(rect.top) < 3000) {
-            scrollToTarget(targetElement as HTMLElement);
-          }
-        }
-
-        scrollRetries++;
-        if (scrollRetries >= 25) {
-          clearInterval(poll); // Give up tracking after 5 seconds (25 * 200ms)
-        }
-      }, 200);
-
-      // If the user manually interacts with the page, stop the aggressive auto-tracking
-      const stopTracking = () => clearInterval(poll);
-      window.addEventListener('wheel', stopTracking, { once: true, passive: true });
-      window.addEventListener('touchstart', stopTracking, { once: true, passive: true });
     }
   };
 
