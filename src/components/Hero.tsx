@@ -24,7 +24,7 @@ const Hero = () => {
   const ref = useRef<HTMLElement>(null);
 
   const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
-  const showSpaceScene = useIdleMount(shouldRenderDesktopScene && !isLoading, 1500, 3000);
+  const showSpaceScene = shouldRenderDesktopScene && !isLoading;
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");

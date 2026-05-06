@@ -1,50 +1,153 @@
-/* ── Matrix Theme ── */
-[data-theme='matrix'] body { background-color: #030a05 !important; color: #00ff41 !important; }
-[data-theme='matrix'] .text-white { color: #00ff41 !important; }
-[data-theme='matrix'] .text-white\/90 { color: rgba(0, 255, 65, 0.9) !important; }
-[data-theme='matrix'] .text-white\/80 { color: rgba(0, 255, 65, 0.8) !important; }
-[data-theme='matrix'] .text-white\/70 { color: rgba(0, 255, 65, 0.7) !important; }
-[data-theme='matrix'] .text-white\/60 { color: rgba(0, 255, 65, 0.6) !important; }
-[data-theme='matrix'] .text-white\/50 { color: rgba(0, 255, 65, 0.5) !important; }
-[data-theme='matrix'] .text-white\/40 { color: rgba(0, 255, 65, 0.4) !important; }
-[data-theme='matrix'] .text-white\/30 { color: rgba(0, 255, 65, 0.3) !important; }
-[data-theme='matrix'] .bg-white { background-color: #00ff41 !important; color: #000 !important; }
-[data-theme='matrix'] .bg-white\/10 { background-color: rgba(0, 255, 65, 0.1) !important; }
-[data-theme='matrix'] .bg-white\/5 { background-color: rgba(0, 255, 65, 0.05) !important; }
-[data-theme='matrix'] .bg-black { background-color: #000 !important; }
-[data-theme='matrix'] .bg-black\/80 { background-color: rgba(0,0,0,0.8) !important; }
-[data-theme='matrix'] .bg-black\/90 { background-color: rgba(0,0,0,0.9) !important; }
-[data-theme='matrix'] .border-white\/20 { border-color: rgba(0, 255, 65, 0.2) !important; }
-[data-theme='matrix'] .border-white\/10 { border-color: rgba(0, 255, 65, 0.1) !important; }
-[data-theme='matrix'] .from-indigo-900\/20 { --tw-gradient-from: rgba(0, 255, 65, 0.1) !important; }
-[data-theme='matrix'] .text-emerald-400, [data-theme='matrix'] .text-emerald-500 { color: #00ff41 !important; }
-[data-theme='matrix'] .bg-emerald-500, [data-theme='matrix'] .bg-emerald-400 { background-color: #00ff41 !important; }
-[data-theme='matrix'] .bg-emerald-500\/20 { background-color: rgba(0, 255, 65, 0.2) !important; }
-[data-theme='matrix'] .bg-emerald-500\/10 { background-color: rgba(0, 255, 65, 0.1) !important; }
-[data-theme='matrix'] .bg-zinc-950 { background-color: #011406 !important; }
+/* ═══════════════════════════════════════════════════════════════
+   Portfolio Theme System
+   
+   Each theme overrides --accent-* CSS variables which Tailwind's
+   emerald-* classes reference. This means ALL 222+ emerald color
+   usages (including /opacity variants, hover:, border-, bg-, text-)
+   automatically update when the theme changes. Zero component edits.
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Synthwave Theme ── */
-[data-theme='synthwave'] body { background-color: #0b001a !important; color: #ff00ff !important; }
-[data-theme='synthwave'] .text-white { color: #ff00ff !important; }
-[data-theme='synthwave'] .text-white\/90 { color: rgba(255, 0, 255, 0.9) !important; }
-[data-theme='synthwave'] .text-white\/80 { color: rgba(255, 0, 255, 0.8) !important; }
-[data-theme='synthwave'] .text-white\/70 { color: rgba(255, 0, 255, 0.7) !important; }
-[data-theme='synthwave'] .text-white\/60 { color: rgba(255, 0, 255, 0.6) !important; }
-[data-theme='synthwave'] .text-white\/50 { color: rgba(255, 0, 255, 0.5) !important; }
-[data-theme='synthwave'] .text-white\/40 { color: rgba(255, 0, 255, 0.4) !important; }
-[data-theme='synthwave'] .text-white\/30 { color: rgba(255, 0, 255, 0.3) !important; }
-[data-theme='synthwave'] .bg-white { background-color: #ff00ff !important; color: #000 !important; }
-[data-theme='synthwave'] .bg-white\/10 { background-color: rgba(255, 0, 255, 0.1) !important; }
-[data-theme='synthwave'] .bg-white\/5 { background-color: rgba(255, 0, 255, 0.05) !important; }
-[data-theme='synthwave'] .bg-black { background-color: #05000a !important; }
-[data-theme='synthwave'] .bg-black\/80 { background-color: rgba(5,0,10,0.8) !important; }
-[data-theme='synthwave'] .bg-black\/90 { background-color: rgba(5,0,10,0.9) !important; }
-[data-theme='synthwave'] .border-white\/20 { border-color: rgba(255, 0, 255, 0.2) !important; }
-[data-theme='synthwave'] .border-white\/10 { border-color: rgba(255, 0, 255, 0.1) !important; }
-[data-theme='synthwave'] .from-indigo-900\/20 { --tw-gradient-from: rgba(0, 255, 255, 0.15) !important; }
-[data-theme='synthwave'] .from-transparent { --tw-gradient-from: transparent !important; }
-[data-theme='synthwave'] .text-emerald-400, [data-theme='synthwave'] .text-emerald-500 { color: #00ffff !important; text-shadow: 0 0 10px rgba(0,255,255,0.5); }
-[data-theme='synthwave'] .bg-emerald-500, [data-theme='synthwave'] .bg-emerald-400 { background-color: #00ffff !important; box-shadow: 0 0 10px rgba(0,255,255,0.5); }
-[data-theme='synthwave'] .bg-emerald-500\/20 { background-color: rgba(0, 255, 255, 0.2) !important; }
-[data-theme='synthwave'] .bg-emerald-500\/10 { background-color: rgba(0, 255, 255, 0.1) !important; }
-[data-theme='synthwave'] .bg-zinc-950 { background-color: #1a0033 !important; }
+/* ── Default (Emerald) — uses :root values, no overrides needed ── */
+
+/* ── Titan (Monochrome) ── */
+[data-theme="titan"] {
+  --accent-100: 0 0% 95%;
+  --accent-300: 0 0% 80%;
+  --accent-400: 0 0% 100%;
+  --accent-500: 0 0% 85%;
+  --accent-900: 0 0% 20%;
+  --accent-950: 0 0% 10%;
+}
+
+/* ── Matrix (Green Terminal) ── */
+[data-theme="matrix"] {
+  --accent-100: 120 100% 90%;
+  --accent-300: 120 100% 70%;
+  --accent-400: 120 100% 50%;
+  --accent-500: 120 100% 45%;
+  --accent-900: 120 100% 15%;
+  --accent-950: 120 100% 8%;
+  --background: 120 50% 2%;
+  --foreground: 120 100% 50%;
+  --card: 120 40% 4%;
+  --card-foreground: 120 100% 50%;
+  --border: 120 100% 12%;
+  --muted-foreground: 120 60% 40%;
+}
+[data-theme="matrix"] body {
+  background-color: #020d02 !important;
+}
+
+/* ── Synthwave (Neon Retro) ── */
+[data-theme="synthwave"] {
+  --accent-100: 180 100% 90%;
+  --accent-300: 180 100% 70%;
+  --accent-400: 180 100% 50%;
+  --accent-500: 300 100% 50%;
+  --accent-900: 280 100% 15%;
+  --accent-950: 280 100% 8%;
+  --background: 270 60% 4%;
+  --foreground: 300 100% 80%;
+  --card: 270 50% 6%;
+  --card-foreground: 300 100% 80%;
+  --border: 280 60% 15%;
+  --muted-foreground: 280 40% 50%;
+}
+[data-theme="synthwave"] body {
+  background-color: #0d0221 !important;
+}
+
+/* ── Dracula (IDE Classic) ── */
+[data-theme="dracula"] {
+  --accent-100: 326 100% 92%;
+  --accent-300: 326 100% 80%;
+  --accent-400: 326 100% 74%;
+  --accent-500: 265 89% 78%;
+  --accent-900: 231 15% 22%;
+  --accent-950: 231 15% 14%;
+  --background: 231 15% 18%;
+  --foreground: 60 30% 96%;
+  --card: 232 14% 21%;
+  --card-foreground: 60 30% 96%;
+  --border: 232 14% 25%;
+  --muted-foreground: 60 10% 60%;
+}
+[data-theme="dracula"] body {
+  background-color: #282a36 !important;
+}
+
+/* ── Nord (Arctic Minimal) ── */
+[data-theme="nord"] {
+  --accent-100: 213 32% 90%;
+  --accent-300: 213 32% 72%;
+  --accent-400: 210 34% 63%;
+  --accent-500: 193 43% 67%;
+  --accent-900: 220 16% 26%;
+  --accent-950: 220 16% 18%;
+  --background: 220 16% 22%;
+  --foreground: 219 28% 88%;
+  --card: 220 16% 25%;
+  --card-foreground: 219 28% 88%;
+  --border: 220 16% 30%;
+  --muted-foreground: 219 20% 55%;
+}
+[data-theme="nord"] body {
+  background-color: #2e3440 !important;
+}
+
+/* ── Cyberpunk (Neon Edge) ── */
+[data-theme="cyberpunk"] {
+  --accent-100: 184 100% 90%;
+  --accent-300: 184 100% 65%;
+  --accent-400: 184 100% 50%;
+  --accent-500: 56 98% 52%;
+  --accent-900: 0 0% 10%;
+  --accent-950: 0 0% 4%;
+  --background: 0 0% 5%;
+  --foreground: 56 98% 52%;
+  --card: 0 0% 7%;
+  --card-foreground: 56 98% 52%;
+  --border: 56 98% 15%;
+  --muted-foreground: 56 60% 40%;
+}
+[data-theme="cyberpunk"] body {
+  background-color: #0d0d0d !important;
+}
+
+/* ── Midnight (Modern SaaS) ── */
+[data-theme="midnight"] {
+  --accent-100: 224 76% 92%;
+  --accent-300: 224 76% 72%;
+  --accent-400: 239 84% 67%;
+  --accent-500: 243 75% 59%;
+  --accent-900: 224 71% 15%;
+  --accent-950: 224 71% 8%;
+  --background: 222 47% 5%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 8%;
+  --card-foreground: 210 40% 98%;
+  --border: 222 47% 14%;
+  --muted-foreground: 215 20% 50%;
+}
+[data-theme="midnight"] body {
+  background-color: #020617 !important;
+}
+
+/* ── Solarized Dark ── */
+[data-theme="solarized"] {
+  --accent-100: 45 100% 85%;
+  --accent-300: 45 100% 55%;
+  --accent-400: 45 100% 40%;
+  --accent-500: 175 59% 40%;
+  --accent-900: 192 100% 14%;
+  --accent-950: 192 100% 8%;
+  --background: 192 100% 11%;
+  --foreground: 186 8% 55%;
+  --card: 192 81% 14%;
+  --card-foreground: 186 8% 55%;
+  --border: 194 14% 20%;
+  --muted-foreground: 186 8% 44%;
+}
+[data-theme="solarized"] body {
+  background-color: #002b36 !important;
+}

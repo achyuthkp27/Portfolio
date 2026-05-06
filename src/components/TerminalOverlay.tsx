@@ -12,7 +12,14 @@ interface TerminalOverlayProps {
 
 export default function TerminalOverlay({ forceOpen = false, onClose }: TerminalOverlayProps) {
   const [isOpen, setIsOpen] = useState(forceOpen);
-  const [theme, setTheme] = useState<'emerald' | 'amber' | 'zinc'>('emerald');
+  const [theme, setTheme] = useState<'emerald' | 'amber' | 'zinc'>(() => {
+    const saved = localStorage.getItem('terminal_theme');
+    return (saved as 'emerald' | 'amber' | 'zinc') || 'emerald';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('terminal_theme', theme);
+  }, [theme]);
   const [githubRepos, setGithubRepos] = useState<GitHubRepo[]>([]);
   const [history, setHistory] = useState<{ type: 'input' | 'output' | 'system' | 'error'; text: string | React.ReactNode }[]>([
     { type: 'system', text: 'Welcome to ACHYUTH_OS v2.4.1 [Secure Line]' },
@@ -30,6 +37,17 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
   // Fetch GitHub repos on mount
   useEffect(() => {
     fetchLatestRepositories(5).then(setGithubRepos);
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Scroll locking & Focus
@@ -189,9 +207,11 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         } else if (args === 'zinc') {
             setTheme('zinc');
             newHistory.push({ type: 'system', text: 'COLOR_MATRIX: ZINC_MONOCHROME_ACTIVATED' });
-        } else {
+        } else if (args === 'emerald') {
             setTheme('emerald');
             newHistory.push({ type: 'system', text: 'COLOR_MATRIX: EMERALD_PHOSPHOR_ACTIVATED' });
+        } else {
+            newHistory.push({ type: 'output', text: 'Usage: theme <name>\nAvailable themes: emerald, amber, zinc' });
         }
         break;
       case 'diagnostics':

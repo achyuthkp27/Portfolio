@@ -4,6 +4,14 @@
 
 @layer base {
   :root {
+    /* Accent Color System — default: Emerald */
+    --accent-100: 152 81% 96%;
+    --accent-300: 156 72% 67%;
+    --accent-400: 158 64% 52%;
+    --accent-500: 160 84% 39%;
+    --accent-900: 164 86% 16%;
+    --accent-950: 166 91% 9%;
+
     /* Titan Theme: Deep Black & Monochrome */
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
@@ -39,10 +47,18 @@
     /* Titan Gradients - Subtle & Deep */
     --gradient-cyber: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 70%));
     --gradient-neon: linear-gradient(90deg, hsl(0 0% 100%), hsl(0 0% 60%));
-    --gradient-aurora: linear-gradient(135deg, hsl(220 20% 10%), hsl(220 20% 5%));
+    --gradient-aurora: linear-gradient(
+      135deg,
+      hsl(220 20% 10%),
+      hsl(220 20% 5%)
+    );
     --gradient-dark: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 5%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 5%), hsl(0 0% 2%));
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 5% / 0.8), hsl(0 0% 0% / 0.9));
+    --gradient-glass: linear-gradient(
+      135deg,
+      hsl(0 0% 5% / 0.8),
+      hsl(0 0% 0% / 0.9)
+    );
 
     /* Shadows - Clean & Sharp */
     --shadow-neon: 0 0 20px hsl(0 0% 100% / 0.1);
@@ -61,9 +77,9 @@
     --sidebar-ring: 0 0% 98%;
 
     /* Custom Fonts */
-    --font-display: 'Inter', sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: "Inter", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
   }
 
   .light {
@@ -94,7 +110,11 @@
     --ring: 0 0% 5%;
 
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 96%));
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.9), hsl(0 0% 98% / 0.7));
+    --gradient-glass: linear-gradient(
+      135deg,
+      hsl(0 0% 100% / 0.9),
+      hsl(0 0% 98% / 0.7)
+    );
     --shadow-neon: 0 0 20px hsl(0 0% 0% / 0.1);
     --shadow-glow: 0 0 20px hsl(0 0% 0% / 0.05);
   }
@@ -235,11 +255,15 @@
 
   .neon-border {
     @apply border border-primary/50;
-    box-shadow: 0 0 15px hsl(var(--primary) / 0.3), inset 0 0 15px hsl(var(--primary) / 0.1);
+    box-shadow:
+      0 0 15px hsl(var(--primary) / 0.3),
+      inset 0 0 15px hsl(var(--primary) / 0.1);
   }
 
   .neon-text {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.5);
+    text-shadow:
+      0 0 10px hsl(var(--primary) / 0.8),
+      0 0 30px hsl(var(--primary) / 0.5);
   }
 
   .noise {
@@ -248,7 +272,7 @@
   }
 
   .noise::after {
-    content: '';
+    content: "";
     position: fixed;
     inset: 0;
     z-index: 50;
@@ -298,7 +322,6 @@
   }
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0px);
@@ -310,14 +333,17 @@
   }
 
   @keyframes pulseGlow {
-
     0%,
     100% {
-      box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 0 40px hsl(var(--primary) / 0.2);
+      box-shadow:
+        0 0 20px hsl(var(--primary) / 0.4),
+        0 0 40px hsl(var(--primary) / 0.2);
     }
 
     50% {
-      box-shadow: 0 0 40px hsl(var(--primary) / 0.6), 0 0 80px hsl(var(--primary) / 0.3);
+      box-shadow:
+        0 0 40px hsl(var(--primary) / 0.6),
+        0 0 80px hsl(var(--primary) / 0.3);
     }
   }
 
@@ -355,13 +381,22 @@
   }
 
   @keyframes shimmer-iridescent {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
 
   @keyframes number-watermark-float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-4px) scale(1.02); }
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-4px) scale(1.02);
+    }
   }
 
   .animate-watermark-float {
@@ -382,13 +417,20 @@
     position: relative;
   }
   .gradient-border::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     padding: 1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(16,185,129,0.3), rgba(255,255,255,0.1));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(16, 185, 129, 0.3),
+      rgba(255, 255, 255, 0.1)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -398,13 +440,13 @@
   .text-iridescent {
     background: linear-gradient(
       110deg,
-      rgba(255,255,255,0.4) 0%,
-      rgba(255,255,255,0.6) 20%,
-      rgba(212,212,216,0.7) 35%,
-      rgba(161,161,170,0.7) 50%,
-      rgba(113,113,122,0.7) 65%,
-      rgba(255,255,255,0.6) 80%,
-      rgba(255,255,255,0.4) 100%
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.6) 20%,
+      rgba(212, 212, 216, 0.7) 35%,
+      rgba(161, 161, 170, 0.7) 50%,
+      rgba(113, 113, 122, 0.7) 65%,
+      rgba(255, 255, 255, 0.6) 80%,
+      rgba(255, 255, 255, 0.4) 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
@@ -414,8 +456,12 @@
   }
 
   @keyframes shimmer {
-    0% { transform: translateX(-150%); }
-    100% { transform: translateX(150%); }
+    0% {
+      transform: translateX(-150%);
+    }
+    100% {
+      transform: translateX(150%);
+    }
   }
 }
 
@@ -424,15 +470,32 @@
 /* ── Mobile Performance Overrides ── */
 @media (max-width: 768px) {
   /* Reduce expensive backdrop-blur on mobile GPUs */
-  .backdrop-blur-xl { backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; }
-  .backdrop-blur-md { backdrop-filter: blur(4px) !important; -webkit-backdrop-filter: blur(4px) !important; }
-  .backdrop-blur-2xl { backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; }
-  .glass, .glass-card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .backdrop-blur-xl {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  .backdrop-blur-md {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+  .glass,
+  .glass-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 
   /* Disable noise overlay on mobile — SVG turbulence filter is extremely GPU-intensive */
-  .noise::after { display: none !important; }
+  .noise::after {
+    display: none !important;
+  }
 
-  .grid-pattern { display: none !important; }
+  .grid-pattern {
+    display: none !important;
+  }
 
   .text-iridescent {
     animation: none !important;
@@ -450,7 +513,9 @@
 
 /* ── Reduced Motion Support ── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

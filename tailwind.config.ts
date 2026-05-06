@@ -21,6 +21,14 @@ export default {
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
+        emerald: {
+          100: "hsl(var(--accent-100) / <alpha-value>)",
+          300: "hsl(var(--accent-300) / <alpha-value>)",
+          400: "hsl(var(--accent-400) / <alpha-value>)",
+          500: "hsl(var(--accent-500) / <alpha-value>)",
+          900: "hsl(var(--accent-900) / <alpha-value>)",
+          950: "hsl(var(--accent-950) / <alpha-value>)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
