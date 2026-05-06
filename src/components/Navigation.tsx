@@ -1,6 +1,6 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useSmoothScroll } from "./ui/SmoothScroll";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, Download } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
@@ -9,6 +9,7 @@ import Logo from "./ui/Logo";
 import MagneticButton from "./ui/MagneticButton";
 
 const Navigation = () => {
+  const scrollTrackerRef = useRef<NodeJS.Timeout | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -104,6 +105,12 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     setIsMobileMenuOpen(false);
 
+    // Clear any existing scroll tracking interval to prevent conflicts if user clicks multiple links
+    if (scrollTrackerRef.current) {
+      clearInterval(scrollTrackerRef.current);
+      scrollTrackerRef.current = null;
+    }
+
     let targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
 
     if (targetElement) {
@@ -134,12 +141,22 @@ const Navigation = () => {
 
         scrollRetries++;
         if (scrollRetries >= 30) {
-          clearInterval(poll); // Stop tracking after 6 seconds (30 * 200ms)
+          if (scrollTrackerRef.current) {
+            clearInterval(scrollTrackerRef.current);
+            scrollTrackerRef.current = null;
+          }
         }
       }, 200);
 
+      scrollTrackerRef.current = poll;
+
       // If the user manually interacts with the scrollbar/wheel, stop tracking to avoid fighting them
-      const stopTracking = () => clearInterval(poll);
+      const stopTracking = () => {
+        if (scrollTrackerRef.current) {
+          clearInterval(scrollTrackerRef.current);
+          scrollTrackerRef.current = null;
+        }
+      };
       window.addEventListener('wheel', stopTracking, { once: true, passive: true });
       window.addEventListener('touchstart', stopTracking, { once: true, passive: true });
     }
