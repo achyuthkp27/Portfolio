@@ -127,3 +127,11 @@ dist-ssr
 # System Files
 .DS_Store
 Thumbs.db
+
+# Agent
+.agent/
+
+# Graphify
+graphify-out/
+graphify-env/
+.graphifyignore

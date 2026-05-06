@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -15,6 +15,7 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { useLoading } from "./context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
+import { useIdleMount } from "@/hooks/useIdleMount";
 
 // Lazy load the project detail page
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
@@ -27,15 +28,24 @@ const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((modul
 const TerminalOverlay = lazy(() => import("@/components/TerminalOverlay"));
 const ActivityWidget = lazy(() => import("@/components/ActivityWidget"));
 
+const RouteLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-transparent">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
+      <span className="font-mono text-xs text-white/40 tracking-widest uppercase">LOADING_MODULE...</span>
+    </div>
+  </div>
+);
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
-        <Route path="/project/:slug" element={<Suspense fallback={<div>Loading project...</div>}><ProjectDetail /></Suspense>} />
-        <Route path="/blog" element={<Suspense fallback={<div>Loading blog...</div>}><BlogList /></Suspense>} />
-        <Route path="/blog/:slug" element={<Suspense fallback={<div>Loading article...</div>}><BlogPost /></Suspense>} />
+        <Route path="/project/:slug" element={<Suspense fallback={<RouteLoader />}><ProjectDetail /></Suspense>} />
+        <Route path="/blog" element={<Suspense fallback={<RouteLoader />}><BlogList /></Suspense>} />
+        <Route path="/blog/:slug" element={<Suspense fallback={<RouteLoader />}><BlogPost /></Suspense>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -46,65 +56,7 @@ const AnimatedRoutes = () => {
 const DeferredExperience = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    let idleId: ReturnType<typeof setTimeout> | number | undefined;
-
-    const mountEnhancements = () => {
-      setIsReady(true);
-      removeInteractionListeners();
-    };
-    const handleInteraction = () => mountEnhancements();
-
-    const addInteractionListeners = () => {
-      if (typeof window === "undefined") return;
-      const opts = { once: true, passive: true } as AddEventListenerOptions;
-      window.addEventListener("scroll", handleInteraction, opts);
-      window.addEventListener("mousemove", handleInteraction, opts);
-      window.addEventListener("keydown", handleInteraction, opts);
-      window.addEventListener("touchstart", handleInteraction, opts);
-    };
-
-    const removeInteractionListeners = () => {
-      if (typeof window === "undefined") return;
-      window.removeEventListener("scroll", handleInteraction);
-      window.removeEventListener("mousemove", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
-    };
-
-    const scheduleIdleMount = () => {
-      if (typeof window === "undefined") return;
-      if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(mountEnhancements, { timeout: 12000 });
-      } else {
-        idleId = setTimeout(mountEnhancements, 12000);
-      }
-    };
-
-    addInteractionListeners();
-    if (typeof window !== "undefined") {
-      timeoutId = setTimeout(scheduleIdleMount, isMobile ? 10000 : 8000);
-    }
-
-    return () => {
-      removeInteractionListeners();
-      if (timeoutId !== undefined) {
-        clearTimeout(timeoutId);
-      }
-      if (idleId !== undefined) {
-        if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
-          window.cancelIdleCallback(idleId as number);
-        } else {
-          clearTimeout(idleId as ReturnType<typeof setTimeout>);
-        }
-      }
-    };
-  }, [isLoading, isMobile]);
+  const isReady = useIdleMount(!isLoading, isMobile ? 10000 : 8000);
 
   if (!isReady) {
     return null;
@@ -135,6 +87,13 @@ const App = () => (
           <Toaster />
           <HashRouter>
             <ThemeProvider>
+              {/* Skip to main content — accessibility */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:text-sm focus:font-mono"
+              >
+                Skip to content
+              </a>
               <DeferredExperience />
               <Navigation />
               <SmoothScroll>

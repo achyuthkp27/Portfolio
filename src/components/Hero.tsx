@@ -1,11 +1,13 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useRef } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import ExperienceTimer from "./ui/ExperienceTimer";
 
+import { lazy, Suspense } from "react";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 import { useMobile } from "@/hooks/useMobile";
+import { useIdleMount } from "@/hooks/useIdleMount";
 
 import DecryptText from "@/components/ui/DecryptText";
 
@@ -22,32 +24,7 @@ const Hero = () => {
   const ref = useRef<HTMLElement>(null);
 
   const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
-  const [showSpaceScene, setShowSpaceScene] = useState(false);
-
-  useEffect(() => {
-    if (!shouldRenderDesktopScene || isLoading) return;
-
-    let idleId: ReturnType<typeof setTimeout> | number | undefined;
-    const mountScene = () => setShowSpaceScene(true);
-
-    if (typeof window === "undefined") return;
-
-    if (typeof window.requestIdleCallback === "function") {
-      idleId = window.requestIdleCallback(mountScene, { timeout: 1500 });
-    } else {
-      idleId = setTimeout(mountScene, 1500);
-    }
-
-    return () => {
-      if (idleId !== undefined) {
-        if (typeof window !== "undefined" && typeof window.cancelIdleCallback === "function") {
-          window.cancelIdleCallback(idleId as number);
-        } else {
-          clearTimeout(idleId as ReturnType<typeof setTimeout>);
-        }
-      }
-    };
-  }, [shouldRenderDesktopScene, isLoading]);
+  const showSpaceScene = useIdleMount(shouldRenderDesktopScene && !isLoading, 1500, 3000);
 
   // Dynamic Experience Calculation (Start: July 2021)
   const startDate = new Date("2021-07-01");

@@ -48,12 +48,14 @@ Designed to be more than just a resume, this portfolio is an experience—demons
 ## 🏃‍♂️ Running Locally
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/achyuthkp27/Portfolio.git
    cd Portfolio
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -62,7 +64,7 @@ Designed to be more than just a resume, this portfolio is an experience—demons
    ```bash
    npm run dev
    ```
-   The application will be available at `http://localhost:5173`.
+   The application will be available at `http://localhost:8080`.
 
 ## 🏗️ Building for Production
 

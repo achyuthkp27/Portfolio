@@ -101,7 +101,7 @@ const ProcessSection = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     return (
-        <section className="py-24 px-6 md:px-12 relative bg-transparent" ref={ref}>
+        <section id="process" className="py-24 px-6 md:px-12 relative bg-transparent" ref={ref}>
             <div className="max-w-7xl mx-auto">
                 <div className="mb-16"> {/* Removed TextReveal from here */}
                     <SectionHeader 
