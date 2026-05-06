@@ -3,7 +3,7 @@ import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect, useRef } from "react";
 import { Menu, Download } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Logo from "./ui/Logo";
 import MagneticButton from "./ui/MagneticButton";
@@ -16,6 +16,7 @@ const Navigation = () => {
   const { theme, toggleTheme } = useTheme();
   const { lenis } = useSmoothScroll();
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === "/" || location.pathname === "";
 
   // Close mobile menu on Escape key
@@ -109,6 +110,18 @@ const Navigation = () => {
     if (scrollTrackerRef.current) {
       clearInterval(scrollTrackerRef.current);
       scrollTrackerRef.current = null;
+    }
+
+    // If we're NOT on the homepage, navigate there first, then scroll
+    if (!isHomePage) {
+      navigate("/");
+      setTimeout(() => {
+        const el = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500);
+      return;
     }
 
     let targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);

@@ -62,8 +62,8 @@ export function CommandMenu() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200" onWheel={(e) => e.stopPropagation()}>
-      <div className="w-full max-w-lg rounded-xl border border-white/10 bg-black/90 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200" onWheel={(e) => e.stopPropagation()} data-command-menu>
+      <div className="w-full max-w-lg rounded-xl border border-white/10 bg-[#0a0a0a]/95 shadow-2xl overflow-hidden">
         <Command label="Global Command Menu" className="w-full text-white">
           <Command.Input 
             autoFocus 
@@ -76,7 +76,7 @@ export function CommandMenu() {
             </Command.Empty>
 
             <Command.Group heading="Navigation" className="text-xs font-mono text-white/40 px-2 pt-3 pb-1 uppercase tracking-wider">
-              <Command.Item onSelect={() => runCommand(() => navigate("/"))} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
+              <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <Home className="h-4 w-4" /> Home
               </Command.Item>
               <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => document.getElementById("projects")?.scrollIntoView(), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
@@ -103,6 +103,10 @@ export function CommandMenu() {
               <Command.Item onSelect={() => setTheme('titan')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'titan' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
                 <Monitor className="h-4 w-4" /> Titan (Monochrome)
                 {activeTheme === 'titan' && <Check className="h-4 w-4 ml-auto" />}
+              </Command.Item>
+              <Command.Item onSelect={() => setTheme('light')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'light' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
+                <Monitor className="h-4 w-4" /> Light (Clean)
+                {activeTheme === 'light' && <Check className="h-4 w-4 ml-auto" />}
               </Command.Item>
               <Command.Item onSelect={() => setTheme('dracula')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'dracula' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
                 <Palette className="h-4 w-4" /> Dracula (IDE Classic)

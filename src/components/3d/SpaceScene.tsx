@@ -90,6 +90,12 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     
     const [hovered, setHovered] = useState(false);
 
+    // Theme-aware base color
+    const getBaseColor = () => {
+        const theme = document.documentElement.getAttribute('data-theme');
+        return theme === 'light' ? new THREE.Color("#222222") : new THREE.Color("#ffffff");
+    };
+
     useFrame((state) => {
         if (!animEnabled && !hovered) return;
         if (!groupRef.current || !shockwaveRef.current || !shockwaveRef2.current || !mainMatRef.current || !innerMatRef.current) return;
@@ -139,12 +145,12 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
 
         } else {
             // --- Reset Logic ---
-            const whiteColor = new THREE.Color("#ffffff");
-            mainMatRef.current.color.copy(whiteColor);
-            mainMatRef.current.emissive.copy(whiteColor);
-            innerMatRef.current.color.copy(whiteColor);
-            (shockwaveRef.current.material as THREE.MeshStandardMaterial).color.copy(whiteColor);
-            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).color.copy(whiteColor);
+            const baseColor = getBaseColor();
+            mainMatRef.current.color.copy(baseColor);
+            mainMatRef.current.emissive.copy(baseColor);
+            innerMatRef.current.color.copy(baseColor);
+            (shockwaveRef.current.material as THREE.MeshStandardMaterial).color.copy(baseColor);
+            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).color.copy(baseColor);
 
             groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
             groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, 0.1);

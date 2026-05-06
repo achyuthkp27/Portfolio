@@ -151,3 +151,272 @@
 [data-theme="solarized"] body {
   background-color: #002b36 !important;
 }
+
+/* ── Light (Clean & Minimal) ── */
+[data-theme="light"] {
+  --accent-100: 152 81% 96%;
+  --accent-300: 156 72% 42%;
+  --accent-400: 158 64% 36%;
+  --accent-500: 160 84% 30%;
+  --accent-900: 164 86% 90%;
+  --accent-950: 166 91% 95%;
+  --background: 0 0% 98%;
+  --foreground: 0 0% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+  --primary: 0 0% 8%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 93%;
+  --secondary-foreground: 0 0% 8%;
+  --muted: 0 0% 93%;
+  --muted-foreground: 0 0% 40%;
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+  --ring: 160 84% 39%;
+}
+[data-theme="light"] body {
+  background-color: #fafafa !important;
+  color: #141414 !important;
+}
+
+/* Text color flips */
+[data-theme="light"] .text-white {
+  color: #141414 !important;
+}
+[data-theme="light"] .text-white\/90 {
+  color: rgba(20, 20, 20, 0.9) !important;
+}
+[data-theme="light"] .text-white\/80 {
+  color: rgba(20, 20, 20, 0.8) !important;
+}
+[data-theme="light"] .text-white\/70 {
+  color: rgba(20, 20, 20, 0.7) !important;
+}
+[data-theme="light"] .text-white\/60 {
+  color: rgba(20, 20, 20, 0.6) !important;
+}
+[data-theme="light"] .text-white\/50 {
+  color: rgba(20, 20, 20, 0.5) !important;
+}
+[data-theme="light"] .text-white\/40 {
+  color: rgba(20, 20, 20, 0.4) !important;
+}
+[data-theme="light"] .text-white\/30 {
+  color: rgba(20, 20, 20, 0.3) !important;
+}
+[data-theme="light"] .text-white\/20 {
+  color: rgba(20, 20, 20, 0.2) !important;
+}
+[data-theme="light"] .text-white\/10 {
+  color: rgba(20, 20, 20, 0.1) !important;
+}
+/* Background flips */
+[data-theme="light"] .bg-black {
+  background-color: #fafafa !important;
+}
+[data-theme="light"] .bg-black\/80 {
+  background-color: rgba(250, 250, 250, 0.8) !important;
+}
+[data-theme="light"] .bg-black\/90 {
+  background-color: rgba(250, 250, 250, 0.9) !important;
+}
+[data-theme="light"] .bg-black\/60 {
+  background-color: rgba(250, 250, 250, 0.6) !important;
+}
+[data-theme="light"] .bg-black\/50 {
+  background-color: rgba(250, 250, 250, 0.5) !important;
+}
+[data-theme="light"] .bg-black\/40 {
+  background-color: rgba(250, 250, 250, 0.4) !important;
+}
+[data-theme="light"] .bg-white {
+  background-color: #141414 !important;
+  color: #fafafa !important;
+}
+[data-theme="light"] .bg-white\/5 {
+  background-color: rgba(20, 20, 20, 0.05) !important;
+}
+[data-theme="light"] .bg-white\/10 {
+  background-color: rgba(20, 20, 20, 0.06) !important;
+}
+[data-theme="light"] .bg-white\/\[0\.02\] {
+  background-color: rgba(20, 20, 20, 0.02) !important;
+}
+[data-theme="light"] .bg-white\/\[0\.03\] {
+  background-color: rgba(20, 20, 20, 0.03) !important;
+}
+/* Border flips */
+[data-theme="light"] .border-white\/10 {
+  border-color: rgba(20, 20, 20, 0.1) !important;
+}
+[data-theme="light"] .border-white\/20 {
+  border-color: rgba(20, 20, 20, 0.15) !important;
+}
+[data-theme="light"] .border-white\/5 {
+  border-color: rgba(20, 20, 20, 0.05) !important;
+}
+[data-theme="light"] .border-white\/\[0\.08\] {
+  border-color: rgba(20, 20, 20, 0.08) !important;
+}
+[data-theme="light"] .border-white\/40 {
+  border-color: rgba(20, 20, 20, 0.3) !important;
+}
+[data-theme="light"] .border-white\/30 {
+  border-color: rgba(20, 20, 20, 0.2) !important;
+}
+/* Gradient & zinc flips */
+[data-theme="light"] .bg-zinc-950 {
+  background-color: #f5f5f5 !important;
+}
+[data-theme="light"] .from-black {
+  --tw-gradient-from: #fafafa !important;
+}
+[data-theme="light"] .via-black {
+  --tw-gradient-stops:
+    var(--tw-gradient-from), #fafafa, var(--tw-gradient-to) !important;
+}
+[data-theme="light"] .to-black {
+  --tw-gradient-to: #fafafa !important;
+}
+[data-theme="light"] .via-zinc-950 {
+  --tw-gradient-stops:
+    var(--tw-gradient-from), #f5f5f5, var(--tw-gradient-to) !important;
+}
+[data-theme="light"] .from-indigo-900\/20 {
+  --tw-gradient-from: rgba(100, 100, 255, 0.08) !important;
+}
+[data-theme="light"] .from-indigo-900\/10 {
+  --tw-gradient-from: rgba(100, 100, 255, 0.04) !important;
+}
+/* Shadows and glows - soften for light mode */
+[data-theme="light"] .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+/* Gray text adjustments */
+[data-theme="light"] .text-gray-400 {
+  color: #555 !important;
+}
+[data-theme="light"] .text-gray-300 {
+  color: #444 !important;
+}
+
+/* CREATIVE DEVELOPER — gradient text visible on white */
+[data-theme="light"] .text-iridescent {
+  background: linear-gradient(
+    110deg,
+    rgba(20, 20, 20, 0.5) 0%,
+    rgba(20, 20, 20, 0.8) 20%,
+    rgba(60, 60, 60, 0.9) 35%,
+    rgba(80, 80, 80, 0.9) 50%,
+    rgba(60, 60, 60, 0.9) 65%,
+    rgba(20, 20, 20, 0.8) 80%,
+    rgba(20, 20, 20, 0.5) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Experience timeline — vertical line & scan beam */
+[data-theme="light"] .bg-white\/10 {
+  background-color: rgba(20, 20, 20, 0.1) !important;
+}
+[data-theme="light"] .via-white {
+  --tw-gradient-stops:
+    var(--tw-gradient-from), rgba(20, 20, 20, 0.4), var(--tw-gradient-to) !important;
+}
+
+/* Services / card section fixes */
+[data-theme="light"] .backdrop-blur-md {
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme="light"] .hover\:bg-white\/5:hover {
+  background-color: rgba(20, 20, 20, 0.03) !important;
+}
+
+/* Glass card & bento overrides */
+[data-theme="light"] .glass-card {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+}
+[data-theme="light"] .bg-gradient-to-br.from-black\/60 {
+  background: rgba(245, 245, 245, 0.9) !important;
+}
+[data-theme="light"] .from-black\/60 {
+  --tw-gradient-from: rgba(245, 245, 245, 0.95) !important;
+}
+[data-theme="light"] .to-black\/80 {
+  --tw-gradient-to: rgba(240, 240, 240, 0.95) !important;
+}
+
+/* SpaceScene canvas background */
+[data-theme="light"] canvas {
+  background-color: transparent !important;
+}
+
+/* Grid pattern and overlay fixes */
+[data-theme="light"] .grid-pattern {
+  opacity: 0.05 !important;
+}
+
+/* Tag/pill borders in cards */
+[data-theme="light"] .hover\:border-emerald-500\/50:hover {
+  border-color: hsl(var(--accent-500) / 0.5) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Command Menu — MUST be at the very end to override all themes.
+   Uses doubled attribute selector for highest specificity.
+   ═══════════════════════════════════════════════════════════════ */
+[data-command-menu][data-command-menu] .text-white,
+[data-command-menu][data-command-menu] .text-white\/90,
+[data-command-menu][data-command-menu] .text-white\/80 {
+  color: #fff !important;
+}
+[data-command-menu][data-command-menu] .text-white\/50 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+[data-command-menu][data-command-menu] .text-white\/40 {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+[data-command-menu][data-command-menu] .text-white\/30 {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+[data-command-menu][data-command-menu] .text-white\/20 {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+[data-command-menu][data-command-menu] .text-white\/10 {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-command-menu][data-command-menu] .bg-white\/10,
+[data-command-menu][data-command-menu]
+  .aria-selected\:bg-white\/10[aria-selected="true"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-command-menu][data-command-menu] .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+[data-command-menu][data-command-menu] .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-command-menu][data-command-menu] .hover\:bg-white\/10:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-command-menu][data-command-menu] .hover\:text-white:hover {
+  color: #fff !important;
+}
+[data-command-menu][data-command-menu]
+  .placeholder\:text-white\/40::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+[data-command-menu][data-command-menu] .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+[data-command-menu][data-command-menu] .bg-black {
+  background-color: #000 !important;
+}
+[data-command-menu][data-command-menu] .bg-black\/90 {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
