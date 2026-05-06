@@ -99,20 +99,43 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
 };
 
 const ProjectsSection = () => {
+  const [projects, setProjects] = useState<GitHubRepo[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<GitHubRepo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string>("ALL");
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
+  
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [projects, setProjects] = useState<GitHubRepo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
   const location = useLocation();
-  const { lenis } = useSmoothScroll();
 
   useEffect(() => {
-    fetchLatestRepositories(6).then((repos) => {
-      setProjects(repos);
-      setIsLoading(false);
-    });
-  }, []);
+    if (isInView) {
+      fetchLatestRepositories(6)
+        .then((data) => {
+          setProjects(data);
+          setFilteredProjects(data);
+          
+          // Extract unique languages
+          const languages = new Set<string>();
+          data.forEach(repo => {
+            if (repo.language) languages.add(repo.language.toUpperCase());
+          });
+          setAvailableLanguages(Array.from(languages).sort());
+          
+          setIsLoading(false);
+        })
+        .catch(console.error);
+    }
+  }, [isInView]);
+
+  useEffect(() => {
+    if (activeFilter === "ALL") {
+      setFilteredProjects(projects);
+    } else {
+      setFilteredProjects(projects.filter(p => p.language?.toUpperCase() === activeFilter));
+    }
+  }, [activeFilter, projects]);
 
   useEffect(() => {
     if (!isLoading && projects.length > 0) {
@@ -147,6 +170,45 @@ const ProjectsSection = () => {
           align="left"
         />
 
+        {/* Filter Bar */}
+        {!isLoading && availableLanguages.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap items-center gap-3 mb-12"
+          >
+            <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest mr-2">
+              FILTER_BY_LANG:
+            </div>
+            
+            <button
+              onClick={() => setActiveFilter("ALL")}
+              className={`px-4 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase transition-all duration-300 ${
+                activeFilter === "ALL" 
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+                  : "bg-white/[0.03] text-white/50 border border-white/10 hover:bg-white/[0.08]"
+              }`}
+            >
+              ALL
+            </button>
+            
+            {availableLanguages.map(lang => (
+              <button
+                key={lang}
+                onClick={() => setActiveFilter(lang)}
+                className={`px-4 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase transition-all duration-300 ${
+                  activeFilter === lang 
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+                    : "bg-white/[0.03] text-white/50 border border-white/10 hover:bg-white/[0.08]"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </motion.div>
+        )}
+
         {/* Dynamic GitHub Repos List */}
         <div className="flex flex-col">
           {isLoading ? (
@@ -154,10 +216,14 @@ const ProjectsSection = () => {
               <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
               <span>SYNCING_REPOSITORIES...</span>
             </div>
-          ) : (
-            projects.map((project, index) => (
+          ) : filteredProjects.length > 0 ? (
+            filteredProjects.map((project, index) => (
               <ProjectCard key={project.name} project={project} index={index} />
             ))
+          ) : (
+            <div className="h-40 flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
+              NO_REPOSITORIES_FOUND_FOR_QUERY
+            </div>
           )}
         </div>
       </div>
