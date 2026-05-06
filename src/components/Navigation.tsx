@@ -104,12 +104,44 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     setIsMobileMenuOpen(false);
 
-    const targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
+    let targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
 
     if (targetElement) {
-      // Start the smooth scroll animation.
-      // We rely entirely on the placeholder minHeight accuracy now to prevent layout shifts.
+      // Start the initial smooth scroll animation
       scrollToTarget(targetElement as HTMLElement);
+
+      // Track the ABSOLUTE document Y coordinate of the target.
+      // We only re-trigger the scroll if a lazy-loaded component above us
+      // mounts and changes its height, shifting the entire document layout.
+      let currentTargetY = targetElement.getBoundingClientRect().top + window.scrollY;
+      let scrollRetries = 0;
+
+      const poll = setInterval(() => {
+        // The placeholder might have been destroyed and replaced by the real section,
+        // so we must continually re-query the DOM element.
+        targetElement = document.querySelector(`section#${targetId}`) || document.getElementById(targetId);
+        
+        if (targetElement) {
+          const newY = targetElement.getBoundingClientRect().top + window.scrollY;
+          
+          // If the element's absolute position in the document shifted by more than 50px
+          // (meaning a layout shift occurred above it), we update the scroll target!
+          if (Math.abs(newY - currentTargetY) > 50) {
+            currentTargetY = newY;
+            scrollToTarget(targetElement as HTMLElement);
+          }
+        }
+
+        scrollRetries++;
+        if (scrollRetries >= 30) {
+          clearInterval(poll); // Stop tracking after 6 seconds (30 * 200ms)
+        }
+      }, 200);
+
+      // If the user manually interacts with the scrollbar/wheel, stop tracking to avoid fighting them
+      const stopTracking = () => clearInterval(poll);
+      window.addEventListener('wheel', stopTracking, { once: true, passive: true });
+      window.addEventListener('touchstart', stopTracking, { once: true, passive: true });
     }
   };
 
