@@ -203,6 +203,7 @@ const Navigation = () => {
                     <a
                       href={item.href}
                       onClick={(e) => handleScroll(e, item.href)}
+                      aria-current={isActive ? "true" : undefined}
                       className={`relative z-10 block px-4 py-1.5 text-[11px] font-mono tracking-widest uppercase transition-colors rounded-full ${
                         isActive
                           ? "text-white"

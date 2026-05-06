@@ -22,6 +22,7 @@ const ContactSection = () => {
     email: "",
     message: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +30,7 @@ const ContactSection = () => {
     try {
       // Validate form data
       const validated = contactFormSchema.parse(formData);
+      setErrors({}); // Clear errors on success
 
       // Construct Mailto link
       const subject = `Portfolio Contact: ${validated.name}`;
@@ -46,9 +48,15 @@ const ContactSection = () => {
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
+        });
+        setErrors(fieldErrors);
+        
         toast({
           title: "Validation Error",
-          description: error.errors[0].message,
+          description: "Please check the highlighted fields.",
           variant: "destructive",
         });
       }
@@ -175,12 +183,24 @@ const ContactSection = () => {
                     <input
                       type="text"
                       id="name"
+                      name="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, name: e.target.value });
+                        if (errors.name) setErrors({ ...errors, name: "" });
+                      }}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10"
+                      aria-required="true"
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       placeholder="ENTER_SENDER_NAME"
                     />
+                    {errors.name && (
+                      <span id="name-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
+                        {errors.name}
+                      </span>
+                    )}
                   </div>
 
                   <div className="group">
@@ -191,12 +211,24 @@ const ContactSection = () => {
                     <input
                       type="email"
                       id="email"
+                      name="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                        if (errors.email) setErrors({ ...errors, email: "" });
+                      }}
                       required
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10"
+                      aria-required="true"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? "email-error" : undefined}
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       placeholder="USER@HOST.COM"
                     />
+                    {errors.email && (
+                      <span id="email-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
+                        {errors.email}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -207,13 +239,25 @@ const ContactSection = () => {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, message: e.target.value });
+                      if (errors.message) setErrors({ ...errors, message: "" });
+                    }}
                     required
+                    aria-required="true"
+                    aria-invalid={!!errors.message}
+                    aria-describedby={errors.message ? "message-error" : undefined}
                     rows={6}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/10"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                     placeholder="INITIATING_MESSAGE_PAYLOAD..."
                   />
+                  {errors.message && (
+                    <span id="message-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
+                      {errors.message}
+                    </span>
+                  )}
                 </div>
 
                 <motion.button
