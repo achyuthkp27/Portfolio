@@ -242,9 +242,10 @@ const Navigation = () => {
 
             <MagneticButton>
               <a
-                href="/resume.pdf"
+                href="/Portfolio/Achyuth KP_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
+                download="Achyuth_KP_Resume.pdf"
                 className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-white/70 hover:text-white transition-all px-4 py-2 hover:bg-white/5 rounded-full group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
