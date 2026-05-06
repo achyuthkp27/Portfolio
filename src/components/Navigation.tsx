@@ -242,7 +242,7 @@ const Navigation = () => {
 
             <MagneticButton>
               <a
-                href="/Portfolio/Achyuth KP_Resume.pdf"
+                href="/Achyuth KP_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 download="Achyuth_KP_Resume.pdf"
