@@ -1,9 +1,9 @@
 import { Server, Database, MessageSquare, HardDrive, LayoutDashboard, type LucideIcon } from "lucide-react";
-import bankingImg from "@/assets/images/projects/banking-platform.jpg";
-import loggingImg from "@/assets/images/projects/logging-system.jpg";
-import notificationImg from "@/assets/images/projects/notification-engine.jpg";
-import storageImg from "@/assets/images/projects/secure-storage.jpg";
-import dashboardImg from "@/assets/images/projects/monitoring-dashboard.jpg";
+const bankingImg = "https://images.unsplash.com/photo-1601597111158-2fcee29a4a0e?q=80&w=800&auto=format&fit=crop";
+const loggingImg = "https://images.unsplash.com/photo-1551288049-bbbda540d3b9?q=80&w=800&auto=format&fit=crop";
+const notificationImg = "https://images.unsplash.com/photo-1557200134-90327ee9fafa?q=80&w=800&auto=format&fit=crop";
+const storageImg = "https://images.unsplash.com/photo-1603398938378-e54eab446ddd?q=80&w=800&auto=format&fit=crop";
+const dashboardImg = "https://images.unsplash.com/photo-1551288049-bbbda540d3b9?q=80&w=800&auto=format&fit=crop";
 
 export type ProjectCategory = 'Backend' | 'Infrastructure' | 'Full-stack' | 'DevOps';
 

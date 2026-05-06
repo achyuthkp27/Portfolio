@@ -1,9 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { Terminal, X } from "lucide-react";
 import { useAnalytics } from "@/lib/analytics";
+import { projects } from "@/data/projects";
+import { experiences } from "@/data/experience";
+import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 
-export default function TerminalOverlay() {
-  const [isOpen, setIsOpen] = useState(false);
+interface TerminalOverlayProps {
+  forceOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function TerminalOverlay({ forceOpen = false, onClose }: TerminalOverlayProps) {
+  const [isOpen, setIsOpen] = useState(forceOpen);
+  const [theme, setTheme] = useState<'emerald' | 'amber' | 'zinc'>('emerald');
+  const [githubRepos, setGithubRepos] = useState<GitHubRepo[]>([]);
   const [history, setHistory] = useState<{ type: 'input' | 'output' | 'system' | 'error'; text: string | React.ReactNode }[]>([
     { type: 'system', text: 'Welcome to ACHYUTH_OS v2.4.1 [Secure Line]' },
     { type: 'system', text: 'Authorization recognized. Type "help" to view directory.' }
@@ -13,144 +23,210 @@ export default function TerminalOverlay() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const posthog = useAnalytics();
 
-  // Key sequence detector for ">_"
   useEffect(() => {
-    let keyBuffer = "";
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if typing in an input or textarea
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
-      
-      // Ignore modifier keys like "Shift", "Control", etc.
-      if (e.key.length === 1) {
-        keyBuffer += e.key;
-        if (keyBuffer.length > 2) {
-          keyBuffer = keyBuffer.slice(-2);
-        }
-      }
-      
-      if (keyBuffer === ">_") {
-        e.preventDefault(); // Prevent '_' from being typed into the newly opened terminal
-        setIsOpen(true);
-        setInput(""); // Ensure the input is strictly empty when opening
-        keyBuffer = "";
-        
-        posthog?.capture('terminal_opened', { 
-            method: 'keyboard_shortcut' 
-        });
-      }
-    };
-    
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [posthog]);
+    if (forceOpen) setIsOpen(true);
+  }, [forceOpen]);
 
+  // Fetch GitHub repos on mount
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    fetchLatestRepositories(5).then(setGithubRepos);
+  }, []);
+
+  // Scroll locking & Focus
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      document.body.style.overflow = '';
+      if (onClose) onClose();
     }
-  }, [isOpen]);
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen, onClose]);
 
+  // Auto-scroll terminal
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [history]);
 
-  const handleCommand = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleCommand = (e?: React.FormEvent, manualCmd?: string) => {
+    if (e) e.preventDefault();
+    const rawInput = manualCmd || input;
+    const trimmedInput = rawInput.trim();
+    if (!trimmedInput) return;
 
-    const fullCmd = input.trim();
+    const fullCmd = trimmedInput;
     const cmd = fullCmd.toLowerCase().split(' ')[0];
     const args = fullCmd.split(' ').slice(1).join(' ');
     const newHistory = [...history, { type: 'input' as const, text: fullCmd }];
-    
+
     switch (cmd) {
       case 'help':
         newHistory.push({ type: 'output', text: (
-            <div className="grid grid-cols-[100px_1fr] gap-x-4 gap-y-1 my-2">
-                <span className="text-emerald-400 font-bold">about</span><span>Who am I?</span>
-                <span className="text-emerald-400 font-bold">skills</span><span>My technical arsenal</span>
-                <span className="text-emerald-400 font-bold">projects</span><span>Classified builds & case studies</span>
-                <span className="text-emerald-400 font-bold">contact</span><span>Establish a secure line</span>
-                <span className="text-emerald-400 font-bold">clear</span><span>Wipe terminal history</span>
-                <span className="text-emerald-400 font-bold">exit</span><span>Close secure connection</span>
-                <span className="text-emerald-400 font-bold">sudo</span><span>Elevate privileges</span>
+            <div className="grid grid-cols-[100px_1fr] gap-x-4 gap-y-1 my-2 text-[12px] sm:text-sm">
+                <span className="text-emerald-400 font-bold">about</span><span>Personnel bio & directives</span>
+                <span className="text-emerald-400 font-bold">skills</span><span>Technical weaponry</span>
+                <span className="text-emerald-400 font-bold">projects</span><span>Classified deployments</span>
+                <span className="text-emerald-400 font-bold">gh</span><span>Sync GitHub repository nodes</span>
+                <span className="text-emerald-400 font-bold">socials</span><span>External nodes (LinkedIn, Mail)</span>
+                <span className="text-emerald-400 font-bold">neofetch</span><span>System configuration overview</span>
+                <span className="text-emerald-400 font-bold">theme</span><span>Toggle UI color matrix</span>
+                <span className="text-emerald-400 font-bold">diagnostics</span><span>System health report</span>
+                <span className="text-emerald-400 font-bold">clear</span><span>Flush buffer</span>
+                <span className="text-emerald-400 font-bold">hack</span><span>Initialize breach simulation</span>
+                <span className="text-emerald-400 font-bold">exit</span><span>Terminate session</span>
             </div>
         )});
         break;
+      case 'clear':
+        setHistory([{ type: 'system', text: 'BUFFER_PURGED. SYSTEM_READY.' }]);
+        setInput("");
+        return;
       case 'about':
+        newHistory.push({ type: 'output', text: 'IDENTITY: ACHYUTH KP\nROLE: SR. SOFTWARE DEVELOPER\nLOC: BANGALORE, IN\nFOCUS: SCALABLE BACKEND & IMMERSIVE FRONTEND\nEMAIL: kpachyuthz@gmail.com' });
+        break;
+      case 'gh':
+        newHistory.push({ type: 'system', text: 'SYNCING WITH GITHUB_API...' });
+        if (githubRepos.length === 0) {
+            newHistory.push({ type: 'error', text: 'Error: No nodes found or rate-limit reached.' });
+        } else {
+            newHistory.push({ type: 'output', text: (
+                <div className="my-2 space-y-1">
+                    {githubRepos.map(repo => (
+                        <div key={repo.id} className="flex items-center justify-between group">
+                            <a href={repo.html_url} target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline flex items-center gap-2">
+                                <span className="text-[10px] opacity-40">[]</span> {repo.name}
+                            </a>
+                            <div className="flex gap-3 text-[10px] text-white/40">
+                                <span>★ {repo.stargazers_count}</span>
+                                <span className="hidden sm:inline">{repo.language}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )});
+        }
+        break;
+      case 'projects':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2 border-l-2 border-emerald-500/50 pl-4 py-1">
-                <p className="font-bold text-white mb-1">Achyuth // Creative Developer</p>
-                <p className="text-emerald-500/80 mb-2">Architecting systems, painting with pixels.</p>
-                <p>I operate at the intersection of rigid logic and fluid creativity.</p>
-                <p>Currently spinning up full-stack react applications and scaling infrastructure.</p>
+            <div className="my-2 space-y-2">
+                {projects.map((p, i) => (
+                    <div key={p.slug} className="group flex items-start gap-3 p-2 hover:bg-white/5 rounded transition-colors border border-transparent hover:border-white/10">
+                        <span className="text-emerald-500/50 mt-1 font-bold">{i+1}.</span>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-bold">{p.title}</span>
+                                <span className="text-[10px] px-1 bg-white/10 rounded text-white/60">{p.category}</span>
+                            </div>
+                            <p className="text-xs text-white/60 leading-relaxed mt-0.5">{p.description}</p>
+                            <div className="flex gap-2 mt-1">
+                                {p.tags.slice(0, 3).map(t => <span key={t} className="text-[9px] text-emerald-400/70">#{t}</span>)}
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         )});
         break;
       case 'skills':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2 space-y-2">
-                <div><span className="text-emerald-400 mr-2">Frontend_</span> React, Next.js, WebGL, Tailwind CSS, Framer Motion</div>
-                <div><span className="text-emerald-400 mr-2">Backend_</span> Node.js, Spring Boot, Microservices</div>
-                <div><span className="text-emerald-400 mr-2">Ops_</span> AWS, Docker, CI/CD, Linux Administration</div>
+            <div className="my-2 space-y-3">
+                <div>
+                    <span className="text-emerald-400 font-bold block mb-1">FRONTEND</span>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                        {["ReactJS", "Next.js", "WebGL", "TypeScript"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
+                    </div>
+                </div>
+                <div>
+                    <span className="text-emerald-400 font-bold block mb-1">BACKEND</span>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                        {["Spring Boot", "Java", "Node.js", "Kafka", "PostgreSQL"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
+                    </div>
+                </div>
             </div>
         )});
         break;
-      case 'projects':
+      case 'socials':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2 space-y-1">
-                <div><span className="text-white hover:underline cursor-pointer">1. E-Commerce Microservices</span> - [ Spring Boot, Kafka, React ]</div>
-                <div><span className="text-white hover:underline cursor-pointer">2. 3D Generative Art engine</span> - [ Three.js, WebGL, React ]</div>
-                <div><span className="text-white hover:underline cursor-pointer">3. Fintech Mobile App</span> - [ React Native, Node.js ]</div>
-                <div className="text-emerald-500/50 text-xs mt-2 italic">Type 'cat projects.dir' for deep dive.</div>
+            <div className="my-2 flex flex-col gap-2">
+                <a href="https://github.com/achyuthkp27" target="_blank" rel="noreferrer" className="text-white hover:text-emerald-400 underline">GitHub: achyuthkp27</a>
+                <a href="https://www.linkedin.com/in/kpachyuth" target="_blank" rel="noreferrer" className="text-white hover:text-emerald-400 underline">LinkedIn: kpachyuth</a>
+                <a href="mailto:kpachyuthz@gmail.com" className="text-white hover:text-emerald-400 underline">Email: kpachyuthz@gmail.com</a>
             </div>
         )});
         break;
-      case 'contact':
-        newHistory.push({ type: 'system', text: 'INITIATING SECURE HANDSHAKE...' });
+      case 'neofetch':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2">
-                <div>Email: <a href="mailto:hello@achyuth.dev" className="text-emerald-400 underline">hello@achyuth.dev</a></div>
-                <div>GitHub: <a href="https://github.com" target="_blank" rel="noreferrer" className="text-emerald-400 underline">github.com/achyuth</a></div>
-                <div>Status: Accepting incoming transmissions.</div>
+            <div className="flex gap-6 py-2">
+                <div className="text-emerald-500 font-bold leading-tight">
+                    <pre>{`
+   /\\
+  /  \\
+ /____\\
+|      |
+|  OS  |
+|______|
+`}</pre>
+                </div>
+                <div className="space-y-1">
+                    <div className="text-emerald-400 font-bold underline">achyuth@os</div>
+                    <div className="text-xs">OS: achyuth-sh 1.0</div>
+                    <div className="text-xs">Host: portfolio-v3</div>
+                    <div className="text-xs">Kernel: react-v18.x</div>
+                    <div className="text-xs">Shell: achyuth-sh</div>
+                    <div className="text-xs">Uptime: 2 years (Pro)</div>
+                    <div className="text-xs">Terminal: matrix-emerald</div>
+                </div>
             </div>
         )});
         break;
-      case 'whoami':
-        newHistory.push({ type: 'output', text: 'guest_user (Clearance Level: 1)' });
+      case 'theme':
+        if (args === 'amber') {
+            setTheme('amber');
+            newHistory.push({ type: 'system', text: 'COLOR_MATRIX: AMBER_CRT_ACTIVATED' });
+        } else if (args === 'zinc') {
+            setTheme('zinc');
+            newHistory.push({ type: 'system', text: 'COLOR_MATRIX: ZINC_MONOCHROME_ACTIVATED' });
+        } else {
+            setTheme('emerald');
+            newHistory.push({ type: 'system', text: 'COLOR_MATRIX: EMERALD_PHOSPHOR_ACTIVATED' });
+        }
         break;
-      case 'ls':
+      case 'diagnostics':
+        newHistory.push({ type: 'system', text: 'RUNNING_SYSTEM_INTEGRITY_CHECK...' });
         newHistory.push({ type: 'output', text: (
-            <div className="flex gap-4 my-2 font-bold">
-                <span className="text-white">about.txt</span>
-                <span className="text-blue-400">projects.dir/</span>
-                <span className="text-emerald-400">contact.sh*</span>
-                <span className="text-red-400">secret.enc</span>
+            <div className="space-y-1 my-2 text-xs">
+                <div className="flex justify-between"><span>CPU_CORES [8]</span><span className="text-emerald-400">[ONLINE]</span></div>
+                <div className="flex justify-between"><span>MEMORY_LOAD</span><span>[||||------] 42%</span></div>
+                <div className="flex justify-between"><span>LATENCY</span><span>24ms (Secure Node)</span></div>
+                <div className="flex justify-between"><span>FIREWALL</span><span className="text-emerald-400">ACTIVE</span></div>
+                <div className="flex justify-between"><span>UPTIME</span><span>99.98%</span></div>
             </div>
         )});
         break;
-      case 'cat':
-        if (args === 'about.txt') newHistory.push({ type: 'output', text: 'Run the `about` command instead. It is prettier.' });
-        else if (args === 'secret.enc') newHistory.push({ type: 'error', text: '[!] Permission Denied. Encryption protocol strictly enforced.' });
-        else if (!args) newHistory.push({ type: 'error', text: 'Usage: cat <filename>' });
-        else newHistory.push({ type: 'error', text: `cat: ${args}: No such file or directory` });
+      case 'hack': {
+        newHistory.push({ type: 'system', text: 'INITIALIZING_BRUTE_FORCE_SEQUENCE...' });
+        let i = 0;
+        const hackInterval = setInterval(() => {
+            const logs = [
+                "[OK] Bypassing firewall...",
+                "[OK] Injecting SQL payload...",
+                "[OK] Escalating privileges...",
+                "[OK] Accessing database...",
+                "[!] SECURITY BREACH DETECTED!",
+                "Terminating connection..."
+            ];
+            if (i < logs.length) {
+                setHistory(prev => [...prev, { type: 'error', text: logs[i] }]);
+                i++;
+            } else {
+                clearInterval(hackInterval);
+            }
+        }, 400);
         break;
-      case 'date':
-        newHistory.push({ type: 'system', text: `SYSTEM_TIME: ${new Date().toISOString()}` });
-        break;
-      case 'echo':
-        newHistory.push({ type: 'output', text: args });
-        break;
-      case 'ping':
-        if (!args) newHistory.push({ type: 'error', text: 'Usage: ping <host>' });
-        else newHistory.push({ type: 'output', text: `Pinging ${args}...\n64 bytes from ${args}: icmp_seq=1 ttl=116 time=24.5 ms\n64 bytes from ${args}: icmp_seq=2 ttl=116 time=22.1 ms` });
-        break;
-      case 'clear':
-        setHistory([]);
-        setInput("");
-        return;
+      }
       case 'exit':
         setIsOpen(false);
         setInput("");
@@ -159,11 +235,8 @@ export default function TerminalOverlay() {
         if (args === 'rm -rf /') {
             newHistory.push({ type: 'error', text: 'NICE TRY. SELF-DESTRUCT SEQUENCE ABORTED.' });
         } else {
-            newHistory.push({ type: 'error', text: '[!] nice try. user not in sudoers file. this incident will be reported to the cyber police.' });
+            newHistory.push({ type: 'error', text: '[!] nice try. user not in sudoers file.' });
         }
-        break;
-      case 'matrix':
-        newHistory.push({ type: 'system', text: 'Wake up, Neo...\nThe Matrix has you...\nFollow the white rabbit.' });
         break;
       default:
         newHistory.push({ type: 'error', text: `Command not found: ${cmd}. Type 'help' for directory.` });
@@ -175,16 +248,32 @@ export default function TerminalOverlay() {
 
   if (!isOpen) return null;
 
+  const themeColors = {
+    emerald: "text-emerald-500 border-emerald-500/30 shadow-[0_0_50px_rgba(16,185,129,0.15)]",
+    amber: "text-amber-500 border-amber-500/30 shadow-[0_0_50px_rgba(245,158,11,0.15)]",
+    zinc: "text-zinc-300 border-zinc-500/30 shadow-[0_0_50px_rgba(255,255,255,0.05)]"
+  };
+
+  const glowColor = {
+    emerald: "rgba(16,185,129,0.15)",
+    amber: "rgba(245,158,11,0.15)",
+    zinc: "rgba(255,255,255,0.1)"
+  };
+
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in zoom-in-95 duration-200">
-      <div className="w-full max-w-3xl h-[60vh] border border-green-500/30 bg-black rounded-lg shadow-[0_0_30px_rgba(0,255,0,0.1)] flex flex-col overflow-hidden font-mono">
+    <div 
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 animate-in fade-in zoom-in-95 duration-200"
+    >
+      <div className={`w-full max-w-3xl h-[75vh] border bg-black rounded-lg flex flex-col overflow-hidden font-mono transition-all duration-500 ${themeColors[theme]}`}>
         {/* Terminal Header */}
-        <div className="bg-green-500/10 border-b border-green-500/30 p-2 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-green-500 text-sm">
+        <div className={`border-b p-2.5 flex items-center justify-between ${theme === 'amber' ? 'bg-amber-500/10 border-amber-500/30' : theme === 'zinc' ? 'bg-zinc-500/10 border-zinc-500/30' : 'bg-emerald-500/10 border-emerald-500/30'}`}>
+          <div className="flex items-center gap-2 text-sm">
             <Terminal size={16} />
-            <span>root@achyuth_os:~</span>
+            <span className="font-bold tracking-tighter opacity-80 uppercase">achyuth@os:~</span>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-green-500 hover:text-green-400 transition-colors">
+          <button onClick={() => setIsOpen(false)} className="hover:opacity-60 transition-opacity p-1">
             <X size={18} />
           </button>
         </div>
@@ -192,23 +281,23 @@ export default function TerminalOverlay() {
         {/* Terminal Body */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-4 space-y-2 text-sm sm:text-base text-green-500/90"
+          className={`flex-1 overflow-y-auto p-5 space-y-2.5 text-sm sm:text-base terminal-scrollbar ${theme === 'amber' ? 'text-amber-500/90' : theme === 'zinc' ? 'text-zinc-400' : 'text-emerald-500/90'}`}
         >
           {history.map((line, i) => (
-            <div key={i} className={`flex gap-3 whitespace-pre-wrap word-break ${line.type === 'error' ? 'text-red-400' : line.type === 'system' ? 'text-emerald-400/60' : 'text-emerald-500/90'}`}>
+            <div key={i} className={`flex gap-3 whitespace-pre-wrap word-break ${line.type === 'error' ? 'text-red-400' : line.type === 'system' ? (theme === 'amber' ? 'text-amber-400/60' : theme === 'zinc' ? 'text-zinc-500' : 'text-emerald-400/60') + ' font-bold italic' : ''}`}>
               {line.type === 'input' ? (
                 <>
-                  <span className="text-emerald-500 shrink-0">guest@achyuth_os:~$</span>
+                  <span className="shrink-0 opacity-70">achyuth@os:~$</span>
                   <span className="text-white font-bold">{line.text}</span>
                 </>
               ) : (
-                <span className="opacity-90 leading-relaxed">{line.text}</span>
+                <div className="opacity-95 leading-relaxed flex-1">{line.text}</div>
               )}
             </div>
           ))}
           
-          <form onSubmit={handleCommand} className="flex gap-2 items-center mt-2 group">
-            <span className="text-green-500">guest@achyuth_os:~$</span>
+          <form onSubmit={handleCommand} className="flex gap-2 items-center mt-3 group">
+            <span className="opacity-70">achyuth@os:~$</span>
             <input 
               ref={inputRef}
               type="text"
@@ -221,6 +310,22 @@ export default function TerminalOverlay() {
           </form>
         </div>
       </div>
+      
+      <style>{`
+        .terminal-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .terminal-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        .terminal-scrollbar::-webkit-scrollbar-thumb {
+          background: ${glowColor[theme]};
+          border-radius: 10px;
+        }
+        .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: ${theme === 'amber' ? 'rgba(245,158,11,0.3)' : theme === 'zinc' ? 'rgba(255,255,255,0.2)' : 'rgba(16,185,129,0.3)'};
+        }
+      `}</style>
     </div>
   );
 }

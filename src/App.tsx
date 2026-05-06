@@ -25,7 +25,7 @@ const Analytics = import.meta.env.DEV ? lazy(() => import("@/components/Analytic
 const CustomCursor = lazy(() => import("@/components/ui/CustomCursor"));
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
 const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })));
-const TerminalOverlay = lazy(() => import("@/components/TerminalOverlay"));
+const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
 const ActivityWidget = lazy(() => import("@/components/ActivityWidget"));
 
 const RouteLoader = () => (
@@ -69,7 +69,7 @@ const DeferredExperience = () => {
         <>
           <CustomCursor />
           <CommandMenu />
-          <TerminalOverlay />
+          <TerminalTrigger />
           <ActivityWidget />
           <ScrollProgress />
         </>
