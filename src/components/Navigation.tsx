@@ -1,7 +1,7 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Download } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
 
@@ -16,6 +16,17 @@ const Navigation = () => {
   const { lenis } = useSmoothScroll();
   const location = useLocation();
   const isHomePage = location.pathname === "/" || location.pathname === "";
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileMenuOpen]);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
@@ -228,6 +239,19 @@ const Navigation = () => {
             >
               {isMobileMenuOpen ? "CLOSE" : "MENU"}
             </button>
+
+            <MagneticButton>
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-white/70 hover:text-white transition-all px-4 py-2 hover:bg-white/5 rounded-full group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                <Download className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
+                <span className="relative z-10">RESUME</span>
+              </a>
+            </MagneticButton>
 
             <MagneticButton>
               <a
