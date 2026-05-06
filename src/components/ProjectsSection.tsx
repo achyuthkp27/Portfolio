@@ -210,9 +210,9 @@ const ProjectsSection = () => {
         )}
 
         {/* Dynamic GitHub Repos List */}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-[800px]">
           {isLoading ? (
-            <div className="h-64 flex flex-col items-center justify-center font-mono text-white/50 gap-4">
+            <div className="h-full min-h-[800px] flex flex-col items-center justify-center font-mono text-white/50 gap-4">
               <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
               <span>SYNCING_REPOSITORIES...</span>
             </div>
@@ -221,7 +221,7 @@ const ProjectsSection = () => {
               <ProjectCard key={project.name} project={project} index={index} />
             ))
           ) : (
-            <div className="h-40 flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
+            <div className="h-[400px] flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
               NO_REPOSITORIES_FOUND_FOR_QUERY
             </div>
           )}

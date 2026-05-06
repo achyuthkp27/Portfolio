@@ -60,12 +60,12 @@ const BlogSection = () => {
                 />
 
                 {/* Transmission Feed */}
-                <div className="relative flex flex-col gap-px bg-white/5 border-y border-white/5 overflow-hidden">
+                <div className="relative flex flex-col gap-px bg-white/5 border-y border-white/5 overflow-hidden min-h-[800px]">
                     {/* Vertical Connecting Axis */}
                     <div className="absolute left-[20px] md:left-[16.66%] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
                     {isLoading ? (
-                        <div className="py-20 text-center font-mono text-white/20 text-xs animate-pulse">
+                        <div className="h-full min-h-[800px] flex items-center justify-center font-mono text-white/20 text-xs animate-pulse">
                             RECEIVING_DATA_PACKETS...
                         </div>
                     ) : (

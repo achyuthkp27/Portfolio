@@ -105,14 +105,7 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     setIsMobileMenuOpen(false);
 
-    // Check if the real section already exists
-    const existingSection = document.querySelector(`section#${targetId}`) as HTMLElement | null;
-    if (existingSection) {
-      scrollToTarget(existingSection);
-      return;
-    }
-
-    // Section not mounted yet — force ALL lazy sections to mount immediately.
+    // Force ALL lazy sections to mount immediately.
     // This ensures the page reaches its true height so scroll positions are accurate.
     window.dispatchEvent(new Event("force-mount-sections"));
 
@@ -137,7 +130,8 @@ const Navigation = () => {
           setTimeout(() => {
             const rect = realSection.getBoundingClientRect();
             // If the section isn't within 50px of the top of the viewport, retry
-            if (Math.abs(rect.top) > 50) {
+            // But if it's more than 2000px away, assume user manually scrolled away
+            if (Math.abs(rect.top) > 50 && Math.abs(rect.top) < 2000) {
               ensurePosition();
             }
           }, 400);
