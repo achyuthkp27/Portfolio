@@ -1,5 +1,5 @@
 import { useInView } from "react-intersection-observer";
-import { Suspense, ReactNode, useState, useEffect } from "react";
+import { Suspense, ReactNode } from "react";
 
 interface LazySectionProps {
   children: ReactNode;
@@ -42,19 +42,9 @@ export const LazySection = ({
     rootMargin,
   });
 
-  const [forceMounted, setForceMounted] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setForceMounted(true);
-    window.addEventListener("force-mount-sections", handler);
-    return () => window.removeEventListener("force-mount-sections", handler);
-  }, []);
-
-  const shouldRender = inView || forceMounted;
-
   return (
-    <div ref={ref} className={className} style={{ minHeight: shouldRender ? undefined : minHeight }}>
-      {shouldRender ? (
+    <div ref={ref} className={className} style={{ minHeight: inView ? undefined : minHeight }}>
+      {inView ? (
         <Suspense fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}>
           {children}
         </Suspense>

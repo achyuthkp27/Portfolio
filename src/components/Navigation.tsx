@@ -105,43 +105,12 @@ const Navigation = () => {
     const targetId = href.replace("#", "");
     setIsMobileMenuOpen(false);
 
-    // Force ALL lazy sections to mount immediately.
-    // This ensures the page reaches its true height so scroll positions are accurate.
-    window.dispatchEvent(new Event("force-mount-sections"));
+    // Look for the element: either the fully mounted <section> or the LazySection placeholder <div>
+    const targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
 
-    // Poll for the real <section> to appear (lazy import is async), then scroll.
-    // Once found, keep re-scrolling until the element is actually near the
-    // viewport top — this handles layout shifts from other sections still mounting.
-    let findAttempts = 0;
-    const poll = setInterval(() => {
-      findAttempts++;
-      const realSection = document.querySelector(`section#${targetId}`) as HTMLElement | null;
-
-      if (realSection) {
-        clearInterval(poll);
-        
-        let scrollRetries = 0;
-        const ensurePosition = () => {
-          if (scrollRetries >= 15) return; // 6s max (15 × 400ms)
-          scrollRetries++;
-
-          scrollToTarget(realSection);
-
-          setTimeout(() => {
-            const rect = realSection.getBoundingClientRect();
-            // If the section isn't within 50px of the top of the viewport, retry
-            // But if it's more than 2000px away, assume user manually scrolled away
-            if (Math.abs(rect.top) > 50 && Math.abs(rect.top) < 2000) {
-              ensurePosition();
-            }
-          }, 400);
-        };
-
-        ensurePosition();
-      }
-
-      if (findAttempts > 25) clearInterval(poll);
-    }, 200);
+    if (targetElement) {
+      scrollToTarget(targetElement as HTMLElement);
+    }
   };
 
   return (
