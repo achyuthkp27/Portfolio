@@ -11,7 +11,6 @@ const ExperienceTimeline = lazy(() => import("@/components/ExperienceTimeline"))
 const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
 const SkillsSection = lazy(() => import("@/components/SkillsSection"));
 const AwardSection = lazy(() => import("@/components/AwardSection"));
-const EducationSection = lazy(() => import("@/components/EducationSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
@@ -49,10 +48,6 @@ const Index = () => {
 
             <LazySection sectionId="awards" minHeight="600px">
               <AwardSection />
-            </LazySection>
-
-            <LazySection sectionId="education" minHeight="700px">
-              <EducationSection />
             </LazySection>
 
             <LazySection sectionId="contact" minHeight="800px">

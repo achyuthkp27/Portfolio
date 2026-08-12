@@ -155,13 +155,11 @@ const ProjectsSection = () => {
   }, [isLoading, projects, location.search]);
 
   return (
-    <section id="projects" className="relative bg-transparent py-24 lg:py-28 px-6 md:px-12" ref={ref}>
-      {/* Background Decor */}
-      <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
-
+    <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[linear-gradient(165deg,#edf5f0_0%,#d2e5d9_38%,#8fae9e_75%,#42584d_100%)]" ref={ref}>
       <div className="max-w-screen-2xl mx-auto">
         {/* Professional case studies — the real work */}
         <SectionHeader
+          tone="light"
           label="Selected work"
           titleMain="Banking Platform"
           titleAccent="Case Studies"
@@ -175,6 +173,7 @@ const ProjectsSection = () => {
 
         {/* Open-source / personal repos */}
         <SectionHeader
+          tone="light"
           label="Open source"
           titleMain="Open Source &"
           titleAccent="Experiments"
@@ -182,6 +181,7 @@ const ProjectsSection = () => {
           align="left"
         />
 
+        <div className="rounded-[1.75rem] bg-[#0a0a0a] p-6 md:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
         {/* Filter Bar */}
         {!isLoading && availableLanguages.length > 0 && (
           <motion.div 
@@ -237,6 +237,7 @@ const ProjectsSection = () => {
               Nothing matches that filter.
             </div>
           )}
+        </div>
         </div>
       </div>
     </section>
