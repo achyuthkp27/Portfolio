@@ -69,7 +69,7 @@ const ProjectDetail = () => {
 
             <div className="min-h-screen bg-background relative overflow-x-hidden">
                 {/* Navigation */}
-                <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+                <nav className="fixed top-20 md:top-24 left-0 z-40 px-6 pointer-events-none">
                     <button 
                       onClick={() => navigate(`/?scrollTo=${slug}`)} 
                       aria-label="Back to projects"
