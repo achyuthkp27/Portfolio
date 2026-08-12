@@ -155,11 +155,10 @@ const ProjectsSection = () => {
   }, [isLoading, projects, location.search]);
 
   return (
-    <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[linear-gradient(165deg,#edf5f0_0%,#d2e5d9_38%,#8fae9e_75%,#42584d_100%)]" ref={ref}>
+    <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(16,185,129,0.14),transparent_70%),linear-gradient(165deg,#0c1712_0%,#0a1a13_40%,#050d09_75%,#000000_100%)]" ref={ref}>
       <div className="max-w-screen-2xl mx-auto">
         {/* Professional case studies — the real work */}
         <SectionHeader
-          tone="light"
           label="Selected work"
           titleMain="Banking Platform"
           titleAccent="Case Studies"
@@ -173,7 +172,6 @@ const ProjectsSection = () => {
 
         {/* Open-source / personal repos */}
         <SectionHeader
-          tone="light"
           label="Open source"
           titleMain="Open Source &"
           titleAccent="Experiments"
@@ -181,7 +179,7 @@ const ProjectsSection = () => {
           align="left"
         />
 
-        <div className="rounded-[1.75rem] bg-[#0a0a0a] p-6 md:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-6 md:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
         {/* Filter Bar */}
         {!isLoading && availableLanguages.length > 0 && (
           <motion.div 

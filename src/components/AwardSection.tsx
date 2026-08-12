@@ -1,6 +1,60 @@
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion, useSpring } from "framer-motion";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Trophy } from "lucide-react";
+
+/** Card that bends toward the cursor with an emerald beam tracing its border on hover. */
+const TiltCard = ({ children, id, delay = 0 }: { children: ReactNode; id?: string; delay?: number }) => {
+    const reduceMotion = useReducedMotion();
+    const ref = useRef<HTMLDivElement>(null);
+    const [hovered, setHovered] = useState(false);
+    const rotateX = useSpring(0, { stiffness: 180, damping: 22 });
+    const rotateY = useSpring(0, { stiffness: 180, damping: 22 });
+
+    const handleMove = (e: React.MouseEvent) => {
+        if (reduceMotion || !ref.current) return;
+        const r = ref.current.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        rotateY.set(px * 7);   // bend toward the cursor
+        rotateX.set(-py * 7);
+    };
+    const handleLeave = () => {
+        setHovered(false);
+        rotateX.set(0);
+        rotateY.set(0);
+    };
+
+    return (
+        <motion.div
+            id={id}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+            style={{ perspective: 1200 }}
+        >
+            <motion.div
+                ref={ref}
+                onMouseMove={handleMove}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={handleLeave}
+                style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                className="relative rounded-[1.75rem] h-full"
+            >
+                {/* Border beam — a conic blade spinning behind a 1px gap */}
+                <div className={`absolute -inset-px rounded-[1.75rem] overflow-hidden transition-opacity duration-500 ${hovered && !reduceMotion ? "opacity-100" : "opacity-0"}`} aria-hidden="true">
+                    <motion.div
+                        className="absolute inset-[-100%]"
+                        style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(16,185,129,0.9) 12%, transparent 26%)" }}
+                        animate={hovered && !reduceMotion ? { rotate: 360 } : { rotate: 0 }}
+                        transition={hovered && !reduceMotion ? { duration: 3.2, repeat: Infinity, ease: "linear" } : { duration: 0 }}
+                    />
+                </div>
+                {children}
+            </motion.div>
+        </motion.div>
+    );
+};
 
 /**
  * Recognition + Education as a Squarespace-style card band:
@@ -105,23 +159,17 @@ const EducationMedia = () => {
 
 // ── Band ─────────────────────────────────────────────────────────────
 
-const cardIn = (delay: number) => ({
-    initial: { opacity: 0, y: 28 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-80px" },
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] as const },
-});
-
 const AwardSection = () => {
     return (
         <section
             id="awards"
-            className="py-20 lg:py-28 px-6 md:px-12 relative overflow-hidden bg-[linear-gradient(165deg,#edf5f0_0%,#d2e5d9_38%,#8fae9e_75%,#42584d_100%)]"
+            className="py-20 lg:py-28 px-6 md:px-12 relative overflow-hidden bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(16,185,129,0.14),transparent_70%),linear-gradient(165deg,#0c1712_0%,#0a1a13_40%,#050d09_75%,#000000_100%)]"
         >
             <div className="max-w-6xl mx-auto">
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                     {/* Recognition card */}
-                    <motion.article {...cardIn(0)} className="rounded-[1.75rem] bg-[#0a0a0a] p-5 md:p-6 flex flex-col shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+                    <TiltCard delay={0}>
+                    <article className="relative rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-5 md:p-6 flex flex-col h-full shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                         <AwardMedia />
                         <div className="text-center px-4 pt-8 pb-6 flex-1 flex flex-col">
                             <h3 className="font-body font-semibold text-white text-sm md:text-base mb-3">
@@ -135,10 +183,12 @@ const AwardSection = () => {
                                 FIS Global · Q1 2024
                             </div>
                         </div>
-                    </motion.article>
+                    </article>
+                    </TiltCard>
 
                     {/* Education card — carries the nav anchor */}
-                    <motion.article {...cardIn(0.12)} id="education" className="rounded-[1.75rem] bg-[#0a0a0a] p-5 md:p-6 flex flex-col shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+                    <TiltCard delay={0.12} id="education">
+                    <article className="relative rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-5 md:p-6 flex flex-col h-full shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                         <EducationMedia />
                         <div className="text-center px-4 pt-8 pb-6 flex-1 flex flex-col">
                             <h3 className="font-body font-semibold text-white text-sm md:text-base mb-3">
@@ -152,10 +202,11 @@ const AwardSection = () => {
                                 Class of 2021
                             </div>
                         </div>
-                    </motion.article>
+                    </article>
+                    </TiltCard>
                 </div>
 
-                <p className="text-center mt-12 font-body text-sm text-emerald-950/70">
+                <p className="text-center mt-12 font-body text-sm text-white/40">
                     Five years in production banking — recognized at FIS Global, built on SSIT fundamentals.
                 </p>
             </div>

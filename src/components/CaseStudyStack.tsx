@@ -1,5 +1,16 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import { motion } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
+
+// Shared diagram choreography: parent staggers, items rise in
+const stackVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.14, delayChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
+};
 
 /**
  * Sticky stacking case-study cards (Harrison Wheeler-style).
@@ -11,28 +22,56 @@ import { projects, type Project } from "@/data/projects";
 // ── Diagram building blocks ──────────────────────────────────────────
 
 const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?: boolean }) => (
-  <div className={`rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 text-center ${wide ? "flex-1" : ""}`}>
+  <motion.div variants={itemVariants} className={`rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 text-center ${wide ? "flex-1" : ""}`}>
     <div className="font-mono text-[11px] md:text-xs text-white leading-tight whitespace-nowrap">{label}</div>
     {sub && <div className="font-mono text-[9px] md:text-[10px] text-white/50 leading-tight mt-0.5 whitespace-nowrap">{sub}</div>}
-  </div>
+  </motion.div>
 );
 
-const Arrow = ({ down = false }: { down?: boolean }) => (
-  <div className={`text-emerald-500/70 font-mono text-sm shrink-0 ${down ? "rotate-90 my-0.5" : ""}`} aria-hidden="true">→</div>
-);
+const Arrow = ({ down = false }: { down?: boolean }) => {
+  const phase = useRef(Math.random() * 1.6).current;
+  return (
+    <motion.div variants={itemVariants} className={`shrink-0 ${down ? "rotate-90 my-0.5" : ""}`} aria-hidden="true">
+      <motion.span
+        className="block text-emerald-500/70 font-mono text-sm motion-reduce:animate-none"
+        animate={{ opacity: [0.35, 1, 0.35], x: [0, 2, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: phase }}
+      >
+        →
+      </motion.span>
+    </motion.div>
+  );
+};
 
 const Row = ({ children }: { children: ReactNode }) => (
-  <div className="flex items-center justify-center gap-2 flex-wrap">{children}</div>
+  <motion.div variants={itemVariants} className="flex items-center justify-center gap-2 flex-wrap">{children}</motion.div>
 );
 
 const Bus = ({ label }: { label: string }) => (
-  <div className="w-full max-w-[280px] mx-auto rounded bg-emerald-500/[0.06] border border-emerald-500/35 border-dashed px-3 py-1.5 text-center">
-    <span className="font-mono text-[10px] md:text-[11px] text-emerald-300/80 tracking-widest uppercase">{label}</span>
-  </div>
+  <motion.div
+    variants={itemVariants}
+    className="w-full max-w-[280px] mx-auto rounded bg-emerald-500/[0.06] border border-emerald-500/35 border-dashed px-3 py-1.5 text-center"
+  >
+    <motion.span
+      className="font-mono text-[10px] md:text-[11px] text-emerald-300/80 tracking-widest uppercase"
+      animate={{ opacity: [0.65, 1, 0.65] }}
+      transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {label}
+    </motion.span>
+  </motion.div>
 );
 
 const Stack = ({ children }: { children: ReactNode }) => (
-  <div className="flex flex-col items-center gap-1.5 w-full">{children}</div>
+  <motion.div
+    variants={stackVariants}
+    initial="hidden"
+    whileInView="show"
+    viewport={{ once: true, margin: "-10%" }}
+    className="flex flex-col items-center gap-1.5 w-full"
+  >
+    {children}
+  </motion.div>
 );
 
 // ── Per-case-study diagrams ──────────────────────────────────────────
@@ -62,7 +101,7 @@ const DIAGRAMS: Record<string, ReactNode> = {
     <Stack>
       <Row>
         {["4", "8", "2", "9", "1", "7"].map((d, i) => (
-          <div key={i} className="w-8 h-10 md:w-9 md:h-11 rounded-md bg-white/[0.05] border border-white/20 flex items-center justify-center font-mono text-base md:text-lg text-emerald-100">{d}</div>
+          <motion.div key={i} variants={itemVariants} className="w-8 h-10 md:w-9 md:h-11 rounded-md bg-white/[0.05] border border-white/20 flex items-center justify-center font-mono text-base md:text-lg text-emerald-100">{d}</motion.div>
         ))}
       </Row>
       <Arrow down />
@@ -73,14 +112,14 @@ const DIAGRAMS: Record<string, ReactNode> = {
   ),
   "card-tokenization": (
     <Stack>
-      <div className="w-44 md:w-52 rounded-xl bg-white/[0.05] border border-white/20 p-3 text-left">
+      <motion.div variants={itemVariants} className="w-44 md:w-52 rounded-xl bg-white/[0.05] border border-white/20 p-3 text-left">
         <div className="font-mono text-[10px] text-white/40 line-through">5412 7534 9821 0067</div>
         <div className="font-mono text-xs md:text-sm text-emerald-300 mt-1">tok_9f3a…e71c</div>
         <div className="flex justify-between mt-2">
           <span className="font-mono text-[9px] text-white/50">CARD ON FILE</span>
           <span className="font-mono text-[9px] text-white/50">MC · VISA</span>
         </div>
-      </div>
+      </motion.div>
       <Arrow down />
       <Row><Node label="Token vault" sub="JWE / JWS" /><Arrow /><Node label="Card networks" sub="Mastercard · Visa" /></Row>
     </Stack>
@@ -89,7 +128,7 @@ const DIAGRAMS: Record<string, ReactNode> = {
     <Stack>
       <Row>
         <Node label="Customer" sub="camera" />
-        <div className="font-mono text-[10px] text-emerald-300/80 border-t border-b border-dashed border-emerald-500/40 px-2 py-1">WebRTC ⇄</div>
+        <motion.div variants={itemVariants} className="font-mono text-[10px] text-emerald-300/80 border-t border-b border-dashed border-emerald-500/40 px-2 py-1">WebRTC ⇄</motion.div>
         <Node label="Agent" sub="verifies" />
       </Row>
       <Arrow down />
@@ -100,10 +139,10 @@ const DIAGRAMS: Record<string, ReactNode> = {
   ),
   "llm-banking-chatbot": (
     <Stack>
-      <div className="w-full max-w-[280px] space-y-1.5">
+      <motion.div variants={itemVariants} className="w-full max-w-[280px] space-y-1.5">
         <div className="rounded-lg rounded-bl-none bg-white/[0.06] border border-white/15 px-3 py-1.5 font-mono text-[10px] md:text-[11px] text-white/90 w-fit">What's my account balance?</div>
         <div className="rounded-lg rounded-br-none bg-emerald-400/90 px-3 py-1.5 font-mono text-[10px] md:text-[11px] text-black w-fit ml-auto">Verifying your identity first…</div>
-      </div>
+      </motion.div>
       <Arrow down />
       <Row><Node label="Chat API" sub="Spring AI" /><Arrow /><Node label="LLM" sub="LangChain4j" /><Arrow /><Node label="Accounts" sub="identity-gated" /></Row>
     </Stack>
