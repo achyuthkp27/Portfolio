@@ -67,22 +67,22 @@ const TiltCard = ({ children, id, delay = 0 }: { children: ReactNode; id?: strin
 const AwardMedia = () => {
     const reduceMotion = useReducedMotion();
     return (
-        <div className="relative h-64 md:h-72 rounded-xl bg-[#101013] border border-white/10 overflow-hidden flex flex-col items-center justify-center gap-5">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.10),transparent_65%)]" aria-hidden="true" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:24px_24px]" aria-hidden="true" />
+        <div className="relative h-56 md:h-64 rounded-xl bg-[#101013] border border-white/10 overflow-hidden flex flex-col items-center justify-center gap-4">
+            {/* Spotlight behind the plaque */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_45%,rgba(16,185,129,0.16),transparent_70%)]" aria-hidden="true" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" aria-hidden="true" />
 
-            <div className="relative w-14 h-14 rounded-full border border-white/15 bg-white/[0.04] flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-emerald-400" />
+            <div className="relative w-12 h-12 rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-emerald-400" />
                 {!reduceMotion && (
-                    <span className="absolute inset-0 rounded-full border border-emerald-400/40 animate-ping [animation-duration:3s]" aria-hidden="true" />
+                    <span className="absolute inset-0 rounded-full border border-emerald-400/30 animate-ping [animation-duration:3.5s]" aria-hidden="true" />
                 )}
             </div>
 
             <div className="relative overflow-hidden px-6">
-                <div className="font-condensed uppercase text-3xl md:text-4xl tracking-wide text-white text-center leading-none">
+                <div className="font-condensed uppercase text-4xl md:text-5xl tracking-wide text-white text-center leading-none">
                     Above &amp; Beyond
                 </div>
-                {/* Shine sweep across the wordmark */}
                 {!reduceMotion && (
                     <motion.div
                         aria-hidden="true"
@@ -94,9 +94,8 @@ const AwardMedia = () => {
                 )}
             </div>
 
-            <div className="font-mono text-[11px] text-white/40 tracking-[0.25em] uppercase">
-                Individual Award · Q1 2024
-            </div>
+            {/* One quiet subline; the card caption carries the rest */}
+            <div className="w-16 h-px bg-emerald-500/40" aria-hidden="true" />
         </div>
     );
 };
@@ -140,8 +139,9 @@ const EducationMedia = () => {
         return () => { cancelled = true; timers.forEach(clearTimeout); };
     }, [cycle, inView, reduceMotion]);
 
+    const lines = text.split("\n");
     return (
-        <div ref={ref} className="relative h-64 md:h-72 rounded-xl bg-[#101013] border border-white/10 overflow-hidden">
+        <div ref={ref} className="relative h-56 md:h-64 rounded-xl bg-[#101013] border border-white/10 overflow-hidden flex flex-col">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.10),transparent_65%)]" aria-hidden="true" />
             <div className="relative z-10 flex items-center gap-2 px-4 py-3 border-b border-white/10">
                 <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
@@ -149,10 +149,19 @@ const EducationMedia = () => {
                 <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
                 <span className="ml-3 font-mono text-[11px] text-white/40">education.ts</span>
             </div>
-            <pre className="relative z-10 p-5 font-mono text-[12px] md:text-[13px] leading-relaxed text-emerald-100/90 whitespace-pre-wrap">
-                {text}
-                <span className="inline-block w-[7px] h-[14px] bg-emerald-400/80 align-middle ml-0.5 animate-pulse" aria-hidden="true" />
-            </pre>
+            <div className="relative z-10 flex-1 flex items-center px-4">
+                <pre className="w-full font-mono text-[12px] md:text-[13px] leading-relaxed whitespace-pre-wrap">
+                    {(lines.length ? lines : [""]).map((line, i) => (
+                        <span key={i} className="block">
+                            <span className="inline-block w-6 text-right mr-3 select-none text-white/20">{i + 1}</span>
+                            <span className="text-emerald-100/90">{line}</span>
+                            {i === lines.length - 1 && (
+                                <span className="inline-block w-[7px] h-[14px] bg-emerald-400/80 align-middle ml-0.5 animate-pulse" aria-hidden="true" />
+                            )}
+                        </span>
+                    ))}
+                </pre>
+            </div>
         </div>
     );
 };
@@ -172,15 +181,15 @@ const AwardSection = () => {
                     <article className="relative rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-5 md:p-6 flex flex-col h-full shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                         <AwardMedia />
                         <div className="text-center px-4 pt-8 pb-6 flex-1 flex flex-col">
-                            <h3 className="font-body font-semibold text-white text-sm md:text-base mb-3">
+                            <h3 className="text-[11px] font-body font-medium tracking-[0.25em] uppercase text-white/40 mb-4">
                                 Recognition
                             </h3>
-                            <p className="font-body font-light text-white/55 text-sm md:text-base leading-relaxed max-w-sm mx-auto mb-8">
-                                Above and Beyond Individual Award for outstanding performance
-                                on critical banking-platform delivery.
+                            <p className="font-body font-light text-white/60 text-sm md:text-base leading-relaxed max-w-sm mx-auto mb-8">
+                                Individual award for outstanding performance on
+                                critical banking-platform delivery.
                             </p>
-                            <div className="mt-auto font-display font-bold text-white text-xl md:text-2xl tracking-tight">
-                                FIS Global · Q1 2024
+                            <div className="mt-auto font-display font-bold text-white text-2xl md:text-3xl tracking-tight">
+                                FIS Global <span className="text-emerald-400">·</span> Q1 2024
                             </div>
                         </div>
                     </article>
@@ -191,15 +200,15 @@ const AwardSection = () => {
                     <article className="relative rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-5 md:p-6 flex flex-col h-full shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                         <EducationMedia />
                         <div className="text-center px-4 pt-8 pb-6 flex-1 flex flex-col">
-                            <h3 className="font-body font-semibold text-white text-sm md:text-base mb-3">
+                            <h3 className="text-[11px] font-body font-medium tracking-[0.25em] uppercase text-white/40 mb-4">
                                 Education
                             </h3>
-                            <p className="font-body font-light text-white/55 text-sm md:text-base leading-relaxed max-w-sm mx-auto mb-8">
+                            <p className="font-body font-light text-white/60 text-sm md:text-base leading-relaxed max-w-sm mx-auto mb-8">
                                 B.E. in Computer Science &amp; Engineering,
                                 Sri Siddhartha Institute of Technology, Tumakuru.
                             </p>
-                            <div className="mt-auto font-display font-bold text-white text-xl md:text-2xl tracking-tight">
-                                Class of 2021
+                            <div className="mt-auto font-display font-bold text-white text-2xl md:text-3xl tracking-tight">
+                                Class of <span className="text-emerald-400">2021</span>
                             </div>
                         </div>
                     </article>

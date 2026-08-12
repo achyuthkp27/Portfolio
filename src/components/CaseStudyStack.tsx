@@ -181,10 +181,7 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
   const meta = META[study.slug];
   const diagram = DIAGRAMS[study.slug];
   const textFirst = index % 2 === 0;
-  // Alternate headline tint like the reference alternates white/pink
-  const headlineTint = index % 2 === 0
-    ? "from-white to-white/70"
-    : "from-white to-emerald-200/50";
+  const headlineTint = "from-white to-white/70";
 
   return (
     <div
