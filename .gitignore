@@ -135,3 +135,7 @@ Thumbs.db
 graphify-out/
 graphify-env/
 .graphifyignore
+
+# Local media/video workspaces — not part of the site
+video/
+remotion-video/

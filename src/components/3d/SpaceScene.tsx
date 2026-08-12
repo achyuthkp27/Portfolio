@@ -1,7 +1,8 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, PerspectiveCamera } from "@react-three/drei";
 import { useRef, useState } from "react";
-import * as THREE from "three";
+import { AdditiveBlending, Color, DoubleSide, MathUtils } from "three";
+import type { Group, Mesh, MeshStandardMaterial } from "three";
 import { Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 export let isDJMuted = true;
@@ -81,11 +82,11 @@ const stopDJ = () => {
 };
 
 const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
-    const groupRef = useRef<THREE.Group>(null);
-    const shockwaveRef = useRef<THREE.Mesh>(null);
-    const shockwaveRef2 = useRef<THREE.Mesh>(null); 
-    const mainMatRef = useRef<THREE.MeshStandardMaterial>(null);
-    const innerMatRef = useRef<THREE.MeshStandardMaterial>(null);
+    const groupRef = useRef<Group>(null);
+    const shockwaveRef = useRef<Mesh>(null);
+    const shockwaveRef2 = useRef<Mesh>(null); 
+    const mainMatRef = useRef<MeshStandardMaterial>(null);
+    const innerMatRef = useRef<MeshStandardMaterial>(null);
     const { invalidate } = useThree();
     
     const [hovered, setHovered] = useState(false);
@@ -93,7 +94,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     // Theme-aware base color
     const getBaseColor = () => {
         const theme = document.documentElement.getAttribute('data-theme');
-        return theme === 'light' ? new THREE.Color("#222222") : new THREE.Color("#ffffff");
+        return theme === 'light' ? new Color("#222222") : new Color("#ffffff");
     };
 
     useFrame((state) => {
@@ -106,13 +107,13 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             // --- 0. Disco Light Colors ---
             // Cycles through vibrant HSL spectrum to mimic a disco club
             const hue = (time * 0.5) % 1; 
-            const discoColor = new THREE.Color().setHSL(hue, 1, 0.5);
+            const discoColor = new Color().setHSL(hue, 1, 0.5);
             
             mainMatRef.current.color.copy(discoColor);
             mainMatRef.current.emissive.copy(discoColor);
             innerMatRef.current.color.copy(discoColor);
-            (shockwaveRef.current.material as THREE.MeshStandardMaterial).color.copy(discoColor);
-            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).color.copy(discoColor);
+            (shockwaveRef.current.material as MeshStandardMaterial).color.copy(discoColor);
+            (shockwaveRef2.current.material as MeshStandardMaterial).color.copy(discoColor);
 
             // --- 1. Smooth Circling/"Shaking" (Orbital Wobble) ---
             const shakeSpeed = 5;
@@ -131,7 +132,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             const opacity1 = (1 - phase1) * 0.5; 
 
             shockwaveRef.current.scale.setScalar(scale1);
-            (shockwaveRef.current.material as THREE.MeshStandardMaterial).opacity = opacity1;
+            (shockwaveRef.current.material as MeshStandardMaterial).opacity = opacity1;
             shockwaveRef.current.rotation.z -= 0.01; 
 
             // Loop 2 
@@ -140,7 +141,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             const opacity2 = (1 - phase2) * 0.3;
 
             shockwaveRef2.current.scale.setScalar(scale2);
-            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).opacity = opacity2;
+            (shockwaveRef2.current.material as MeshStandardMaterial).opacity = opacity2;
             shockwaveRef2.current.rotation.z += 0.01;
 
         } else {
@@ -149,18 +150,18 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
             mainMatRef.current.color.copy(baseColor);
             mainMatRef.current.emissive.copy(baseColor);
             innerMatRef.current.color.copy(baseColor);
-            (shockwaveRef.current.material as THREE.MeshStandardMaterial).color.copy(baseColor);
-            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).color.copy(baseColor);
+            (shockwaveRef.current.material as MeshStandardMaterial).color.copy(baseColor);
+            (shockwaveRef2.current.material as MeshStandardMaterial).color.copy(baseColor);
 
-            groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
-            groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, 0, 0.1);
-            groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, 0, 0.1);
+            groupRef.current.position.x = MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
+            groupRef.current.position.y = MathUtils.lerp(groupRef.current.position.y, 0, 0.1);
+            groupRef.current.position.z = MathUtils.lerp(groupRef.current.position.z, 0, 0.1);
 
             // Hide Beams
             shockwaveRef.current.scale.setScalar(0.01);
-            (shockwaveRef.current.material as THREE.MeshStandardMaterial).opacity = 0;
+            (shockwaveRef.current.material as MeshStandardMaterial).opacity = 0;
             shockwaveRef2.current.scale.setScalar(0.01);
-            (shockwaveRef2.current.material as THREE.MeshStandardMaterial).opacity = 0;
+            (shockwaveRef2.current.material as MeshStandardMaterial).opacity = 0;
         }
 
         invalidate();
@@ -222,9 +223,9 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
                         emissiveIntensity={1}
                         transparent
                         opacity={0}
-                        blending={THREE.AdditiveBlending}
+                        blending={AdditiveBlending}
                         depthWrite={false}
-                        side={THREE.DoubleSide}
+                        side={DoubleSide}
                     />
                 </mesh>
 
@@ -238,9 +239,9 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
                         transparent
                         opacity={0}
                         wireframe={false}
-                        blending={THREE.AdditiveBlending}
+                        blending={AdditiveBlending}
                         depthWrite={false}
-                        side={THREE.DoubleSide}
+                        side={DoubleSide}
                     />
                 </mesh>
             </group>

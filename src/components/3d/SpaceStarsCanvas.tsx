@@ -1,16 +1,17 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import { useRef } from "react";
-import * as THREE from "three";
+import { MathUtils } from "three";
+import type { Group } from "three";
 
 const ParallaxStars = () => {
-    const group = useRef<THREE.Group>(null);
+    const group = useRef<Group>(null);
 
     useFrame((state) => {
         if (!group.current) return;
         const { x, y } = state.mouse;
-        group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, y * 0.05, 0.05);
-        group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, x * 0.05, 0.05);
+        group.current.rotation.x = MathUtils.lerp(group.current.rotation.x, y * 0.05, 0.05);
+        group.current.rotation.y = MathUtils.lerp(group.current.rotation.y, x * 0.05, 0.05);
     });
 
     return (

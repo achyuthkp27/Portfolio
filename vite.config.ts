@@ -61,7 +61,9 @@ export default defineConfig(({ mode }) => ({
           'react-vendor': ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-router-dom'],
           // Framer Motion — used by Hero and layout, separate from React core
           'framer-motion': ['framer-motion'],
-          // Three.js core — only loaded when 3D scene mounts (lazy)
+          // Three.js core — only loaded when 3D scene mounts (lazy).
+          // Kept as its own chunk: r3f imports the full three namespace internally,
+          // so tree-shaking cannot reduce it; splitting at least keeps it cacheable.
           'three': ['three'],
           // React Three Fiber + Drei — only loaded when 3D components mount (lazy)
           'r3f': ['@react-three/fiber', '@react-three/drei'],
