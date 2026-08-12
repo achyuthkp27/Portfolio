@@ -108,7 +108,7 @@ const ContactSection = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <SectionHeader 
-          label="[ CONTACT ]"
+          label="Contact"
           titleMain="Let's"
           titleAccent="Talk"
           description="Recruiting, engineering roles, or a systems question — email gets the fastest response, usually within a day."

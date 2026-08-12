@@ -64,13 +64,13 @@ const Hero = () => {
 
       {/* Technical Corner Labels - Social Links */}
       <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        [ GITHUB: ACHYUTHKP27 ]
+        GitHub — achyuthkp27
       </a>
       <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        [ LINKEDIN: KPACHYUTH ]
+        LinkedIn — kpachyuth
       </a>
       <a href="mailto:kpachyuthz@gmail.com" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        [ EMAIL: KPACHYUTHZ@GMAIL.COM ]
+        kpachyuthz@gmail.com
       </a>
 
       {/* Shortcut Hint - Relocated to avoid 3D control overlap */}
@@ -98,7 +98,7 @@ const Hero = () => {
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                 </span>
                 <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/70">
-                  OPEN_TO_OPPORTUNITIES
+                  Open to opportunities
                 </span>
               </div>
             </motion.div>
@@ -165,7 +165,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.46 }}
-              className="text-sm md:text-lg font-mono text-gray-400 max-w-lg mb-12 leading-relaxed tracking-wide uppercase pointer-events-auto"
+              className="text-base md:text-lg font-body font-light text-gray-400 max-w-lg mb-12 leading-relaxed pointer-events-auto"
             >
               Building secure banking microservices — Java, Spring Boot, Kafka — for platforms that move real money.
             </motion.p>

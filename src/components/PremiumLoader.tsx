@@ -4,7 +4,8 @@ import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
-const words = ["Developer", "Designer", "Engineer", "Creator"];
+// Single wordmark, brief hold, slide away — a premium load feels instant
+const words = ["Achyuth KP"];
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
@@ -43,7 +44,7 @@ const PremiumLoader = () => {
         if (index === words.length - 1) {
             const timeout = setTimeout(() => {
                 setIsLoading(false);
-            }, 500);
+            }, 450);
             return () => clearTimeout(timeout);
         }
     }, [index, setIsLoading, shouldSkipLoader]);
@@ -76,7 +77,7 @@ const PremiumLoader = () => {
                 >
                     <div className="relative flex items-center justify-center">
                         <AnimatePresence mode="wait">
-                            <motion.h1
+                            <motion.div
                                 key={index}
                                 initial={index === 0 
                                     ? { opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" } 
@@ -88,7 +89,7 @@ const PremiumLoader = () => {
                                 className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center"
                             >
                                 {words[index]}
-                            </motion.h1>
+                            </motion.div>
                         </AnimatePresence>
                     </div>
                 </motion.div>

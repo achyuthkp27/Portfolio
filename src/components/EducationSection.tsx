@@ -22,7 +22,7 @@ const EducationSection = () => {
 
       <div className="max-w-4xl mx-auto relative z-10">
         <SectionHeader 
-          label="[ ACADEMIC_RECORD ]" 
+          label="Education" 
           titleMain="EDUCATION" 
           titleAccent="HISTORY" 
           align="center"

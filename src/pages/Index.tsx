@@ -2,7 +2,6 @@ import { lazy } from "react";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
-import SystemStatus from "@/components/SystemStatus";
 import SpaceBackground from "@/components/3d/SpaceBackground";
 import { LazySection } from "@/components/ui/LazySection";
 
@@ -31,7 +30,6 @@ const Index = () => {
       <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
         <main id="main-content">
             <Hero />
-            <SystemStatus />
 
             <LazySection sectionId="about" minHeight="1200px">
               <AboutMeSection />

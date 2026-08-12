@@ -66,7 +66,7 @@ export default function ActivityWidget() {
           
           <div className="flex flex-col">
             <span className="text-[10px] font-mono text-white/50 uppercase tracking-widest leading-none mb-1">
-              SYSTEM_STATUS
+              Currently
             </span>
             <div className="flex items-center gap-2">
               <Activity className="w-3 h-3 text-emerald-400" />

@@ -45,7 +45,7 @@ interface Highlight {
 const PERSONAS: Persona[] = [
     {
         id: "human",
-        title: "THE HUMAN_ENTITY",
+        title: "The Human",
         subtitle: "Simply, Achyuth",
         description: "A curious mind exploring the intersection of technology, art, and human connection. Driven by empathy and the pursuit of meaningful digital interactions.",
         icon: Code,
@@ -55,11 +55,11 @@ const PERSONAS: Persona[] = [
         gradientVia: "via-emerald-400",
         glowBg: "bg-emerald-400",
         ringBorder: "border-emerald-400",
-        keywords: ["EMPATHY", "CURIOSITY", "COLLABORATION", "LEARNING"],
+        keywords: ["Empathy", "Curiosity", "Collaboration", "Learning"],
     },
     {
         id: "operator",
-        title: "THE OPERATOR_CORE",
+        title: "The Operator",
         subtitle: "Banking Systems Engineer",
         description: "Five years inside regulated banking platforms — microservices, Kafka event streams, payment security, and the production discipline that keeps money moving safely.",
         icon: Cpu,
@@ -69,11 +69,11 @@ const PERSONAS: Persona[] = [
         gradientVia: "via-blue-400",
         glowBg: "bg-blue-400",
         ringBorder: "border-blue-400",
-        keywords: ["ARCHITECTURE", "SCALABILITY", "INFRASTRUCTURE", "SECURITY"],
+        keywords: ["Architecture", "Scalability", "Infrastructure", "Security"],
     },
     {
         id: "creator",
-        title: "THE BUILDER_NODE",
+        title: "The Builder",
         subtitle: "Maker of Systems",
         description: "Building beyond the day job — LLM-powered banking chatbots, real-time Video KYC over WebRTC, and this site. Curiosity compiled into shipped things.",
         icon: Palette,
@@ -83,21 +83,21 @@ const PERSONAS: Persona[] = [
         gradientVia: "via-orange-400",
         glowBg: "bg-orange-400",
         ringBorder: "border-orange-400",
-        keywords: ["AI_INTEGRATION", "REAL-TIME", "SIDE_PROJECTS", "SHIPPING"],
+        keywords: ["AI integration", "Real-time", "Side projects", "Shipping"],
     },
 ];
 
 const STATS: Stat[] = [
-    { value: "5+", label: "YEARS_IN_BANKING", icon: TrendingUp },
-    { value: "30+", label: "SERVICE_ESTATE", icon: Globe },
-    { value: "3", label: "BANKING_CHANNELS", icon: Award },
+    { value: "5+", label: "Years in banking", icon: TrendingUp },
+    { value: "30+", label: "Service estate", icon: Globe },
+    { value: "3", label: "Banking channels", icon: Award },
 ];
 
 const HIGHLIGHTS: Highlight[] = [
-    { icon: Code, label: "ARCHITECTURE", value: "CLEAN_CODE" },
-    { icon: Server, label: "EVENT_DRIVEN", value: "KAFKA" },
-    { icon: Cloud, label: "AWS_&_DOCKER", value: "CLOUD_NATIVE" },
-    { icon: Zap, label: "PCI-DSS_/_SOX", value: "COMPLIANCE" },
+    { icon: Code, label: "Architecture", value: "Clean code" },
+    { icon: Server, label: "Event-driven", value: "Kafka" },
+    { icon: Cloud, label: "AWS & Docker", value: "Cloud native" },
+    { icon: Zap, label: "PCI-DSS / SOX", value: "Compliance" },
 ];
 
 // ─────────────────────────────────────────────
@@ -332,7 +332,7 @@ const AboutMeSection = () => {
                 <div className="mb-16 lg:mb-24 md:flex justify-between items-end">
                     <div className="max-w-2xl"> {/* Removed TextReveal from here */}
                         <SectionHeader 
-                            label="[ IDENTITY_MATRIX_V4.0 ]" 
+                            label="About" 
                             titleMain="The Mind Behind" 
                             titleAccent="the Machine" 
                             align="left"
@@ -342,10 +342,10 @@ const AboutMeSection = () => {
                         <div className="flex gap-4 text-white/40 text-[10px] font-mono font-bold tracking-widest">
                             <span className="flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                SYS_STATUS: ONLINE
+                                Bengaluru, India
                             </span>
                             <span className="opacity-20">|</span>
-                            <span>PCI-DSS // SOX</span>
+                            <span>PCI-DSS / SOX</span>
                         </div>
                     </div>
                 </div>
@@ -374,7 +374,7 @@ const AboutMeSection = () => {
                                     onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                                     className="inline-flex items-center gap-2 text-white text-[10px] font-mono font-bold tracking-[0.2em] hover:text-emerald-400 transition-colors group border border-white/10 px-6 py-3 bg-white/5 hover:bg-emerald-500/10"
                                 >
-                                    <span>[ INITIATE_CONTACT ]</span>
+                                    <span>Get in touch</span>
                                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -409,10 +409,10 @@ const AboutMeSection = () => {
                         {/* Location readout — real coordinates, Bengaluru */}
                         <div className="absolute top-8 left-8 z-30 flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-                            <span className="font-mono text-[10px] text-emerald-500/70 uppercase tracking-widest">BENGALURU // IST</span>
+                            <span className="font-mono text-[10px] text-emerald-500/70 uppercase tracking-widest">Bengaluru / IST</span>
                         </div>
                         <div className="absolute bottom-8 right-8 z-30 font-mono text-[10px] text-white/40">
-                            12.9716°N // 77.5946°E
+                            12.9716°N / 77.5946°E
                         </div>
                     </div>
                 </div>

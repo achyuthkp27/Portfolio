@@ -15,7 +15,7 @@ const AwardSection = () => {
 
       <div className="max-w-4xl mx-auto relative z-10">
         <SectionHeader 
-          label="[ RECOGNITION_LOG ]" 
+          label="Recognition" 
           titleMain="HONORS &" 
           titleAccent="AWARDS" 
           align="center"

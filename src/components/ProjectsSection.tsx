@@ -216,7 +216,7 @@ const ProjectsSection = () => {
       <div className="max-w-screen-2xl mx-auto">
         {/* Professional case studies — the real work */}
         <SectionHeader
-          label="[ PROFESSIONAL_WORK ]"
+          label="Selected work"
           titleMain="Banking Platform"
           titleAccent="Case Studies"
           description="Systems designed, built, and shipped to production across five years of regulated banking platforms. Client specifics generalized."
@@ -231,7 +231,7 @@ const ProjectsSection = () => {
 
         {/* Open-source / personal repos */}
         <SectionHeader
-          label="[ LIVE_GITHUB_FEED ]"
+          label="Open source"
           titleMain="Open Source &"
           titleAccent="Experiments"
           description="Latest public repositories, fetched live from GitHub."

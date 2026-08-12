@@ -27,7 +27,7 @@ const ExperienceTimeline = () => {
 
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeader 
-          label="[ EXPERIENCE_LOG ]" 
+          label="Experience" 
           titleMain="Professional" 
           titleAccent="History" 
           align="center"
@@ -92,9 +92,9 @@ const ExperienceTimeline = () => {
                       <div className={`flex flex-col ${index % 2 === 0 ? "md:items-end text-left md:text-right" : "text-left md:items-start"}`}>
                         <div className={`flex items-center gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
                           <Icon className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />
-                          <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-widest">{exp.company}</h3>
+                          <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">{exp.company}</h3>
                         </div>
-                        <p className="text-emerald-400/90 font-mono text-xs md:text-sm tracking-widest uppercase mt-1">{exp.role}</p>
+                        <p className="text-emerald-300/70 font-body font-light text-xs md:text-sm tracking-wide mt-1.5">{exp.role}</p>
                       </div>
                       <div className="flex flex-row sm:flex-col items-center gap-3 self-end sm:self-auto">
                         <span className="text-[10px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
