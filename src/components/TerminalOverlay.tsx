@@ -111,7 +111,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         setInput("");
         return;
       case 'about':
-        newHistory.push({ type: 'output', text: 'IDENTITY: ACHYUTH KP\nROLE: SR. SOFTWARE DEVELOPER\nLOC: BANGALORE, IN\nFOCUS: SCALABLE BACKEND & IMMERSIVE FRONTEND\nEMAIL: kpachyuthz@gmail.com' });
+        newHistory.push({ type: 'output', text: 'IDENTITY: ACHYUTH KP\nROLE: SOFTWARE ENGINEER\nLOC: BENGALURU, IN\nFOCUS: BANKING MICROSERVICES & AI INTEGRATION\nEMAIL: kpachyuthz@gmail.com' });
         break;
       case 'gh':
         newHistory.push({ type: 'system', text: 'SYNCING WITH GITHUB_API...' });

@@ -2,22 +2,17 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
-import ExperienceTimer from "./ui/ExperienceTimer";
 
 import { lazy, Suspense } from "react";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 import { useMobile } from "@/hooks/useMobile";
 import { useIdleMount } from "@/hooks/useIdleMount";
 
-import DecryptText from "@/components/ui/DecryptText";
 
 import { useLoading } from "@/context/LoadingContext";
 import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
-
-// Career start — single source for the experience card (module-level for stable identity)
-const CAREER_START = new Date("2021-07-01");
 
 const Hero = () => {
   const { isLoading } = useLoading();
@@ -62,29 +57,8 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Technical Corner Labels - Social Links */}
-      <a href="https://github.com/achyuthkp27" target="_blank" rel="noopener noreferrer" className="absolute top-24 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        GitHub — achyuthkp27
-      </a>
-      <a href="https://linkedin.com/in/kpachyuth" target="_blank" rel="noopener noreferrer" className="absolute top-24 right-6 md:right-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        LinkedIn — kpachyuth
-      </a>
-      <a href="mailto:kpachyuthz@gmail.com" className="absolute bottom-12 left-6 md:left-12 font-mono text-[10px] text-muted-foreground tracking-widest opacity-90 hover:opacity-100 transition-opacity hidden md:block z-50 pointer-events-auto cursor-pointer">
-        kpachyuthz@gmail.com
-      </a>
-
-      {/* Shortcut Hint - Relocated to avoid 3D control overlap */}
-      <div className="absolute top-32 right-6 md:right-12 flex flex-col items-end gap-2 font-mono text-[10px] text-white/40 tracking-[0.2em] hidden md:flex z-50 select-none">
-        <div className="flex items-center gap-2 px-2 py-1 border border-white/5 bg-white/[0.02] rounded backdrop-blur-sm group hover:border-emerald-500/30 hover:text-white/60 transition-all duration-500">
-          <span className="text-emerald-500/40 group-hover:text-emerald-400 transition-colors">⌘K</span> COMMAND_MENU
-        </div>
-        <div className="flex items-center gap-2 px-2 py-1 border border-white/5 bg-white/[0.02] rounded backdrop-blur-sm group hover:border-emerald-500/30 hover:text-white/60 transition-all duration-500">
-          <span className="text-emerald-500/40 group-hover:text-emerald-400 transition-colors">&gt;_</span> SYSTEM_TERMINAL
-        </div>
-      </div>
-
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-3xl">
           <div className="flex flex-col text-left">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -116,7 +90,7 @@ const Hero = () => {
 
             <motion.div
               role="text"
-              aria-label="Backend Engineer"
+              aria-label="Software Engineer"
               className="font-display font-bold tracking-tighter leading-none mb-8 select-none cursor-default pointer-events-auto"
               whileHover="hover"
             >
@@ -127,7 +101,7 @@ const Hero = () => {
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                 >
-                  BACKEND
+                  SOFTWARE
                 </motion.div>
               </div>
               <div className="overflow-hidden ml-12">
@@ -141,24 +115,6 @@ const Hero = () => {
                   ENGINEER
                 </motion.div>
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0.38 }}
-              className="flex flex-wrap gap-3 mb-8 pointer-events-auto"
-            >
-              {["Java", "Spring Boot", "Microservices", "Kafka", "AWS", "Banking & AI"].map((tag, i) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider group hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300 rounded-md relative overflow-hidden"
-                >
-                  {/* Shimmer sweep on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                  <span className="relative z-10"><DecryptText text={tag} /></span>
-                </span>
-              ))}
             </motion.div>
 
             <motion.p
@@ -213,50 +169,17 @@ const Hero = () => {
                 </a>
               </MagneticButton>
             </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={!isLoading ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="mt-14 text-[13px] font-body font-light text-white/40 tracking-wide pointer-events-auto"
+            >
+              5+ years in banking platforms&ensp;·&ensp;First Citizens Bank via Cognizant&ensp;·&ensp;Bengaluru
+            </motion.p>
           </div>
 
-          {/* Right side Experience Card — improved corner animations */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={!isLoading ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.32 }}
-            className="flex justify-center pointer-events-auto mt-12 lg:mt-0"
-          >
-            <motion.div className="relative w-80 h-80" whileHover="hover" initial="initial">
-              {/* Ambient glow behind card */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              
-              <motion.div
-                variants={{
-                  hover: { borderColor: "rgba(255,255,255,0.2)", backgroundColor: "rgba(255,255,255,0.05)" }
-                }}
-                className="absolute inset-0 border border-white/10 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center transition-colors duration-500"
-              >
-                <ExperienceTimer startDate={CAREER_START} />
-              </motion.div>
-              {/* Decorative corners — smoother spring */}
-              <motion.div
-                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-0 left-0 w-full h-full origin-top-left scale-x-[0.05] scale-y-[0.05] border-t border-l border-white/40 pointer-events-none"
-              />
-              <motion.div
-                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-0 right-0 w-full h-full origin-top-right scale-x-[0.05] scale-y-[0.05] border-t border-r border-white/40 pointer-events-none"
-              />
-              <motion.div
-                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-0 left-0 w-full h-full origin-bottom-left scale-x-[0.05] scale-y-[0.05] border-b border-l border-white/40 pointer-events-none"
-              />
-              <motion.div
-                variants={{ hover: { scaleX: 1, scaleY: 1, borderColor: "rgba(255,255,255,0.8)" } }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-0 right-0 w-full h-full origin-bottom-right scale-x-[0.05] scale-y-[0.05] border-b border-r border-white/40 pointer-events-none"
-              />
-            </motion.div>
-          </motion.div>
         </div>
       </motion.div>
 
