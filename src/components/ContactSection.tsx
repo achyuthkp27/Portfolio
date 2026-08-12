@@ -115,9 +115,9 @@ const ContactSection = () => {
           align="left"
         />
 
-        <div className="grid lg:grid-cols-5 gap-16 items-start">
+        <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
           {/* Contact Info: Communication Nodes */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 min-w-0">
             {contactInfo.map((item, index) => (
               <motion.a
                 key={item.label}
@@ -130,7 +130,7 @@ const ContactSection = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ x: 6, scale: 1.01 }}
-                className="flex items-center gap-6 p-7 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm hover:bg-emerald-500/[0.04] hover:border-emerald-500/20 transition-all duration-500 group/item relative overflow-hidden"
+                className="flex items-center gap-5 p-5 md:p-7 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm hover:bg-emerald-500/[0.04] hover:border-emerald-500/20 transition-all duration-500 group/item relative overflow-hidden"
               >
                 {/* Subtle background glow on hover */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.06] to-transparent opacity-0 group-hover/item:opacity-100 blur-xl transition-opacity duration-700 pointer-events-none" />
@@ -144,8 +144,8 @@ const ContactSection = () => {
                 </div>
                 
                 <div className="flex-1 relative z-10">
-                  <span className="text-[10px] font-mono text-white/15 uppercase tracking-[0.3em] group-hover/item:text-emerald-400/50 transition-colors duration-500">
-                    {item.label}_CHANNEL
+                  <span className="text-[10px] font-body font-medium text-white/30 uppercase tracking-[0.25em] group-hover/item:text-emerald-400/60 transition-colors duration-500">
+                    {item.label}
                   </span>
                   <p className="text-white/80 font-display text-lg md:text-xl font-semibold tracking-tight group-hover/item:text-white transition-colors duration-300">{item.value}</p>
                 </div>
@@ -157,28 +157,21 @@ const ContactSection = () => {
               </motion.a>
             ))}
 
-            <div className="pt-8 border-t border-white/5">
-                <div className="flex items-center gap-4 px-4 py-3 bg-emerald-500/5 border border-emerald-500/10 text-[10px] font-mono text-emerald-400 uppercase tracking-widest">
-                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                   STATUS: ENCRYPTION_ACTIVE // 4096-BIT_RSA
-                </div>
-            </div>
           </div>
 
           {/* Contact Form: Encrypted Uplink */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 min-w-0">
             <form
               onSubmit={handleSubmit}
-              className="relative p-10 border border-white/10 bg-black/60 backdrop-blur-xl rounded-2xl overflow-hidden group/form shadow-2xl"
+              className="relative p-6 md:p-10 border border-white/10 bg-black/60 backdrop-blur-xl rounded-2xl overflow-hidden group/form shadow-2xl"
             >
               <div className="absolute inset-0 grid-pattern opacity-[0.03] pointer-events-none" />
               
               <div className="space-y-12 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="group">
-                    <label htmlFor="name" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
-                      <span>{'>'} IDENTITY_VERIFICATION</span>
-                      <span className="text-[10px] opacity-20">AUTH_REQ</span>
+                    <label htmlFor="name" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                      Name
                     </label>
                     <input
                       type="text"
@@ -193,8 +186,8 @@ const ContactSection = () => {
                       aria-required="true"
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? "name-error" : undefined}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
-                      placeholder="ENTER_SENDER_NAME"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                      placeholder="Your name"
                     />
                     {errors.name && (
                       <span id="name-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
@@ -204,9 +197,8 @@ const ContactSection = () => {
                   </div>
 
                   <div className="group">
-                    <label htmlFor="email" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
-                      <span>{'>'} RETURN_ADDRESS</span>
-                      <span className="text-[10px] opacity-20">IPV6_LINK</span>
+                    <label htmlFor="email" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                      Email
                     </label>
                     <input
                       type="email"
@@ -221,8 +213,8 @@ const ContactSection = () => {
                       aria-required="true"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
-                      placeholder="USER@HOST.COM"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                      placeholder="you@example.com"
                     />
                     {errors.email && (
                       <span id="email-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
@@ -233,9 +225,8 @@ const ContactSection = () => {
                 </div>
 
                 <div className="group">
-                  <label htmlFor="message" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
-                    <span>{'>'} PACKET_DATA_STREAM</span>
-                    <span className="text-[10px] opacity-20">LZW_COMPRESSED</span>
+                  <label htmlFor="message" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                    Message
                   </label>
                   <textarea
                     id="message"
@@ -250,8 +241,8 @@ const ContactSection = () => {
                     aria-invalid={!!errors.message}
                     aria-describedby={errors.message ? "message-error" : undefined}
                     rows={6}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/10 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
-                    placeholder="INITIATING_MESSAGE_PAYLOAD..."
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                    placeholder="What can I help with?"
                   />
                   {errors.message && (
                     <span id="message-error" className="text-red-400 text-[10px] font-mono mt-2 block" role="alert">
@@ -264,22 +255,19 @@ const ContactSection = () => {
                   type="submit"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-6 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-emerald-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn rounded-lg"
+                  className="w-full py-5 bg-white text-black font-body text-xs font-semibold uppercase tracking-[0.15em] hover:bg-emerald-400 transition-all duration-500 flex items-center justify-center gap-4 relative overflow-hidden group/btn rounded-lg"
                 >
                   <div className="absolute inset-0 bg-white group-hover/btn:bg-emerald-400 transition-colors" />
                   {/* Ripple overlay */}
                   <div className="absolute inset-0 pointer-events-none" />
                   <span className="relative z-10 flex items-center gap-3">
-                    EXECUTE_TRANSMISSION <Send className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    Send message <Send className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </span>
                   {/* Shimmer sweep */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 pointer-events-none" />
                 </motion.button>
               </div>
 
-              {/* Decorative side lines */}
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent" />
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent" />
             </form>
           </div>
         </div>

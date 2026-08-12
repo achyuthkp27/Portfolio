@@ -55,9 +55,8 @@ export default function ActivityWidget() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-[90] hidden md:flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="fixed bottom-6 left-6 z-[90] hidden md:flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-1000 opacity-60 hover:opacity-100 transition-opacity">
       <div className="relative group">
-        <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md animate-pulse" />
         <div className="relative bg-black/80 border border-white/10 backdrop-blur-md rounded-full px-4 py-2 flex items-center gap-3 shadow-2xl transition-all duration-300 hover:border-emerald-500/50 hover:bg-black">
           <div className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

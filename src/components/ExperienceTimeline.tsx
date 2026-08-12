@@ -25,7 +25,7 @@ const ExperienceTimeline = () => {
   return (
     <section id="experience" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
 
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="max-w-3xl mx-auto relative z-10">
         <SectionHeader 
           label="Experience" 
           titleMain="Professional" 
@@ -35,12 +35,11 @@ const ExperienceTimeline = () => {
 
         {/* Timeline */}
         <div className="relative">
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2 overflow-visible">
+          <div className="absolute left-8 top-0 bottom-0 w-px bg-white/10 overflow-visible">
             <motion.div
               className="w-full bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent origin-top"
               style={{ scaleY }}
             />
-            <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-transparent via-white to-transparent animate-scan-beam" />
           </div>
 
           {experiences.map((exp, index) => {
@@ -54,10 +53,10 @@ const ExperienceTimeline = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.2 }}
-                className={`relative mb-12 group/timeline ${index % 2 === 0 ? "md:pr-[50%] md:text-right" : "md:pl-[50%] md:ml-auto"}`}
+                className="relative mb-12 group/timeline"
               >
                 {/* Timeline dot */}
-                <div className="absolute left-8 md:left-1/2 -translate-x-1/2 top-10 z-10 flex items-center justify-center">
+                <div className="absolute left-8 -translate-x-1/2 top-10 z-10 flex items-center justify-center">
                   <div className={`w-5 h-5 rounded-full border-2 z-20 transition-all duration-500 flex items-center justify-center ${isExpanded ? 'border-emerald-400 bg-emerald-950 shadow-[0_0_15px_rgba(52,211,153,0.6)]' : 'border-white/30 bg-black group-hover/timeline:border-emerald-500/50 group-hover/timeline:shadow-[0_0_10px_rgba(52,211,153,0.2)]'}`}>
                     {isExpanded && <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />}
                   </div>
@@ -72,9 +71,9 @@ const ExperienceTimeline = () => {
                 {/* Content card */}
                 <motion.div
                   layout
-                  whileHover={{ x: index % 2 === 0 ? -8 : 8, scale: 1.01 }}
+                  whileHover={{ x: 8, scale: 1.01 }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className={`ml-20 md:ml-0 ${index % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
+                  className="ml-20"
                 >
                   <button
                     type="button"
@@ -88,9 +87,9 @@ const ExperienceTimeline = () => {
                     <div className={`absolute -inset-32 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 rounded-full blur-3xl opacity-0 transition-opacity duration-700 pointer-events-none ${isExpanded ? 'opacity-100' : 'group-hover:opacity-40'}`} />
 
                     {/* Header */}
-                    <div className={`relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-2 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
-                      <div className={`flex flex-col ${index % 2 === 0 ? "md:items-end text-left md:text-right" : "text-left md:items-start"}`}>
-                        <div className={`flex items-center gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
+                    <div className="relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-2">
+                      <div className="flex flex-col text-left">
+                        <div className="flex items-center gap-3">
                           <Icon className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />
                           <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">{exp.company}</h3>
                         </div>
@@ -121,14 +120,14 @@ const ExperienceTimeline = () => {
                           className="overflow-hidden relative z-10"
                         >
                           <div className="pt-6 border-t border-white/10 mt-6">
-                            <ul className={`space-y-4 mb-8 ${index % 2 === 0 ? "md:text-right" : "text-left"}`}>
+                            <ul className="space-y-4 mb-8 text-left">
                               {exp.achievements.map((achievement, i) => (
                                 <motion.li
                                   key={i}
                                   initial={{ opacity: 0, y: 10 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
-                                  className={`text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3 ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
+                                  className="text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3"
                                 >
                                   <span className="text-emerald-500 mt-1.5 text-[10px]">▹</span>
                                   <span className="flex-1">{achievement}</span>
@@ -136,7 +135,7 @@ const ExperienceTimeline = () => {
                               ))}
                             </ul>
 
-                            <div className={`flex flex-wrap gap-2 ${index % 2 === 0 ? "md:justify-end" : "justify-start"}`}>
+                            <div className="flex flex-wrap gap-2 justify-start">
                               {exp.technologies.map((tech) => (
                                 <span
                                   key={tech}

@@ -48,13 +48,13 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
               </span>
               
               <div className="relative w-full">
-                <h3 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white/70 group-hover:text-white tracking-tighter transition-all duration-700 group-hover:translate-x-4">
+                <h3 className="font-display text-3xl md:text-5xl font-bold text-white/70 group-hover:text-white tracking-tight transition-all duration-700 group-hover:translate-x-4">
                   {formattedTitle}
                 </h3>
                 
                 <div className="mt-6 flex flex-col md:flex-row md:items-center gap-4 text-gray-500 text-sm md:text-base max-w-2xl group-hover:text-gray-300 transition-all duration-700 delay-100 group-hover:translate-x-4">
                   <p className="line-clamp-2 leading-relaxed">
-                    {project.description || "Experimental architecture. Classified repository details."}
+                    {project.description || "No description yet."}
                   </p>
                 </div>
               </div>
@@ -191,7 +191,7 @@ const ProjectsSection = () => {
             className="flex flex-wrap items-center gap-3 mb-12"
           >
             <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest mr-2">
-              FILTER_BY_LANG:
+              Filter
             </div>
             
             <button
@@ -226,7 +226,7 @@ const ProjectsSection = () => {
           {isLoading ? (
             <div className="h-full min-h-[300px] flex flex-col items-center justify-center font-mono text-white/50 gap-4">
               <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
-              <span>SYNCING_REPOSITORIES...</span>
+              <span>Loading repositories…</span>
             </div>
           ) : filteredProjects.length > 0 ? (
             filteredProjects.map((project, index) => (
@@ -234,7 +234,7 @@ const ProjectsSection = () => {
             ))
           ) : (
             <div className="h-[400px] flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
-              NO_REPOSITORIES_FOUND_FOR_QUERY
+              Nothing matches that filter.
             </div>
           )}
         </div>

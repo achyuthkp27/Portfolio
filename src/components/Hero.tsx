@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
+import ExperienceTimer from "./ui/ExperienceTimer";
 
 import { lazy, Suspense } from "react";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
@@ -13,6 +14,8 @@ import { useLoading } from "@/context/LoadingContext";
 import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
+
+const CAREER_START = new Date("2021-07-01");
 
 const Hero = () => {
   const { isLoading } = useLoading();
@@ -58,7 +61,7 @@ const Hero = () => {
       )}
 
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
-        <div className="max-w-3xl">
+        <div>
           <div className="flex flex-col text-left">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -82,7 +85,7 @@ const Hero = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={!isLoading ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.45, delay: 0.16 }}
-                className="text-4xl md:text-6xl font-display font-bold text-white tracking-tight"
+                className="text-base md:text-lg font-body font-medium tracking-[0.35em] uppercase text-white/70"
               >
                 ACHYUTH KP
               </motion.h1>
@@ -91,7 +94,7 @@ const Hero = () => {
             <motion.div
               role="text"
               aria-label="Software Engineer"
-              className="font-display font-bold tracking-tighter leading-none mb-8 select-none cursor-default pointer-events-auto"
+              className="leading-none mb-8 select-none cursor-default pointer-events-auto"
               whileHover="hover"
             >
               <div className="overflow-hidden">
@@ -99,17 +102,17 @@ const Hero = () => {
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
+                  className="font-condensed uppercase text-[15vw] md:text-[10.5vw] lg:text-[9vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/55 bg-clip-text text-transparent"
                 >
                   SOFTWARE
                 </motion.div>
               </div>
-              <div className="overflow-hidden ml-12">
+              <div className="overflow-hidden ml-0 sm:ml-12">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.28 }}
-                  className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
+                  className="font-condensed uppercase text-[15vw] md:text-[10.5vw] lg:text-[9vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/55 bg-clip-text text-transparent"
                   style={{ animationDelay: "0.5s" }}
                 >
                   ENGINEER
@@ -142,7 +145,7 @@ const Hero = () => {
                       target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="group relative inline-flex items-center gap-4 px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+                  className="group relative inline-flex items-center justify-center gap-4 px-8 py-3 w-full sm:w-auto bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
                 >
                   {/* White glow pulse on hover */}
                   <div className="absolute inset-0 bg-gradient-to-r from-white via-emerald-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -161,7 +164,7 @@ const Hero = () => {
                       target.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="group relative inline-flex items-center gap-4 px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                  className="group relative inline-flex items-center justify-center gap-4 px-8 py-3 w-full sm:w-auto border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
                 >
                   {/* Gradient border shine */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
@@ -170,15 +173,32 @@ const Hero = () => {
               </MagneticButton>
             </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={!isLoading ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="mt-14 text-[13px] font-body font-light text-white/40 tracking-wide pointer-events-auto"
-            >
-              5+ years in banking platforms&ensp;·&ensp;First Citizens Bank via Cognizant&ensp;·&ensp;Bengaluru
-            </motion.p>
           </div>
+
+          {/* Stat bar — live experience counter anchors three quiet facts */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 pointer-events-auto"
+          >
+            <ExperienceTimer startDate={CAREER_START} />
+            <div>
+              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">30<span className="text-emerald-400">+</span></div>
+              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Services in estate</div>
+              <div className="font-mono text-xs text-white/30 mt-1.5">Spring Boot · Kafka</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">3</div>
+              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Banking channels</div>
+              <div className="font-mono text-xs text-white/30 mt-1.5">Retail · Mobile · Corporate</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">PCI</div>
+              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Compliance-first</div>
+              <div className="font-mono text-xs text-white/30 mt-1.5">PCI-DSS · SOX audited</div>
+            </div>
+          </motion.div>
 
         </div>
       </motion.div>
