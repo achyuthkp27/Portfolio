@@ -4,8 +4,8 @@ import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 
-// Single wordmark, brief hold, slide away — a premium load feels instant
-const words = ["Achyuth KP"];
+// Word-flip sequence on load, ending on the name
+const words = ["Developer", "Engineer", "Creator", "Achyuth KP"];
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();

@@ -3,9 +3,8 @@ import { Float, PerspectiveCamera } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { AdditiveBlending, Color, DoubleSide, MathUtils } from "three";
 import type { Group, Mesh, MeshStandardMaterial } from "three";
-import { Play, Pause } from "lucide-react";
 
-const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
+const HeroObjectFixed = () => {
     const groupRef = useRef<Group>(null);
     const shockwaveRef = useRef<Mesh>(null);
     const shockwaveRef2 = useRef<Mesh>(null);
@@ -14,6 +13,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     const { invalidate } = useThree();
 
     const [hovered, setHovered] = useState(false);
+    const settleFrames = useRef(0);
 
     // Reset the cursor if the scene unmounts while hovered
     useEffect(() => {
@@ -23,12 +23,14 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     const getBaseColor = () => new Color("#ffffff");
 
     useFrame((state) => {
-        if (!animEnabled && !hovered) return;
+        if (!hovered && settleFrames.current <= 0) return;
+        if (hovered) settleFrames.current = 90;
+        else settleFrames.current -= 1;
         if (!groupRef.current || !shockwaveRef.current || !shockwaveRef2.current || !mainMatRef.current || !innerMatRef.current) return;
 
         const time = state.clock.elapsedTime;
 
-        if (hovered && animEnabled) {
+        if (hovered) {
             // Gentle emissive lift and slow ripple on hover — quiet, not a light show
             const baseColor = getBaseColor();
             mainMatRef.current.color.copy(baseColor);
@@ -73,15 +75,15 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     });
 
     return (
-        <Float speed={animEnabled ? 2 : 0} rotationIntensity={animEnabled ? 0.5 : 0} floatIntensity={animEnabled ? 0.5 : 0}>
+        <Float speed={hovered ? 2 : 0} rotationIntensity={hovered ? 0.5 : 0} floatIntensity={hovered ? 0.5 : 0}>
             <group
                 onPointerOver={() => {
-                    if (window.innerWidth <= 1024 || !animEnabled) return;
+                    if (window.innerWidth <= 1024) return;
                     document.body.style.cursor = 'pointer';
                     setHovered(true);
                 }}
                 onPointerOut={() => {
-                    if (window.innerWidth <= 1024 || !animEnabled) return;
+                    if (window.innerWidth <= 1024) return;
                     document.body.style.cursor = 'auto';
                     setHovered(false);
                 }}
@@ -152,38 +154,21 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
     );
 }
 
-const Scene = ({ animEnabled }: { animEnabled: boolean }) => {
+const Scene = () => {
     return (
         <>
-            <HeroObjectFixed animEnabled={animEnabled} />
+            <HeroObjectFixed />
             <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
         </>
     );
 };
 
 const SpaceScene = () => {
-    const [animEnabled, setAnimEnabled] = useState(false);
-
     return (
         <div className="absolute inset-0 z-0">
             <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]} frameloop="demand">
-                <Scene animEnabled={animEnabled} />
+                <Scene />
             </Canvas>
-
-            <div className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-50">
-                <button
-                    onClick={() => setAnimEnabled(!animEnabled)}
-                    className="p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 backdrop-blur-md transition-all group"
-                    aria-label={animEnabled ? "Pause animation" : "Play animation"}
-                    title={animEnabled ? "Pause animation" : "Play animation"}
-                >
-                    {animEnabled ? (
-                        <Pause className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    ) : (
-                        <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    )}
-                </button>
-            </div>
         </div>
     );
 };
