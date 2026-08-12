@@ -97,7 +97,7 @@ const Hero = () => {
               className="leading-none mb-8 select-none cursor-default pointer-events-auto"
               whileHover="hover"
             >
-              <div className="overflow-hidden">
+              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em]">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
@@ -107,7 +107,7 @@ const Hero = () => {
                   SOFTWARE
                 </motion.div>
               </div>
-              <div className="overflow-hidden ml-0 sm:ml-12">
+              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em] ml-0 sm:ml-12">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}

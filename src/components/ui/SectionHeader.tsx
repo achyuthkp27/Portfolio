@@ -22,7 +22,7 @@ export const SectionHeader = ({ label, titleMain, titleAccent, description, alig
             </span>
           </span>
         </TextReveal>
-        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tighter leading-[0.95]">
+        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tighter leading-[1.02]">
           <TextReveal type="blur-reveal" delay={0.2} as="span">{titleMain}</TextReveal>
           {isCenter ? <br/> : " "}
           <TextReveal type="blur-reveal" delay={0.4} as="span" className="text-white/35">{titleAccent}</TextReveal>

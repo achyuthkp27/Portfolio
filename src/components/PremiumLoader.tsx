@@ -86,7 +86,7 @@ const PremiumLoader = () => {
                                 animate={{ opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" }}
                                 exit={{ opacity: 0, y: -20, filter: isMobile ? undefined : "blur(10px)" }}
                                 transition={{ duration: 0.2 }}
-                                className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center"
+                                className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center leading-[1.2] pb-1"
                             >
                                 {words[index]}
                             </motion.div>

@@ -57,7 +57,7 @@ const TextReveal = ({
         return (
             <Component ref={ref} className={`flex flex-wrap gap-x-[0.25em] ${className}`}>
                 {words.map((word, i) => (
-                    <div key={i} className="overflow-hidden">
+                    <div key={i} className="overflow-hidden pb-[0.15em] -mb-[0.15em]">
                         <motion.span
                             initial={{ y: "100%", opacity: 0 }}
                             animate={isInView ? { y: 0, opacity: 1 } : {}}
