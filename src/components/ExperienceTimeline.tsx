@@ -40,6 +40,12 @@ const ExperienceTimeline = () => {
               className="w-full bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent origin-top"
               style={{ scaleY }}
             />
+            <motion.div
+              aria-hidden="true"
+              className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] motion-reduce:hidden"
+              animate={{ top: ["0%", "100%"], opacity: [0, 1, 1, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", times: [0, 0.08, 0.92, 1] }}
+            />
           </div>
 
           {experiences.map((exp, index) => {
@@ -97,6 +103,9 @@ const ExperienceTimeline = () => {
                       </div>
                       <div className="flex flex-row sm:flex-col items-center gap-3 self-end sm:self-auto">
                         <span className="text-[10px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
+                        <span className="font-mono text-[11px] text-white/35 whitespace-nowrap">
+                          {exp.achievements.length} highlight{exp.achievements.length > 1 ? "s" : ""}
+                        </span>
                         <motion.div 
                           animate={{ rotate: isExpanded ? 180 : 0 }} 
                           transition={{ duration: 0.4, ease: "easeInOut" }}
