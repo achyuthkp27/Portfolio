@@ -31,13 +31,13 @@ const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?
 const Arrow = ({ down = false }: { down?: boolean }) => {
   const phase = useRef(Math.random() * 1.6).current;
   return (
-    <motion.div variants={itemVariants} className={`shrink-0 ${down ? "rotate-90 my-0.5" : ""}`} aria-hidden="true">
+    <motion.div variants={itemVariants} className={`shrink-0 ${down ? "my-0.5" : ""}`} aria-hidden="true">
       <motion.span
         className="block text-emerald-500/70 font-mono text-sm motion-reduce:animate-none"
-        animate={{ opacity: [0.35, 1, 0.35], x: [0, 2, 0] }}
+        animate={down ? { opacity: [0.35, 1, 0.35], y: [0, 2, 0] } : { opacity: [0.35, 1, 0.35], x: [0, 2, 0] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: phase }}
       >
-        →
+        {down ? "↓" : "→"}
       </motion.span>
     </motion.div>
   );

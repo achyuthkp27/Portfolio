@@ -155,7 +155,7 @@ const ProjectsSection = () => {
   }, [isLoading, projects, location.search]);
 
   return (
-    <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(16,185,129,0.14),transparent_70%),linear-gradient(165deg,#0c1712_0%,#0a1a13_40%,#050d09_75%,#000000_100%)]" ref={ref}>
+    <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[radial-gradient(ellipse_70%_50%_at_50%_38%,rgba(16,185,129,0.12),transparent_72%),linear-gradient(180deg,#000000_0%,#0c1712_22%,#0a1a13_55%,#050d09_82%,#000000_100%)]" ref={ref}>
       <div className="max-w-screen-2xl mx-auto">
         {/* Professional case studies — the real work */}
         <SectionHeader
