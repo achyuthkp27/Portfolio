@@ -1,95 +1,64 @@
-# ⚡ Achyuth KP | Software Engineer — Java · Spring Boot · Banking Systems
+# Achyuth KP — Software Engineer
 
-![Project Banner](public/og-image.jpg)
+**Java · Spring Boot · Banking Systems**
 
-<div align="center">
+A premium dark portfolio, live at **[achyuthkp27.github.io/Portfolio](https://achyuthkp27.github.io/Portfolio)**.
 
-[![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Three.js](https://img.shields.io/badge/Three.js-r160-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
+Five years building secure banking microservices — retail, mobile, and corporate channels — presented with the restraint of an editorial site: typography-led, one accent color, no noise.
 
-</div>
+## Design system
 
-## 🚀 Overview
+- **Type** — [Anton](https://fonts.google.com/specimen/Anton) (condensed display) for monument statements, [Inter](https://rsms.me/inter/) for everything else, JetBrains Mono for terminal and metadata.
+- **Color** — emerald on near-black. One accent, sitewide.
+- **Hero** — centered monument composition with a word-flip loader, live years-of-experience counter, and a slow drifting emerald light. Desktop gets a lazy-loaded 3D wireframe scene (React Three Fiber); mobile gets a clean gradient and never downloads three.js.
+- **Case studies** — sticky-stacking cards with HTML-built architecture diagrams (NDA-safe, no invented metrics).
+- **Projects & Awards** — Squarespace-style card bands: a light emerald-sage gradient field holding near-black rounded cards with code-built animations.
+- **Pipeline terminal** — a retro-green interactive terminal (the `>_` trigger, desktop) with commands, themes, and a few jokes. The site's designated toy.
 
-A high-performance, visually stunning developer portfolio built with modern web technologies. This project showcases advanced frontend engineering skills, featuring immersive 3D elements, fluid animations, and a responsive design that works seamlessly across all devices.
+## Tech stack
 
-Designed to be more than just a resume, this portfolio is an experience—demonstrating expertise in React ecosystem, creative coding, and performance optimization.
+| Layer             | Choice                                                          |
+| ----------------- | --------------------------------------------------------------- |
+| Framework         | React 18 + TypeScript, Vite 5                                   |
+| Styling           | Tailwind CSS 3                                                  |
+| Animation         | Framer Motion, Lenis smooth scroll                              |
+| 3D (desktop only) | three.js via React Three Fiber + drei, lazy-loaded              |
+| Routing           | React Router (hash routing for GitHub Pages)                    |
+| Data              | GitHub REST API (repos, commit count) with localStorage caching |
+| Quality           | Vitest + Testing Library, ESLint, Prettier, Husky + lint-staged |
+| PWA               | vite-plugin-pwa (auto-update service worker)                    |
 
-## ✨ Key Features
+Performance notes: below-the-fold sections are lazy-loaded behind `content-visibility` placeholders, heavy chunks (three.js, r3f, framer-motion) are split and deferred, and mobile skips the loader, the 3D scenes, and the expensive backdrop blurs.
 
-- **🎨 Premium UI/UX**: Custom design system using TailwindCSS with a dark, cyber-aesthetic.
-- **⚡ High Performance**: Powered by Vite for lightning-fast HMR and optimized production builds.
-- **🌐 3D Integration**: Interactive 3D elements using React Three Fiber.
-- **🎬 Advanced Animations**: Complex orchestrations with Framer Motion and GSAP.
-- **💻 Interactive Easter Eggs**: A fully functional retro Terminal (triggered via `>_`) with simulated system commands.
-- **🎧 Generative Audio**: Zero-copyright, procedural Web Audio API acid-house loops that react to 3D object hover states.
-- **📖 3D Guestbook**: A persistent, interactive 3D Rolodex-style guestbook featuring mechanical haptic audio feedback.
-- **⌨️ Command Palette**: Global quick-navigation system (Cmd+K) using `cmdk`.
-- **📡 Live Activity Widget**: Persistent system status indicator for immersive world-building.
-- **📱 Fully Responsive**: Mobile-first architecture ensuring perfect rendering on any screen size.
-- **♿ Accessible**: Built with accessibility best practices (ARIA, semantic HTML).
-- **🔧 Type-Safe**: 100% TypeScript codebase for strict type checking and maintainability.
-
-## 🛠️ Tech Stack
-
-- **Framework**: [React 18](https://react.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: [TailwindCSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **3D Graphics**: [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) (Headless) + [Shadcn/ui](https://ui.shadcn.com/)
-- **Routing**: [React Router](https://reactrouter.com/)
-- **Linting & Formatting**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
-
-## 🏃‍♂️ Running Locally
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/achyuthkp27/Portfolio.git
-   cd Portfolio
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-   The application will be available at `http://localhost:8080`.
-
-## 🏗️ Building for Production
-
-To create a production-ready build:
+## Run it
 
 ```bash
-npm run build
+npm install
+npm run dev        # http://localhost:8080
 ```
 
-The output will be in the `dist` directory, ready to be deployed.
+```bash
+npm run build      # production build to dist/
+npm run preview    # serve the build locally
+npm test           # vitest
+npm run lint       # eslint
+```
 
-## 🚀 Deployment
+## Deploy
 
-This project is configured for automated deployment to **GitHub Pages** using GitHub Actions.
+Pushes to `main` deploy via the GitHub Pages workflow (`.github/workflows/deploy.yml`).
 
-- **Workflow**: `.github/workflows/deploy.yml`
-- **Trigger**: Pushes to the `main` branch.
-- **Process**: Builds the project and deploys the `dist` folder to the `gh-pages` branch.
+> **PWA caveat:** the service worker precaches aggressively. After a deploy, returning visitors may need a hard refresh (or a second visit) to pick up the new version.
 
-## 📄 License
+## Structure
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-  <p>Built with ❤️ by Achyuth KP</p>
-</div>
+```
+src/
+├── components/       # sections (Hero, CaseStudyStack, AwardSection, …)
+│   ├── 3d/           # lazy-loaded R3F scenes (desktop only)
+│   └── ui/           # small building blocks (TextReveal, MagneticButton, …)
+├── data/             # projects & experience content
+├── hooks/            # useMobile, useLowEndDevice, useIdleMount
+├── lib/              # GitHub API client, analytics
+└── pages/            # Index, ProjectDetail, NotFound
+```
