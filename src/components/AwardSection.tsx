@@ -249,7 +249,7 @@ const AwardSection = () => {
     return (
         <section
             id="awards"
-            className="py-20 lg:py-28 px-6 md:px-12 relative overflow-hidden bg-[radial-gradient(ellipse_75%_45%_at_50%_10%,rgba(16,185,129,0.13),transparent_70%),linear-gradient(180deg,#000000_0%,#0c1712_7%,#0a1a13_35%,#050d09_75%,#000000_100%)]"
+            className="py-20 lg:py-28 px-6 md:px-12 relative overflow-hidden bg-[radial-gradient(ellipse_90%_55%_at_50%_22%,rgba(16,185,129,0.09),transparent_75%),linear-gradient(180deg,#000000_0%,#060e0a_14%,#0c1712_32%,#0a1a13_55%,#050d09_80%,#000000_100%)]"
         >
             <div className="max-w-6xl mx-auto">
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-12">

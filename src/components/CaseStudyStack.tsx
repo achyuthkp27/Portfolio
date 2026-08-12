@@ -186,9 +186,12 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
   return (
     <div
       className="sticky"
-      style={{ top: `calc(5.75rem + ${index * 0.5}rem)`, zIndex: index + 1 }}
+      style={{ top: `calc(5.75rem + ${index * 1.1}rem)`, zIndex: index + 1 }}
     >
-      <article className="rounded-[2rem] border border-white/10 bg-[#0a0a0c] shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden mb-8">
+      <article
+        className="rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden mb-8"
+        style={{ background: `rgb(${10 + index * 3} ${10 + index * 3} ${13 + index * 3})` }}
+      >
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center p-8 md:p-14 lg:p-20 lg:min-h-[70vh]">
           {/* Text side */}
           <div className={textFirst ? "" : "lg:order-2"}>
