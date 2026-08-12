@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import {
-  Code2, Server, Database, Cloud, MessageSquare,
+  Code2, Server, Database, Cloud, ShieldCheck,
   GitBranch,
 } from "lucide-react";
 import { SectionHeader } from "./ui/SectionHeader";
@@ -9,12 +9,12 @@ import ParallaxSection from "./ui/ParallaxSection";
 import SpotlightCard from "./ui/SpotlightCard";
 
 const skillCategories = [
-  { id: "01", title: "Languages", icon: Code2, color: "emerald", skills: [{ name: "Java", level: 95 }, { name: "Python", level: 75 }] },
-  { id: "02", title: "Frameworks", icon: Server, color: "blue", skills: [{ name: "Spring Boot", level: 95 }, { name: "gRPC", level: 80 }, { name: "ReactJS", level: 70 }] },
-  { id: "03", title: "Databases", icon: Database, color: "purple", skills: [{ name: "PostgreSQL", level: 90 }, { name: "MySQL", level: 85 }, { name: "Redis", level: 75 }] },
-  { id: "04", title: "Messaging", icon: MessageSquare, color: "yellow", skills: [{ name: "Apache Kafka", level: 90 }, { name: "NATS JetStream", level: 80 }] },
-  { id: "05", title: "AWS Cloud", icon: Cloud, color: "cyan", skills: [{ name: "EC2", level: 85 }, { name: "S3", level: 90 }, { name: "RDS", level: 85 }, { name: "ELB", level: 80 }, { name: "IAM", level: 85 }, { name: "Elastic Beanstalk", level: 75 }] },
-  { id: "06", title: "DevOps & Tools", icon: GitBranch, color: "rose", skills: [{ name: "Git", level: 95 }, { name: "Docker", level: 80 }, { name: "ELK Stack", level: 85 }, { name: "JasperSoft Studio", level: 75 }, { name: "Minio", level: 80 }] },
+  { id: "01", title: "Core Java & Languages", icon: Code2, color: "emerald", skills: [{ name: "Java", level: 95 }, { name: "Concurrency & Multithreading", level: 85 }, { name: "Design Patterns", level: 85 }, { name: "Python", level: 75 }, { name: "JavaScript", level: 70 }] },
+  { id: "02", title: "Frameworks & AI", icon: Server, color: "blue", skills: [{ name: "Spring Boot", level: 95 }, { name: "Spring Security", level: 90 }, { name: "Spring Data JPA", level: 90 }, { name: "Spring AI", level: 80 }, { name: "LangChain4j", level: 75 }, { name: "gRPC", level: 80 }, { name: "ReactJS", level: 70 }] },
+  { id: "03", title: "Data & Messaging", icon: Database, color: "purple", skills: [{ name: "PostgreSQL", level: 90 }, { name: "Redis", level: 85 }, { name: "Apache Kafka", level: 90 }, { name: "NATS JetStream", level: 80 }, { name: "MinIO", level: 80 }] },
+  { id: "04", title: "Security & Resilience", icon: ShieldCheck, color: "yellow", skills: [{ name: "JWT / JWE / JWS", level: 90 }, { name: "OAuth2", level: 85 }, { name: "TOTP / MFA", level: 90 }, { name: "Circuit Breakers & Retries", level: 80 }, { name: "PCI-DSS / SOX", level: 85 }] },
+  { id: "05", title: "Cloud & DevOps", icon: Cloud, color: "cyan", skills: [{ name: "AWS", level: 85 }, { name: "Docker", level: 80 }, { name: "Kubernetes", level: 75 }, { name: "Jenkins", level: 85 }, { name: "Git", level: 95 }] },
+  { id: "06", title: "Testing & Observability", icon: GitBranch, color: "rose", skills: [{ name: "JUnit", level: 90 }, { name: "Mockito", level: 85 }, { name: "ELK Stack", level: 85 }, { name: "Prometheus", level: 75 }, { name: "Grafana", level: 75 }, { name: "Swagger / OpenAPI", level: 90 }] },
 ];
 
 const colorMap: Record<string, { accent: string; accentBg: string; accentBorder: string; ring: string; arc: string }> = {

@@ -153,7 +153,7 @@ const Hero = () => {
               transition={{ duration: 0.4, delay: 0.38 }}
               className="flex flex-wrap gap-3 mb-8 pointer-events-auto"
             >
-              {["Software Developer", "React Js", "Spring Boot", "Microservices", "AWS"].map((tag, i) => (
+              {["Java", "Spring Boot", "Microservices", "Kafka", "AWS", "Banking & AI"].map((tag, i) => (
                 <span
                   key={tag}
                   className="px-3 py-1.5 text-xs font-mono bg-white/5 text-white/80 border border-white/10 uppercase tracking-wider group hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300 rounded-md relative overflow-hidden"
