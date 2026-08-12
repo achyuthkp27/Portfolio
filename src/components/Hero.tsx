@@ -15,6 +15,8 @@ import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
+const CAREER_START = new Date("2021-07-01");
+
 const Hero = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
@@ -60,6 +62,20 @@ const Hero = () => {
 
       {/* Emerald aura grounding the headline */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_45%_40%_at_50%_45%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" aria-hidden="true" />
+
+      {/* Drifting light — a slow emerald source wandering the scene (~24s orbit) */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute z-[1] w-[55vw] h-[55vw] max-w-[900px] max-h-[900px] rounded-full pointer-events-none mix-blend-screen motion-reduce:hidden"
+        style={{
+          background: "radial-gradient(circle, rgba(52,211,153,0.16) 0%, rgba(16,185,129,0.07) 35%, transparent 65%)",
+        }}
+        animate={{
+          left: ["-15%", "45%", "75%", "30%", "-15%"],
+          top: ["-10%", "-20%", "35%", "55%", "-10%"],
+        }}
+        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+      />
 
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
         <div>
