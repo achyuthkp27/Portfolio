@@ -15,6 +15,31 @@ import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
+// Faint traffic drifting behind the hero — the platform at work
+const STREAMS = [
+  { top: "14%", dur: 70, dir: 1, text: "TXN 4821 settled · 82ms   →   POST /payments 200   →   maker-checker ✓ approved   →   kafka payments.events +1   →   " },
+  { top: "26%", dur: 95, dir: -1, text: "TOTP verified · device push ✓   →   token vault: PAN → tok_9f3a…e71c   →   ledger balanced   →   audit trail written   →   " },
+  { top: "68%", dur: 82, dir: 1, text: "kyc.session opened · WebRTC   →   GET /accounts 200 · 41ms   →   circuit closed · retries 0   →   ELK indexed 1.2k events   →   " },
+  { top: "80%", dur: 110, dir: -1, text: "deploy payments-service ✓ · k8s rollout   →   JUnit 214 passed   →   prometheus: all green   →   SOX control check ✓   →   " },
+];
+
+const TrafficStreams = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none motion-reduce:hidden" aria-hidden="true">
+    {STREAMS.map((row, i) => (
+      <motion.div
+        key={i}
+        className="absolute whitespace-nowrap w-max font-mono text-[11px] tracking-wider text-emerald-200/[0.13]"
+        style={{ top: row.top }}
+        initial={{ x: row.dir === 1 ? "-50%" : "0%" }}
+        animate={{ x: row.dir === 1 ? "0%" : "-50%" }}
+        transition={{ duration: row.dur, repeat: Infinity, ease: "linear" }}
+      >
+        {row.text.repeat(6)}
+      </motion.div>
+    ))}
+  </div>
+);
+
 const CAREER_START = new Date("2021-07-01");
 
 const Hero = () => {
@@ -59,6 +84,10 @@ const Hero = () => {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
         </div>
       )}
+
+      <TrafficStreams />
+      {/* Emerald aura grounding the headline */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_45%_40%_at_50%_45%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" aria-hidden="true" />
 
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
         <div>

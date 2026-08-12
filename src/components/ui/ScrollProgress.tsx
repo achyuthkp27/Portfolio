@@ -13,7 +13,6 @@ const ScrollProgress = () => {
         restDelta: 0.001,
     });
 
-    const headLeft = useTransform(progress, (v) => `${v * 100}%`);
     const opacity = useTransform(scrollYProgress, [0, 0.01], [0, 1]);
 
     return (
@@ -30,18 +29,6 @@ const ScrollProgress = () => {
                 style={{ scaleX: progress, transformOrigin: "left" }}
                 aria-hidden="true"
             />
-            {/* Comet head: white core in an emerald corona, gentle breath */}
-            <motion.div
-                className="absolute top-[1px] -translate-x-1/2 -translate-y-1/2"
-                style={{ left: headLeft }}
-                aria-hidden="true"
-            >
-                <motion.div
-                    className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_3px_rgba(52,211,153,0.9),0_0_28px_8px_rgba(52,211,153,0.35)]"
-                    animate={{ scale: [1, 1.25, 1] }}
-                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                />
-            </motion.div>
         </motion.div>
     );
 };
