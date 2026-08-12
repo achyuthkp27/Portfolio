@@ -64,38 +64,86 @@ const TiltCard = ({ children, id, delay = 0 }: { children: ReactNode; id?: strin
 
 // ── Card A media: award wordmark with a periodic shine sweep ─────────
 
+const SPARKLES = [
+    { x: "18%", y: "22%", d: 0.0 }, { x: "82%", y: "18%", d: 1.1 },
+    { x: "12%", y: "68%", d: 2.2 }, { x: "88%", y: "62%", d: 0.6 },
+    { x: "28%", y: "12%", d: 1.7 }, { x: "72%", y: "78%", d: 2.8 },
+];
+
 const AwardMedia = () => {
     const reduceMotion = useReducedMotion();
     return (
-        <div className="relative h-56 md:h-64 rounded-xl bg-[#101013] border border-white/10 overflow-hidden flex flex-col items-center justify-center gap-4">
-            {/* Spotlight behind the plaque */}
+        <div className="relative h-56 md:h-64 rounded-xl bg-[#101013] border border-white/10 overflow-hidden flex flex-col items-center justify-center gap-3">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_45%,rgba(16,185,129,0.16),transparent_70%)]" aria-hidden="true" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" aria-hidden="true" />
 
-            <div className="relative w-12 h-12 rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-emerald-400" />
-                {!reduceMotion && (
-                    <span className="absolute inset-0 rounded-full border border-emerald-400/30 animate-ping [animation-duration:3.5s]" aria-hidden="true" />
-                )}
-            </div>
+            {/* Drifting sparkles */}
+            {!reduceMotion && SPARKLES.map((sp, i) => (
+                <motion.span
+                    key={i}
+                    aria-hidden="true"
+                    className="absolute w-1 h-1 rounded-full bg-emerald-300/80"
+                    style={{ left: sp.x, top: sp.y }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.4, 1.15, 0.4], y: [0, -6, 0] }}
+                    transition={{ duration: 3.4, repeat: Infinity, delay: sp.d, ease: "easeInOut" }}
+                />
+            ))}
 
-            <div className="relative overflow-hidden px-6">
-                <div className="font-condensed uppercase text-4xl md:text-5xl tracking-wide text-white text-center leading-none">
-                    Above &amp; Beyond
+            {/* Self-drawing trophy */}
+            <svg viewBox="0 0 100 80" className="w-20 h-16 md:w-24 md:h-20" aria-hidden="true">
+                <motion.path
+                    d="M32 10 H68 V28 C68 44 60 52 50 52 C40 52 32 44 32 28 Z
+                       M32 14 C18 14 18 34 33 36
+                       M68 14 C82 14 82 34 67 36
+                       M50 52 V62 M38 68 H62 M44 62 H56"
+                    fill="none"
+                    stroke="rgb(52 211 153)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={reduceMotion ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 1 }}
+                    animate={reduceMotion ? {} : { pathLength: [0, 1, 1, 0], opacity: [1, 1, 1, 0.4] }}
+                    transition={{ duration: 7, times: [0, 0.3, 0.86, 1], repeat: Infinity, ease: "easeInOut" }}
+                />
+            </svg>
+
+            {/* Wordmark: letters rise in sync with the trophy draw, then the shine passes */}
+            <div className="relative overflow-hidden px-6" role="text" aria-label="Above and Beyond">
+                <div className="font-condensed uppercase text-4xl md:text-5xl tracking-wide text-white text-center leading-none" aria-hidden="true">
+                    {"ABOVE & BEYOND".split("").map((ch, i) => (
+                        <motion.span
+                            key={i}
+                            className="inline-block"
+                            initial={reduceMotion ? {} : { opacity: 0, y: 14 }}
+                            animate={reduceMotion ? {} : { opacity: [0, 1, 1, 0.5], y: [14, 0, 0, 0] }}
+                            transition={{
+                                duration: 7,
+                                times: [Math.min(0.1 + i * 0.014, 0.32), Math.min(0.16 + i * 0.014, 0.38), 0.86, 1],
+                                repeat: Infinity,
+                                ease: "easeOut",
+                            }}
+                        >
+                            {ch === " " ? "\u00A0" : ch}
+                        </motion.span>
+                    ))}
                 </div>
                 {!reduceMotion && (
                     <motion.div
                         aria-hidden="true"
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                        initial={{ x: "-120%" }}
-                        animate={{ x: "120%" }}
-                        transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 2.4, ease: "easeInOut" }}
+                        animate={{ x: ["-120%", "-120%", "120%", "120%"] }}
+                        transition={{ duration: 7, times: [0, 0.42, 0.6, 1], repeat: Infinity, ease: "easeInOut" }}
                     />
                 )}
             </div>
 
-            {/* One quiet subline; the card caption carries the rest */}
-            <div className="w-16 h-px bg-emerald-500/40" aria-hidden="true" />
+            {/* Underline draws after the letters land */}
+            <motion.div
+                className="w-16 h-px bg-emerald-500/60 origin-center"
+                initial={reduceMotion ? {} : { scaleX: 0 }}
+                animate={reduceMotion ? {} : { scaleX: [0, 0, 1, 1, 0] }}
+                transition={{ duration: 7, times: [0, 0.36, 0.46, 0.9, 1], repeat: Infinity, ease: "easeInOut" }}
+                aria-hidden="true"
+            />
         </div>
     );
 };
@@ -112,11 +160,20 @@ const TYPE_MS = 34;
 const LINE_PAUSE = 350;
 const LOOP_PAUSE = 3200;
 
+// Colorized rendering shown once "compilation" finishes
+const COLORED_LINES = [
+    (<><span className="text-emerald-400">class</span><span className="text-white/90"> Engineer </span><span className="text-emerald-400">extends</span><span className="text-white/90"> Graduate {'{'}</span></>),
+    (<><span className="text-white/90">  foundation = [</span><span className="text-emerald-200/90">"DS"</span><span className="text-white/90">, </span><span className="text-emerald-200/90">"OS"</span><span className="text-white/90">, </span><span className="text-emerald-200/90">"DBMS"</span><span className="text-white/90">];</span></>),
+    (<><span className="text-white/90">  university = </span><span className="text-emerald-200/90">"SSIT, Tumakuru"</span><span className="text-white/90">;</span></>),
+    (<><span className="text-white/90">{'}'}  </span><span className="text-white/35">{'// compiled 2021 · running since'}</span></>),
+];
+
 const EducationMedia = () => {
     const reduceMotion = useReducedMotion();
     const ref = useRef(null);
     const inView = useInView(ref, { margin: "-15%" });
     const [text, setText] = useState(reduceMotion ? CODE_LINES.join("\n") : "");
+    const [compiled, setCompiled] = useState(reduceMotion);
     const [cycle, setCycle] = useState(0);
 
     useEffect(() => {
@@ -124,6 +181,7 @@ const EducationMedia = () => {
         let cancelled = false;
         const timers: ReturnType<typeof setTimeout>[] = [];
         setText("");
+        setCompiled(false);
         let t = 300;
         let acc = "";
         CODE_LINES.forEach((line) => {
@@ -135,7 +193,8 @@ const EducationMedia = () => {
             acc += line + "\n";
             t += LINE_PAUSE;
         });
-        timers.push(setTimeout(() => { if (!cancelled) setCycle((n) => n + 1); }, t + LOOP_PAUSE));
+        timers.push(setTimeout(() => { if (!cancelled) setCompiled(true); }, t + 500));
+        timers.push(setTimeout(() => { if (!cancelled) setCycle((n) => n + 1); }, t + 500 + LOOP_PAUSE));
         return () => { cancelled = true; timers.forEach(clearTimeout); };
     }, [cycle, inView, reduceMotion]);
 
@@ -151,16 +210,34 @@ const EducationMedia = () => {
             </div>
             <div className="relative z-10 flex-1 flex items-center px-4">
                 <pre className="w-full font-mono text-[12px] md:text-[13px] leading-relaxed whitespace-pre-wrap">
-                    {(lines.length ? lines : [""]).map((line, i) => (
-                        <span key={i} className="block">
-                            <span className="inline-block w-6 text-right mr-3 select-none text-white/20">{i + 1}</span>
-                            <span className="text-emerald-100/90">{line}</span>
-                            {i === lines.length - 1 && (
-                                <span className="inline-block w-[7px] h-[14px] bg-emerald-400/80 align-middle ml-0.5 animate-pulse" aria-hidden="true" />
-                            )}
-                        </span>
-                    ))}
+                    {compiled
+                        ? COLORED_LINES.map((jsx, i) => (
+                            <span key={i} className="block">
+                                <span className="inline-block w-6 text-right mr-3 select-none text-white/20">{i + 1}</span>
+                                {jsx}
+                            </span>
+                        ))
+                        : (lines.length ? lines : [""]).map((line, i) => (
+                            <span key={i} className="block">
+                                <span className="inline-block w-6 text-right mr-3 select-none text-white/20">{i + 1}</span>
+                                <span className="text-emerald-100/90">{line}</span>
+                                {i === lines.length - 1 && (
+                                    <span className="inline-block w-[7px] h-[14px] bg-emerald-400/80 align-middle ml-0.5 animate-pulse" aria-hidden="true" />
+                                )}
+                            </span>
+                        ))}
                 </pre>
+            </div>
+            {/* Status bar lights up when the "build" finishes */}
+            <div className="relative z-10 flex items-center justify-between px-4 py-2 border-t border-white/10 font-mono text-[10px]">
+                <span className="text-white/30">typescript</span>
+                <motion.span
+                    className="flex items-center gap-1.5 text-emerald-400"
+                    animate={{ opacity: compiled ? 1 : 0.15 }}
+                    transition={{ duration: 0.4 }}
+                >
+                    <span aria-hidden="true">✓</span> compiled · 0 errors
+                </motion.span>
             </div>
         </div>
     );
