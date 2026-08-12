@@ -12,7 +12,6 @@ import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { LoadingProvider } from "./context/LoadingContext";
-import { ThemeProvider } from "@/hooks/useTheme";
 import { useLoading } from "./context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
 import { useIdleMount } from "@/hooks/useIdleMount";
@@ -82,7 +81,6 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <HashRouter>
-            <ThemeProvider>
               {/* Skip to main content — accessibility */}
               <a
                 href="#main-content"
@@ -95,7 +93,6 @@ const App = () => (
               <SmoothScroll>
                 <AnimatedRoutes />
               </SmoothScroll>
-            </ThemeProvider>
           </HashRouter>
         </TooltipProvider>
       </LoadingProvider>

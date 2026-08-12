@@ -20,11 +20,7 @@ const HeroObjectFixed = ({ animEnabled }: { animEnabled: boolean }) => {
         return () => { document.body.style.cursor = ''; };
     }, []);
 
-    // Theme-aware base color
-    const getBaseColor = () => {
-        const theme = document.documentElement.getAttribute('data-theme');
-        return theme === 'light' ? new Color("#222222") : new Color("#ffffff");
-    };
+    const getBaseColor = () => new Color("#ffffff");
 
     useFrame((state) => {
         if (!animEnabled && !hovered) return;

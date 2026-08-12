@@ -2,7 +2,6 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect, useRef } from "react";
 import { Menu, Download } from "lucide-react";
-import { useTheme } from "@/hooks/useTheme";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Logo from "./ui/Logo";
@@ -13,7 +12,6 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
-  const { theme, toggleTheme } = useTheme();
   const { lenis } = useSmoothScroll();
   const location = useLocation();
   const navigate = useNavigate();

@@ -55,39 +55,33 @@ export default function ActivityWidget() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-[90] hidden md:flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-1000 opacity-60 hover:opacity-100 transition-opacity">
-      <div className="relative group">
-        <div className="relative bg-black/80 border border-white/10 backdrop-blur-md rounded-full px-4 py-2 flex items-center gap-3 shadow-2xl transition-all duration-300 hover:border-emerald-500/50 hover:bg-black">
-          <div className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </div>
-          
-          <div className="flex flex-col">
-            <span className="text-[10px] font-mono text-white/50 uppercase tracking-widest leading-none mb-1">
-              Currently
-            </span>
-            <div className="flex items-center gap-2">
-              <Activity className="w-3 h-3 text-emerald-400" />
-              <span className="text-xs text-white/90 font-medium">Shipping banking systems</span>
-            </div>
-          </div>
+    <div className="fixed bottom-6 left-6 z-[90] hidden md:flex animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      {/* Collapsed by default: status dot + commit count. Expands on hover/focus. */}
+      <a
+        href={`https://github.com/${GITHUB_USERNAME}`}
+        target="_blank"
+        rel="noreferrer"
+        title={commits === null ? "GitHub profile" : `Commits this year: ${commits} (live)`}
+        aria-label="GitHub profile — currently shipping banking systems"
+        className="group relative bg-black/80 border border-white/10 backdrop-blur-md rounded-full px-3.5 py-2 flex items-center gap-2.5 shadow-2xl opacity-60 hover:opacity-100 focus-visible:opacity-100 transition-all duration-300 hover:border-white/25 hover:bg-black"
+      >
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
 
-          <div className="w-px h-6 bg-white/10 mx-1" />
+        <span className="flex items-center gap-1.5 text-white/60 group-hover:text-white/80 transition-colors shrink-0">
+          <GitCommit className="w-3.5 h-3.5" />
+          <span className="text-xs font-mono">{commits ?? "GitHub"}</span>
+        </span>
 
-          <a 
-            href={`https://github.com/${GITHUB_USERNAME}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 text-white/60 hover:text-emerald-400 transition-colors cursor-pointer" 
-            title={commits === null ? "GitHub profile" : `Commits this year: ${commits} (live)`}
-            aria-label="GitHub profile"
-          >
-            <GitCommit className="w-3.5 h-3.5" />
-            <span className="text-xs font-mono">{commits ?? "GitHub"}</span>
-          </a>
-        </div>
-      </div>
+        {/* Expanded detail — width animates open on hover */}
+        <span className="flex items-center gap-2 max-w-0 opacity-0 group-hover:max-w-[240px] group-hover:opacity-100 group-focus-visible:max-w-[240px] group-focus-visible:opacity-100 overflow-hidden whitespace-nowrap transition-all duration-500 ease-out">
+          <span className="w-px h-5 bg-white/10 shrink-0" />
+          <Activity className="w-3 h-3 text-emerald-400 shrink-0" />
+          <span className="text-xs text-white/90 font-medium pr-1">Shipping banking systems</span>
+        </span>
+      </a>
     </div>
   );
 }

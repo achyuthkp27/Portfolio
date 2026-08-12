@@ -29,7 +29,7 @@ const SpaceBackground = () => {
         return (
             <div className="fixed inset-0 z-[-1] pointer-events-none bg-black">
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black opacity-40" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/15 via-black to-black opacity-40" />
             </div>
         );
     }

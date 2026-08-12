@@ -1,26 +1,17 @@
 import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
-import { Home, Briefcase, Mail, FileText, Code, User, Monitor, Terminal, Palette, Check } from "lucide-react";
-import { useAnalytics } from "@/lib/analytics";
+import { Home, Briefcase, Mail, Code, User } from "lucide-react";
 
-import "@/styles/themes.css";
 import { useSmoothScroll } from "@/components/ui/SmoothScroll";
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
-  const [activeTheme, setActiveTheme] = useState("emerald");
   const navigate = useNavigate();
-  const posthog = useAnalytics();
   const { lenis } = useSmoothScroll();
 
   // Toggle the menu when ⌘K is pressed
   useEffect(() => {
-    // Load initial theme
-    const savedTheme = localStorage.getItem("portfolio-theme") || "emerald";
-    setActiveTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -51,14 +42,6 @@ export function CommandMenu() {
     command();
   };
 
-  const setTheme = (theme: string) => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('portfolio-theme', theme);
-    setActiveTheme(theme);
-    setOpen(false);
-    posthog?.capture('theme_changed', { theme_id: theme });
-  };
-
   if (!open) return null;
 
   return (
@@ -87,51 +70,6 @@ export function CommandMenu() {
               </Command.Item>
               <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => document.getElementById("contact")?.scrollIntoView(), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <Mail className="h-4 w-4" /> Contact
-              </Command.Item>
-            </Command.Group>
-
-            <Command.Separator className="my-1 h-px bg-white/10" />
-
-            <Command.Group heading="Themes" className="text-xs font-mono text-white/40 px-2 pt-3 pb-1 uppercase tracking-wider">
-              <Command.Item onSelect={() => setTheme('emerald')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'emerald' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Monitor className="h-4 w-4" /> Default (Emerald)
-                {activeTheme === 'emerald' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('titan')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'titan' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Monitor className="h-4 w-4" /> Titan (Monochrome)
-                {activeTheme === 'titan' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('light')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'light' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Monitor className="h-4 w-4" /> Light (Clean)
-                {activeTheme === 'light' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('dracula')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'dracula' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Palette className="h-4 w-4" /> Dracula (IDE Classic)
-                {activeTheme === 'dracula' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('nord')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'nord' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Palette className="h-4 w-4" /> Nord (Arctic Minimal)
-                {activeTheme === 'nord' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('cyberpunk')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'cyberpunk' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Terminal className="h-4 w-4" /> Cyberpunk Edge
-                {activeTheme === 'cyberpunk' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('midnight')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'midnight' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Monitor className="h-4 w-4" /> Midnight (Modern SaaS)
-                {activeTheme === 'midnight' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('solarized')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'solarized' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Terminal className="h-4 w-4" /> Solarized Dark
-                {activeTheme === 'solarized' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('matrix')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'matrix' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Terminal className="h-4 w-4" /> Matrix Protocol
-                {activeTheme === 'matrix' && <Check className="h-4 w-4 ml-auto" />}
-              </Command.Item>
-              <Command.Item onSelect={() => setTheme('synthwave')} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors aria-selected:bg-white/10 ${activeTheme === 'synthwave' ? 'text-emerald-400 bg-white/5' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                <Palette className="h-4 w-4" /> Synthwave 1984
-                {activeTheme === 'synthwave' && <Check className="h-4 w-4 ml-auto" />}
               </Command.Item>
             </Command.Group>
 

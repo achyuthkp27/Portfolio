@@ -44,19 +44,19 @@ const Hero = () => {
         showSpaceScene ? (
           <Suspense fallback={
             <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
             </div>
           }>
             <SpaceScene />
           </Suspense>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
           </div>
         )
       ) : (
         <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black opacity-50" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
         </div>
       )}
 

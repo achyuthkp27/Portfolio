@@ -469,8 +469,6 @@
   }
 }
 
-/* Custom theme overrides (matrix, synthwave) are lazy-loaded from src/styles/themes.css */
-
 /* ── Mobile Performance Overrides ── */
 @media (max-width: 768px) {
   /* Reduce expensive backdrop-blur on mobile GPUs */
