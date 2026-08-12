@@ -41,7 +41,7 @@ const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
     const pad = (n: number) => n.toString().padStart(2, "0");
 
     return (
-        <div>
+        <div className="text-center lg:text-inherit">
             <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">
                 {years}<span className="text-emerald-400">+</span>
             </div>

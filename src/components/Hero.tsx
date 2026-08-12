@@ -62,7 +62,7 @@ const Hero = () => {
 
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
         <div>
-          <div className="flex flex-col text-left">
+          <div className="flex flex-col items-center text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
@@ -107,7 +107,7 @@ const Hero = () => {
                   SOFTWARE
                 </motion.div>
               </div>
-              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em] ml-0 sm:ml-12">
+              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em]">
                 <motion.div
                   initial={{ y: "100%" }}
                   animate={!isLoading ? { y: 0 } : {}}
@@ -124,7 +124,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.46 }}
-              className="text-base md:text-lg font-body font-light text-gray-400 max-w-lg mb-12 leading-relaxed pointer-events-auto"
+              className="text-base md:text-lg font-body font-light text-gray-400 max-w-lg mx-auto mb-12 leading-relaxed pointer-events-auto"
             >
               Building secure banking microservices — Java, Spring Boot, Kafka — for platforms that move real money.
             </motion.p>
@@ -133,7 +133,7 @@ const Hero = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={!isLoading ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.54 }}
-              className="flex flex-wrap items-center gap-6 pointer-events-auto"
+              className="flex flex-wrap items-center justify-center gap-6 pointer-events-auto"
             >
               <MagneticButton>
                 <a
@@ -180,7 +180,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={!isLoading ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 pointer-events-auto"
+            className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
           >
             <ExperienceTimer startDate={CAREER_START} />
             <div>

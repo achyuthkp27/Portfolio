@@ -165,7 +165,7 @@ const Scene = () => {
 
 const SpaceScene = () => {
     return (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 opacity-60">
             <Canvas gl={{ antialias: false, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false }} dpr={[1, 1.25]} frameloop="demand">
                 <Scene />
             </Canvas>
