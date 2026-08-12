@@ -108,10 +108,10 @@ const ContactSection = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <SectionHeader 
-          label="SATELLITE_UPLINK // ESTABLISHED"
-          titleMain="Initiate"
-          titleAccent="Contact"
-          description="Establishing a high-bandwidth frequency for neural collaboration. Secure protocols active. Ready for packet transmission."
+          label="[ CONTACT ]"
+          titleMain="Let's"
+          titleAccent="Talk"
+          description="Recruiting, engineering roles, or a systems question — email gets the fastest response, usually within a day."
           align="left"
         />
 
@@ -144,7 +144,7 @@ const ContactSection = () => {
                 </div>
                 
                 <div className="flex-1 relative z-10">
-                  <span className="text-[9px] font-mono text-white/15 uppercase tracking-[0.3em] group-hover/item:text-emerald-400/50 transition-colors duration-500">
+                  <span className="text-[10px] font-mono text-white/15 uppercase tracking-[0.3em] group-hover/item:text-emerald-400/50 transition-colors duration-500">
                     {item.label}_CHANNEL
                   </span>
                   <p className="text-white/80 font-display text-lg md:text-xl font-semibold tracking-tight group-hover/item:text-white transition-colors duration-300">{item.value}</p>
@@ -178,7 +178,7 @@ const ContactSection = () => {
                   <div className="group">
                     <label htmlFor="name" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       <span>{'>'} IDENTITY_VERIFICATION</span>
-                      <span className="text-[8px] opacity-20">AUTH_REQ</span>
+                      <span className="text-[10px] opacity-20">AUTH_REQ</span>
                     </label>
                     <input
                       type="text"
@@ -206,7 +206,7 @@ const ContactSection = () => {
                   <div className="group">
                     <label htmlFor="email" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       <span>{'>'} RETURN_ADDRESS</span>
-                      <span className="text-[8px] opacity-20">IPV6_LINK</span>
+                      <span className="text-[10px] opacity-20">IPV6_LINK</span>
                     </label>
                     <input
                       type="email"
@@ -235,7 +235,7 @@ const ContactSection = () => {
                 <div className="group">
                   <label htmlFor="message" className="flex items-center justify-between text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                     <span>{'>'} PACKET_DATA_STREAM</span>
-                    <span className="text-[8px] opacity-20">LZW_COMPRESSED</span>
+                    <span className="text-[10px] opacity-20">LZW_COMPRESSED</span>
                   </label>
                   <textarea
                     id="message"

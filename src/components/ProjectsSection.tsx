@@ -1,11 +1,64 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { ArrowUpRight, Star } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
 import { Link, useLocation } from "react-router-dom";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
-import { useSmoothScroll } from "@/components/ui/SmoothScroll";
 import { SectionHeader } from "./ui/SectionHeader";
+import { projects as caseStudies, type Project } from "@/data/projects";
+
+const CaseStudyCard = ({ study, index }: { study: Project; index: number }) => {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: 0.08 * index, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="group relative glass-card border border-white/10 bg-black/40 rounded-xl p-6 md:p-8 hover:border-emerald-500/25 transition-colors duration-500 flex flex-col"
+    >
+      <div className="flex items-center gap-4 mb-5">
+        <div className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500/10 group-hover:border-emerald-500/25 transition-colors duration-500 shrink-0">
+          <study.icon className="w-5 h-5 text-white/70 group-hover:text-emerald-400 transition-colors duration-500" />
+        </div>
+        <div>
+          <h3 className="font-display text-lg md:text-xl font-bold text-white tracking-tight leading-snug">
+            {study.title}
+          </h3>
+          <span className="text-[11px] font-mono text-emerald-500/60 uppercase tracking-widest">
+            {study.category}
+          </span>
+        </div>
+      </div>
+
+      <p className="text-sm text-gray-400 leading-relaxed mb-6">{study.description}</p>
+
+      <dl className="space-y-3 text-sm mb-6">
+        <div>
+          <dt className="font-mono text-[11px] uppercase tracking-widest text-white/40 mb-0.5">Problem</dt>
+          <dd className="text-gray-300 leading-relaxed">{study.problem}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[11px] uppercase tracking-widest text-white/40 mb-0.5">Solution</dt>
+          <dd className="text-gray-300 leading-relaxed">{study.solution}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[11px] uppercase tracking-widest text-emerald-500/60 mb-0.5">Outcome</dt>
+          <dd className="text-gray-200 leading-relaxed">{study.outcome}</dd>
+        </div>
+      </dl>
+
+      <div className="flex flex-wrap gap-2 mt-auto pt-2">
+        {study.tags.map((tag) => (
+          <span
+            key={tag}
+            className="px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider border border-white/10 rounded-full text-white/60 group-hover:border-white/20 transition-colors duration-500"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </motion.article>
+  );
+};
 
 const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -161,12 +214,27 @@ const ProjectsSection = () => {
       <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-screen-2xl mx-auto">
-        {/* Section Header */}
-        <SectionHeader 
+        {/* Professional case studies — the real work */}
+        <SectionHeader
+          label="[ PROFESSIONAL_WORK ]"
+          titleMain="Banking Platform"
+          titleAccent="Case Studies"
+          description="Systems designed, built, and shipped to production across five years of regulated banking platforms. Client specifics generalized."
+          align="left"
+        />
+
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-24 lg:mb-32">
+          {caseStudies.map((study, index) => (
+            <CaseStudyCard key={study.slug} study={study} index={index} />
+          ))}
+        </div>
+
+        {/* Open-source / personal repos */}
+        <SectionHeader
           label="[ LIVE_GITHUB_FEED ]"
-          titleMain="Selected"
-          titleAccent="Case Files"
-          description="Continuously fetching the latest repository commits, architecture structures, and source codes from the public domains."
+          titleMain="Open Source &"
+          titleAccent="Experiments"
+          description="Latest public repositories, fetched live from GitHub."
           align="left"
         />
 
@@ -210,9 +278,9 @@ const ProjectsSection = () => {
         )}
 
         {/* Dynamic GitHub Repos List */}
-        <div className="flex flex-col min-h-[800px]">
+        <div className="flex flex-col min-h-[300px]">
           {isLoading ? (
-            <div className="h-full min-h-[800px] flex flex-col items-center justify-center font-mono text-white/50 gap-4">
+            <div className="h-full min-h-[300px] flex flex-col items-center justify-center font-mono text-white/50 gap-4">
               <div className="w-8 h-8 rounded-full border-t-2 border-emerald-500 animate-spin" />
               <span>SYNCING_REPOSITORIES...</span>
             </div>

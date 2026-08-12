@@ -97,7 +97,7 @@ const ExperienceTimeline = () => {
                         <p className="text-emerald-400/90 font-mono text-xs md:text-sm tracking-widest uppercase mt-1">{exp.role}</p>
                       </div>
                       <div className="flex flex-row sm:flex-col items-center gap-3 self-end sm:self-auto">
-                        <span className="text-[9px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
+                        <span className="text-[10px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
                         <motion.div 
                           animate={{ rotate: isExpanded ? 180 : 0 }} 
                           transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -140,7 +140,7 @@ const ExperienceTimeline = () => {
                               {exp.technologies.map((tech) => (
                                 <span
                                   key={tech}
-                                  className="px-2 py-1 text-[9px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
+                                  className="px-2 py-1 text-[10px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
                                 >
                                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent -translate-x-full group-hover/tech:translate-x-full transition-transform duration-500 pointer-events-none" />
                                   <span className="relative z-10">{tech}</span>

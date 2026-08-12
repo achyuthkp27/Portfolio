@@ -85,9 +85,6 @@ export function CommandMenu() {
               <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => document.getElementById("experience")?.scrollIntoView(), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <Briefcase className="h-4 w-4" /> Experience
               </Command.Item>
-              <Command.Item onSelect={() => runCommand(() => navigate("/blog"))} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
-                <FileText className="h-4 w-4" /> Blog
-              </Command.Item>
               <Command.Item onSelect={() => runCommand(() => { navigate("/"); setTimeout(() => document.getElementById("contact")?.scrollIntoView(), 100); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <Mail className="h-4 w-4" /> Contact
               </Command.Item>

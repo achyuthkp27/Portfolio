@@ -1,5 +1,5 @@
 import { motion, useSpring, useMotionTemplate, useReducedMotion } from "framer-motion";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import TextReveal from "./ui/TextReveal";
 import { ArrowRight, Code, Cpu, Palette, Server, Cloud, Zap, Globe, Award, TrendingUp } from "lucide-react";
 import { SectionHeader } from "./ui/SectionHeader";
@@ -60,8 +60,8 @@ const PERSONAS: Persona[] = [
     {
         id: "operator",
         title: "THE OPERATOR_CORE",
-        subtitle: "Architect of Systems",
-        description: "Executing precise, scalable solutions for enterprise-grade infrastructure. Zero tolerance for inefficiency or architectural fragility.",
+        subtitle: "Banking Systems Engineer",
+        description: "Five years inside regulated banking platforms — microservices, Kafka event streams, payment security, and the production discipline that keeps money moving safely.",
         icon: Cpu,
         color: "text-blue-400",
         bg: "bg-blue-500/10",
@@ -73,9 +73,9 @@ const PERSONAS: Persona[] = [
     },
     {
         id: "creator",
-        title: "THE CREATOR_NODE",
-        subtitle: "Visionary Artist",
-        description: "Pushing boundaries of visual design and interactive experiences. Crafting cinematic interfaces where motion defines meaning.",
+        title: "THE BUILDER_NODE",
+        subtitle: "Maker of Systems",
+        description: "Building beyond the day job — LLM-powered banking chatbots, real-time Video KYC over WebRTC, and this site. Curiosity compiled into shipped things.",
         icon: Palette,
         color: "text-orange-400",
         bg: "bg-orange-500/10",
@@ -83,21 +83,21 @@ const PERSONAS: Persona[] = [
         gradientVia: "via-orange-400",
         glowBg: "bg-orange-400",
         ringBorder: "border-orange-400",
-        keywords: ["UI/UX_DESIGN", "INTERACTIVE", "AESTHETICS", "MOTION"],
+        keywords: ["AI_INTEGRATION", "REAL-TIME", "SIDE_PROJECTS", "SHIPPING"],
     },
 ];
 
 const STATS: Stat[] = [
-    { value: "5+", label: "YEARS_ACTIVE", icon: TrendingUp },
-    { value: "50+", label: "DEPLOYED_NODES", icon: Globe },
-    { value: "30+", label: "SATISFIED_CLIENTS", icon: Award },
+    { value: "5+", label: "YEARS_IN_BANKING", icon: TrendingUp },
+    { value: "30+", label: "SERVICE_ESTATE", icon: Globe },
+    { value: "3", label: "BANKING_CHANNELS", icon: Award },
 ];
 
 const HIGHLIGHTS: Highlight[] = [
-    { icon: Code, label: "ARCHITECTURE", value: "CLEAN_PROSE" },
-    { icon: Server, label: "25+ SERVICES", value: "DISTRIBUTED" },
-    { icon: Cloud, label: "AWS_CERTIFIED", value: "CLOUD_NATIVE" },
-    { icon: Zap, label: "LATENCY_MIN", value: "PERFORMANCE" },
+    { icon: Code, label: "ARCHITECTURE", value: "CLEAN_CODE" },
+    { icon: Server, label: "EVENT_DRIVEN", value: "KAFKA" },
+    { icon: Cloud, label: "AWS_&_DOCKER", value: "CLOUD_NATIVE" },
+    { icon: Zap, label: "PCI-DSS_/_SOX", value: "COMPLIANCE" },
 ];
 
 // ─────────────────────────────────────────────
@@ -119,13 +119,15 @@ const PersonaCard = ({
     const Icon = persona.icon;
 
     return (
-        <motion.div
+        <motion.button
+            type="button"
             key={persona.id}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
             onClick={onClick}
-            className={`group relative p-6 cursor-pointer border transition-all duration-500 rounded-xl overflow-hidden ${
+            aria-pressed={isActive}
+            className={`group relative w-full text-left p-6 cursor-pointer border transition-all duration-500 rounded-xl overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-500/60 ${
                 isActive
                     ? `${persona.bg} ${persona.border}`
                     : "bg-white/5 border-white/5 hover:border-white/10"
@@ -162,7 +164,7 @@ const PersonaCard = ({
                     className={`absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent ${persona.gradientVia} to-transparent opacity-50`}
                 />
             )}
-        </motion.div>
+        </motion.button>
     );
 };
 
@@ -186,6 +188,8 @@ const PersonaShowcase = ({
                 zIndex: isActive ? 10 : 0,
             }}
             transition={{ duration: 0.5 }}
+            aria-hidden={!isActive}
+            style={{ visibility: isActive ? "visible" : "hidden" }}
             className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 pointer-events-none"
         >
             {/* Glowing background effect */}
@@ -222,7 +226,7 @@ const PersonaShowcase = ({
                     {persona.keywords.map((keyword) => (
                         <div
                             key={keyword}
-                            className="border border-white/5 bg-white/[0.02] rounded-lg px-2 py-3 text-[9px] font-mono text-white/40 tracking-[0.2em] group-hover:text-white transition-colors uppercase"
+                            className="border border-white/5 bg-white/[0.02] rounded-lg px-2 py-3 text-[10px] font-mono text-white/55 tracking-[0.2em] group-hover:text-white transition-colors uppercase"
                         >
                             {keyword}
                         </div>
@@ -243,7 +247,7 @@ const StatBlock = ({ stat }: { stat: Stat }) => {
                 <div className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-2 tracking-tighter">
                     {stat.value}
                 </div>
-                <div className="text-[8px] md:text-[9px] font-mono text-white/20 group-hover:text-white transition-colors uppercase tracking-[0.2em]">
+                <div className="text-[10px] md:text-[10px] font-mono text-white/50 group-hover:text-white transition-colors uppercase tracking-[0.2em]">
                     {stat.label}
                 </div>
             </div>
@@ -257,10 +261,10 @@ const HighlightBlock = ({ item }: { item: Highlight }) => {
     return (
         <div className="p-6 md:p-8 bg-black/60 border-l border-white/5 hover:bg-white/[0.02] transition-colors group flex flex-col items-center text-center justify-center">
             <Icon className="w-5 h-5 md:w-6 md:h-6 text-white/20 group-hover:text-emerald-400 transition-colors mb-3 md:mb-4 group-hover:scale-110 transition-transform" />
-            <div className="text-[9px] md:text-[10px] font-display font-bold text-white mb-1 uppercase tracking-tight">
+            <div className="text-[10px] md:text-[10px] font-display font-bold text-white mb-1 uppercase tracking-tight">
                 {item.value}
             </div>
-            <div className="text-[7px] md:text-[8px] font-mono text-white/20 uppercase tracking-widest leading-none">
+            <div className="text-[10px] md:text-[10px] font-mono text-white/50 uppercase tracking-widest leading-none">
                 {item.label}
             </div>
             {/* Hover line effect */}
@@ -314,16 +318,9 @@ const AboutMeSection = () => {
         }
     };
 
-    const maskImage = shouldReduceMotion
-        ? undefined
-        : useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
+    const maskImage = useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
     const flashlightStyle = shouldReduceMotion ? {} : { maskImage, WebkitMaskImage: maskImage };
 
-    // Stable random coordinates (don't regenerate on every render)
-    const coords = useMemo(
-        () => ({ x: Math.random().toFixed(4), y: Math.random().toFixed(4) }),
-        []
-    );
 
     return (
         <section ref={containerRef} id="about" className="relative py-20 lg:py-24 px-6 md:px-12 bg-transparent overflow-hidden">
@@ -348,7 +345,7 @@ const AboutMeSection = () => {
                                 SYS_STATUS: ONLINE
                             </span>
                             <span className="opacity-20">|</span>
-                            <span>ENCRYPT: AES-256</span>
+                            <span>PCI-DSS // SOX</span>
                         </div>
                     </div>
                 </div>
@@ -409,13 +406,13 @@ const AboutMeSection = () => {
                             style={flashlightStyle}
                         />
 
-                        {/* Diagnostic UI overlays */}
+                        {/* Location readout — real coordinates, Bengaluru */}
                         <div className="absolute top-8 left-8 z-30 flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-                            <span className="font-mono text-[9px] text-emerald-500/60 uppercase tracking-widest">TRACE_LINK_STABLE</span>
+                            <span className="font-mono text-[10px] text-emerald-500/70 uppercase tracking-widest">BENGALURU // IST</span>
                         </div>
-                        <div className="absolute bottom-8 right-8 z-30 font-mono text-[9px] text-white/20">
-                            COORD: {coords.x} // {coords.y}
+                        <div className="absolute bottom-8 right-8 z-30 font-mono text-[10px] text-white/40">
+                            12.9716°N // 77.5946°E
                         </div>
                     </div>
                 </div>

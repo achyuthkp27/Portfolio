@@ -7,20 +7,13 @@ import SpaceBackground from "@/components/3d/SpaceBackground";
 import { LazySection } from "@/components/ui/LazySection";
 
 // Lazy load below-the-fold heavy components
-const Services = lazy(() => import("@/components/Services"));
 const AboutMeSection = lazy(() => import("@/components/AboutMeSection"));
-const ProcessSection = lazy(() => import("@/components/ProcessSection"));
 const ExperienceTimeline = lazy(() => import("@/components/ExperienceTimeline"));
-const PhilosophySection = lazy(() => import("@/components/PhilosophySection"));
-const SkillsSection = lazy(() => import("@/components/SkillsSection"));
 const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
-const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
-const ArchitectureGallery = lazy(() => import("@/components/ArchitectureGallery"));
+const SkillsSection = lazy(() => import("@/components/SkillsSection"));
 const AwardSection = lazy(() => import("@/components/AwardSection"));
 const EducationSection = lazy(() => import("@/components/EducationSection"));
-const BlogSection = lazy(() => import("@/components/BlogSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
-const Guestbook = lazy(() => import("@/components/Guestbook"));
 
 const Index = () => {
   return (
@@ -39,41 +32,21 @@ const Index = () => {
         <main id="main-content">
             <Hero />
             <SystemStatus />
-            
-            <LazySection rootMargin="100px 0px" minHeight="800px">
-              <Services />
-            </LazySection>
 
             <LazySection sectionId="about" minHeight="1200px">
               <AboutMeSection />
-            </LazySection>
-
-            <LazySection sectionId="process" minHeight="1000px">
-              <ProcessSection />
-            </LazySection>
-
-            <LazySection sectionId="philosophy" minHeight="800px">
-              <PhilosophySection />
             </LazySection>
 
             <LazySection sectionId="experience" minHeight="900px">
               <ExperienceTimeline />
             </LazySection>
 
-            <LazySection sectionId="skills" minHeight="800px">
-              <SkillsSection />
-            </LazySection>
-
             <LazySection sectionId="projects" minHeight="1000px">
               <ProjectsSection />
             </LazySection>
 
-            <LazySection sectionId="testimonials" minHeight="600px">
-              <TestimonialsSection />
-            </LazySection>
-
-            <LazySection minHeight="700px">
-              <ArchitectureGallery />
+            <LazySection sectionId="skills" minHeight="800px">
+              <SkillsSection />
             </LazySection>
 
             <LazySection sectionId="awards" minHeight="600px">
@@ -82,14 +55,6 @@ const Index = () => {
 
             <LazySection sectionId="education" minHeight="700px">
               <EducationSection />
-            </LazySection>
-
-            <LazySection sectionId="blog" minHeight="1000px">
-              <BlogSection />
-            </LazySection>
-
-            <LazySection sectionId="guestbook" minHeight="800px">
-              <Guestbook />
             </LazySection>
 
             <LazySection sectionId="contact" minHeight="800px">

@@ -89,7 +89,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                                 Try Again
                             </button>
                             <button
-                                onClick={() => window.location.href = '/'}
+                                onClick={() => window.location.href = import.meta.env.BASE_URL}
                                 className="px-6 py-3 glass rounded-full font-medium hover:bg-secondary/80 transition-all"
                             >
                                 Go Home

@@ -19,11 +19,14 @@ export const DecryptText = ({
     maxIterations = 10,
 }: DecryptTextProps) => {
     const [displayText, setDisplayText] = useState(text);
-    const [isHovering, setIsHovering] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Clear any in-flight scramble if the component unmounts mid-hover
+    useEffect(() => {
+        return () => clearInterval(intervalRef.current as NodeJS.Timeout);
+    }, []);
+
     const startScramble = () => {
-        setIsHovering(true);
         let iteration = 0;
 
         clearInterval(intervalRef.current as NodeJS.Timeout);
@@ -50,7 +53,6 @@ export const DecryptText = ({
     };
 
     const stopScramble = () => {
-        setIsHovering(false);
         clearInterval(intervalRef.current as NodeJS.Timeout);
         setDisplayText(text);
     };

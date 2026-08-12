@@ -70,7 +70,7 @@ const EducationSection = () => {
                           style={{ width: `${bar.width}%`, opacity: bar.opacity }}
                         />
                       ))}
-                      <span className="text-[8px] font-mono text-blue-400/50 mt-2 text-center uppercase tracking-widest">
+                      <span className="text-[10px] font-mono text-blue-400/50 mt-2 text-center uppercase tracking-widest">
                         SYS.ID_21
                       </span>
                     </div>
@@ -83,7 +83,7 @@ const EducationSection = () => {
 
                     <TextReveal type="fade-up" delay={0.2}>
                       <span className="inline-block px-3 py-1 text-[10px] font-mono border border-blue-500/30 text-blue-400 rounded bg-blue-500/10 uppercase tracking-[0.2em] mb-4">
-                        AUTHORIZED_ACCESS
+                        B.E._2017–2021
                       </span>
                     </TextReveal>
 
@@ -107,7 +107,7 @@ const EducationSection = () => {
                     </div>
 
                     <p className="text-gray-400 leading-relaxed text-sm max-w-2xl text-justify border-t border-white/5 pt-6 relative group-hover/edu:text-gray-300 transition-colors">
-                      Completed Bachelor's degree with a focus on advanced software engineering architectures, complex data structures, and distributed database management systems. Formulated the fundamental operational logic and system design methodologies utilized in present architectural frameworks.
+                      B.E. in Computer Science and Engineering from Sri Siddhartha Institute of Technology, Tumakuru — data structures, operating systems, databases, and the fundamentals that five years of banking systems have been built on since.
                     </p>
                   </div>
                 </div>

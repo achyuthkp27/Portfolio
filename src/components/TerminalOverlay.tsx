@@ -28,6 +28,14 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hackIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Stop any streaming 'hack' output if the terminal unmounts mid-sequence
+  useEffect(() => {
+    return () => {
+      if (hackIntervalRef.current) clearInterval(hackIntervalRef.current);
+    };
+  }, []);
   const posthog = useAnalytics();
 
   useEffect(() => {
@@ -140,7 +148,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                             </div>
                             <p className="text-xs text-white/60 leading-relaxed mt-0.5">{p.description}</p>
                             <div className="flex gap-2 mt-1">
-                                {p.tags.slice(0, 3).map(t => <span key={t} className="text-[9px] text-emerald-400/70">#{t}</span>)}
+                                {p.tags.slice(0, 3).map(t => <span key={t} className="text-[10px] text-emerald-400/70">#{t}</span>)}
                             </div>
                         </div>
                     </div>
@@ -152,15 +160,15 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         newHistory.push({ type: 'output', text: (
             <div className="my-2 space-y-3">
                 <div>
-                    <span className="text-emerald-400 font-bold block mb-1">FRONTEND</span>
+                    <span className="text-emerald-400 font-bold block mb-1">BACKEND</span>
                     <div className="flex flex-wrap gap-2 text-xs">
-                        {["ReactJS", "Next.js", "WebGL", "TypeScript"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
+                        {["Java", "Spring Boot", "Spring Security", "Kafka", "PostgreSQL", "Redis", "gRPC"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
                     </div>
                 </div>
                 <div>
-                    <span className="text-emerald-400 font-bold block mb-1">BACKEND</span>
+                    <span className="text-emerald-400 font-bold block mb-1">QUALITY & OPS</span>
                     <div className="flex flex-wrap gap-2 text-xs">
-                        {["Spring Boot", "Java", "Node.js", "Kafka", "PostgreSQL"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
+                        {["JUnit", "Mockito", "Jenkins", "Docker", "ELK Stack", "AWS"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
                     </div>
                 </div>
             </div>
@@ -194,7 +202,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                     <div className="text-xs">Host: portfolio-v3</div>
                     <div className="text-xs">Kernel: react-v18.x</div>
                     <div className="text-xs">Shell: achyuth-sh</div>
-                    <div className="text-xs">Uptime: 2 years (Pro)</div>
+                    <div className="text-xs">Uptime: 5+ years (Banking-grade)</div>
                     <div className="text-xs">Terminal: matrix-emerald</div>
                 </div>
             </div>
@@ -229,6 +237,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
       case 'hack': {
         newHistory.push({ type: 'system', text: 'INITIALIZING_BRUTE_FORCE_SEQUENCE...' });
         let i = 0;
+        if (hackIntervalRef.current) clearInterval(hackIntervalRef.current);
         const hackInterval = setInterval(() => {
             const logs = [
                 "[OK] Bypassing firewall...",
@@ -243,8 +252,10 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                 i++;
             } else {
                 clearInterval(hackInterval);
+                hackIntervalRef.current = null;
             }
         }, 400);
+        hackIntervalRef.current = hackInterval;
         break;
       }
       case 'exit':

@@ -133,7 +133,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased select-none;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
     cursor: default;
     overflow-y: auto;
@@ -173,11 +173,15 @@
 
     html.custom-cursor-enabled body a,
     html.custom-cursor-enabled body button,
-    html.custom-cursor-enabled body [role="button"],
+    html.custom-cursor-enabled body [role="button"] {
+      cursor: none;
+    }
+
+    /* Text fields keep the native I-beam — the custom dot obscures caret placement */
     html.custom-cursor-enabled body input,
     html.custom-cursor-enabled body textarea,
     html.custom-cursor-enabled body select {
-      cursor: none;
+      cursor: text;
     }
   }
 

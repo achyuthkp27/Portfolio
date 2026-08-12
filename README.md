@@ -1,4 +1,4 @@
-# ⚡ Achyuth KP | Full Stack Developer
+# ⚡ Achyuth KP | Software Engineer — Java · Spring Boot · Banking Systems
 
 ![Project Banner](public/og-image.jpg)
 

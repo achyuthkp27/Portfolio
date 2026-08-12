@@ -94,10 +94,10 @@ const Navigation = () => {
 
   const navItems = [
     { label: "About", href: "#about" },
-    { label: "Process", href: "#process" },
     { label: "Experience", href: "#experience" },
-    { label: "Skills", href: "#skills" },
     { label: "Projects", href: "#projects" },
+    { label: "Skills", href: "#skills" },
+    { label: "Education", href: "#education" },
     { label: "Contact", href: "#contact" },
   ];
 

@@ -65,7 +65,7 @@ const SkillArc = ({ name, level, delay, arcColor }: { name: string; level: numbe
         {/* Percentage in center */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.span
-            className="text-[9px] font-mono font-bold text-white/50 group-hover/token:text-white/80 transition-colors"
+            className="text-[10px] font-mono font-bold text-white/50 group-hover/token:text-white/80 transition-colors"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: delay + 0.5 }}
@@ -139,7 +139,7 @@ const SkillsSection = () => {
                           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-white/50 group-hover:${colors.accent.replace('text-', 'bg-')} opacity-75 transition-colors duration-500`}></span>
                           <span className={`relative inline-flex rounded-full h-1.5 w-1.5 bg-white/80 group-hover:${colors.accent.replace('text-', 'bg-')} transition-colors duration-500`}></span>
                         </span>
-                        <span className={`text-[9px] font-mono text-white/40 group-hover:${colors.accent} opacity-70 transition-colors duration-500 tracking-wider`}>ACTIVE</span>
+                        <span className={`text-[10px] font-mono text-white/40 group-hover:${colors.accent} opacity-70 transition-colors duration-500 tracking-wider`}>ACTIVE</span>
                       </div>
                     </div>
 

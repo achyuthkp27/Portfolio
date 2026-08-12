@@ -36,7 +36,7 @@ const Footer = () => {
         </div>
 
         {/* Colophon */}
-        <div className="hidden md:flex items-center gap-2 text-[9px] font-mono text-white/60 uppercase tracking-widest">
+        <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-white/60 uppercase tracking-widest">
           <span>BUILT_WITH</span>
           <span className="text-white/20">|</span>
           {["React", "Vite", "Tailwind", "Framer Motion"].map((tech, i) => (

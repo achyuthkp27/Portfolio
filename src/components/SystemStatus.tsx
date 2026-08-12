@@ -31,20 +31,20 @@ const SystemStatus = () => {
 const ContentBlock = () => (
     <>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
-            INITIALIZING...
+            JAVA // SPRING BOOT // KAFKA
         </span>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/50 uppercase flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-white/50 rounded-full animate-pulse"></span>
-            SYSTEM_SECURE
+            BANKING_MICROSERVICES
         </span>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
-            AKP | ACHYUTH_CREATIVE
+            AKP | BACKEND_ENGINEER
         </span>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
-             /// 001
+             /// BLR
         </span>
         <span className="text-[10px] font-mono tracking-[0.2em] text-white/55 uppercase">
-            EST. 2024
+            SINCE 2021
         </span>
     </>
 )

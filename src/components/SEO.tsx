@@ -40,19 +40,19 @@ const personJsonLd = {
 const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Achyuth KP | Creative Developer",
+    name: "Achyuth KP | Software Engineer",
     url: SITE_URL,
     author: { "@type": "Person", name: "Achyuth KP" },
 };
 
 const SEO = ({
-    title = "Achyuth KP | Creative Developer",
-    description = "Portfolio of Achyuth KP - A Creative Developer specializing in scalable web/mobile applications, microservices, and immersive 3D experiences.",
-    image = "/og-image.png",
+    title = "Achyuth KP | Software Engineer",
+    description = "Portfolio of Achyuth KP — Backend engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
+    image = `${SITE_URL}og-image.jpg`,
     url = SITE_URL,
     type = "website"
 }: SEOProps) => {
-    const fullTitle = title === "Achyuth KP | Creative Developer" ? title : `${title} | Achyuth KP`;
+    const fullTitle = title === "Achyuth KP | Software Engineer" ? title : `${title} | Achyuth KP`;
 
     return (
         <Helmet>

@@ -16,6 +16,9 @@ import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
+// Career start — single source for the experience card (module-level for stable identity)
+const CAREER_START = new Date("2021-07-01");
+
 const Hero = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
@@ -25,15 +28,6 @@ const Hero = () => {
 
   const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
   const showSpaceScene = shouldRenderDesktopScene && !isLoading;
-
-  // Dynamic Experience Calculation (Start: July 2021)
-  const startDate = new Date("2021-07-01");
-  const today = new Date();
-  let exp = today.getFullYear() - startDate.getFullYear();
-  const m = today.getMonth() - startDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < startDate.getDate())) {
-    exp--;
-  }
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -80,7 +74,7 @@ const Hero = () => {
       </a>
 
       {/* Shortcut Hint - Relocated to avoid 3D control overlap */}
-      <div className="absolute top-32 right-6 md:right-12 flex flex-col items-end gap-2 font-mono text-[9px] text-white/20 tracking-[0.2em] hidden md:flex z-50 select-none">
+      <div className="absolute top-32 right-6 md:right-12 flex flex-col items-end gap-2 font-mono text-[10px] text-white/40 tracking-[0.2em] hidden md:flex z-50 select-none">
         <div className="flex items-center gap-2 px-2 py-1 border border-white/5 bg-white/[0.02] rounded backdrop-blur-sm group hover:border-emerald-500/30 hover:text-white/60 transition-all duration-500">
           <span className="text-emerald-500/40 group-hover:text-emerald-400 transition-colors">⌘K</span> COMMAND_MENU
         </div>
@@ -104,23 +98,25 @@ const Hero = () => {
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                 </span>
                 <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/70">
-                  AVAILABLE_FOR_WORK
+                  OPEN_TO_OPPORTUNITIES
                 </span>
               </div>
             </motion.div>
 
             <div className="mb-2 pointer-events-auto">
-              <motion.h2
+              <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={!isLoading ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.45, delay: 0.16 }}
                 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tight"
               >
                 ACHYUTH KP
-              </motion.h2>
+              </motion.h1>
             </div>
 
-            <motion.h1
+            <motion.div
+              role="text"
+              aria-label="Backend Engineer"
               className="font-display font-bold tracking-tighter leading-none mb-8 select-none cursor-default pointer-events-auto"
               whileHover="hover"
             >
@@ -131,7 +127,7 @@ const Hero = () => {
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                 >
-                  CREATIVE
+                  BACKEND
                 </motion.div>
               </div>
               <div className="overflow-hidden ml-12">
@@ -142,10 +138,10 @@ const Hero = () => {
                   className="text-[12vw] md:text-[8vw] lg:text-[7vw] tracking-tight text-iridescent"
                   style={{ animationDelay: "0.5s" }}
                 >
-                  DEVELOPER
+                  ENGINEER
                 </motion.div>
               </div>
-            </motion.h1>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -171,7 +167,7 @@ const Hero = () => {
               transition={{ duration: 0.45, delay: 0.46 }}
               className="text-sm md:text-lg font-mono text-gray-400 max-w-lg mb-12 leading-relaxed tracking-wide uppercase pointer-events-auto"
             >
-              Engineering scalable systems with precision, performance, and a product mindset.
+              Building secure banking microservices — Java, Spring Boot, Kafka — for platforms that move real money.
             </motion.p>
 
             <motion.div
@@ -236,7 +232,7 @@ const Hero = () => {
                 }}
                 className="absolute inset-0 border border-white/10 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center transition-colors duration-500"
               >
-                <ExperienceTimer startDate={startDate} />
+                <ExperienceTimer startDate={CAREER_START} />
               </motion.div>
               {/* Decorative corners — smoother spring */}
               <motion.div

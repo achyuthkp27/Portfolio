@@ -108,7 +108,7 @@ const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
                             </div>
 
                             <div className="mt-4 pt-2 border-t border-white/10 text-center">
-                                <span className="text-[8px] font-mono text-white/30 tracking-[0.3em] uppercase animate-pulse">
+                                <span className="text-[10px] font-mono text-white/30 tracking-[0.3em] uppercase animate-pulse">
                                     LIVE_SYSTEM_UPTIME
                                 </span>
                             </div>

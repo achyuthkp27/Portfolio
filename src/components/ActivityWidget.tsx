@@ -7,7 +7,7 @@ const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
 
 export default function ActivityWidget() {
   const [isVisible, setIsVisible] = useState(false);
-  const [commits, setCommits] = useState<number | string>("350+");
+  const [commits, setCommits] = useState<number | null>(null);
 
   useEffect(() => {
     // Show widget after 2 seconds
@@ -44,8 +44,8 @@ export default function ActivityWidget() {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ count: data.total_count, timestamp: Date.now() }));
         }
       } catch (error) {
-        console.warn("Failed to fetch live commits. Using fallback.");
-        // Leave it as "350+" if we get rate limited
+        console.warn("Failed to fetch live commits; hiding counter.");
+        // No invented fallback number — hide the counter instead
       }
     };
 
@@ -70,7 +70,7 @@ export default function ActivityWidget() {
             </span>
             <div className="flex items-center gap-2">
               <Activity className="w-3 h-3 text-emerald-400" />
-              <span className="text-xs text-white/90 font-medium">Building the Future</span>
+              <span className="text-xs text-white/90 font-medium">Shipping banking systems</span>
             </div>
           </div>
 
@@ -81,10 +81,11 @@ export default function ActivityWidget() {
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1.5 text-white/60 hover:text-emerald-400 transition-colors cursor-pointer" 
-            title={`Total Commits this Year: ${commits} (Live)`}
+            title={commits === null ? "GitHub profile" : `Commits this year: ${commits} (live)`}
+            aria-label="GitHub profile"
           >
             <GitCommit className="w-3.5 h-3.5" />
-            <span className="text-xs font-mono">{commits}</span>
+            <span className="text-xs font-mono">{commits ?? "GitHub"}</span>
           </a>
         </div>
       </div>

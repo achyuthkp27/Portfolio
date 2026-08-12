@@ -19,9 +19,7 @@ import { useIdleMount } from "@/hooks/useIdleMount";
 
 // Lazy load the project detail page
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
-const BlogList = lazy(() => import("@/pages/BlogList"));
-const BlogPost = lazy(() => import("@/pages/BlogPost"));
-const Analytics = import.meta.env.DEV ? lazy(() => import("@/components/Analytics")) : null;
+const Analytics = import.meta.env.PROD ? lazy(() => import("@/components/Analytics")) : null;
 const CustomCursor = lazy(() => import("@/components/ui/CustomCursor"));
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
 const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })));
@@ -44,8 +42,6 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/project/:slug" element={<Suspense fallback={<RouteLoader />}><ProjectDetail /></Suspense>} />
-        <Route path="/blog" element={<Suspense fallback={<RouteLoader />}><BlogList /></Suspense>} />
-        <Route path="/blog/:slug" element={<Suspense fallback={<RouteLoader />}><BlogPost /></Suspense>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
