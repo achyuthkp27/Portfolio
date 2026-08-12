@@ -15,7 +15,7 @@ import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
-const CAREER_START = new Date("2021-07-01");
+const CAREER_START = new Date("2021-07-26");
 
 const Hero = () => {
   const { isLoading } = useLoading();
