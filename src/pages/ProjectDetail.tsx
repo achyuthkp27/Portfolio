@@ -16,13 +16,16 @@ const ProjectDetail = () => {
 
     useEffect(() => {
         if (!slug) return;
-        
-        fetchRepositoryDetails(slug).then((repoData) => {
+
+        const controller = new AbortController();
+        fetchRepositoryDetails(slug, controller.signal).then((repoData) => {
+            if (controller.signal.aborted) return;
             setProject(repoData);
             setIsLoading(false);
         }).catch(() => {
-            setIsLoading(false);
+            if (!controller.signal.aborted) setIsLoading(false);
         });
+        return () => controller.abort();
     }, [slug]);
 
     if (isLoading) {

@@ -36,7 +36,8 @@ describe("fetchLatestRepositories", () => {
 
     expect(repos).toEqual([mockRepo]);
     expect(fetchSpy).toHaveBeenCalledWith(
-      expect.stringContaining("api.github.com/users/achyuthkp27/repos")
+      expect.stringContaining("api.github.com/users/achyuthkp27/repos"),
+      expect.anything()
     );
   });
 

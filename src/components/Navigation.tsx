@@ -17,6 +17,13 @@ const Navigation = () => {
   const navigate = useNavigate();
   const isHomePage = location.pathname === "/" || location.pathname === "";
 
+  // Clear any in-flight scroll-tracking interval on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTrackerRef.current) clearInterval(scrollTrackerRef.current);
+    };
+  }, []);
+
   // Close mobile menu on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,25 +65,37 @@ const Navigation = () => {
 
     // Track which sections we're already observing
     const observedIds = new Set<string>();
+    const expectedSections = ["about", "experience", "projects", "skills", "awards", "contact"];
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
     const observeAllSections = () => {
-      const sections = document.querySelectorAll("section[id]");
+      const sections = document.querySelectorAll("main section[id]");
       sections.forEach((section) => {
         if (!observedIds.has(section.id)) {
           observedIds.add(section.id);
           sectionObserver.observe(section);
         }
       });
+      // Once every expected section is mounted and observed there is nothing
+      // left to discover — stop watching the DOM entirely.
+      if (expectedSections.every((id) => observedIds.has(id))) {
+        domObserver.disconnect();
+      }
     };
+
+    // Re-scan (debounced) whenever the DOM changes — LazySection mounts
+    // replace placeholders with the real sections.
+    const domObserver = new MutationObserver(() => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(observeAllSections, 300);
+    });
 
     // Initial scan
     observeAllSections();
-
-    // Re-scan whenever the DOM changes (LazySection mounting new sections)
-    const domObserver = new MutationObserver(() => observeAllSections());
     domObserver.observe(document.body, { childList: true, subtree: true });
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
       sectionObserver.disconnect();
       domObserver.disconnect();
     };

@@ -42,9 +42,13 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
     if (forceOpen) setIsOpen(true);
   }, [forceOpen]);
 
-  // Fetch GitHub repos on mount
+  // Fetch GitHub repos on mount; abort if the terminal unmounts first
   useEffect(() => {
-    fetchLatestRepositories(5).then(setGithubRepos);
+    const controller = new AbortController();
+    fetchLatestRepositories(5, controller.signal).then((repos) => {
+      if (!controller.signal.aborted) setGithubRepos(repos);
+    });
+    return () => controller.abort();
   }, []);
 
   // Close on Escape key
@@ -86,7 +90,12 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
     const fullCmd = trimmedInput;
     const cmd = fullCmd.toLowerCase().split(' ')[0];
     const args = fullCmd.split(' ').slice(1).join(' ');
-    const newHistory = [...history, { type: 'input' as const, text: fullCmd }];
+    // Collect the entries this command produces, then append them with a
+    // functional update so concurrent updates (e.g. the streaming `hack`
+    // output) are never clobbered by a stale `history` closure.
+    const newHistory: { type: 'input' | 'output' | 'system' | 'error'; text: string | React.ReactNode }[] = [
+      { type: 'input' as const, text: fullCmd },
+    ];
 
     switch (cmd) {
       case 'help':
@@ -273,7 +282,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         newHistory.push({ type: 'error', text: `Command not found: ${cmd}. Type 'help' for directory.` });
     }
 
-    setHistory(newHistory);
+    setHistory(prev => [...prev, ...newHistory]);
     setInput("");
   };
 

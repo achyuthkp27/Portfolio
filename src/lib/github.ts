@@ -40,13 +40,13 @@ function writeCache<T>(key: string, data: T): void {
   }
 }
 
-export async function fetchLatestRepositories(limit: number = 6): Promise<GitHubRepo[]> {
+export async function fetchLatestRepositories(limit: number = 6, signal?: AbortSignal): Promise<GitHubRepo[]> {
   const cacheKey = `gh_repos_${limit}`;
   const cached = readCache<GitHubRepo[]>(cacheKey);
   if (cached) return cached;
 
   try {
-    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`);
+    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`, { signal });
     if (!res.ok) {
       throw new Error("Failed to fetch repositories.");
     }
@@ -54,24 +54,28 @@ export async function fetchLatestRepositories(limit: number = 6): Promise<GitHub
     writeCache(cacheKey, data);
     return data;
   } catch (error) {
-    console.error("[GitHub API] Error fetching repos:", error);
+    if (!(error instanceof DOMException && error.name === "AbortError")) {
+      console.error("[GitHub API] Error fetching repos:", error);
+    }
     return [];
   }
 }
 
-export async function fetchRepositoryDetails(repoName: string): Promise<GitHubRepo | null> {
+export async function fetchRepositoryDetails(repoName: string, signal?: AbortSignal): Promise<GitHubRepo | null> {
   const cacheKey = `gh_detail_${repoName}`;
   const cached = readCache<GitHubRepo>(cacheKey);
   if (cached) return cached;
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}`);
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}`, { signal });
     if (!res.ok) return null;
     const data = await res.json() as GitHubRepo;
     writeCache(cacheKey, data);
     return data;
   } catch (error) {
-    console.error("[GitHub API] Error fetching repository details:", error);
+    if (!(error instanceof DOMException && error.name === "AbortError")) {
+      console.error("[GitHub API] Error fetching repository details:", error);
+    }
     return null;
   }
 }

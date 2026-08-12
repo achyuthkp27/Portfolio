@@ -16,6 +16,7 @@ export default function ActivityWidget() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchCommits = async () => {
       try {
         // Check Cache
@@ -33,23 +34,27 @@ export default function ActivityWidget() {
         const res = await fetch(`https://api.github.com/search/commits?q=author:${GITHUB_USERNAME}+committer-date:>${year}-01-01`, {
           headers: {
             Accept: "application/vnd.github.cloak-preview"
-          }
+          },
+          signal: controller.signal
         });
         
         if (!res.ok) throw new Error("Rate limited or failed");
         
         const data = await res.json();
-        if (data.total_count !== undefined) {
+        if (data.total_count !== undefined && !controller.signal.aborted) {
           setCommits(data.total_count);
           localStorage.setItem(CACHE_KEY, JSON.stringify({ count: data.total_count, timestamp: Date.now() }));
         }
       } catch (error) {
-        console.warn("Failed to fetch live commits; hiding counter.");
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          console.warn("Failed to fetch live commits; hiding counter.");
+        }
         // No invented fallback number — hide the counter instead
       }
     };
 
     fetchCommits();
+    return () => controller.abort();
   }, []);
 
   if (!isVisible) return null;

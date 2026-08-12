@@ -110,8 +110,10 @@ const ProjectsSection = () => {
 
   useEffect(() => {
     if (isInView) {
-      fetchLatestRepositories(6)
+      const controller = new AbortController();
+      fetchLatestRepositories(6, controller.signal)
         .then((data) => {
+          if (controller.signal.aborted) return;
           setProjects(data);
           setFilteredProjects(data);
           
@@ -125,6 +127,7 @@ const ProjectsSection = () => {
           setIsLoading(false);
         })
         .catch(console.error);
+      return () => controller.abort();
     }
   }, [isInView]);
 
