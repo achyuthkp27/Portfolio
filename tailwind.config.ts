@@ -19,6 +19,7 @@ export default {
         display: ['Inter', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        condensed: ['Anton', 'Impact', 'sans-serif'],
       },
       colors: {
         emerald: {
