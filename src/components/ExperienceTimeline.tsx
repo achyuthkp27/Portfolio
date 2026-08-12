@@ -102,7 +102,7 @@ const ExperienceTimeline = () => {
                         </div>
                         <p className="text-emerald-300/70 font-body font-light text-xs md:text-sm tracking-wide mt-1.5">{exp.role}</p>
                       </div>
-                      <div className="flex flex-row sm:flex-col items-center gap-3 self-end sm:self-auto">
+                      <div className="flex flex-row flex-wrap justify-end sm:flex-col items-center gap-3 self-end sm:self-auto max-w-full">
                         <span className="text-[10px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
                         <span className="font-mono text-[11px] text-white/35 whitespace-nowrap">
                           {exp.achievements.length} highlight{exp.achievements.length > 1 ? "s" : ""}
