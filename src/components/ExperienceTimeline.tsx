@@ -40,11 +40,12 @@ const ExperienceTimeline = () => {
               className="w-full bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent origin-top"
               style={{ scaleY }}
             />
+            {/* Lightsaber scan beam sweeping the rail */}
             <motion.div
               aria-hidden="true"
-              className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] motion-reduce:hidden"
-              animate={{ top: ["0%", "100%"], opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", times: [0, 0.08, 0.92, 1] }}
+              className="absolute left-1/2 -translate-x-1/2 w-px h-[120px] rounded-full bg-gradient-to-b from-transparent via-white to-transparent shadow-[0_0_12px_rgba(52,211,153,0.7)] motion-reduce:hidden"
+              animate={{ top: ["-15%", "105%"] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
 
