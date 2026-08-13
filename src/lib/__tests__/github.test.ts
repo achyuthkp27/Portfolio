@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   fetchLatestRepositories,
   fetchRepositoryDetails,
-  fetchRepositoryReadme,
 } from "../github";
 
 // Clear localStorage cache before each test
@@ -108,39 +107,3 @@ describe("fetchRepositoryDetails", () => {
   });
 });
 
-describe("fetchRepositoryReadme", () => {
-  it("fetches README from main branch", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      text: async () => "# Hello World",
-    } as Response);
-
-    const readme = await fetchRepositoryReadme("test-repo");
-
-    expect(readme).toBe("# Hello World");
-  });
-
-  it("falls back to master branch on 404", async () => {
-    vi.spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce({ ok: false, status: 404 } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        text: async () => "# From Master",
-      } as Response);
-
-    const readme = await fetchRepositoryReadme("test-repo");
-
-    expect(readme).toBe("# From Master");
-  });
-
-  it("returns null when both branches fail", async () => {
-    vi.spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce({ ok: false, status: 404 } as Response)
-      .mockResolvedValueOnce({ ok: false } as Response);
-
-    const readme = await fetchRepositoryReadme("test-repo");
-
-    expect(readme).toBeNull();
-  });
-});

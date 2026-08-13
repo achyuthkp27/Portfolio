@@ -80,31 +80,4 @@ export async function fetchRepositoryDetails(repoName: string, signal?: AbortSig
   }
 }
 
-export async function fetchRepositoryReadme(repoName: string): Promise<string | null> {
-  const cacheKey = `gh_readme_${repoName}`;
-  const cached = readCache<string>(cacheKey);
-  if (cached) return cached;
-
-  try {
-    // Fetch via the raw githubusercontent to instantly get the raw markdown bypassing base64 decoding
-    const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${repoName}/main/README.md`);
-    
-    // Fallback to master if main doesn't exist
-    if (res.status === 404) {
-      const fallbackRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${repoName}/master/README.md`);
-      if (!fallbackRes.ok) return null;
-      const text = await fallbackRes.text();
-      writeCache(cacheKey, text);
-      return text;
-    }
-    
-    if (!res.ok) return null;
-    const text = await res.text();
-    writeCache(cacheKey, text);
-    return text;
-  } catch (error) {
-    console.error("[GitHub API] Error fetching README for", repoName, error);
-    return null;
-  }
-}
 

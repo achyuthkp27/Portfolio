@@ -76,7 +76,7 @@ export function CommandMenu() {
             <Command.Separator className="my-1 h-px bg-white/10" />
 
             <Command.Group heading="Actions" className="text-xs font-mono text-white/40 px-2 pt-3 pb-1 uppercase tracking-wider">
-              <Command.Item onSelect={() => runCommand(() => { const a = document.createElement('a'); a.href = '/Achyuth KP_Resume.pdf'; a.download = 'Achyuth_KP_Resume.pdf'; a.click(); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
+              <Command.Item onSelect={() => runCommand(() => { const a = document.createElement('a'); a.href = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`; a.download = 'Achyuth_KP_Resume.pdf'; a.click(); })} className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors aria-selected:bg-white/10">
                 <User className="h-4 w-4" /> Download Resume
               </Command.Item>
             </Command.Group>

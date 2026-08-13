@@ -69,7 +69,7 @@ const Navigation = () => {
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
     const observeAllSections = () => {
-      const sections = document.querySelectorAll("main section[id]");
+      const sections = document.querySelectorAll("main section[id], main #education");
       sections.forEach((section) => {
         if (!observedIds.has(section.id)) {
           observedIds.add(section.id);
@@ -284,7 +284,7 @@ const Navigation = () => {
 
             <MagneticButton>
               <a
-                href="/Achyuth KP_Resume.pdf"
+                href={`${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
                 download="Achyuth_KP_Resume.pdf"
