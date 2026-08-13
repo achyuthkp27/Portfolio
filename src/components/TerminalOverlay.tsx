@@ -336,6 +336,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                     { group: "BACKEND", items: ["Java", "Concurrency", "Spring Boot", "Spring Security", "Spring Data JPA", "gRPC"] },
                     { group: "DATA & MESSAGING", items: ["PostgreSQL", "Redis", "Kafka", "NATS JetStream", "MinIO"] },
                     { group: "SECURITY & AI", items: ["JWT / JWE", "OAuth2", "TOTP / MFA", "PCI-DSS / SOX", "Spring AI", "LangChain4j"] },
+                    { group: "FRONTEND", items: ["ReactJS", "JavaScript"] },
                     { group: "QUALITY & OPS", items: ["JUnit", "Mockito", "Jenkins", "Docker", "Kubernetes", "ELK Stack", "Prometheus", "Grafana", "AWS"] },
                 ].map((row) => (
                     <div key={row.group}>
