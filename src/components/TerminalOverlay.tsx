@@ -331,19 +331,21 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         break;
       case 'skills':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2 space-y-3">
-                <div>
-                    <span className="text-emerald-400 font-bold block mb-1">BACKEND</span>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                        {["Java", "Spring Boot", "Spring Security", "Kafka", "PostgreSQL", "Redis", "gRPC"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
+            <div className="my-2 flex flex-col gap-1.5">
+                {[
+                    { label: "core", items: "Java · Concurrency & Multithreading · Design Patterns" },
+                    { label: "frameworks", items: "Spring Boot · Spring Security · Spring Data JPA · Spring AI · LangChain4j · gRPC" },
+                    { label: "data", items: "PostgreSQL · Redis · Kafka · NATS JetStream · MinIO" },
+                    { label: "security", items: "JWT / JWE / JWS · OAuth2 · TOTP / MFA · PCI-DSS / SOX" },
+                    { label: "cloud", items: "AWS · Docker · Kubernetes · Jenkins" },
+                    { label: "observability", items: "JUnit · Mockito · ELK Stack · Prometheus · Grafana" },
+                ].map((row) => (
+                    <div key={row.label} className="flex items-baseline gap-3">
+                        <span className="text-emerald-500/60 w-32 shrink-0">{row.label}</span>
+                        <span className="text-emerald-500/40 shrink-0">──▶</span>
+                        <span className="text-white/85">{row.items}</span>
                     </div>
-                </div>
-                <div>
-                    <span className="text-emerald-400 font-bold block mb-1">QUALITY & OPS</span>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                        {["JUnit", "Mockito", "Jenkins", "Docker", "ELK Stack", "AWS"].map(s => <span key={s} className="px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20">{s}</span>)}
-                    </div>
-                </div>
+                ))}
             </div>
         )});
         break;
