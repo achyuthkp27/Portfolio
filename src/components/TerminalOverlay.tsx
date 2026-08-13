@@ -383,10 +383,25 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         break;
       case 'socials':
         newHistory.push({ type: 'output', text: (
-            <div className="my-2 flex flex-col gap-2">
-                <a href="https://github.com/achyuthkp27" target="_blank" rel="noreferrer" className="text-white hover:text-emerald-400 underline">GitHub: achyuthkp27</a>
-                <a href="https://www.linkedin.com/in/kpachyuth" target="_blank" rel="noreferrer" className="text-white hover:text-emerald-400 underline">LinkedIn: kpachyuth</a>
-                <a href="mailto:kpachyuthz@gmail.com" className="text-white hover:text-emerald-400 underline">Email: kpachyuthz@gmail.com</a>
+            <div className="my-2 flex flex-col gap-1.5">
+                {[
+                    { label: "github", value: "achyuthkp27", href: "https://github.com/achyuthkp27" },
+                    { label: "linkedin", value: "kpachyuth", href: "https://www.linkedin.com/in/kpachyuth" },
+                    { label: "email", value: "kpachyuthz@gmail.com", href: "mailto:kpachyuthz@gmail.com" },
+                ].map((node) => (
+                    <a
+                        key={node.label}
+                        href={node.href}
+                        target={node.href.startsWith("http") ? "_blank" : undefined}
+                        rel="noreferrer"
+                        className="group inline-flex items-center gap-3 w-fit"
+                    >
+                        <span className="text-emerald-500/60 w-20">{node.label}</span>
+                        <span className="text-emerald-500/40">──▶</span>
+                        <span className="text-white/90 group-hover:text-emerald-300 transition-colors">{node.value}</span>
+                        <span className="opacity-0 group-hover:opacity-100 text-emerald-400 transition-opacity">↗</span>
+                    </a>
+                ))}
             </div>
         )});
         break;
