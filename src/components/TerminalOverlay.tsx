@@ -1,8 +1,9 @@
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
 import { Terminal, X } from "lucide-react";
-import { useAnalytics } from "@/lib/analytics";
 import { projects } from "@/data/projects";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
+import { useSmoothScroll } from "@/components/ui/SmoothScroll";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface TerminalOverlayProps {
   forceOpen?: boolean;
@@ -28,7 +29,7 @@ const BOOT_LINES: { type: HistoryEntry['type']; text: string }[] = [
 
 const DEPLOY_LINES: { type: HistoryEntry['type']; text: string }[] = [
   { type: 'system', text: 'PIPELINE_TRIGGERED: release/prod' },
-  { type: 'output', text: '[1/5] unit tests ........... 23 passed, 0 failed' },
+  { type: 'output', text: '[1/5] unit tests ........... all passed' },
   { type: 'output', text: '[2/5] build ................ dist/ ready (vite, 2.5s)' },
   { type: 'output', text: '[3/5] kafka consumers ...... rebalanced, lag 0' },
   { type: 'output', text: '[4/5] k8s rollout .......... 3/3 pods healthy' },
@@ -36,18 +37,33 @@ const DEPLOY_LINES: { type: HistoryEntry['type']; text: string }[] = [
   { type: 'system', text: 'PROD IS GREEN. Ship it.' },
 ];
 
+const TERMINAL_THEMES = ['emerald', 'amber', 'zinc'] as const;
+type TerminalTheme = typeof TERMINAL_THEMES[number];
+
 const MATRIX_CHARS = "アカサタナハマヤラワ0123456789ABCDEF$#@%&";
 
 export default function TerminalOverlay({ forceOpen = false, onClose }: TerminalOverlayProps) {
   const [isOpen, setIsOpen] = useState(forceOpen);
-  const [theme, setTheme] = useState<'emerald' | 'amber' | 'zinc'>(() => {
-    const saved = localStorage.getItem('terminal_theme');
-    return (saved as 'emerald' | 'amber' | 'zinc') || 'emerald';
+  const [theme, setTheme] = useState<TerminalTheme>(() => {
+    // Storage can throw (private mode, blocked site data) and may hold stale values
+    try {
+      const saved = localStorage.getItem('terminal_theme');
+      return TERMINAL_THEMES.includes(saved as TerminalTheme) ? (saved as TerminalTheme) : 'emerald';
+    } catch {
+      return 'emerald';
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem('terminal_theme', theme);
+    try {
+      localStorage.setItem('terminal_theme', theme);
+    } catch {
+      // Theme just won't persist
+    }
   }, [theme]);
+  const { lenis } = useSmoothScroll();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, isOpen);
   const [githubRepos, setGithubRepos] = useState<GitHubRepo[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [input, setInput] = useState("");
@@ -62,7 +78,6 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
   const timersRef = useRef<{ intervals: Set<ReturnType<typeof setInterval>>; timeouts: Set<ReturnType<typeof setTimeout>>; rafs: Set<number> }>({
     intervals: new Set(), timeouts: new Set(), rafs: new Set(),
   });
-  const posthog = useAnalytics();
 
   useEffect(() => {
     const timers = timersRef.current;
@@ -149,6 +164,13 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Freeze the page behind the overlay. Lenis drives scrolling itself, so overflow alone isn't enough.
+  useEffect(() => {
+    if (!isOpen || !lenis) return;
+    lenis.stop();
+    return () => lenis.start();
+  }, [isOpen, lenis]);
 
   // Scroll locking & Focus
   useEffect(() => {
@@ -547,7 +569,12 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
     <div
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 animate-in fade-in zoom-in-95 duration-200"
+      ref={dialogRef}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-4 animate-in fade-in zoom-in-95 duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Interactive terminal"
+      data-lenis-prevent
     >
       <div className={`w-full max-w-3xl h-[75vh] border bg-black rounded-lg flex flex-col overflow-hidden font-mono transition-all duration-500 ${themeColors[theme]}`}>
         {/* Terminal Header */}
@@ -556,7 +583,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
             <Terminal size={16} />
             <span className="font-bold tracking-tighter opacity-80 uppercase">achyuth@os:~</span>
           </div>
-          <button onClick={() => setIsOpen(false)} className="hover:opacity-60 transition-opacity p-1">
+          <button type="button" onClick={() => setIsOpen(false)} aria-label="Close terminal" className="hover:opacity-60 transition-opacity p-1">
             <X size={18} />
           </button>
         </div>

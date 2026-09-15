@@ -1,76 +1,78 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import sitemap from "vite-plugin-sitemap";
 import { VitePWA } from "vite-plugin-pwa";
 
+/**
+ * The site is served from https://achyuthkp27.github.io/Portfolio/, so every build
+ * (CI, local `npm run build`, `npm run preview`) uses the /Portfolio/ base.
+ * The dev server stays at the root for convenience.
+ */
+const PAGES_BASE = "/Portfolio/";
+
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  base: process.env.GITHUB_ACTIONS ? "/Portfolio/" : "/",
+export default defineConfig(({ command, isPreview }) => ({
+  base: command === "build" || isPreview ? PAGES_BASE : "/",
   server: {
     host: "::",
     port: 8080,
   },
+  preview: {
+    port: 4173,
+  },
   plugins: [
     react(),
-    sitemap({
-      hostname: "https://achyuthkp27.github.io/Portfolio",
-      dynamicRoutes: [
-        "/",
-        "/blog",
-      ],
-      generateRobotsTxt: true,
-    }),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      registerType: "autoUpdate",
+      includeAssets: ["images/logo.webp", "apple-touch-icon.png"],
       manifest: {
-        name: 'Achyuth KP | Creative Developer',
-        short_name: 'Achyuth',
-        description: 'Portfolio of Achyuth KP - Software Developer',
-        theme_color: '#000000',
-        background_color: '#000000',
-        display: 'standalone',
+        name: "Achyuth KP | Software Engineer",
+        short_name: "Achyuth KP",
+        description: "Achyuth KP, Software Engineer building secure banking microservices with Java, Spring Boot, and Kafka.",
+        theme_color: "#000000",
+        background_color: "#000000",
+        display: "standalone",
         icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      }
-    })
+          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+      },
+      workbox: {
+        // Activate new deploys straight away instead of waiting for every tab to close
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        // The 3D scene is desktop-only; don't make phones download it into the offline cache
+        globIgnores: ["**/three-*.js", "**/r3f-*.js", "**/SpaceScene-*.js"],
+      },
+    }),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
   build: {
     modulePreload: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // Core React — always needed on first load
-          'react-vendor': ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-router-dom'],
-          // Framer Motion — used by Hero and layout, separate from React core
-          'framer-motion': ['framer-motion'],
-          // Three.js core — only loaded when 3D scene mounts (lazy).
-          // Kept as its own chunk: r3f imports the full three namespace internally,
-          // so tree-shaking cannot reduce it; splitting at least keeps it cacheable.
-          'three': ['three'],
-          // React Three Fiber + Drei — only loaded when 3D components mount (lazy)
-          'r3f': ['@react-three/fiber', '@react-three/drei'],
+        // Stable, cacheable vendor chunks. Groups match on node_modules paths (Rolldown has no object form).
+        codeSplitting: {
+          groups: [
+            // Core React — always needed on first load
+            { name: "react-vendor", test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 40 },
+            // Router kept apart from react-dom: bundling them together once left react-dom undefined at startup
+            { name: "router", test: /node_modules[\\/](react-router|react-router-dom|@remix-run)[\\/]/, priority: 30 },
+            { name: "framer-motion", test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/, priority: 30 },
+            // three.js and React Three Fiber load only when the desktop 3D scene mounts
+            { name: "three", test: /node_modules[\\/]three[\\/]/, priority: 20 },
+            { name: "r3f", test: /node_modules[\\/]@react-three[\\/]/, priority: 20 },
+          ],
         },
       },
     },
-    chunkSizeWarningLimit: 600,
-    sourcemap: false, // Omit source maps in production to reduce total download size
+    chunkSizeWarningLimit: 700,
+    sourcemap: false,
   },
 }));

@@ -19,11 +19,9 @@ import { useIdleMount } from "@/hooks/useIdleMount";
 // Lazy load the project detail page
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const Analytics = import.meta.env.PROD ? lazy(() => import("@/components/Analytics")) : null;
-const CustomCursor = lazy(() => import("@/components/ui/CustomCursor"));
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
-const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })));
 const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
-const ActivityWidget = lazy(() => import("@/components/ActivityWidget"));
+const CommandMenu = lazy(() => import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })));
 
 const RouteLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-transparent">
@@ -48,6 +46,21 @@ const AnimatedRoutes = () => {
   );
 };
 
+/**
+ * Keyboard shortcuts load immediately on desktop: the nav advertises them,
+ * so they must work from the first second.
+ */
+const KeyboardShortcuts = () => {
+  const isMobile = useMobile();
+  if (isMobile) return null;
+  return (
+    <Suspense fallback={null}>
+      <CommandMenu />
+      <TerminalTrigger />
+    </Suspense>
+  );
+};
+
 const DeferredExperience = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
@@ -60,15 +73,7 @@ const DeferredExperience = () => {
   return (
     <Suspense fallback={null}>
       {Analytics ? <Analytics /> : null}
-      {!isMobile && (
-        <>
-          <CustomCursor />
-          <CommandMenu />
-          <TerminalTrigger />
-          <ActivityWidget />
-          <ScrollProgress />
-        </>
-      )}
+      {!isMobile && <ScrollProgress />}
     </Suspense>
   );
 };
@@ -77,20 +82,28 @@ const App = () => (
   <ErrorBoundary>
     <HelmetProvider>
       <LoadingProvider>
+        {/* PROTECTED: opening splash screen. Required on every visit and device — never remove. See CLAUDE.md. */}
         <PremiumLoader />
         <TooltipProvider>
           <Toaster />
           <HashRouter>
-              {/* Skip to main content — accessibility */}
-              <a
-                href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:text-sm focus:font-mono"
+              {/* Skip to main content. A button, because "#main-content" would be a route under HashRouter. */}
+              <button
+                type="button"
+                onClick={() => {
+                  const main = document.getElementById("main-content");
+                  main?.focus();
+                  main?.scrollIntoView();
+                }}
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:text-sm focus:font-body"
               >
                 Skip to content
-              </a>
-              <DeferredExperience />
-              <Navigation />
+              </button>
+              {/* One Lenis instance for everything: nav, overlays, and pages share it */}
               <SmoothScroll>
+                <KeyboardShortcuts />
+                <DeferredExperience />
+                <Navigation />
                 <AnimatedRoutes />
               </SmoothScroll>
           </HashRouter>

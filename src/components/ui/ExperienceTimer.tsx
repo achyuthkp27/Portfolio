@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ExperienceTimerProps {
     startDate: Date;
@@ -10,10 +10,37 @@ interface ExperienceTimerProps {
  */
 const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
     const [, setTick] = useState(0);
+    const ref = useRef<HTMLDivElement>(null);
 
+    // Tick once a second only while the counter is on screen and the tab is visible
     useEffect(() => {
-        const interval = setInterval(() => setTick((t) => t + 1), 1000);
-        return () => clearInterval(interval);
+        let onScreen = true;
+        let interval: ReturnType<typeof setInterval> | null = null;
+
+        const sync = () => {
+            const shouldRun = onScreen && document.visibilityState === "visible";
+            if (shouldRun && !interval) {
+                setTick((t) => t + 1);
+                interval = setInterval(() => setTick((t) => t + 1), 1000);
+            } else if (!shouldRun && interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+        };
+
+        const observer = new IntersectionObserver(([entry]) => {
+            onScreen = entry.isIntersecting;
+            sync();
+        });
+        if (ref.current) observer.observe(ref.current);
+        document.addEventListener("visibilitychange", sync);
+        sync();
+
+        return () => {
+            observer.disconnect();
+            document.removeEventListener("visibilitychange", sync);
+            if (interval) clearInterval(interval);
+        };
     }, []);
 
     const now = new Date();
@@ -41,11 +68,11 @@ const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
     const pad = (n: number) => n.toString().padStart(2, "0");
 
     return (
-        <div className="text-center lg:text-inherit">
+        <div ref={ref} className="text-center lg:text-inherit">
             <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">
                 {years}<span className="text-emerald-400">+</span>
             </div>
-            <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">
+            <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/60 mt-2">
                 Years in banking
             </div>
             <div className="font-mono text-xs text-emerald-400/70 mt-1.5 tabular-nums" aria-hidden="true">

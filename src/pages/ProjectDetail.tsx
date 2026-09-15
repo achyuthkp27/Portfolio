@@ -4,26 +4,27 @@ import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, Star, GitFork }
 import { useEffect, useState } from "react";
 import SEO from "@/components/SEO";
 import TextReveal from "@/components/ui/TextReveal";
-import { fetchRepositoryDetails, GitHubRepo } from "@/lib/github";
+import { fetchRepositoryDetails, type RepoDetailsResult } from "@/lib/github";
 
 const ProjectDetail = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const [project, setProject] = useState<GitHubRepo | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [result, setResult] = useState<RepoDetailsResult | null>(null);
+    const project = result?.status === "ok" ? result.repo : null;
+    const isLoading = result === null;
     const { scrollY } = useScroll();
     const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
     useEffect(() => {
-        if (!slug) return;
+        if (!slug) {
+            setResult({ status: "not-found" });
+            return;
+        }
 
+        setResult(null);
         const controller = new AbortController();
-        fetchRepositoryDetails(slug, controller.signal).then((repoData) => {
-            if (controller.signal.aborted) return;
-            setProject(repoData);
-            setIsLoading(false);
-        }).catch(() => {
-            if (!controller.signal.aborted) setIsLoading(false);
+        fetchRepositoryDetails(slug, controller.signal).then((next) => {
+            if (!controller.signal.aborted) setResult(next);
         });
         return () => controller.abort();
     }, [slug]);
@@ -34,23 +35,43 @@ const ProjectDetail = () => {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="min-h-screen flex items-center justify-center font-mono text-white/50 bg-background"
             >
-                Loading repository…
+                <span role="status">Loading repository…</span>
             </motion.div>
         );
     }
 
     if (!project) {
+        const unavailable = result?.status === "unavailable";
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="min-h-screen flex items-center justify-center text-white bg-background flex-col"
+                className="min-h-screen flex items-center justify-center text-white bg-background flex-col px-6 text-center"
             >
-                <h1 className="text-4xl font-bold mb-4 font-display">Repository Not Found</h1>
-                <Link to="/" className="text-emerald-500 hover:underline inline-flex items-center gap-2">
-                    <ArrowLeft className="w-4 h-4" /> Return Home
-                </Link>
+                <h1 className="text-3xl md:text-4xl font-semibold mb-4 font-display">
+                    {unavailable ? "GitHub isn't responding right now" : "Repository not found"}
+                </h1>
+                <p className="max-w-md text-white/65 mb-8">
+                    {unavailable
+                        ? "GitHub limits how often a browser can ask for repository details. Try again in a few minutes, or open it on GitHub directly."
+                        : "There's no public repository with that name."}
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-6">
+                    {unavailable && slug && (
+                        <a
+                            href={`https://github.com/achyuthkp27/${encodeURIComponent(slug)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-400 hover:underline inline-flex items-center gap-2"
+                        >
+                            <Github className="w-4 h-4" aria-hidden="true" /> Open on GitHub
+                        </a>
+                    )}
+                    <Link to="/" className="text-white/80 hover:text-white hover:underline inline-flex items-center gap-2">
+                        <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to home
+                    </Link>
+                </div>
             </motion.div>
         );
     }

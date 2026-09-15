@@ -46,11 +46,7 @@
 
     /* Titan Gradients - Subtle & Deep */
     --gradient-cyber: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 70%));
-    --gradient-glass: linear-gradient(
-      135deg,
-      hsl(0 0% 5% / 0.8),
-      hsl(0 0% 0% / 0.9)
-    );
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 5% / 0.8), hsl(0 0% 0% / 0.9));
 
     /* Shadows - Clean & Sharp */
     --shadow-neon: 0 0 20px hsl(0 0% 100% / 0.1);
@@ -72,7 +68,6 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     height: 100%;
-    touch-action: pan-y;
   }
 
   body {
@@ -83,7 +78,6 @@
     overflow-x: hidden;
     min-height: 100%;
     position: relative;
-    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -107,25 +101,6 @@
 
   .lenis.lenis-scrolling iframe {
     pointer-events: none;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    html.custom-cursor-enabled body {
-      cursor: none;
-    }
-
-    html.custom-cursor-enabled body a,
-    html.custom-cursor-enabled body button,
-    html.custom-cursor-enabled body [role="button"] {
-      cursor: none;
-    }
-
-    /* Text fields keep the native I-beam — the custom dot obscures caret placement */
-    html.custom-cursor-enabled body input,
-    html.custom-cursor-enabled body textarea,
-    html.custom-cursor-enabled body select {
-      cursor: text;
-    }
   }
 
   /* Hide scrollbar but keep functionality */

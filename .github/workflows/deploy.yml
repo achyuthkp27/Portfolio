@@ -23,12 +23,34 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      # Nothing deploys unless lint, types, and tests pass (includes the splash-screen guard test)
+      - name: Lint
+        run: npm run lint
+      - name: Type-check
+        run: npm run type-check
+      - name: Test
+        run: npm run test:run
       - name: Build
         run: npm run build
+        env:
+          # Lets the build-time GitHub snapshot use the higher authenticated rate limit
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Browser smoke test of the real build: blocks a deploy that builds but renders a blank or broken page
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Smoke test production build
+        run: npm run test:e2e
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

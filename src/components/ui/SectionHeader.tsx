@@ -1,42 +1,47 @@
-import TextReveal from "./TextReveal";
+import { motion } from "framer-motion";
 
 interface SectionHeaderProps {
   label: string;
-  titleMain: string;
-  titleAccent: string;
+  title: string;
   description?: string;
   align?: "left" | "center";
-  /** "light" flips type dark for warm gradient backgrounds */
-  tone?: "dark" | "light";
 }
 
-export const SectionHeader = ({ label, titleMain, titleAccent, description, align = "center", tone = "dark" }: SectionHeaderProps) => {
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-60px" },
+};
+
+/** Section opener: a quiet label, one plain headline, optional supporting line. */
+export const SectionHeader = ({ label, title, description, align = "left" }: SectionHeaderProps) => {
   const isCenter = align === "center";
-  const light = tone === "light";
 
   return (
-    <div className={`mb-20 lg:mb-24 flex flex-col ${isCenter ? "items-center text-center" : `md:flex-row md:items-end justify-between border-b ${light ? "border-zinc-900/10" : "border-white/5"} pb-12`} gap-6`}>
-      <div className={isCenter ? "" : "flex-1"}>
-        <TextReveal type="fade-up">
-          <span className={`flex items-center gap-3 mb-8 ${isCenter ? "justify-center" : ""}`}>
-            <span className={`w-8 h-px ${light ? "bg-emerald-700/70" : "bg-emerald-500/60"}`} aria-hidden="true" />
-            <span className={`text-[11px] font-body font-medium tracking-[0.25em] uppercase ${light ? "text-zinc-800/60" : "text-white/40"}`}>
-              {label}
-            </span>
-          </span>
-        </TextReveal>
-        <h2 className={`font-display text-4xl md:text-6xl lg:text-7xl font-bold ${light ? "text-zinc-900" : "text-white"} tracking-tighter leading-[1.02]`}>
-          <TextReveal type="blur-reveal" delay={0.2} as="span">{titleMain}</TextReveal>
-          {" "}
-          <TextReveal type="blur-reveal" delay={0.4} as="span" className={light ? "text-zinc-900/40" : "text-white/35"}>{titleAccent}</TextReveal>
+    <div
+      className={`mb-14 lg:mb-20 flex flex-col gap-6 ${
+        isCenter ? "items-center text-center" : "md:flex-row md:items-end md:justify-between"
+      }`}
+    >
+      <motion.div {...fadeUp} transition={{ duration: 0.5 }} className={isCenter ? "max-w-3xl" : "max-w-3xl flex-1"}>
+        <span className={`flex items-center gap-3 mb-6 ${isCenter ? "justify-center" : ""}`}>
+          <span className="w-8 h-px bg-emerald-500/70" aria-hidden="true" />
+          <span className="text-xs font-body font-medium tracking-[0.2em] uppercase text-white/65">{label}</span>
+        </span>
+        <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-[1.08] text-balance">
+          {title}
         </h2>
-      </div>
+      </motion.div>
       {description && (
-        <div className={`max-w-sm ${isCenter ? "mt-4" : ""}`}>
-          <TextReveal type="fade-up" delay={0.6} className={`text-sm font-body font-light ${light ? "text-zinc-800/70" : "text-white/50"} leading-relaxed ${isCenter ? "" : "text-right"}`}>
-            {description}
-          </TextReveal>
-        </div>
+        <motion.p
+          {...fadeUp}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className={`max-w-sm text-sm md:text-base font-body font-light text-white/65 leading-relaxed ${
+            isCenter ? "" : "md:text-right"
+          }`}
+        >
+          {description}
+        </motion.p>
       )}
     </div>
   );

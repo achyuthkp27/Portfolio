@@ -1,21 +1,29 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import ExperienceTimer from "./ui/ExperienceTimer";
-
-import { lazy, Suspense } from "react";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
 import { useMobile } from "@/hooks/useMobile";
-import { useIdleMount } from "@/hooks/useIdleMount";
-
-
 import { useLoading } from "@/context/LoadingContext";
-import MagneticButton from "@/components/ui/MagneticButton";
 
 const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 
 const CAREER_START = new Date("2021-07-26");
+
+const HERO_EASE = [0.16, 1, 0.3, 1] as const;
+
+const StaticBackdrop = () => (
+  <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
+  </div>
+);
+
+const STATS = [
+  { value: "30", suffix: "+", label: "Services in estate", detail: "Spring Boot · Kafka" },
+  { value: "3", label: "Banking channels", detail: "Retail · Mobile · Corporate" },
+  { value: "PCI", label: "Compliance-first", detail: "PCI-DSS · SOX audited" },
+];
 
 const Hero = () => {
   const { isLoading } = useLoading();
@@ -24,208 +32,133 @@ const Hero = () => {
   const { lenis } = useSmoothScroll();
   const ref = useRef<HTMLElement>(null);
 
-  const shouldRenderDesktopScene = isLowEnd === false && !isMobile;
-  const showSpaceScene = shouldRenderDesktopScene && !isLoading;
+  const showSpaceScene = isLowEnd === false && !isMobile && !isLoading;
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 300]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
 
+  const reveal = (delay: number) => ({
+    initial: { opacity: 0, y: 20 },
+    animate: !isLoading ? { opacity: 1, y: 0 } : {},
+    transition: { duration: 0.45, delay },
+  });
+
+  // Buttons, not hash anchors — a real "#projects" href is a route under HashRouter.
+  const scrollToSection = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (lenis) lenis.scrollTo(target, { duration: 1.2 });
+    else target.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
-      {/* 3D Space Background (Adaptive) */}
-      {shouldRenderDesktopScene ? (
-        showSpaceScene ? (
-          <Suspense fallback={
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
-            </div>
-          }>
-            <SpaceScene />
-          </Suspense>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
-          </div>
-        )
+      {showSpaceScene ? (
+        <Suspense fallback={<StaticBackdrop />}>
+          <SpaceScene />
+        </Suspense>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
-        </div>
+        <StaticBackdrop />
       )}
 
       {/* Emerald aura grounding the headline */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_45%_40%_at_50%_45%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" aria-hidden="true" />
 
-      {/* Drifting light — a slow emerald source wandering the scene (~24s orbit) */}
+      {/* Drifting light — transform-only so it never triggers layout */}
       <motion.div
         aria-hidden="true"
-        className="absolute z-[1] w-[55vw] h-[55vw] max-w-[900px] max-h-[900px] rounded-full pointer-events-none mix-blend-screen motion-reduce:hidden"
-        style={{
-          background: "radial-gradient(circle, rgba(52,211,153,0.16) 0%, rgba(16,185,129,0.07) 35%, transparent 65%)",
-        }}
+        className="absolute left-0 top-0 z-[1] w-[55vw] h-[55vw] max-w-[900px] max-h-[900px] rounded-full pointer-events-none mix-blend-screen motion-reduce:hidden"
+        style={{ background: "radial-gradient(circle, rgba(52,211,153,0.16) 0%, rgba(16,185,129,0.07) 35%, transparent 65%)" }}
         animate={{
-          left: ["-15%", "45%", "75%", "30%", "-15%"],
-          top: ["-10%", "-20%", "35%", "55%", "-10%"],
+          x: ["-15vw", "45vw", "75vw", "30vw", "-15vw"],
+          y: ["-10vh", "-20vh", "35vh", "55vh", "-10vh"],
         }}
         transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
-        <div>
-          <div className="flex flex-col items-center text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.1 }}
-              className="mb-8 pointer-events-auto"
-            >
-              <div className="inline-flex items-center gap-3 px-4 py-1.5 border border-white/10 bg-white/5 backdrop-blur-sm rounded-full">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                </span>
-                <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/70">
-                  Open to opportunities
-                </span>
-              </div>
-            </motion.div>
-
-            <div className="mb-2 pointer-events-auto">
-              <motion.h1
-                initial={{ opacity: 0, x: -20 }}
-                animate={!isLoading ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.45, delay: 0.16 }}
-                className="text-base md:text-lg font-body font-medium tracking-[0.35em] uppercase text-white/70"
-              >
-                ACHYUTH KP
-              </motion.h1>
-            </div>
-
-            <motion.div
-              role="text"
-              aria-label="Software Engineer"
-              className="leading-none mb-8 select-none cursor-default pointer-events-auto"
-              whileHover="hover"
-            >
-              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em]">
-                <motion.div
-                  initial={{ y: "100%" }}
-                  animate={!isLoading ? { y: 0 } : {}}
-                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                  className="font-condensed uppercase text-[15vw] md:text-[10.5vw] lg:text-[9vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/55 bg-clip-text text-transparent"
-                >
-                  SOFTWARE
-                </motion.div>
-              </div>
-              <div className="overflow-hidden pb-[0.08em] -mb-[0.08em]">
-                <motion.div
-                  initial={{ y: "100%" }}
-                  animate={!isLoading ? { y: 0 } : {}}
-                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.28 }}
-                  className="font-condensed uppercase text-[15vw] md:text-[10.5vw] lg:text-[9vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/55 bg-clip-text text-transparent"
-                  style={{ animationDelay: "0.5s" }}
-                >
-                  ENGINEER
-                </motion.div>
-              </div>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.46 }}
-              className="text-base md:text-lg font-body font-light text-gray-400 max-w-lg mx-auto mb-12 leading-relaxed pointer-events-auto"
-            >
-              Building secure banking microservices — Java, Spring Boot, Kafka — for platforms that move real money.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={!isLoading ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.45, delay: 0.54 }}
-              className="flex flex-wrap items-center justify-center gap-6 pointer-events-auto"
-            >
-              <MagneticButton>
-                <a
-                  href="#projects"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const target = document.getElementById('projects');
-                    if (target) {
-                      target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="group relative inline-flex items-center justify-center gap-4 px-8 py-3 w-full sm:w-auto bg-white text-black font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
-                >
-                  {/* White glow pulse on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-emerald-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="relative z-10 flex items-center gap-2 text-black">
-                    View Projects <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </a>
-              </MagneticButton>
-              <MagneticButton>
-                <a
-                  href="#contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const target = document.getElementById('contact');
-                    if (target) {
-                      target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="group relative inline-flex items-center justify-center gap-4 px-8 py-3 w-full sm:w-auto border border-white/20 text-white font-bold text-xs tracking-widest uppercase overflow-hidden transition-all hover:border-emerald-500/40 hover:bg-emerald-500/5"
-                >
-                  {/* Gradient border shine */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
-                  <span className="relative z-10">Contact Me</span>
-                </a>
-              </MagneticButton>
-            </motion.div>
-
-          </div>
-
-          {/* Stat bar — live experience counter anchors three quiet facts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
-          >
-            <ExperienceTimer startDate={CAREER_START} />
-            <div>
-              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">30<span className="text-emerald-400">+</span></div>
-              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Services in estate</div>
-              <div className="font-mono text-xs text-white/30 mt-1.5">Spring Boot · Kafka</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">3</div>
-              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Banking channels</div>
-              <div className="font-mono text-xs text-white/30 mt-1.5">Retail · Mobile · Corporate</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">PCI</div>
-              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40 mt-2">Compliance-first</div>
-              <div className="font-mono text-xs text-white/30 mt-1.5">PCI-DSS · SOX audited</div>
+        <div className="flex flex-col items-center text-center">
+          <motion.div {...reveal(0.1)} className="mb-8 pointer-events-auto">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 border border-white/10 bg-white/[0.04] rounded-full">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+              <span className="text-xs font-body text-white/75">Open to opportunities</span>
             </div>
           </motion.div>
 
+          <h1 className="mb-8 pointer-events-auto">
+            <motion.span {...reveal(0.16)} className="block mb-4 text-sm md:text-base font-body font-medium tracking-[0.2em] uppercase text-white/75">
+              Achyuth KP <span className="text-emerald-400" aria-hidden="true">·</span> Software Engineer
+            </motion.span>
+            {["Systems that", "move money."].map((line, i) => (
+              <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
+                <motion.span
+                  initial={{ y: "100%" }}
+                  animate={!isLoading ? { y: 0 } : {}}
+                  transition={{ duration: 0.7, ease: HERO_EASE, delay: 0.2 + i * 0.08 }}
+                  className="block font-condensed uppercase text-[13vw] md:text-[9vw] lg:text-[7.6vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
+                >
+                  {line}
+                </motion.span>
+              </span>
+            ))}
+          </h1>
+
+          <motion.p
+            {...reveal(0.46)}
+            className="text-base md:text-lg font-body font-light text-white/70 max-w-xl mx-auto mb-12 leading-relaxed pointer-events-auto"
+          >
+            Five years building secure banking microservices in Java, Spring Boot, and Kafka —
+            maker-checker controls, card tokenization, and MFA for retail, mobile, and corporate channels.
+          </motion.p>
+
+          <motion.div {...reveal(0.54)} className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pointer-events-auto">
+            <button
+              type="button"
+              onClick={() => scrollToSection("projects")}
+              className="group inline-flex items-center justify-center gap-2 px-8 py-3 w-full sm:w-auto bg-white text-black font-semibold text-sm transition-colors hover:bg-emerald-100"
+            >
+              See the work <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("contact")}
+              className="inline-flex items-center justify-center px-8 py-3 w-full sm:w-auto border border-white/25 text-white font-semibold text-sm transition-colors hover:border-emerald-400/60 hover:bg-emerald-500/5"
+            >
+              Get in touch
+            </button>
+          </motion.div>
         </div>
+
+        {/* Stat bar — live experience counter anchors three quiet facts */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
+        >
+          <ExperienceTimer startDate={CAREER_START} />
+          {STATS.map((stat) => (
+            <div key={stat.label}>
+              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">
+                {stat.value}
+                {stat.suffix && <span className="text-emerald-400">{stat.suffix}</span>}
+              </div>
+              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/60 mt-2">{stat.label}</div>
+              <div className="font-mono text-xs text-white/50 mt-1.5">{stat.detail}</div>
+            </div>
+          ))}
+        </motion.div>
       </motion.div>
 
-      {/* Simple Line Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={!isLoading ? { opacity: 1 } : {}}
         transition={{ delay: 0.8, duration: 0.5 }}
         className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[1px] bg-gradient-to-b from-transparent to-white/20"
+        aria-hidden="true"
       />
     </section>
   );

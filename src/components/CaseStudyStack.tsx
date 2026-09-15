@@ -1,6 +1,8 @@
-import { useRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
+import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
+import TotpDemo from "./case-studies/TotpDemo";
 
 // Shared diagram choreography: parent staggers, items rise in
 const stackVariants = {
@@ -14,9 +16,9 @@ const itemVariants = {
 
 /**
  * Sticky stacking case-study cards (Harrison Wheeler-style).
- * Pure CSS `position: sticky` — each card pins below the nav with a small
- * staggered offset so previous cards peek out above as the next slides over.
- * No scroll-jacking, no animation library; works on mobile untouched.
+ * Pure CSS `position: sticky` on large, tall-enough screens — each card pins below the nav
+ * with a small staggered offset so previous cards peek out above as the next slides over.
+ * Elsewhere they are a plain vertical list. No scroll-jacking.
  */
 
 // ── Diagram building blocks ──────────────────────────────────────────
@@ -28,20 +30,11 @@ const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?
   </motion.div>
 );
 
-const Arrow = ({ down = false }: { down?: boolean }) => {
-  const phase = useRef(Math.random() * 1.6).current;
-  return (
-    <motion.div variants={itemVariants} className={`shrink-0 ${down ? "my-0.5" : ""}`} aria-hidden="true">
-      <motion.span
-        className="block text-emerald-500/70 font-mono text-sm motion-reduce:animate-none"
-        animate={down ? { opacity: [0.35, 1, 0.35], y: [0, 2, 0] } : { opacity: [0.35, 1, 0.35], x: [0, 2, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: phase }}
-      >
-        {down ? "↓" : "→"}
-      </motion.span>
-    </motion.div>
-  );
-};
+const Arrow = ({ down = false }: { down?: boolean }) => (
+  <motion.div variants={itemVariants} className={`shrink-0 ${down ? "my-0.5" : ""}`} aria-hidden="true">
+    <span className="block text-emerald-500/80 font-mono text-sm">{down ? "↓" : "→"}</span>
+  </motion.div>
+);
 
 const Row = ({ children }: { children: ReactNode }) => (
   <motion.div variants={itemVariants} className="flex items-center justify-center gap-2 flex-wrap">{children}</motion.div>
@@ -52,13 +45,7 @@ const Bus = ({ label }: { label: string }) => (
     variants={itemVariants}
     className="w-full max-w-[280px] mx-auto rounded bg-emerald-500/[0.06] border border-emerald-500/35 border-dashed px-3 py-1.5 text-center"
   >
-    <motion.span
-      className="font-mono text-[10px] md:text-[11px] text-emerald-300/80 tracking-widest uppercase"
-      animate={{ opacity: [0.65, 1, 0.65] }}
-      transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-    >
-      {label}
-    </motion.span>
+    <span className="font-mono text-[10px] md:text-[11px] text-emerald-300/90 tracking-widest uppercase">{label}</span>
   </motion.div>
 );
 
@@ -88,28 +75,8 @@ const DIAGRAMS: Record<string, ReactNode> = {
       <Row><Node label="30+ services" /><Node label="PostgreSQL" /><Node label="Redis" /></Row>
     </Stack>
   ),
-  "maker-checker-authorization": (
-    <Stack>
-      <Row><Node label="Maker" sub="initiates" /><Arrow /><Node label="Pending" sub="queued" /><Arrow /><Node label="Checker" sub="approves" /></Row>
-      <Arrow down />
-      <Node label="Dual-approval gate" sub="PCI-DSS / SOX" wide />
-      <Arrow down />
-      <Node label="Core banking" sub="transaction posted" />
-    </Stack>
-  ),
-  "totp-authentication-system": (
-    <Stack>
-      <Row>
-        {["4", "8", "2", "9", "1", "7"].map((d, i) => (
-          <motion.div key={i} variants={itemVariants} className="w-8 h-10 md:w-9 md:h-11 rounded-md bg-white/[0.05] border border-white/20 flex items-center justify-center font-mono text-base md:text-lg text-emerald-100">{d}</motion.div>
-        ))}
-      </Row>
-      <Arrow down />
-      <Row><Node label="Auth service" sub="RFC 6238" /><Arrow /><Node label="Redis" sub="replay check" /></Row>
-      <Arrow down />
-      <Node label="✓ Approved on device" sub="push notification" />
-    </Stack>
-  ),
+  "maker-checker-authorization": <MakerCheckerDemo />,
+  "totp-authentication-system": <TotpDemo />,
   "card-tokenization": (
     <Stack>
       <motion.div variants={itemVariants} className="w-44 md:w-52 rounded-xl bg-white/[0.05] border border-white/20 p-3 text-left">
@@ -162,17 +129,18 @@ const DIAGRAMS: Record<string, ReactNode> = {
 
 interface StackMeta {
   headline: string;
-  gradient?: string; // deprecated — panels share one blueprint surface
+  /** Diagram is a hands-on demo rather than a static drawing */
+  interactive?: boolean;
 }
 
 const META: Record<string, StackMeta> = {
-  "corporate-banking-microservices": { headline: "Three channels. One platform. Hundreds of corporates.", gradient: undefined },
-  "maker-checker-authorization": { headline: "Four eyes on every transaction", gradient: undefined },
-  "totp-authentication-system": { headline: "Proving it's really you, every time", gradient: undefined },
-  "card-tokenization": { headline: "Card numbers that never touch disk", gradient: undefined },
-  "video-kyc-onboarding": { headline: "KYC without the branch visit", gradient: undefined },
-  "llm-banking-chatbot": { headline: "A banker that answers at 3 AM", gradient: undefined },
-  "elk-observability-rollout": { headline: "Every log, one search bar", gradient: undefined },
+  "corporate-banking-microservices": { headline: "Three channels. One platform. Hundreds of corporates." },
+  "maker-checker-authorization": { headline: "Four eyes on every transaction", interactive: true },
+  "totp-authentication-system": { headline: "Proving it's really you, every time", interactive: true },
+  "card-tokenization": { headline: "Card numbers that never touch disk" },
+  "video-kyc-onboarding": { headline: "KYC without the branch visit" },
+  "llm-banking-chatbot": { headline: "A banker that answers at 3 AM" },
+  "elk-observability-rollout": { headline: "Every log, one search bar" },
 };
 
 // ── Card ─────────────────────────────────────────────────────────────
@@ -181,34 +149,41 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
   const meta = META[study.slug];
   const diagram = DIAGRAMS[study.slug];
   const textFirst = index % 2 === 0;
-  const headlineTint = "from-white to-white/70";
 
   return (
+    // Stacking only where a whole card fits on screen. On phones and short laptop screens the
+    // cards scroll normally, so the next card never covers the bottom (or the interactive demos).
     <div
-      className="sticky"
+      className="relative lg:[@media(min-height:820px)]:sticky"
       style={{ top: `calc(5.75rem + ${index * 1.1}rem)`, zIndex: index + 1 }}
     >
       <article
         className="rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden mb-8"
         style={{ background: `rgb(${10 + index * 3} ${10 + index * 3} ${13 + index * 3})` }}
       >
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center p-8 md:p-14 lg:p-20 lg:min-h-[70vh]">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center p-7 md:p-12 lg:p-16 lg:min-h-[70vh]">
           {/* Text side */}
           <div className={textFirst ? "" : "lg:order-2"}>
             <div className="flex items-center gap-3 mb-6">
-              <span className="font-mono text-[11px] text-white/40">{String(index + 1).padStart(2, "0")}</span>
-              <span className="w-6 h-px bg-white/20" aria-hidden="true" />
-              <span className="text-[11px] font-body font-medium tracking-[0.25em] uppercase text-white/40">{study.category}</span>
+              <span className="font-mono text-xs text-white/60">{String(index + 1).padStart(2, "0")}</span>
+              <span className="w-6 h-px bg-white/25" aria-hidden="true" />
+              <span className="text-xs font-body font-medium tracking-[0.2em] uppercase text-white/60">{study.title}</span>
             </div>
-            <h3 className={`font-condensed text-4xl md:text-6xl lg:text-7xl uppercase leading-[0.95] tracking-wide bg-gradient-to-b ${headlineTint} bg-clip-text text-transparent mb-6`}>
+            <h3 className="font-condensed text-4xl md:text-5xl lg:text-6xl uppercase leading-[0.95] tracking-wide bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent mb-8">
               {meta?.headline ?? study.title}
             </h3>
-            <p className="text-base md:text-lg font-body font-light text-white/60 leading-relaxed max-w-md mb-6">
-              {study.description}
-            </p>
-            <p className="text-sm font-body font-light text-white/45 leading-relaxed max-w-md mb-8">
-              <span className="text-emerald-400/80">Outcome — </span>{study.outcome}.
-            </p>
+            <dl className="space-y-4 max-w-lg mb-8">
+              {[
+                { term: "Problem", detail: study.problem },
+                { term: "Approach", detail: study.solution },
+                { term: "Outcome", detail: study.outcome },
+              ].map(({ term, detail }) => (
+                <div key={term} className="grid grid-cols-[5.5rem_1fr] gap-4 items-baseline">
+                  <dt className="text-xs font-body font-medium tracking-[0.12em] uppercase text-emerald-400/90">{term}</dt>
+                  <dd className="text-[15px] font-body font-light text-white/75 leading-relaxed">{detail}.</dd>
+                </div>
+              ))}
+            </dl>
             <div className="flex flex-wrap gap-2">
               {study.tags.map((tag) => (
                 <span key={tag} className="px-3 py-1 text-[11px] font-body font-light text-white/60 border border-white/15 rounded-full">
@@ -218,13 +193,18 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
             </div>
           </div>
 
-          {/* Visual side — architecture diagram on a color panel */}
+          {/* Visual side — architecture diagram, or a hands-on demo */}
           <div className={textFirst ? "" : "lg:order-1"}>
             <div className="relative rounded-2xl border border-white/10 bg-[#101013] p-6 md:p-10 flex items-center justify-center min-h-[300px] md:min-h-[380px] shadow-2xl overflow-hidden">
               {/* Faint emerald bloom + blueprint grid — same surface on every card */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.10),transparent_65%)] pointer-events-none" aria-hidden="true" />
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" aria-hidden="true" />
-              <div className="relative z-10 w-full flex items-center justify-center">{diagram}</div>
+              {meta?.interactive && (
+                <span className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-full border border-emerald-400/40 bg-emerald-400/[0.08] text-[11px] font-body font-medium text-emerald-200">
+                  Try it
+                </span>
+              )}
+              <div className="relative z-10 w-full flex items-center justify-center pt-6 md:pt-0">{diagram}</div>
             </div>
           </div>
         </div>

@@ -27,8 +27,7 @@ const AboutMeSection = () => {
             <div className="max-w-7xl mx-auto relative z-10">
                 <SectionHeader
                     label="About"
-                    titleMain="The Mind Behind"
-                    titleAccent="the Machine"
+                    title="Correctness isn't negotiable when the software moves money"
                     align="left"
                 />
 
@@ -42,7 +41,7 @@ const AboutMeSection = () => {
                             for hundreds of corporate clients.
                         </motion.p>
                         <motion.p {...fadeUp} transition={{ duration: 0.5, delay: 0.08 }}
-                            className="text-base md:text-lg font-body font-light text-white/55 leading-relaxed max-w-2xl">
+                            className="text-base md:text-lg font-body font-light text-white/70 leading-relaxed max-w-2xl">
                             That means work where correctness isn't negotiable: dual-approval
                             controls on financial transactions, card tokenization for Mastercard
                             and Visa, TOTP authentication, and the observability that keeps a
@@ -51,7 +50,7 @@ const AboutMeSection = () => {
                             platform and client to Cognizant.
                         </motion.p>
                         <motion.p {...fadeUp} transition={{ duration: 0.5, delay: 0.16 }}
-                            className="text-base md:text-lg font-body font-light text-white/55 leading-relaxed max-w-2xl">
+                            className="text-base md:text-lg font-body font-light text-white/70 leading-relaxed max-w-2xl">
                             Lately the interesting problems sit where banking meets AI —
                             LLM-powered chatbots that verify who they're talking to, and
                             real-time Video KYC over WebRTC. This site is my sketchbook
@@ -74,7 +73,7 @@ const AboutMeSection = () => {
                         className="lg:col-span-2 border-t border-white/10">
                         {FACTS.map((fact) => (
                             <div key={fact.term} className="grid grid-cols-[7.5rem_1fr] gap-4 py-4 border-b border-white/10 items-baseline">
-                                <dt className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/40">{fact.term}</dt>
+                                <dt className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/60">{fact.term}</dt>
                                 <dd className="text-sm font-body font-light text-white/75 leading-relaxed">{fact.detail}</dd>
                             </div>
                         ))}

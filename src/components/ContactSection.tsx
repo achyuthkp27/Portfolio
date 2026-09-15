@@ -1,9 +1,8 @@
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { Mail, Send, Linkedin, Github, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
-import MagneticButton from "./ui/MagneticButton";
 import { SectionHeader } from "./ui/SectionHeader";
 
 
@@ -16,7 +15,6 @@ const contactFormSchema = z.object({
 
 const ContactSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -91,26 +89,11 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent group/contact" ref={ref}>
-      {/* Dynamic Cursor Spotlight Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover/contact:opacity-100 transition-opacity duration-1000 pointer-events-none z-0 will-change-transform"
-           style={{
-             background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.03) 0%, transparent 40%)'
-           }} 
-           onMouseMove={(e) => {
-             const rect = e.currentTarget.getBoundingClientRect();
-             const x = ((e.clientX - rect.left) / rect.width) * 100;
-             const y = ((e.clientY - rect.top) / rect.height) * 100;
-             e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
-             e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
-           }}
-      />
-
+    <section id="contact" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
       <div className="max-w-7xl mx-auto relative z-10">
         <SectionHeader 
           label="Contact"
-          titleMain="Let's"
-          titleAccent="Talk"
+          title="Hiring for backend or banking platform work?"
           description="Recruiting, engineering roles, or a systems question — email gets the fastest response, usually within a day."
           align="left"
         />
@@ -130,7 +113,7 @@ const ContactSection = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ x: 6, scale: 1.01 }}
-                className="flex items-center gap-5 p-5 md:p-7 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm hover:bg-emerald-500/[0.04] hover:border-emerald-500/20 transition-all duration-500 group/item relative overflow-hidden"
+                className="flex items-center gap-5 p-5 md:p-7 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-emerald-500/[0.04] hover:border-emerald-500/20 transition-all duration-500 group/item relative overflow-hidden"
               >
                 {/* Subtle background glow on hover */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.06] to-transparent opacity-0 group-hover/item:opacity-100 blur-xl transition-opacity duration-700 pointer-events-none" />
@@ -139,12 +122,12 @@ const ContactSection = () => {
                 <div className="absolute left-0 top-[20%] bottom-[20%] w-[2px] rounded-full bg-emerald-500/0 group-hover/item:bg-emerald-500/60 group-hover/item:shadow-[0_0_8px_rgba(16,185,129,0.4)] transition-all duration-500" />
                 
                 {/* Icon container with glow */}
-                <div className="relative w-12 h-12 rounded-lg flex items-center justify-center border border-white/[0.08] bg-white/[0.03] text-white/30 group-hover/item:text-emerald-400 group-hover/item:border-emerald-500/30 group-hover/item:bg-emerald-500/[0.08] group-hover/item:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-500">
+                <div className="relative w-12 h-12 rounded-lg flex items-center justify-center border border-white/[0.08] bg-white/[0.03] text-white/60 group-hover/item:text-emerald-400 group-hover/item:border-emerald-500/30 group-hover/item:bg-emerald-500/[0.08] group-hover/item:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-500">
                    <item.icon className="w-5 h-5" />
                 </div>
                 
                 <div className="flex-1 relative z-10">
-                  <span className="text-[10px] font-body font-medium text-white/30 uppercase tracking-[0.25em] group-hover/item:text-emerald-400/60 transition-colors duration-500">
+                  <span className="text-[10px] font-body font-medium text-white/60 uppercase tracking-[0.2em] group-hover/item:text-emerald-300 transition-colors duration-500">
                     {item.label}
                   </span>
                   <p className="text-white/80 font-display text-lg md:text-xl font-semibold tracking-tight group-hover/item:text-white transition-colors duration-300">{item.value}</p>
@@ -163,14 +146,14 @@ const ContactSection = () => {
           <div className="lg:col-span-3 min-w-0">
             <form
               onSubmit={handleSubmit}
-              className="relative p-6 md:p-10 border border-white/10 bg-black/60 backdrop-blur-xl rounded-2xl overflow-hidden group/form shadow-2xl"
+              className="relative p-6 md:p-10 border border-white/10 bg-[#0a0a0a]/90 rounded-2xl overflow-hidden group/form shadow-2xl"
             >
               <div className="absolute inset-0 grid-pattern opacity-[0.03] pointer-events-none" />
               
               <div className="space-y-12 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="group">
-                    <label htmlFor="name" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                    <label htmlFor="name" className="block text-[11px] font-body font-medium text-white/65 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       Name
                     </label>
                     <input
@@ -186,7 +169,7 @@ const ContactSection = () => {
                       aria-required="true"
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? "name-error" : undefined}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/45 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       placeholder="Your name"
                     />
                     {errors.name && (
@@ -197,7 +180,7 @@ const ContactSection = () => {
                   </div>
 
                   <div className="group">
-                    <label htmlFor="email" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                    <label htmlFor="email" className="block text-[11px] font-body font-medium text-white/65 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                       Email
                     </label>
                     <input
@@ -213,7 +196,7 @@ const ContactSection = () => {
                       aria-required="true"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] transition-all duration-500 placeholder:text-white/45 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       placeholder="you@example.com"
                     />
                     {errors.email && (
@@ -225,7 +208,7 @@ const ContactSection = () => {
                 </div>
 
                 <div className="group">
-                  <label htmlFor="message" className="block text-[11px] font-body font-medium text-white/40 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
+                  <label htmlFor="message" className="block text-[11px] font-body font-medium text-white/65 uppercase tracking-[0.2em] mb-4 group-focus-within:text-emerald-400 transition-colors">
                     Message
                   </label>
                   <textarea
@@ -241,7 +224,7 @@ const ContactSection = () => {
                     aria-invalid={!!errors.message}
                     aria-describedby={errors.message ? "message-error" : undefined}
                     rows={6}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/25 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-5 py-4 text-white font-display focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.1)] resize-none transition-all duration-500 placeholder:text-white/45 aria-[invalid=true]:border-red-500/50 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                     placeholder="What can I help with?"
                   />
                   {errors.message && (

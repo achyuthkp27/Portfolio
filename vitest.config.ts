@@ -8,6 +8,7 @@ export default defineConfig({
         globals: true,
         environment: 'jsdom',
         setupFiles: './src/test/setup.ts',
+        include: ['src/**/*.{test,spec}.{ts,tsx}'],
         css: true,
         coverage: {
             provider: 'v8',
@@ -24,7 +25,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(import.meta.dirname, './src'),
         },
     },
 });

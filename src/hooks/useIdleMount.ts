@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
  * Defers mounting of expensive components until the browser is idle or
  * the user interacts — whichever comes first.
  *
- * Replaces the copy-pasted idle-mount pattern that was in App.tsx,
- * Hero.tsx, and SpaceBackground.tsx.
+ * Replaces the copy-pasted idle-mount pattern that was in App.tsx
+ * and Hero.tsx.
  *
  * @param shouldMount  – gate condition (e.g. `!isLoading && !isMobile`)
  * @param delay        – ms to wait before scheduling an idle callback (default 8000)

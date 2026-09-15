@@ -15,6 +15,13 @@ export interface GitHubRepo {
   default_branch: string;
 }
 
+export type RepoDetailsResult =
+  | { status: "ok"; repo: GitHubRepo; fromSnapshot: boolean }
+  | { status: "not-found" }
+  | { status: "unavailable" };
+
+const isAbort = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
+
 /** Read a cached value from localStorage if it hasn't expired. */
 function readCache<T>(key: string): T | null {
   try {
@@ -40,44 +47,63 @@ function writeCache<T>(key: string, data: T): void {
   }
 }
 
+let snapshotPromise: Promise<GitHubRepo[]> | null = null;
+
+/** Repos saved at build time (scripts/snapshot-github.mjs). Empty when there is no snapshot. */
+export function loadSnapshot(): Promise<GitHubRepo[]> {
+  snapshotPromise ??= fetch(`${import.meta.env.BASE_URL}data/github.json`)
+    .then((res) => (res.ok ? res.json() : { repos: [] }))
+    .then((body: { repos?: GitHubRepo[] }) => (Array.isArray(body.repos) ? body.repos : []))
+    .catch(() => []);
+  return snapshotPromise;
+}
+
+/** Test hook: forget the memoized snapshot. */
+export const resetSnapshotForTests = () => {
+  snapshotPromise = null;
+};
+
 export async function fetchLatestRepositories(limit: number = 6, signal?: AbortSignal): Promise<GitHubRepo[]> {
   const cacheKey = `gh_repos_${limit}`;
   const cached = readCache<GitHubRepo[]>(cacheKey);
   if (cached) return cached;
 
   try {
-    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`, { signal });
-    if (!res.ok) {
-      throw new Error("Failed to fetch repositories.");
-    }
-    const data = await res.json() as GitHubRepo[];
+    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`, {
+      signal,
+    });
+    if (!res.ok) throw new Error(`GitHub responded ${res.status}`);
+    const data = (await res.json()) as GitHubRepo[];
     writeCache(cacheKey, data);
     return data;
   } catch (error) {
-    if (!(error instanceof DOMException && error.name === "AbortError")) {
-      console.error("[GitHub API] Error fetching repos:", error);
-    }
-    return [];
+    if (isAbort(error)) return [];
+    // Rate-limited or offline: fall back to the build-time snapshot
+    return (await loadSnapshot()).slice(0, limit);
   }
 }
 
-export async function fetchRepositoryDetails(repoName: string, signal?: AbortSignal): Promise<GitHubRepo | null> {
+export async function fetchRepositoryDetails(repoName: string, signal?: AbortSignal): Promise<RepoDetailsResult> {
   const cacheKey = `gh_detail_${repoName}`;
   const cached = readCache<GitHubRepo>(cacheKey);
-  if (cached) return cached;
+  if (cached) return { status: "ok", repo: cached, fromSnapshot: false };
+
+  const fromSnapshot = async (): Promise<RepoDetailsResult | null> => {
+    const repo = (await loadSnapshot()).find((r) => r.name.toLowerCase() === repoName.toLowerCase());
+    return repo ? { status: "ok", repo, fromSnapshot: true } : null;
+  };
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}`, { signal });
-    if (!res.ok) return null;
-    const data = await res.json() as GitHubRepo;
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${encodeURIComponent(repoName)}`, {
+      signal,
+    });
+    if (res.status === 404) return { status: "not-found" };
+    if (!res.ok) return (await fromSnapshot()) ?? { status: "unavailable" };
+    const data = (await res.json()) as GitHubRepo;
     writeCache(cacheKey, data);
-    return data;
+    return { status: "ok", repo: data, fromSnapshot: false };
   } catch (error) {
-    if (!(error instanceof DOMException && error.name === "AbortError")) {
-      console.error("[GitHub API] Error fetching repository details:", error);
-    }
-    return null;
+    if (isAbort(error)) return { status: "unavailable" };
+    return (await fromSnapshot()) ?? { status: "unavailable" };
   }
 }
-
-

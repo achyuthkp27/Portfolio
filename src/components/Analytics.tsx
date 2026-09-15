@@ -1,30 +1,21 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAnalytics } from '@/lib/analytics';
-import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useAnalytics } from "@/lib/analytics";
 
+/** Sends a PostHog pageview per route. Renders nothing; PostHog stays off without a key. */
 const Analytics = () => {
-    const location = useLocation();
-    const posthog = useAnalytics();
+  const location = useLocation();
+  const posthog = useAnalytics();
 
-    useEffect(() => {
-        if (typeof window !== 'undefined' && posthog) {
-            posthog.capture('$pageview', {
-                $current_url: window.location.href,
-                $pathname: location.pathname,
-            });
-        }
-    }, [location, posthog]);
+  useEffect(() => {
+    if (!posthog) return;
+    posthog.capture("$pageview", {
+      $current_url: window.location.href,
+      $pathname: location.pathname,
+    });
+  }, [location, posthog]);
 
-    return (
-        <>
-            <VercelAnalytics />
-            <SpeedInsights />
-        </>
-    );
+  return null;
 };
 
-
 export default Analytics;
-

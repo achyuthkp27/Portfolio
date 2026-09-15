@@ -1,36 +1,49 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { OPEN_TERMINAL_EVENT } from "@/lib/shortcuts";
 
 const TerminalOverlay = lazy(() => import("./TerminalOverlay"));
 
+const isTyping = () => {
+  const el = document.activeElement;
+  return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || (el as HTMLElement | null)?.isContentEditable;
+};
+
+/** Opens the terminal with the ` key, by typing ">_", or from the nav badge / command menu. */
 export default function TerminalTrigger() {
   const [isRequested, setIsRequested] = useState(false);
 
   useEffect(() => {
     let keyBuffer = "";
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
-      
+      if (isTyping() || e.metaKey || e.ctrlKey || e.altKey) return;
+
       if (e.key.length === 1) {
-        keyBuffer += e.key;
-        if (keyBuffer.length > 2) keyBuffer = keyBuffer.slice(-2);
+        keyBuffer = (keyBuffer + e.key).slice(-2);
       }
-      
+
       if (keyBuffer === ">_" || e.key === "`") {
         e.preventDefault();
         setIsRequested(true);
         keyBuffer = "";
       }
     };
-    
+    const handleOpen = () => setIsRequested(true);
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener(OPEN_TERMINAL_EVENT, handleOpen);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener(OPEN_TERMINAL_EVENT, handleOpen);
+    };
   }, []);
+
+  const handleClose = useCallback(() => setIsRequested(false), []);
 
   if (!isRequested) return null;
 
   return (
     <Suspense fallback={null}>
-      <TerminalOverlay forceOpen={true} onClose={() => setIsRequested(false)} />
+      <TerminalOverlay forceOpen={true} onClose={handleClose} />
     </Suspense>
   );
 }

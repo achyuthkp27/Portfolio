@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  fetchLatestRepositories,
-  fetchRepositoryDetails,
-} from "../github";
+import { fetchLatestRepositories, fetchRepositoryDetails, resetSnapshotForTests } from "../github";
 
-// Clear localStorage cache before each test
 beforeEach(() => {
   localStorage.clear();
   vi.restoreAllMocks();
+  resetSnapshotForTests();
 });
 
 const mockRepo = {
@@ -24,81 +21,90 @@ const mockRepo = {
   default_branch: "main",
 };
 
+const snapshotRepo = { ...mockRepo, id: 2, name: "snapshot-repo" };
+
+const json = (body: unknown, init: { ok?: boolean; status?: number } = {}) =>
+  ({ ok: init.ok ?? true, status: init.status ?? 200, json: async () => body }) as Response;
+
+/** Routes the live API and the build-time snapshot to separate responses. */
+const mockFetch = (api: () => Promise<Response>, snapshot: () => Promise<Response>) =>
+  vi.spyOn(globalThis, "fetch").mockImplementation((input) =>
+    String(input).includes("data/github.json") ? snapshot() : api(),
+  );
+
 describe("fetchLatestRepositories", () => {
-  it("fetches repos from GitHub API", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => [mockRepo],
-    } as Response);
+  it("requests the most recently updated repos with the given page size", async () => {
+    const fetchSpy = mockFetch(async () => json([mockRepo]), async () => json({ repos: [] }));
 
     const repos = await fetchLatestRepositories(6);
 
     expect(repos).toEqual([mockRepo]);
-    expect(fetchSpy).toHaveBeenCalledWith(
-      expect.stringContaining("api.github.com/users/achyuthkp27/repos"),
-      expect.anything()
-    );
+    const url = new URL(String(fetchSpy.mock.calls[0][0]));
+    expect(url.pathname).toBe("/users/achyuthkp27/repos");
+    expect(url.searchParams.get("sort")).toBe("updated");
+    expect(url.searchParams.get("per_page")).toBe("6");
   });
 
   it("returns cached data on subsequent calls", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => [mockRepo],
-    } as Response);
+    const fetchSpy = mockFetch(async () => json([mockRepo]), async () => json({ repos: [] }));
 
     await fetchLatestRepositories(6);
     const repos = await fetchLatestRepositories(6);
 
     expect(repos).toEqual([mockRepo]);
-    expect(fetchSpy).toHaveBeenCalledTimes(1); // Only one fetch, second was cached
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("returns empty array on network error", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new Error("Network error"));
+  it("falls back to the build-time snapshot when rate-limited", async () => {
+    mockFetch(async () => json({}, { ok: false, status: 403 }), async () => json({ repos: [snapshotRepo, mockRepo] }));
 
-    const repos = await fetchLatestRepositories(6);
-
-    expect(repos).toEqual([]);
+    await expect(fetchLatestRepositories(1)).resolves.toEqual([snapshotRepo]);
   });
 
-  it("returns empty array on non-ok response", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: false,
-    } as Response);
+  it("falls back to the snapshot on a network error", async () => {
+    mockFetch(() => Promise.reject(new Error("Network error")), async () => json({ repos: [snapshotRepo] }));
 
-    const repos = await fetchLatestRepositories(6);
+    await expect(fetchLatestRepositories(6)).resolves.toEqual([snapshotRepo]);
+  });
 
-    expect(repos).toEqual([]);
+  it("returns an empty list when both GitHub and the snapshot are unavailable", async () => {
+    mockFetch(() => Promise.reject(new Error("Network error")), async () => json({}, { ok: false, status: 404 }));
+
+    await expect(fetchLatestRepositories(6)).resolves.toEqual([]);
   });
 });
 
 describe("fetchRepositoryDetails", () => {
   it("fetches single repo details", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockRepo,
-    } as Response);
+    mockFetch(async () => json(mockRepo), async () => json({ repos: [] }));
 
-    const repo = await fetchRepositoryDetails("test-repo");
-
-    expect(repo).toEqual(mockRepo);
+    await expect(fetchRepositoryDetails("test-repo")).resolves.toEqual({ status: "ok", repo: mockRepo, fromSnapshot: false });
   });
 
-  it("returns null on 404", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: false,
-    } as Response);
+  it("reports a real 404 as not found", async () => {
+    mockFetch(async () => json({}, { ok: false, status: 404 }), async () => json({ repos: [snapshotRepo] }));
 
-    const repo = await fetchRepositoryDetails("nonexistent");
+    await expect(fetchRepositoryDetails("nonexistent")).resolves.toEqual({ status: "not-found" });
+  });
 
-    expect(repo).toBeNull();
+  it("uses the snapshot when GitHub rate-limits the visitor", async () => {
+    mockFetch(async () => json({}, { ok: false, status: 403 }), async () => json({ repos: [snapshotRepo] }));
+
+    await expect(fetchRepositoryDetails("snapshot-repo")).resolves.toEqual({
+      status: "ok",
+      repo: snapshotRepo,
+      fromSnapshot: true,
+    });
+  });
+
+  it("reports unavailable, not missing, when rate-limited and the repo isn't in the snapshot", async () => {
+    mockFetch(async () => json({}, { ok: false, status: 403 }), async () => json({ repos: [] }));
+
+    await expect(fetchRepositoryDetails("test-repo")).resolves.toEqual({ status: "unavailable" });
   });
 
   it("caches successful responses", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockRepo,
-    } as Response);
+    const fetchSpy = mockFetch(async () => json(mockRepo), async () => json({ repos: [] }));
 
     await fetchRepositoryDetails("test-repo");
     await fetchRepositoryDetails("test-repo");
@@ -106,4 +112,3 @@ describe("fetchRepositoryDetails", () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
-

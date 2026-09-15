@@ -1,28 +1,20 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { useSmoothScroll } from "./ui/SmoothScroll";
 import { useState, useEffect, useRef } from "react";
-import { Menu, Download } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
-
-import Logo from "./ui/Logo";
-import MagneticButton from "./ui/MagneticButton";
+import { Download } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { hasKeyboardAndPointer, isMacPlatform, openCommandMenu } from "@/lib/shortcuts";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 const Navigation = () => {
-  const scrollTrackerRef = useRef<NodeJS.Timeout | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
-  const { lenis } = useSmoothScroll();
   const location = useLocation();
-  const navigate = useNavigate();
+  const scrollToSection = useSectionScroll();
   const isHomePage = location.pathname === "/" || location.pathname === "";
-
-  // Clear any in-flight scroll-tracking interval on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTrackerRef.current) clearInterval(scrollTrackerRef.current);
-    };
-  }, []);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(mobileMenuRef, isMobileMenuOpen);
 
   // Close mobile menu on Escape key
   useEffect(() => {
@@ -35,11 +27,18 @@ const Navigation = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobileMenuOpen]);
 
+  const [activeSection, setActiveSection] = useState("");
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
+    // Back in the hero, no section is current
+    if (latest < window.innerHeight * 0.5) setActiveSection("");
   });
 
-  const [activeSection, setActiveSection] = useState("");
+  const [shortcutHints, setShortcutHints] = useState<{ show: boolean; mod: string }>({ show: false, mod: "Ctrl" });
+
+  useEffect(() => {
+    setShortcutHints({ show: hasKeyboardAndPointer(), mod: isMacPlatform() ? "⌘" : "Ctrl" });
+  }, []);
 
   useEffect(() => {
     if (!isHomePage) {
@@ -101,95 +100,19 @@ const Navigation = () => {
     };
   }, [isHomePage]);
 
-  const scrollToTarget = (element: HTMLElement) => {
-    if (lenis) {
-      lenis.scrollTo(element, { duration: 1.2, offset: 0 });
-    } else {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Experience", href: "#experience" },
-    { label: "Projects", href: "#projects" },
-    { label: "Skills", href: "#skills" },
-    { label: "Education", href: "#education" },
-    { label: "Contact", href: "#contact" },
+    { label: "About", id: "about" },
+    { label: "Experience", id: "experience" },
+    { label: "Projects", id: "projects" },
+    { label: "Skills", id: "skills" },
+    { label: "Education", id: "education" },
+    { label: "Contact", id: "contact" },
   ];
 
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const targetId = href.replace("#", "");
+  // Buttons, not "#section" links: under HashRouter a real hash href is a route (and a 404).
+  const goToSection = (id: string) => {
     setIsMobileMenuOpen(false);
-
-    // Clear any existing scroll tracking interval to prevent conflicts if user clicks multiple links
-    if (scrollTrackerRef.current) {
-      clearInterval(scrollTrackerRef.current);
-      scrollTrackerRef.current = null;
-    }
-
-    // If we're NOT on the homepage, navigate there first, then scroll
-    if (!isHomePage) {
-      navigate("/");
-      setTimeout(() => {
-        const el = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 500);
-      return;
-    }
-
-    let targetElement = document.getElementById(targetId) || document.querySelector(`section#${targetId}`);
-
-    if (targetElement) {
-      // Start the initial smooth scroll animation
-      scrollToTarget(targetElement as HTMLElement);
-
-      // Track the ABSOLUTE document Y coordinate of the target.
-      // We only re-trigger the scroll if a lazy-loaded component above us
-      // mounts and changes its height, shifting the entire document layout.
-      let currentTargetY = targetElement.getBoundingClientRect().top + window.scrollY;
-      let scrollRetries = 0;
-
-      const poll = setInterval(() => {
-        // The placeholder might have been destroyed and replaced by the real section,
-        // so we must continually re-query the DOM element.
-        targetElement = document.querySelector(`section#${targetId}`) || document.getElementById(targetId);
-        
-        if (targetElement) {
-          const newY = targetElement.getBoundingClientRect().top + window.scrollY;
-          
-          // If the element's absolute position in the document shifted by more than 50px
-          // (meaning a layout shift occurred above it), we update the scroll target!
-          if (Math.abs(newY - currentTargetY) > 50) {
-            currentTargetY = newY;
-            scrollToTarget(targetElement as HTMLElement);
-          }
-        }
-
-        scrollRetries++;
-        if (scrollRetries >= 30) {
-          if (scrollTrackerRef.current) {
-            clearInterval(scrollTrackerRef.current);
-            scrollTrackerRef.current = null;
-          }
-        }
-      }, 200);
-
-      scrollTrackerRef.current = poll;
-
-      // If the user manually interacts with the scrollbar/wheel, stop tracking to avoid fighting them
-      const stopTracking = () => {
-        if (scrollTrackerRef.current) {
-          clearInterval(scrollTrackerRef.current);
-          scrollTrackerRef.current = null;
-        }
-      };
-      window.addEventListener('wheel', stopTracking, { once: true, passive: true });
-      window.addEventListener('touchstart', stopTracking, { once: true, passive: true });
-    }
+    scrollToSection(id);
   };
 
   return (
@@ -209,7 +132,7 @@ const Navigation = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: isScrolled ? 1 : 0 }}
           transition={{ duration: 0.4 }}
-          className="absolute inset-0 bg-black/60 backdrop-blur-xl border-b border-white/[0.06] pointer-events-none"
+          className="absolute inset-0 bg-black/85 border-b border-white/[0.06] pointer-events-none"
         >
           {/* Gradient shimmer line on bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
@@ -217,27 +140,19 @@ const Navigation = () => {
 
         <div className="max-w-[1800px] mx-auto flex items-center justify-between relative z-10">
           {/* Logo / Name */}
-          <motion.a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              if (lenis) {
-                lenis.scrollTo(0, { duration: 1.2 });
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            whileHover={{ scale: 1.05 }}
-            className="font-display text-lg font-bold tracking-tight text-white"
+          <button
+            type="button"
+            onClick={() => goToSection("top")}
+            className="font-display text-lg font-bold tracking-tight text-white hover:text-white/80 transition-colors"
           >
-            ACHYUTH<span className="opacity-50">.DEV</span>
-          </motion.a>
+            Achyuth KP
+          </button>
 
           {/* Desktop Nav — Pill-style active indicator */}
           <div className="hidden md:flex items-center relative">
             <ul className="flex items-center gap-1 p-1 bg-white/[0.03] border border-white/[0.06] rounded-full backdrop-blur-sm">
               {navItems.map((item, index) => {
-                const isActive = activeSection === item.href.substring(1);
+                const isActive = activeSection === item.id;
                 return (
                   <motion.li
                     key={item.label}
@@ -253,18 +168,18 @@ const Navigation = () => {
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
-                    <a
-                      href={item.href}
-                      onClick={(e) => handleScroll(e, item.href)}
-                      aria-current={isActive ? "true" : undefined}
-                      className={`relative z-10 block px-4 py-1.5 text-[11px] font-mono tracking-widest uppercase transition-colors rounded-full ${
+                    <button
+                      type="button"
+                      onClick={() => goToSection(item.id)}
+                      aria-current={isActive ? "location" : undefined}
+                      className={`relative z-10 block px-4 py-1.5 text-[13px] font-body font-medium transition-colors rounded-full ${
                         isActive
                           ? "text-white"
-                          : "text-white/40 hover:text-white/70"
+                          : "text-white/60 hover:text-white"
                       }`}
                     >
                       {item.label}
-                    </a>
+                    </button>
                   </motion.li>
                 );
               })}
@@ -273,40 +188,48 @@ const Navigation = () => {
 
           {/* Right side - CTA */}
           <div className="flex items-center gap-4">
+            {/* Quick-menu key — desktop with a real keyboard only */}
+            {shortcutHints.show && (
+              <button
+                type="button"
+                onClick={openCommandMenu}
+                title="Quick menu"
+                aria-label={`Open quick menu (${shortcutHints.mod === "⌘" ? "Command" : "Control"} K)`}
+                className="hidden lg:inline-flex items-center gap-1 h-8 px-2.5 rounded-md border border-white/15 bg-white/[0.03] font-body text-xs font-medium text-white/70 hover:text-white hover:border-white/30 transition-colors"
+              >
+                <span className={shortcutHints.mod === "⌘" ? "text-[13px] leading-none" : ""}>{shortcutHints.mod}</span>
+                <span>K</span>
+              </button>
+            )}
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
-              className="md:hidden text-white hover:opacity-70 transition-opacity font-mono text-xs tracking-widest uppercase"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              className="md:hidden text-white hover:opacity-70 transition-opacity font-body text-sm font-medium"
             >
-              {isMobileMenuOpen ? "CLOSE" : "MENU"}
+              {isMobileMenuOpen ? "Close" : "Menu"}
             </button>
 
-            <MagneticButton>
               <a
                 href={`${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
                 download="Achyuth_KP_Resume.pdf"
-                className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-white/70 hover:text-white transition-all px-4 py-2 hover:bg-white/5 rounded-full group relative overflow-hidden"
+                className="hidden md:flex items-center gap-2 text-[13px] font-body font-medium text-white/75 hover:text-white transition-colors px-4 py-2 hover:bg-white/5 rounded-full"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
-                <Download className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
-                <span className="relative z-10">RESUME</span>
+                <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Résumé</span>
               </a>
-            </MagneticButton>
 
-            <MagneticButton>
-              <a
-                href="#contact"
-                onClick={(e) => handleScroll(e, "#contact")}
-                className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-white/70 hover:text-white transition-all border border-white/10 hover:border-emerald-500/30 px-5 py-2 rounded-full hover:bg-emerald-500/5 group relative overflow-hidden"
+              <button
+                type="button"
+                onClick={() => goToSection("contact")}
+                className="hidden md:flex items-center text-[13px] font-body font-medium text-white hover:text-white transition-colors border border-white/20 hover:border-emerald-400/50 px-5 py-2 rounded-full hover:bg-emerald-500/5"
               >
-                {/* Shimmer sweep */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
-                <span className="relative z-10">Get in touch</span>
-              </a>
-            </MagneticButton>
+                <span>Get in touch</span>
+              </button>
           </div>
         </div>
       </motion.nav>
@@ -319,40 +242,43 @@ const Navigation = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
+            ref={mobileMenuRef}
             className="fixed inset-0 z-40 md:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
           >
-            <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl">
+            <div className="absolute inset-0 bg-black">
               <div className="flex flex-col items-center justify-center h-full gap-6">
                 {navItems.map((item, index) => (
-                  <motion.a
+                  <motion.button
+                    type="button"
                     key={item.label}
-                    href={item.href}
-                    onClick={(e) => handleScroll(e, item.href)}
+                    onClick={() => goToSection(item.id)}
                     initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
                     className={`text-3xl font-display font-semibold tracking-tight transition-colors ${
-                      activeSection === item.href.substring(1)
+                      activeSection === item.id
                         ? "text-white"
-                        : "text-white/40 hover:text-white"
+                        : "text-white/60 hover:text-white"
                     }`}
                   >
                     {item.label}
-                  </motion.a>
+                  </motion.button>
                 ))}
-                <motion.a
-                  href="#contact"
-                  aria-label="Hire Me"
-                  onClick={(e) => handleScroll(e, "#contact")}
+                <motion.button
+                  type="button"
+                  onClick={() => goToSection("contact")}
                   initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4, delay: 0.35 }}
-                  className="mt-6 px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase bg-white text-black hover:bg-emerald-400 transition-colors"
+                  className="mt-6 px-8 py-3 text-sm font-body font-semibold bg-white text-black hover:bg-emerald-100 transition-colors"
                 >
-                  Hire Me
-                </motion.a>
+                  Get in touch
+                </motion.button>
               </div>
             </div>
           </motion.div>

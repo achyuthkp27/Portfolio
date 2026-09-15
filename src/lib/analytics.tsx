@@ -19,7 +19,7 @@ export const initPostHog = async (): Promise<PostHogClient | null> => {
         });
         return posthogClient;
     } else {
-        console.log('[Analytics] PostHog telemetry disabled (no valid key provided). Running in stealth mode.');
+        if (import.meta.env.DEV) console.info('[Analytics] PostHog disabled: no VITE_POSTHOG_KEY set.');
         return null;
     }
 };

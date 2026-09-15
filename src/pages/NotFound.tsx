@@ -19,6 +19,7 @@ const NotFound = () => {
 
   // Glitch effect on the 404 text
   useEffect(() => {
+    let reset: ReturnType<typeof setTimeout> | undefined;
     const interval = setInterval(() => {
       const shouldGlitch = Math.random() > 0.7;
       if (shouldGlitch) {
@@ -31,10 +32,14 @@ const NotFound = () => {
           )
           .join("");
         setGlitchText(glitched);
-        setTimeout(() => setGlitchText("404"), 100);
+        clearTimeout(reset);
+        reset = setTimeout(() => setGlitchText("404"), 100);
       }
     }, 2000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(reset);
+    };
   }, []);
 
   // Auto-redirect countdown

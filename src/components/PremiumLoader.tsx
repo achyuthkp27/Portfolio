@@ -1,94 +1,77 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/context/LoadingContext";
 import { useMobile } from "@/hooks/useMobile";
-import { useLowEndDevice } from "@/hooks/useLowEndDevice";
+import { LOADER_WORDS } from "@/data/loader";
 
-// Word-flip sequence on load, ending on the name
-const words = ["Developer", "Engineer", "Creator", "Achyuth KP"];
+/**
+ * PROTECTED — the opening splash screen (word flip ending on the name).
+ * The site owner requires it on every visit, on every device. Do not remove it,
+ * skip it, or gate it behind mobile / low-end / reduced-motion checks.
+ * Guarded by src/components/__tests__/PremiumLoader.test.tsx and CLAUDE.md.
+ */
+
+const WORD_DURATION_MS = 280;
+const FINAL_WORD_HOLD_MS = 450;
+/** Safety net so the site can never stay covered. */
+const FALLBACK_UNLOCK_MS = 4000;
 
 const PremiumLoader = () => {
     const { isLoading, setIsLoading } = useLoading();
     const [index, setIndex] = useState(0);
     const isMobile = useMobile();
-    const isLowEnd = useLowEndDevice();
-    const [shouldSkipLoader, setShouldSkipLoader] = useState(false);
+    // Reduced motion keeps the splash, only swapping movement for a plain crossfade
+    const reduceMotion = useReducedMotion();
+    const useBlur = !isMobile && !reduceMotion;
+    const offsetY = reduceMotion ? 0 : 20;
+
+    // Word flip sequence
+    useEffect(() => {
+        if (index >= LOADER_WORDS.length - 1) return;
+        const timeout = setTimeout(() => setIndex((prev) => prev + 1), WORD_DURATION_MS);
+        return () => clearTimeout(timeout);
+    }, [index]);
+
+    // Hold the final word, then reveal the site
+    useEffect(() => {
+        if (index !== LOADER_WORDS.length - 1) return;
+        const timeout = setTimeout(() => setIsLoading(false), FINAL_WORD_HOLD_MS);
+        return () => clearTimeout(timeout);
+    }, [index, setIsLoading]);
 
     useEffect(() => {
-        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const narrowViewport = window.innerWidth < 768;
-        const lowEndDevice = isLowEnd === true;
-
-        if (narrowViewport || reduceMotion || lowEndDevice || isMobile) {
-            setShouldSkipLoader(true);
-            setIsLoading(false);
-        }
-    }, [isLowEnd, isMobile, setIsLoading]);
-
-    // Word Flip Animation Sequence
-    useEffect(() => {
-        if (shouldSkipLoader) return;
-        const wordDuration = 280;
-
-        if (index < words.length - 1) {
-            const timeout = setTimeout(() => {
-                setIndex((prev) => prev + 1);
-            }, wordDuration);
-            return () => clearTimeout(timeout);
-        }
-    }, [index, shouldSkipLoader]);
-
-    // Wait for the word sequence to finish. 3D modules are lazy-loaded after first paint.
-    useEffect(() => {
-        if (shouldSkipLoader) return;
-        if (index === words.length - 1) {
-            const timeout = setTimeout(() => {
-                setIsLoading(false);
-            }, 450);
-            return () => clearTimeout(timeout);
-        }
-    }, [index, setIsLoading, shouldSkipLoader]);
-
-
-
-    // Safety fallback: Force unlock after 6 seconds in case 3D hangs
-    useEffect(() => {
-        if (shouldSkipLoader) return;
-        const fallback = setTimeout(() => {
-            setIsLoading(false);
-        }, 4000);
+        const fallback = setTimeout(() => setIsLoading(false), FALLBACK_UNLOCK_MS);
         return () => clearTimeout(fallback);
-    }, [setIsLoading, shouldSkipLoader]);
-
-    if (shouldSkipLoader) {
-        return null;
-    }
-
-
+    }, [setIsLoading]);
 
     return (
         <AnimatePresence>
             {isLoading && (
                 <motion.div
+                    data-testid="splash-screen"
                     initial={{ opacity: 1 }}
-                    exit={{ y: "-100%" }}
+                    exit={reduceMotion ? { opacity: 0 } : { y: "-100%" }}
                     transition={{ duration: 0.45, ease: [0.76, 0, 0.24, 1] }}
                     className="fixed inset-0 z-[200] flex items-center justify-center bg-background"
+                    role="status"
+                    aria-label="Loading Achyuth KP's portfolio"
                 >
                     <div className="relative flex items-center justify-center">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={index}
-                                initial={index === 0 
-                                    ? { opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" } 
-                                    : { opacity: 0, y: 20, filter: isMobile ? undefined : "blur(10px)" }
+                                initial={
+                                    index === 0
+                                        ? { opacity: 1, y: 0, filter: useBlur ? "blur(0px)" : undefined }
+                                        : { opacity: 0, y: offsetY, filter: useBlur ? "blur(10px)" : undefined }
                                 }
-                                animate={{ opacity: 1, y: 0, filter: isMobile ? undefined : "blur(0px)" }}
-                                exit={{ opacity: 0, y: -20, filter: isMobile ? undefined : "blur(10px)" }}
+                                animate={{ opacity: 1, y: 0, filter: useBlur ? "blur(0px)" : undefined }}
+                                exit={{ opacity: 0, y: -offsetY, filter: useBlur ? "blur(10px)" : undefined }}
                                 transition={{ duration: 0.2 }}
-                                className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center leading-[1.2] pb-1"
+                                className="text-4xl md:text-6xl font-display font-bold text-gradient tracking-tight text-center leading-[1.2] pb-1 px-6"
+                                aria-hidden="true"
                             >
-                                {words[index]}
+                                {LOADER_WORDS[index]}
                             </motion.div>
                         </AnimatePresence>
                     </div>

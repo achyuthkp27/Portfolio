@@ -7,8 +7,6 @@ import { SectionHeader } from "./ui/SectionHeader";
 import CaseStudyStack from "./CaseStudyStack";
 
 const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   // Parse repo name into readable title
   const formattedTitle = project.name.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
 
@@ -20,8 +18,6 @@ const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number })
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, delay: 0.1 * index, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="group relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <Link to={`/project/${project.name}`} className="block relative z-10 w-full overflow-hidden">
         <div className="relative border-b border-white/5 py-10 md:py-16 px-4 md:px-8 transition-colors duration-700 group-hover:bg-white/[0.02]">
@@ -103,70 +99,54 @@ const ProjectsSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-  
+
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const location = useLocation();
 
   useEffect(() => {
-    if (isInView) {
-      const controller = new AbortController();
-      fetchLatestRepositories(6, controller.signal)
-        .then((data) => {
-          if (controller.signal.aborted) return;
-          setProjects(data);
-          setFilteredProjects(data);
-          
-          // Extract unique languages
-          const languages = new Set<string>();
-          data.forEach(repo => {
-            if (repo.language) languages.add(repo.language.toUpperCase());
-          });
-          setAvailableLanguages(Array.from(languages).sort());
-          
-          setIsLoading(false);
-        })
-        .catch(console.error);
-      return () => controller.abort();
-    }
+    if (!isInView) return;
+    const controller = new AbortController();
+    fetchLatestRepositories(6, controller.signal)
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setProjects(data);
+        setFilteredProjects(data);
+        const languages = new Set<string>();
+        data.forEach((repo) => {
+          if (repo.language) languages.add(repo.language.toUpperCase());
+        });
+        setAvailableLanguages(Array.from(languages).sort());
+      })
+      // Always clear the spinner, even when the request fails
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
+    return () => controller.abort();
   }, [isInView]);
 
   useEffect(() => {
-    if (activeFilter === "ALL") {
-      setFilteredProjects(projects);
-    } else {
-      setFilteredProjects(projects.filter(p => p.language?.toUpperCase() === activeFilter));
-    }
+    setFilteredProjects(activeFilter === "ALL" ? projects : projects.filter((p) => p.language?.toUpperCase() === activeFilter));
   }, [activeFilter, projects]);
 
   useEffect(() => {
-    if (!isLoading && projects.length > 0) {
-      const params = new URLSearchParams(location.search);
-      const scrollToSlug = params.get('scrollTo');
-
-      if (scrollToSlug) {
-        // Wait a tick for the DOM to fully paint the mapped project cards
-        setTimeout(() => {
-          const el = document.getElementById(`project-card-${scrollToSlug}`);
-          if (el) {
-            // Force native browser instant scroll jump, overriding Lenis
-            el.scrollIntoView({ behavior: 'instant', block: 'center' });
-          }
-        }, 100);
-      }
-    }
+    if (isLoading || projects.length === 0) return;
+    const scrollToSlug = new URLSearchParams(location.search).get("scrollTo");
+    if (!scrollToSlug) return;
+    // Wait a tick for the DOM to paint the project cards
+    const id = window.setTimeout(() => {
+      document.getElementById(`project-card-${scrollToSlug}`)?.scrollIntoView({ behavior: "instant", block: "center" });
+    }, 100);
+    return () => window.clearTimeout(id);
   }, [isLoading, projects, location.search]);
 
   return (
     <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[radial-gradient(ellipse_90%_55%_at_50%_20%,rgba(16,185,129,0.09),transparent_75%),linear-gradient(180deg,#000000_0%,#060e0a_14%,#0c1712_32%,#0a1a13_55%,#050d09_80%,#000000_100%)]" ref={ref}>
       <div className="max-w-screen-2xl mx-auto">
-        {/* Professional case studies — the real work */}
         <SectionHeader
           label="Selected work"
-          titleMain="Banking Platform"
-          titleAccent="Case Studies"
-          description="Systems designed, built, and shipped to production across five years of regulated banking platforms. Client specifics generalized."
-          align="left"
+          title="Seven systems from a regulated banking platform"
+          description="Client specifics are generalized. Two of them are interactive, so you can try the control instead of reading about it."
         />
 
         <div className="mb-24 lg:mb-32">
@@ -176,10 +156,8 @@ const ProjectsSection = () => {
         {/* Open-source / personal repos */}
         <SectionHeader
           label="Open source"
-          titleMain="Open Source &"
-          titleAccent="Experiments"
+          title="Open source & experiments"
           description="Latest public repositories, fetched live from GitHub."
-          align="left"
         />
 
         <div className="rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-6 md:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
@@ -190,6 +168,8 @@ const ProjectsSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="flex flex-wrap items-center gap-3 mb-12"
+            role="group"
+            aria-label="Filter repositories by language"
           >
             <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest mr-2">
               Filter
@@ -197,6 +177,7 @@ const ProjectsSection = () => {
             
             <button
               onClick={() => setActiveFilter("ALL")}
+              aria-pressed={activeFilter === "ALL"}
               className={`px-4 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase transition-all duration-300 ${
                 activeFilter === "ALL" 
                   ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
@@ -210,6 +191,7 @@ const ProjectsSection = () => {
               <button
                 key={lang}
                 onClick={() => setActiveFilter(lang)}
+                aria-pressed={activeFilter === lang}
                 className={`px-4 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase transition-all duration-300 ${
                   activeFilter === lang 
                     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 

@@ -1,173 +1,106 @@
-import { AnimatePresence, motion, useInView, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { SectionHeader } from "./ui/SectionHeader";
 import { experiences } from "@/data/experience";
 
+/** Highlights visible before "show more" — enough to judge a role without clicking. */
+const VISIBLE_HIGHLIGHTS = 3;
+
 const ExperienceTimeline = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end center"]
-  });
-
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end center"] });
   const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [expanded, setExpanded] = useState<number[]>([]);
 
-  const toggleExpanded = (index: number) => {
-    setExpandedItems((current) =>
-      current.includes(index) ? current.filter((id) => id !== index) : [...current, index]
-    );
-  };
+  const toggle = (index: number) =>
+    setExpanded((current) => (current.includes(index) ? current.filter((i) => i !== index) : [...current, index]));
 
   return (
-    <section id="experience" className="py-20 lg:py-24 px-6 md:px-12 relative overflow-hidden bg-transparent" ref={ref}>
-
-      <div className="max-w-3xl mx-auto relative z-10">
-        <SectionHeader 
-          label="Experience" 
-          titleMain="Professional" 
-          titleAccent="History" 
-          align="center"
+    <section id="experience" ref={ref} className="py-20 lg:py-28 px-6 md:px-12 relative">
+      <div className="max-w-5xl mx-auto">
+        <SectionHeader
+          label="Experience"
+          title="One banking platform, one client, since 2021"
+          description="Hired at FIS Global, promoted to Senior Software Engineer, then moved with the same platform and team to Cognizant."
         />
 
-        {/* Timeline */}
-        <div className="relative">
-          <div className="absolute left-8 top-0 bottom-0 w-px bg-white/10 overflow-visible">
-            <motion.div
-              className="w-full bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent origin-top"
-              style={{ scaleY }}
-            />
-            {/* Lightsaber scan beam sweeping the rail */}
-            <motion.div
-              aria-hidden="true"
-              className="absolute left-1/2 -translate-x-1/2 w-px h-[120px] rounded-full bg-gradient-to-b from-transparent via-white to-transparent shadow-[0_0_12px_rgba(52,211,153,0.7)] motion-reduce:hidden"
-              animate={{ top: ["-15%", "105%"] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+        <ol className="relative">
+          {/* Rail that fills as the section scrolls */}
+          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-white/10" aria-hidden="true">
+            <motion.div className="w-full h-full bg-emerald-500/70 origin-top" style={{ scaleY }} />
           </div>
 
           {experiences.map((exp, index) => {
-            const isExpanded = expandedItems.includes(index);
-            const Icon = exp.icon;
+            const isOpen = expanded.includes(index);
+            const shown = isOpen ? exp.achievements : exp.achievements.slice(0, VISIBLE_HIGHLIGHTS);
+            const hiddenCount = exp.achievements.length - VISIBLE_HIGHLIGHTS;
+            const panelId = `experience-more-${index}`;
 
             return (
-              <motion.div
-                key={`${exp.company}-${index}`}
-                initial={{ opacity: 0, y: 30 }}
+              <motion.li
+                key={exp.company}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: 0.2 + index * 0.2 }}
-                className="relative mb-12 group/timeline"
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5 }}
+                className="relative pl-10 md:pl-14 pb-16 last:pb-0"
               >
-                {/* Timeline dot */}
-                <div className="absolute left-8 -translate-x-1/2 top-10 z-10 flex items-center justify-center">
-                  <div className={`w-5 h-5 rounded-full border-2 z-20 transition-all duration-500 flex items-center justify-center ${isExpanded ? 'border-emerald-400 bg-emerald-950 shadow-[0_0_15px_rgba(52,211,153,0.6)]' : 'border-white/30 bg-black group-hover/timeline:border-emerald-500/50 group-hover/timeline:shadow-[0_0_10px_rgba(52,211,153,0.2)]'}`}>
-                    {isExpanded && <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />}
-                  </div>
-                  {/* Pulsing ring for first (current) role */}
-                  {index === 0 && !isExpanded && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-5 h-5 rounded-full border border-emerald-500/30 animate-ping" />
-                    </div>
-                  )}
+                <span
+                  className={`absolute left-0 top-2 w-[15px] h-[15px] rounded-full border-2 bg-black ${
+                    index === 0 ? "border-emerald-400" : "border-white/30"
+                  }`}
+                  aria-hidden="true"
+                />
+
+                <div className="grid md:grid-cols-[1fr_auto] gap-x-8 gap-y-2 items-baseline mb-6">
+                  <h3 className="font-display text-2xl md:text-3xl font-semibold text-white tracking-tight">{exp.company}</h3>
+                  <span className="font-mono text-xs md:text-sm text-white/60 md:text-right whitespace-nowrap">{exp.period}</span>
+                  <p className="md:col-span-2 text-sm md:text-base font-body text-emerald-300/85">{exp.role}</p>
                 </div>
 
-                {/* Content card */}
-                <motion.div
-                  layout
-                  whileHover={{ x: 8, scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="ml-20"
-                >
+                <ul id={panelId} className="space-y-3.5 max-w-3xl">
+                  <AnimatePresence initial={false}>
+                    {shown.map((achievement, i) => (
+                      <motion.li
+                        key={achievement}
+                        initial={i >= VISIBLE_HIGHLIGHTS ? { opacity: 0, height: 0 } : false}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex gap-3 text-[15px] md:text-base font-body font-light text-white/75 leading-relaxed overflow-hidden"
+                      >
+                        <span className="mt-[0.7em] h-px w-3 shrink-0 bg-emerald-500/70" aria-hidden="true" />
+                        <span>{achievement}</span>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
+                </ul>
+
+                {hiddenCount > 0 && (
                   <button
                     type="button"
-                    aria-expanded={isExpanded}
-                    aria-controls={`experience-panel-${index}`}
-                    id={`experience-toggle-${index}`}
-                    className={`group relative p-8 w-full text-left cursor-pointer overflow-hidden transition-all duration-500 border rounded-xl bg-black/60 backdrop-blur-md ${isExpanded ? 'border-emerald-500/50 shadow-[0_0_40px_rgba(16,185,129,0.1)]' : 'border-white/10 hover:border-emerald-500/30 hover:bg-white/5'}`}
-                    onClick={() => toggleExpanded(index)}
+                    onClick={() => toggle(index)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="mt-5 text-sm font-body font-medium text-white/70 hover:text-emerald-300 underline underline-offset-4 decoration-white/20 hover:decoration-emerald-400/60 transition-colors"
                   >
-                    {/* Cinematic Bloom Background */}
-                    <div className={`absolute -inset-32 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 rounded-full blur-3xl opacity-0 transition-opacity duration-700 pointer-events-none ${isExpanded ? 'opacity-100' : 'group-hover:opacity-40'}`} />
-
-                    {/* Header */}
-                    <div className="relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-2">
-                      <div className="flex flex-col text-left">
-                        <div className="flex items-center gap-3">
-                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />
-                          <h3 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">{exp.company}</h3>
-                        </div>
-                        <p className="text-emerald-300/70 font-body font-light text-xs md:text-sm tracking-wide mt-1.5">{exp.role}</p>
-                      </div>
-                      <div className="flex flex-row flex-wrap justify-end sm:flex-col items-center gap-3 self-end sm:self-auto max-w-full">
-                        <span className="text-[10px] md:text-[11px] text-white/50 font-mono border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded bg-white/5 backdrop-blur-sm shadow-sm whitespace-nowrap">{exp.period}</span>
-                        <span className="font-mono text-[11px] text-white/35 whitespace-nowrap">
-                          {exp.achievements.length} highlight{exp.achievements.length > 1 ? "s" : ""}
-                        </span>
-                        <motion.div 
-                          animate={{ rotate: isExpanded ? 180 : 0 }} 
-                          transition={{ duration: 0.4, ease: "easeInOut" }}
-                          className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center border transition-colors duration-300 ${isExpanded ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400' : 'border-white/10 bg-white/5 text-white/40 group-hover:border-emerald-500/30 group-hover:text-emerald-400'}`}
-                        >
-                          <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
-                        </motion.div>
-                      </div>
-                    </div>
-
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <motion.div
-                          key="expanded"
-                          id={`experience-panel-${index}`}
-                          aria-labelledby={`experience-toggle-${index}`}
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                          className="overflow-hidden relative z-10"
-                        >
-                          <div className="pt-6 border-t border-white/10 mt-6">
-                            <ul className="space-y-4 mb-8 text-left">
-                              {exp.achievements.map((achievement, i) => (
-                                <motion.li
-                                  key={i}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
-                                  className="text-sm md:text-[15px] font-light text-gray-300 leading-relaxed flex items-start gap-3"
-                                >
-                                  <span className="text-emerald-500 mt-1.5 text-[10px]">▹</span>
-                                  <span className="flex-1">{achievement}</span>
-                                </motion.li>
-                              ))}
-                            </ul>
-
-                            <div className="flex flex-wrap gap-2 justify-start">
-                              {exp.technologies.map((tech) => (
-                                <span
-                                  key={tech}
-                                  className="px-2 py-1 text-[10px] font-mono border border-emerald-500/20 bg-emerald-950/30 text-emerald-100 rounded tracking-widest hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.05)] cursor-crosshair break-words max-w-full relative overflow-hidden group/tech"
-                                >
-                                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent -translate-x-full group-hover/tech:translate-x-full transition-transform duration-500 pointer-events-none" />
-                                  <span className="relative z-10">{tech}</span>
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {isOpen ? "Show less" : `Show ${hiddenCount} more`}
                   </button>
-                </motion.div>
-              </motion.div>
+                )}
+
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {exp.technologies.map((tech) => (
+                    <span key={tech} className="px-2.5 py-1 text-xs font-mono text-white/65 border border-white/10 rounded">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.li>
             );
           })}
-        </div>
+        </ol>
       </div>
-    </section >
+    </section>
   );
 };
 

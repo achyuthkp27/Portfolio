@@ -139,3 +139,10 @@ graphify-env/
 # Local media/video workspaces — not part of the site
 video/
 remotion-video/
+
+# Build-time GitHub snapshot (scripts/snapshot-github.mjs)
+public/data/github.json
+
+# Playwright
+test-results/
+playwright-report/
