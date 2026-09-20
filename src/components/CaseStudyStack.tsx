@@ -160,7 +160,8 @@ const StackCard = ({ study, index, isLast }: { study: Project; index: number; is
       style={{ "--stack-offset": `${index * 1.1}rem`, zIndex: index + 1 } as CSSProperties}
     >
       <article
-        className={`rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden ${isLast ? "" : "mb-8"}`}
+        id={`case-${study.slug}`}
+        className={`rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden scroll-mt-24 md:scroll-mt-32 ${isLast ? "" : "mb-8"}`}
         style={{ background: `rgb(${10 + index * 3} ${10 + index * 3} ${13 + index * 3})` }}
       >
         {/* Padding, gaps and the 70vh floor all shrink on short screens so a whole card fits

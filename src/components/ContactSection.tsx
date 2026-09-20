@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { Mail, Send, Linkedin, Github, FileText } from "lucide-react";
+import { Mail, Send, Linkedin, Github, FileText, CornerDownLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { SectionHeader } from "./ui/SectionHeader";
@@ -13,6 +13,100 @@ const contactFormSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
+/**
+ * What the form actually does, written the way the backend would log it. The response is
+ * 202 Accepted on purpose: nothing was created on a server, the message was handed to the
+ * visitor's mail client. Claiming a 201 here would be a lie told in monospace.
+ */
+const Exchange = ({
+  payload,
+  onReset,
+}: {
+  payload: { name: string; email: string; message: string };
+  onReset: () => void;
+}) => {
+  const request = [
+    "POST /contact HTTP/1.1",
+    "host: achyuthkp27.github.io",
+    "content-type: application/json",
+    "",
+    JSON.stringify(payload, null, 2),
+  ].join("\n");
+
+  const response = [
+    "HTTP/1.1 202 Accepted",
+    "x-handoff: local-mail-client",
+    "",
+    JSON.stringify(
+      {
+        accepted: true,
+        handedTo: "your mail client",
+        to: "kpachyuthz@gmail.com",
+        replyWithin: "usually a day",
+      },
+      null,
+      2,
+    ),
+  ].join("\n");
+
+  const blocks = [
+    { dir: "→", label: "Request", body: request, accent: false },
+    { dir: "←", label: "Response", body: response, accent: true },
+  ];
+
+  return (
+    <div className="relative p-6 md:p-10 border border-white/10 bg-[#0a0a0a]/90 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="absolute inset-0 grid-pattern opacity-[0.03] pointer-events-none" aria-hidden="true" />
+      <div className="relative z-10 space-y-6" aria-live="polite">
+        {blocks.map((block, i) => (
+          <motion.div
+            key={block.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-center gap-2.5 mb-3">
+              <span className={`font-mono text-sm ${block.accent ? "text-emerald-400" : "text-white/50"}`} aria-hidden="true">
+                {block.dir}
+              </span>
+              <span className="text-[11px] font-body font-medium uppercase tracking-[0.2em] text-white/55">
+                {block.label}
+              </span>
+            </div>
+            <pre
+              className={`overflow-x-auto rounded-lg border p-4 md:p-5 font-mono text-[11px] md:text-xs leading-relaxed whitespace-pre-wrap break-words ${
+                block.accent
+                  ? "border-emerald-500/25 bg-emerald-500/[0.04] text-emerald-100/90"
+                  : "border-white/10 bg-white/[0.02] text-white/75"
+              }`}
+            >
+              {block.body}
+            </pre>
+          </motion.div>
+        ))}
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.95, duration: 0.4 }}
+          className="flex flex-wrap items-center justify-between gap-4 pt-2"
+        >
+          <p className="text-sm font-body font-light text-white/55 max-w-md leading-relaxed">
+            There is no server behind this page — your mail client has the draft. Send it and it reaches me.
+          </p>
+          <button
+            type="button"
+            onClick={onReset}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-[11px] font-body font-medium text-white/80 hover:text-white hover:border-emerald-400/50 hover:bg-emerald-400/[0.06] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+          >
+            <CornerDownLeft className="w-3.5 h-3.5" aria-hidden="true" /> Write another
+          </button>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 const ContactSection = () => {
   const ref = useRef(null);
   const [formData, setFormData] = useState({
@@ -21,6 +115,8 @@ const ContactSection = () => {
     message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  /** The validated payload, kept so the exchange below can render what was actually handed over */
+  const [sent, setSent] = useState<{ name: string; email: string; message: string } | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +139,7 @@ const ContactSection = () => {
         variant: "default",
       });
 
+      setSent(validated);
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -142,8 +239,11 @@ const ContactSection = () => {
 
           </div>
 
-          {/* Contact Form: Encrypted Uplink */}
+          {/* Contact form, and what it did once you submit it */}
           <div className="lg:col-span-3 min-w-0">
+            {sent ? (
+              <Exchange payload={sent} onReset={() => setSent(null)} />
+            ) : (
             <form
               onSubmit={handleSubmit}
               className="relative p-6 md:p-10 border border-white/10 bg-[#0a0a0a]/90 rounded-2xl overflow-hidden group/form shadow-2xl"
@@ -252,6 +352,7 @@ const ContactSection = () => {
               </div>
 
             </form>
+            )}
           </div>
         </div>
       </div>
