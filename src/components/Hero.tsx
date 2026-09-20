@@ -1,6 +1,6 @@
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { lazy, Suspense, useRef } from "react";
+import { Fragment, lazy, Suspense, useRef } from "react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import ExperienceTimer from "./ui/ExperienceTimer";
 import { useLowEndDevice } from "@/hooks/useLowEndDevice";
@@ -12,6 +12,44 @@ const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
 const CAREER_START = new Date("2021-07-26");
 
 const HERO_EASE = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * The estate in one line. Deliberately the same five words as the skills map, and
+ * deliberately not the stat bar's numbers — this is the shape, those are the counts.
+ */
+const FLOW = ["channels", "api gateway", "kafka", "services", "stores"];
+
+/**
+ * Proof rather than claim: the path a request actually takes, with one request
+ * travelling it. Still legible when the motion is switched off.
+ */
+const FlowStrip = () => {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <div className="relative inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 overflow-hidden">
+      {!reduceMotion && (
+        <motion.span
+          aria-hidden="true"
+          initial={{ left: "-6%" }}
+          animate={{ left: "106%" }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "linear", repeatDelay: 0.6 }}
+          className="absolute top-0 bottom-0 w-24 pointer-events-none bg-[linear-gradient(90deg,transparent,rgba(16,185,129,0.16),transparent)]"
+        />
+      )}
+      {FLOW.map((node, i) => (
+        <Fragment key={node}>
+          {i > 0 && (
+            <span className="font-mono text-[11px] text-emerald-500/70" aria-hidden="true">
+              →
+            </span>
+          )}
+          <span className="relative font-mono text-[10px] md:text-[11px] text-white/65 whitespace-nowrap">{node}</span>
+        </Fragment>
+      ))}
+    </div>
+  );
+};
 
 const StaticBackdrop = () => (
   <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
@@ -132,12 +170,22 @@ const Hero = () => {
           </motion.div>
         </div>
 
+        {/* One request's path across the estate, before the numbers */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.62 }}
+          className="mt-14 flex justify-center pointer-events-auto"
+        >
+          <FlowStrip />
+        </motion.div>
+
         {/* Stat bar — live experience counter anchors three quiet facts */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={!isLoading ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
+          className="mt-10 lg:mt-12 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
         >
           <ExperienceTimer startDate={CAREER_START} />
           {STATS.map((stat) => (

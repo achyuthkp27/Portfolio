@@ -6,6 +6,9 @@ import { experiences } from "@/data/experience";
 /** Highlights visible before "show more" — enough to judge a role without clicking. */
 const VISIBLE_HIGHLIGHTS = 3;
 
+/** Named once so the lane header and the roles it spans can never drift apart. */
+const PLATFORM_LANE = experiences.find((e) => e.platform)?.platform ?? "";
+
 const ExperienceTimeline = () => {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end center"] });
@@ -24,14 +27,25 @@ const ExperienceTimeline = () => {
           description="Hired at FIS Global, promoted to Senior Software Engineer, then moved with the same platform and team to Cognizant."
         />
 
+        {/* The platform lane's own header, aligned to the emerald track below it */}
+        <div className="relative pl-12 md:pl-16 mb-6">
+          <span className="absolute left-[18px] top-1/2 w-[7px] h-[7px] -mt-[3.5px] rounded-full bg-emerald-400/80" aria-hidden="true" />
+          <span className="font-mono text-[11px] md:text-xs tracking-wide text-emerald-300/80">
+            {PLATFORM_LANE} · unbroken since Jul 2021
+          </span>
+        </div>
+
         <ol className="relative">
-          {/* Rail that fills as the section scrolls */}
+          {/* Employer track: fills as the section scrolls */}
           <div className="absolute left-[7px] top-2 bottom-2 w-px bg-white/10" aria-hidden="true">
             <motion.div className="w-full h-full bg-emerald-500/70 origin-top" style={{ scaleY }} />
           </div>
 
           {experiences.map((exp, index) => {
             const isOpen = expanded.includes(index);
+            // The employer changes, the platform does not — that is the point of the second lane.
+            const onPlatform = Boolean(exp.platform);
+            const platformContinues = exp.platform && experiences[index + 1]?.platform === exp.platform;
             const shown = isOpen ? exp.achievements : exp.achievements.slice(0, VISIBLE_HIGHLIGHTS);
             const hiddenCount = exp.achievements.length - VISIBLE_HIGHLIGHTS;
             const panelId = `experience-more-${index}`;
@@ -43,7 +57,7 @@ const ExperienceTimeline = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.5 }}
-                className="relative pl-10 md:pl-14 pb-16 last:pb-0"
+                className="relative pl-12 md:pl-16 pb-16 last:pb-0"
               >
                 <span
                   className={`absolute left-0 top-2 w-[15px] h-[15px] rounded-full border-2 bg-black ${
@@ -51,6 +65,15 @@ const ExperienceTimeline = () => {
                   }`}
                   aria-hidden="true"
                 />
+
+                {/* Platform track: one segment per role, stacking into a single unbroken line */}
+                {onPlatform && (
+                  <span
+                    className="absolute left-[21px] border-l border-dashed border-emerald-400/45"
+                    style={{ top: index === 0 ? "0.5rem" : 0, bottom: platformContinues ? 0 : "auto", height: platformContinues ? undefined : "calc(100% - 3.5rem)" }}
+                    aria-hidden="true"
+                  />
+                )}
 
                 <div className="grid md:grid-cols-[1fr_auto] gap-x-8 gap-y-2 items-baseline mb-6">
                   <h3 className="font-display text-2xl md:text-3xl font-semibold text-white tracking-tight">{exp.company}</h3>
@@ -95,6 +118,14 @@ const ExperienceTimeline = () => {
                     </span>
                   ))}
                 </div>
+
+                {/* What carried this role into the one below it */}
+                {exp.handoff && platformContinues && (
+                  <p className="mt-8 -ml-2 inline-flex items-center gap-2.5 rounded-full border border-dashed border-emerald-500/35 bg-emerald-500/[0.05] px-3.5 py-1.5 font-mono text-[10px] md:text-[11px] text-emerald-200/85">
+                    <span aria-hidden="true">↕</span>
+                    {exp.handoff}
+                  </p>
+                )}
               </motion.li>
             );
           })}

@@ -7,6 +7,10 @@ export interface Experience {
   type: 'full-time' | 'internship' | 'contract';
   icon: LucideIcon;
   color: string;
+  /** Roles sharing a platform form one unbroken lane on the rail, across employers */
+  platform?: string;
+  /** How this role began, when it continued something rather than started it */
+  handoff?: string;
   achievements: string[];
   technologies: string[];
 }
@@ -19,6 +23,8 @@ export const experiences: Experience[] = [
     type: "full-time",
     icon: Briefcase,
     color: "primary",
+    platform: "First Citizens Bank platform",
+    handoff: "Client-driven rebadge — same platform, same team, same client",
     achievements: [
       "Leading backend API architecture for a next-generation banking platform using Java 21, Spring Boot 3.5, and Apache Kafka within a 25+ engineer delivery team.",
       "Mentoring 4 junior engineers on clean code, unit testing discipline (JUnit, Mockito), and CI/CD standards.",
@@ -33,6 +39,7 @@ export const experiences: Experience[] = [
     type: "full-time",
     icon: Building2,
     color: "primary",
+    platform: "First Citizens Bank platform",
     achievements: [
       "Designed, built, and maintained Spring Boot microservices across a 30+ service estate powering Retail, Mobile, and Corporate Online Banking for hundreds of corporate clients — delivering three major corporate banking modules end to end.",
       "Implemented a maker-checker authorization framework enforcing dual-approval controls on financial transactions to meet PCI-DSS and SOX compliance and audit requirements.",

@@ -7,90 +7,86 @@ import { SectionHeader } from "./ui/SectionHeader";
 import CaseStudyStack from "./CaseStudyStack";
 import TraceWaterfall from "./case-studies/TraceWaterfall";
 
-/** "3 days ago" from an ISO timestamp — repos read as activity, not as rows. */
-const relativeTime = (iso: string) => {
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const days = Math.floor((Date.now() - then) / 86_400_000);
-  if (days <= 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 30) return `${days} days ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months} ${months === 1 ? "month" : "months"} ago`;
-  const years = Math.floor(days / 365);
-  return `${years} ${years === 1 ? "year" : "years"} ago`;
-};
-
-/** Where the dot sits inside a row — rail, dot and connector all line up on it. */
-const DOT_CENTER = "2.2rem";
-
-/**
- * One repo as one commit on a graph: a dot on the rail, a connector into the row.
- * Newest at the top, the way `git log` prints it.
- */
-const CommitRow = ({ project, index, isLast }: { project: GitHubRepo; index: number; isLast: boolean }) => {
-  const formattedTitle = project.name.replace(/[-_]/g, " ").toUpperCase();
+const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
+  // Parse repo name into readable title
+  const formattedTitle = project.name.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
 
   return (
     <motion.div
       id={`project-card-${project.name}`}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: 0.08 * index, ease: [0.21, 0.47, 0.32, 0.98] }}
+      transition={{ duration: 0.8, delay: 0.1 * index, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="group relative"
     >
-      <Link to={`/project/${project.name}`} className="block relative">
-        <div className="grid grid-cols-[2.25rem_1fr] md:grid-cols-[3rem_1fr] gap-x-3 md:gap-x-6">
-          {/* Rail: line above and below, dot on this commit */}
-          <div className="relative flex justify-center" aria-hidden="true">
-            {/* The rail stops at the dot on the first and last commit, so the graph has ends */}
-            <span
-              className="absolute w-px bg-white/10"
-              style={{ top: index === 0 ? DOT_CENTER : 0, bottom: isLast ? `calc(100% - ${DOT_CENTER})` : 0 }}
-            />
-            <span
-              className="absolute w-2.5 h-2.5 -mt-[0.3125rem] rounded-full border border-white/25 bg-[#0a0a0a] group-hover:border-emerald-400 group-hover:bg-emerald-400/20 group-hover:shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-all duration-500"
-              style={{ top: DOT_CENTER }}
-            />
-            <span
-              className="absolute left-1/2 w-3 md:w-5 h-px bg-white/10 group-hover:bg-emerald-400/40 transition-colors duration-500"
-              style={{ top: DOT_CENTER }}
-            />
-          </div>
+      <Link to={`/project/${project.name}`} className="block relative z-10 w-full overflow-hidden">
+        <div className="relative border-b border-white/5 py-10 md:py-16 px-4 md:px-8 transition-colors duration-700 group-hover:bg-white/[0.02]">
+          
+          {/* Animated reveal line */}
+          <motion.div
+            className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.1 * index, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "left" }}
+          />
+          
+          {/* Background Hover Bloom */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-          {/* Commit body */}
-          <div className="py-6 md:py-8 pr-2 border-b border-white/5 transition-colors duration-500 group-hover:border-emerald-500/20">
-            <div className="flex items-start justify-between gap-6">
-              <div className="min-w-0">
-                <h3 className="font-display text-xl md:text-3xl font-bold text-white/75 group-hover:text-white tracking-tight transition-all duration-500 group-hover:translate-x-1 truncate">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative z-10">
+            
+            {/* Left Side: Number & Title */}
+            <div className="flex items-start lg:items-center gap-6 md:gap-12 w-full lg:w-3/4">
+              <span className="font-mono text-2xl md:text-3xl text-white/10 font-light group-hover:text-emerald-500/40 transition-colors duration-500 mt-2 lg:mt-0 shrink-0">
+                {(index + 1).toString().padStart(2, '0')}
+              </span>
+              
+              <div className="relative w-full">
+                <h3 className="font-display text-3xl md:text-5xl font-bold text-white/70 group-hover:text-white tracking-tight transition-all duration-700 group-hover:translate-x-4">
                   {formattedTitle}
                 </h3>
-                <p className="mt-2.5 text-sm md:text-base font-body font-light text-gray-500 group-hover:text-gray-300 leading-relaxed line-clamp-2 max-w-2xl transition-colors duration-500">
-                  {project.description || "No description yet."}
-                </p>
-                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[10px] md:text-[11px] text-white/40">
-                  <span className="text-emerald-400/70">{project.default_branch || "main"}</span>
-                  {project.updated_at && <span>updated {relativeTime(project.updated_at)}</span>}
-                  {project.language && (
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white/40" aria-hidden="true" />
-                      {project.language}
-                    </span>
-                  )}
-                  {project.stargazers_count > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Star className="w-3 h-3" aria-hidden="true" /> {project.stargazers_count}
-                    </span>
-                  )}
+                
+                <div className="mt-6 flex flex-col md:flex-row md:items-center gap-4 text-gray-500 text-sm md:text-base max-w-2xl group-hover:text-gray-300 transition-all duration-700 delay-100 group-hover:translate-x-4">
+                  <p className="line-clamp-2 leading-relaxed">
+                    {project.description || "No description yet."}
+                  </p>
                 </div>
               </div>
-
-              <div className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-500 overflow-hidden relative">
-                <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-white transform group-hover:translate-x-[150%] group-hover:translate-y-[-150%] transition-transform duration-500 ease-in-out" />
-                <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black absolute top-[150%] left-[-150%] transform group-hover:top-1/2 group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 transition-all duration-500 ease-in-out" />
-              </div>
             </div>
+
+            {/* Right Side: Metrics & Arrow */}
+            <div className="flex items-center justify-between lg:justify-end w-full lg:w-1/4 gap-8 opacity-60 group-hover:opacity-100 transition-opacity duration-500">
+              
+              {/* Tech / Language */}
+              <div className="flex items-center gap-3">
+                {project.language && (
+                  <span className="px-3 py-1 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full text-white/60 group-hover:border-emerald-500/30 group-hover:text-emerald-400 group-hover:bg-emerald-500/5 transition-all duration-500 relative overflow-hidden">
+                    {/* Shimmer on hover */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                    <span className="relative z-10">{project.language}</span>
+                  </span>
+                )}
+                {project.stargazers_count > 0 && (
+                  <span className="flex items-center gap-1.5 font-mono text-[10px] md:text-xs uppercase tracking-widest border border-white/10 rounded-full px-3 py-1 text-white/60 group-hover:border-amber-500/30 group-hover:text-amber-400 group-hover:bg-amber-500/5 transition-all duration-500">
+                    <Star className="w-3 h-3 md:w-4 md:h-4" /> {project.stargazers_count}
+                  </span>
+                )}
+              </div>
+
+              {/* Arrow with spring animation */}
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-500 overflow-hidden relative shrink-0 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
+                 <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-white transform group-hover:translate-x-[150%] group-hover:translate-y-[-150%] transition-transform duration-500 ease-in-out" />
+                 <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 text-black absolute top-[150%] left-[-150%] transform group-hover:top-1/2 group-hover:left-1/2 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 transition-all duration-500 ease-in-out" />
+              </motion.div>
+            </div>
+
           </div>
         </div>
       </Link>
@@ -173,7 +169,7 @@ const ProjectsSection = () => {
         <SectionHeader
           label="Open source"
           title="Open source & experiments"
-          description="Public repositories as a commit graph, newest first, fetched live from GitHub."
+          description="Latest public repositories, fetched live from GitHub."
         />
 
         <div className="rounded-[1.75rem] bg-[#0a0a0a] border border-white/10 p-6 md:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
@@ -229,12 +225,7 @@ const ProjectsSection = () => {
             </div>
           ) : filteredProjects.length > 0 ? (
             filteredProjects.map((project, index) => (
-              <CommitRow
-                key={project.name}
-                project={project}
-                index={index}
-                isLast={index === filteredProjects.length - 1}
-              />
+              <ProjectCard key={project.name} project={project} index={index} />
             ))
           ) : (
             <div className="h-[400px] flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
