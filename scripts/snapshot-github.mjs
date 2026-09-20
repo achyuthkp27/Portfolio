@@ -18,7 +18,7 @@ const headers = { Accept: "application/vnd.github+json", "User-Agent": `${USERNA
 if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 
 try {
-  const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=30`, {
+  const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100`, {
     headers,
     signal: AbortSignal.timeout(15_000),
   });

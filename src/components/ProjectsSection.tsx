@@ -1,11 +1,15 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Star } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 import { SectionHeader } from "./ui/SectionHeader";
 import CaseStudyStack from "./CaseStudyStack";
 import TraceWaterfall from "./case-studies/TraceWaterfall";
+
+/** Repos shown per page, and how many to ask GitHub for (its per_page ceiling is 100). */
+const REPO_PAGE = 6;
+const REPO_FETCH_LIMIT = 100;
 
 const ProjectCard = ({ project, index }: { project: GitHubRepo, index: number }) => {
   // Parse repo name into readable title
@@ -100,6 +104,7 @@ const ProjectsSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
+  const [visibleCount, setVisibleCount] = useState(REPO_PAGE);
 
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -108,7 +113,7 @@ const ProjectsSection = () => {
   useEffect(() => {
     if (!isInView) return;
     const controller = new AbortController();
-    fetchLatestRepositories(6, controller.signal)
+    fetchLatestRepositories(REPO_FETCH_LIMIT, controller.signal)
       .then((data) => {
         if (controller.signal.aborted) return;
         setProjects(data);
@@ -128,18 +133,28 @@ const ProjectsSection = () => {
 
   useEffect(() => {
     setFilteredProjects(activeFilter === "ALL" ? projects : projects.filter((p) => p.language?.toUpperCase() === activeFilter));
+    // A new filter is a new list, so start it at the first page again
+    setVisibleCount(REPO_PAGE);
   }, [activeFilter, projects]);
+
+  const remaining = filteredProjects.length - visibleCount;
 
   useEffect(() => {
     if (isLoading || projects.length === 0) return;
     const scrollToSlug = new URLSearchParams(location.search).get("scrollTo");
     if (!scrollToSlug) return;
+    // "Back to projects" can point at a repo on a later page — page out to it first,
+    // otherwise there is no card in the DOM to scroll to.
+    const target = filteredProjects.findIndex((repo) => repo.name === scrollToSlug);
+    if (target >= 0) {
+      setVisibleCount((count) => Math.max(count, Math.ceil((target + 1) / REPO_PAGE) * REPO_PAGE));
+    }
     // Wait a tick for the DOM to paint the project cards
     const id = window.setTimeout(() => {
       document.getElementById(`project-card-${scrollToSlug}`)?.scrollIntoView({ behavior: "instant", block: "center" });
     }, 100);
     return () => window.clearTimeout(id);
-  }, [isLoading, projects, location.search]);
+  }, [isLoading, projects, filteredProjects, location.search]);
 
   return (
     <section id="projects" className="relative py-24 lg:py-28 px-6 md:px-12 bg-[radial-gradient(ellipse_90%_55%_at_50%_20%,rgba(16,185,129,0.09),transparent_75%),linear-gradient(180deg,#000000_0%,#060e0a_14%,#0c1712_32%,#0a1a13_55%,#050d09_80%,#000000_100%)]" ref={ref}>
@@ -224,9 +239,30 @@ const ProjectsSection = () => {
               <span>Loading repositories…</span>
             </div>
           ) : filteredProjects.length > 0 ? (
-            filteredProjects.map((project, index) => (
-              <ProjectCard key={project.name} project={project} index={index} />
-            ))
+            <>
+              {filteredProjects.slice(0, visibleCount).map((project, index) => (
+                <ProjectCard key={project.name} project={project} index={index} />
+              ))}
+
+              {remaining > 0 && (
+                <div className="flex flex-col items-center gap-3 pt-12">
+                  <button
+                    type="button"
+                    onClick={() => setVisibleCount((count) => count + REPO_PAGE)}
+                    className="group inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/15 text-xs font-body font-semibold uppercase tracking-[0.15em] text-white/75 hover:text-white hover:border-emerald-400/50 hover:bg-emerald-400/[0.06] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+                  >
+                    Show {Math.min(REPO_PAGE, remaining)} more
+                    <ArrowDown
+                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <span className="font-mono text-[11px] text-white/40" aria-live="polite">
+                    {visibleCount} of {filteredProjects.length} repositories
+                  </span>
+                </div>
+              )}
+            </>
           ) : (
             <div className="h-[400px] flex items-center justify-center font-mono text-white/40 border border-white/5 bg-white/[0.02] rounded-xl">
               Nothing matches that filter.
