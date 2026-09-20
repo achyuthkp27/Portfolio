@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
@@ -16,9 +16,9 @@ const itemVariants = {
 
 /**
  * Sticky stacking case-study cards (Harrison Wheeler-style).
- * Pure CSS `position: sticky` on large, tall-enough screens — each card pins below the nav
- * with a small staggered offset so previous cards peek out above as the next slides over.
- * Elsewhere they are a plain vertical list. No scroll-jacking.
+ * Pure CSS `position: sticky` — each card pins below the nav with a small
+ * staggered offset so previous cards peek out above as the next slides over it.
+ * Applies on every screen size. No scroll-jacking.
  */
 
 // ── Diagram building blocks ──────────────────────────────────────────
@@ -145,34 +145,40 @@ const META: Record<string, StackMeta> = {
 
 // ── Card ─────────────────────────────────────────────────────────────
 
-const StackCard = ({ study, index }: { study: Project; index: number }) => {
+const StackCard = ({ study, index, isLast }: { study: Project; index: number; isLast: boolean }) => {
   const meta = META[study.slug];
   const diagram = DIAGRAMS[study.slug];
   const textFirst = index % 2 === 0;
 
   return (
-    // Stacking only where a whole card fits on screen. On phones and short laptop screens the
-    // cards scroll normally, so the next card never covers the bottom (or the interactive demos).
+    // The last card never pins — nothing slides over it — so it takes no `top` offset either.
+    // A `top` on a non-sticky box shifts it down over whatever follows; it still layers over
+    // the card before it via z-index. The pin offset is a CSS var so the nav clearance can
+    // shrink on small screens, where every pixel of visible card counts.
     <div
-      className="relative lg:[@media(min-height:820px)]:sticky"
-      style={{ top: `calc(5.75rem + ${index * 1.1}rem)`, zIndex: index + 1 }}
+      className={isLast ? "relative" : "sticky top-[calc(4.25rem+var(--stack-offset))] md:top-[calc(5.75rem+var(--stack-offset))]"}
+      style={{ "--stack-offset": `${index * 1.1}rem`, zIndex: index + 1 } as CSSProperties}
     >
       <article
-        className="rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden mb-8"
+        className={`rounded-[2rem] border border-white/15 shadow-[0_-24px_80px_rgba(0,0,0,0.8)] overflow-hidden ${isLast ? "" : "mb-8"}`}
         style={{ background: `rgb(${10 + index * 3} ${10 + index * 3} ${13 + index * 3})` }}
       >
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center p-7 md:p-12 lg:p-16 lg:min-h-[70vh]">
-          {/* Text side */}
-          <div className={textFirst ? "" : "lg:order-2"}>
-            <div className="flex items-center gap-3 mb-6">
+        {/* Padding, gaps and the 70vh floor all shrink on short screens so a whole card fits
+            between the nav and the fold — that is what keeps the next card from covering
+            content you have not read yet. */}
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 xl:gap-16 items-center p-5 md:p-10 lg:p-12 xl:p-16 [@media(max-height:820px)]:lg:p-8 [@media(max-height:820px)]:xl:p-10 lg:[@media(min-height:900px)]:min-h-[70vh]">
+          {/* Text side. On one column it comes second: the next card slides up from the
+              bottom, so the demo must not be the thing sitting down there. */}
+          <div className={`order-2 ${textFirst ? "lg:order-1" : "lg:order-2"}`}>
+            <div className="flex items-center gap-3 mb-4 md:mb-6">
               <span className="font-mono text-xs text-white/60">{String(index + 1).padStart(2, "0")}</span>
               <span className="w-6 h-px bg-white/25" aria-hidden="true" />
               <span className="text-xs font-body font-medium tracking-[0.2em] uppercase text-white/60">{study.title}</span>
             </div>
-            <h3 className="font-condensed text-4xl md:text-5xl lg:text-6xl uppercase leading-[0.95] tracking-wide bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent mb-8">
+            <h3 className="font-condensed text-4xl md:text-5xl lg:text-6xl uppercase leading-[0.95] tracking-wide bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent mb-5 md:mb-8">
               {meta?.headline ?? study.title}
             </h3>
-            <dl className="space-y-4 max-w-lg mb-8">
+            <dl className="space-y-3 md:space-y-4 max-w-lg mb-5 md:mb-8">
               {[
                 { term: "Problem", detail: study.problem },
                 { term: "Approach", detail: study.solution },
@@ -193,9 +199,10 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
             </div>
           </div>
 
-          {/* Visual side — architecture diagram, or a hands-on demo */}
-          <div className={textFirst ? "" : "lg:order-1"}>
-            <div className="relative rounded-2xl border border-white/10 bg-[#101013] p-6 md:p-10 flex items-center justify-center min-h-[300px] md:min-h-[380px] shadow-2xl overflow-hidden">
+          {/* Visual side — architecture diagram, or a hands-on demo. First on one column so the
+              "Try it" controls stay in the pinned, always-visible part of the card. */}
+          <div className={`order-1 ${textFirst ? "lg:order-2" : "lg:order-1"}`}>
+            <div className="relative rounded-2xl border border-white/10 bg-[#101013] p-4 md:p-8 lg:p-10 flex items-center justify-center min-h-[230px] md:min-h-[320px] lg:[@media(min-height:900px)]:min-h-[380px] shadow-2xl overflow-hidden">
               {/* Faint emerald bloom + blueprint grid — same surface on every card */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.10),transparent_65%)] pointer-events-none" aria-hidden="true" />
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" aria-hidden="true" />
@@ -216,7 +223,7 @@ const StackCard = ({ study, index }: { study: Project; index: number }) => {
 const CaseStudyStack = () => (
   <div className="relative">
     {projects.map((study, index) => (
-      <StackCard key={study.slug} study={study} index={index} />
+      <StackCard key={study.slug} study={study} index={index} isLast={index === projects.length - 1} />
     ))}
   </div>
 );

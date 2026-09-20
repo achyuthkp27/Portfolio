@@ -153,7 +153,9 @@ const ProjectsSection = () => {
           <CaseStudyStack />
         </div>
 
-        {/* Open-source / personal repos */}
+        {/* Open-source / personal repos. `relative z-10` keeps this above the sticky
+            case-study cards, so a card can never paint over the heading. */}
+        <div className="relative z-10">
         <SectionHeader
           label="Open source"
           title="Open source & experiments"
@@ -220,6 +222,7 @@ const ProjectsSection = () => {
               Nothing matches that filter.
             </div>
           )}
+        </div>
         </div>
         </div>
       </div>
