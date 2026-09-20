@@ -46,40 +46,64 @@ const Navigation = () => {
       return;
     }
 
+    // What the nav highlights, and what to watch for it. "Education" labels a 125px row
+    // inside the awards band — too short for a fast scroll to land on — so watch the whole
+    // band and report it as education. #writing has no nav item, so nothing watches it.
+    const spyTargets = [
+      { navId: "about", elementId: "about" },
+      { navId: "experience", elementId: "experience" },
+      { navId: "projects", elementId: "projects" },
+      { navId: "skills", elementId: "skills" },
+      { navId: "education", elementId: "awards" },
+      { navId: "contact", elementId: "contact" },
+    ];
+
+    // Which observed elements currently cross the reading line, and where each one is.
+    const targets = new Map<string, Element>();
+    const navIdByElementId = new Map(spyTargets.map((t) => [t.elementId, t.navId]));
+    const crossing = new Set<string>();
+
     const sectionObserver = new IntersectionObserver(
       (entries) => {
-        let nextActiveSection = "";
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            nextActiveSection = entry.target.id;
-          }
+          const navId = navIdByElementId.get(entry.target.id);
+          if (!navId) return;
+          if (entry.isIntersecting) crossing.add(navId);
+          else crossing.delete(navId);
         });
 
-        if (nextActiveSection) {
-          setActiveSection(nextActiveSection);
-        }
+        // Sections are metres tall and often overlap the line together, so take the
+        // highest one on the page rather than whichever entry happened to fire last.
+        const topmost = [...crossing]
+          .map((id) => ({ id, top: targets.get(id)?.getBoundingClientRect().top ?? Infinity }))
+          .sort((a, b) => a.top - b.top)[0];
+
+        if (topmost) setActiveSection(topmost.id);
       },
-      { rootMargin: "-35% 0px -55% 0px", threshold: 0.25 }
+      // A thin band across the middle of the viewport is the reading line. threshold 0
+      // means "touches the line at all" — with a threshold, a section taller than the
+      // band could never satisfy it, which is every section on this page.
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
     );
 
-    // Track which sections we're already observing
-    const observedIds = new Set<string>();
-    const expectedSections = ["about", "experience", "projects", "skills", "awards", "contact"];
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
+    // A LazySection placeholder carries the section id until the real section mounts and
+    // replaces it. Following the id alone would leave us observing a detached node, so
+    // re-point whenever the element behind an id changes.
     const observeAllSections = () => {
-      const sections = document.querySelectorAll("main section[id], main #education");
-      sections.forEach((section) => {
-        if (!observedIds.has(section.id)) {
-          observedIds.add(section.id);
-          sectionObserver.observe(section);
+      spyTargets.forEach(({ navId, elementId }) => {
+        const element = document.querySelector(`main #${elementId}`);
+        if (!element || targets.get(navId) === element) return;
+
+        const previous = targets.get(navId);
+        if (previous) {
+          sectionObserver.unobserve(previous);
+          crossing.delete(navId);
         }
+        targets.set(navId, element);
+        sectionObserver.observe(element);
       });
-      // Once every expected section is mounted and observed there is nothing
-      // left to discover — stop watching the DOM entirely.
-      if (expectedSections.every((id) => observedIds.has(id))) {
-        domObserver.disconnect();
-      }
     };
 
     // Re-scan (debounced) whenever the DOM changes — LazySection mounts
