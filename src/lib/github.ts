@@ -13,6 +13,8 @@ export interface GitHubRepo {
   topics: string[];
   updated_at: string;
   default_branch: string;
+  /** Present on live API responses; the build-time snapshot drops it, having already filtered */
+  fork?: boolean;
 }
 
 export type RepoDetailsResult =
@@ -73,7 +75,10 @@ export async function fetchLatestRepositories(limit: number = 6, signal?: AbortS
       signal,
     });
     if (!res.ok) throw new Error(`GitHub responded ${res.status}`);
-    const data = (await res.json()) as GitHubRepo[];
+    // Forks are someone else's work; the build-time snapshot already excludes them,
+    // so the live path has to agree or the two lists drift. Private repos cannot
+    // appear here at all — this endpoint is public-only for unauthenticated calls.
+    const data = ((await res.json()) as GitHubRepo[]).filter((repo) => !repo.fork);
     writeCache(cacheKey, data);
     return data;
   } catch (error) {

@@ -45,6 +45,13 @@ describe("fetchLatestRepositories", () => {
     expect(url.searchParams.get("per_page")).toBe("6");
   });
 
+  it("leaves forks out, matching what the build-time snapshot keeps", async () => {
+    const fork = { ...mockRepo, id: 3, name: "forked-repo", fork: true };
+    mockFetch(async () => json([mockRepo, fork]), async () => json({ repos: [] }));
+
+    await expect(fetchLatestRepositories(6)).resolves.toEqual([mockRepo]);
+  });
+
   it("returns cached data on subsequent calls", async () => {
     const fetchSpy = mockFetch(async () => json([mockRepo]), async () => json({ repos: [] }));
 
