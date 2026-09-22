@@ -27,8 +27,7 @@ const setEnvironment = ({ width, reducedMotion }: { width: number; reducedMotion
   Object.defineProperty(window, "innerWidth", { configurable: true, writable: true, value: width });
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches:
-      (query.includes("prefers-reduced-motion") && reducedMotion) ||
-      (query.includes("max-width") && width < 768),
+      (query.includes("prefers-reduced-motion") && reducedMotion) || (query.includes("max-width") && width < 768),
     media: query,
     onchange: null,
     addListener: vi.fn(),

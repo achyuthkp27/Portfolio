@@ -1,90 +1,81 @@
 import { Helmet } from "react-helmet-async";
 
 interface SEOProps {
-    title?: string;
-    description?: string;
-    image?: string;
-    url?: string;
-    type?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: string;
 }
 
 const SITE_URL = "https://achyuthkp27.github.io/Portfolio/";
 
 const personJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: "Achyuth KP",
-    url: SITE_URL,
-    jobTitle: "Software Engineer",
-    description:
-        "Software Engineer with 5+ years building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
-    sameAs: [
-        "https://github.com/achyuthkp27",
-        "https://linkedin.com/in/kpachyuth",
-        "https://medium.com/@kpachyuthz",
-    ],
-    knowsAbout: [
-        "Java",
-        "Spring Boot",
-        "Microservices",
-        "Apache Kafka",
-        "AWS",
-        "JUnit",
-        "Java Concurrency",
-        "React",
-        "TypeScript",
-        "Three.js",
-    ],
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Achyuth KP",
+  url: SITE_URL,
+  jobTitle: "Software Engineer",
+  description:
+    "Software Engineer with 5+ years building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
+  sameAs: ["https://github.com/achyuthkp27", "https://linkedin.com/in/kpachyuth", "https://medium.com/@kpachyuthz"],
+  knowsAbout: [
+    "Java",
+    "Spring Boot",
+    "Microservices",
+    "Apache Kafka",
+    "AWS",
+    "JUnit",
+    "Java Concurrency",
+    "React",
+    "TypeScript",
+    "Three.js",
+  ],
 };
 
 const websiteJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Achyuth KP | Software Engineer",
-    url: SITE_URL,
-    author: { "@type": "Person", name: "Achyuth KP" },
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Achyuth KP | Software Engineer",
+  url: SITE_URL,
+  author: { "@type": "Person", name: "Achyuth KP" },
 };
 
 const SEO = ({
-    title = "Achyuth KP | Software Engineer",
-    description = "Portfolio of Achyuth KP — Software engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
-    image = `${SITE_URL}og-image.jpg`,
-    url = SITE_URL,
-    type = "website"
+  title = "Achyuth KP | Software Engineer",
+  description = "Portfolio of Achyuth KP — Software engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
+  image = `${SITE_URL}og-image.jpg`,
+  url = SITE_URL,
+  type = "website",
 }: SEOProps) => {
-    const fullTitle = title === "Achyuth KP | Software Engineer" ? title : `${title} | Achyuth KP`;
+  const fullTitle = title === "Achyuth KP | Software Engineer" ? title : `${title} | Achyuth KP`;
 
-    return (
-        <Helmet>
-            {/* Primary Meta Tags */}
-            <title>{fullTitle}</title>
-            <meta name="title" content={fullTitle} />
-            <meta name="description" content={description} />
+  return (
+    <Helmet>
+      {/* Primary Meta Tags */}
+      <title>{fullTitle}</title>
+      <meta name="title" content={fullTitle} />
+      <meta name="description" content={description} />
 
-            {/* Open Graph / Facebook */}
-            <meta property="og:type" content={type} />
-            <meta property="og:url" content={url} />
-            <meta property="og:title" content={fullTitle} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={image} />
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={url} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={image} />
 
-            {/* Twitter */}
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:url" content={url} />
-            <meta property="twitter:title" content={fullTitle} />
-            <meta property="twitter:description" content={description} />
-            <meta property="twitter:image" content={image} />
+      {/* Twitter */}
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={url} />
+      <meta property="twitter:title" content={fullTitle} />
+      <meta property="twitter:description" content={description} />
+      <meta property="twitter:image" content={image} />
 
-            {/* Structured Data — helps Google rich snippets */}
-            <script type="application/ld+json">
-                {JSON.stringify(personJsonLd)}
-            </script>
-            <script type="application/ld+json">
-                {JSON.stringify(websiteJsonLd)}
-            </script>
-        </Helmet>
-    );
+      {/* Structured Data — helps Google rich snippets */}
+      <script type="application/ld+json">{JSON.stringify(personJsonLd)}</script>
+      <script type="application/ld+json">{JSON.stringify(websiteJsonLd)}</script>
+    </Helmet>
+  );
 };
 
 export default SEO;
-

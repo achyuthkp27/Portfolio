@@ -1,296 +1,167 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, Star, GitFork } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import SEO from "@/components/SEO";
-import TextReveal from "@/components/ui/TextReveal";
 import { fetchRepositoryDetails, type RepoDetailsResult } from "@/lib/github";
+import { PillLink } from "@/components/ui/Pill";
+import { DUR, EASE } from "@/lib/motion";
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+/** One repository: name at statement scale, description once, actions, and a ledger of facts. */
 const ProjectDetail = () => {
-    const { slug } = useParams();
-    const navigate = useNavigate();
-    const [result, setResult] = useState<RepoDetailsResult | null>(null);
-    const project = result?.status === "ok" ? result.repo : null;
-    const isLoading = result === null;
-    const { scrollY } = useScroll();
-    const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const [result, setResult] = useState<RepoDetailsResult | null>(null);
+  const project = result?.status === "ok" ? result.repo : null;
+  const isLoading = result === null;
 
-    useEffect(() => {
-        if (!slug) {
-            setResult({ status: "not-found" });
-            return;
-        }
-
-        setResult(null);
-        const controller = new AbortController();
-        fetchRepositoryDetails(slug, controller.signal).then((next) => {
-            if (!controller.signal.aborted) setResult(next);
-        });
-        return () => controller.abort();
-    }, [slug]);
-
-    if (isLoading) {
-        return (
-            <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="min-h-screen flex items-center justify-center font-mono text-white/50 bg-background"
-            >
-                <span role="status">Loading repository…</span>
-            </motion.div>
-        );
+  useEffect(() => {
+    if (!slug) {
+      setResult({ status: "not-found" });
+      return;
     }
+    setResult(null);
+    const controller = new AbortController();
+    fetchRepositoryDetails(slug, controller.signal).then((next) => {
+      if (!controller.signal.aborted) setResult(next);
+    });
+    return () => controller.abort();
+  }, [slug]);
 
-    if (!project) {
-        const unavailable = result?.status === "unavailable";
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="min-h-screen flex items-center justify-center text-white bg-background flex-col px-6 text-center"
-            >
-                <h1 className="text-3xl md:text-4xl font-semibold mb-4 font-display">
-                    {unavailable ? "GitHub isn't responding right now" : "Repository not found"}
-                </h1>
-                <p className="max-w-md text-white/65 mb-8">
-                    {unavailable
-                        ? "GitHub limits how often a browser can ask for repository details. Try again in a few minutes, or open it on GitHub directly."
-                        : "There's no public repository with that name."}
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-6">
-                    {unavailable && slug && (
-                        <a
-                            href={`https://github.com/achyuthkp27/${encodeURIComponent(slug)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-emerald-400 hover:underline inline-flex items-center gap-2"
-                        >
-                            <Github className="w-4 h-4" aria-hidden="true" /> Open on GitHub
-                        </a>
-                    )}
-                    <Link to="/" className="text-white/80 hover:text-white hover:underline inline-flex items-center gap-2">
-                        <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to home
-                    </Link>
-                </div>
-            </motion.div>
-        );
-    }
-
-    const formattedTitle = project.name.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
-
+  if (isLoading) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-        >
-            <SEO
-                title={project.name}
-                description={project.description || "GitHub Repository"}
-                url={`https://achyuthkp27.github.io/Portfolio/#/project/${slug}`}
-            />
-
-            <div className="min-h-screen bg-background relative overflow-x-hidden">
-                {/* Navigation */}
-                <nav className="fixed top-20 md:top-24 left-0 z-40 px-6 pointer-events-none">
-                    <button 
-                      onClick={() => navigate(`/?scrollTo=${slug}`)} 
-                      aria-label="Back to projects"
-                      className="pointer-events-auto flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
-                    >
-                        <div className="p-2 rounded-full border border-white/10 bg-black/40 group-hover:bg-white/10 transition-colors">
-                            <ArrowLeft className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" />
-                        </div>
-                        <span className="font-mono text-xs uppercase tracking-widest hidden md:inline-block">Back to projects</span>
-                    </button>
-                </nav>
-
-                {/* Hero Section */}
-                <motion.section
-                    style={{ opacity: heroOpacity }}
-                    className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-20 px-6"
-                >
-                    <div className="absolute inset-0 z-0 overflow-hidden">
-                        <div className={`absolute inset-0 bg-gradient-to-br from-emerald-900/30 via-black to-black opacity-40`} />
-                        <div className="absolute inset-0 bg-grid-white/[0.02]" />
-                    </div>
-
-                    <div className="max-w-5xl mx-auto text-center relative z-10">
-                        <span className="flex items-center justify-center gap-3 mb-8">
-                            <span className="w-8 h-px bg-emerald-500/60" aria-hidden="true" />
-                            <span className="text-[11px] font-body font-medium tracking-[0.25em] uppercase text-white/40">Open source</span>
-                            <span className="w-8 h-px bg-emerald-500/60" aria-hidden="true" />
-                        </span>
-
-                        <h1 className="font-condensed uppercase text-5xl md:text-7xl lg:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 mb-8 tracking-wide break-words max-w-full leading-[0.95] pb-[0.08em]">
-                            <TextReveal type="blur-reveal">{formattedTitle}</TextReveal>
-                        </h1>
-
-                        <p className="text-lg md:text-xl font-body font-light text-white/55 max-w-2xl mx-auto leading-relaxed mb-12">
-                            {project.description || "No description yet."}
-                        </p>
-
-                        <div className="flex flex-wrap justify-center gap-4">
-                            <motion.a
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                href={project.html_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="View Source on GitHub"
-                                className="px-8 py-3 bg-white text-black font-bold text-xs tracking-widest uppercase flex items-center gap-3 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all"
-                            >
-                                <Github className="w-5 h-5" />
-                                View Source
-                            </motion.a>
-                            {project.homepage && (
-                                <motion.a
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    href={project.homepage}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label="View Live Demo"
-                                    className="px-8 py-3 border border-white/20 text-white font-bold text-xs tracking-widest uppercase flex items-center gap-3 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all"
-                                >
-                                    <ExternalLink className="w-5 h-5" />
-                                    Live Demo
-                                </motion.a>
-                            )}
-                        </div>
-                    </div>
-                </motion.section>
-
-                {/* Detailed Content */}
-                <section className="relative z-10 px-6 pb-32">
-                    <div className="max-w-screen-xl mx-auto">
-                        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 relative">
-
-                            {/* Sticky Left Sidebar (Meta Data) */}
-                            <div className="w-full lg:w-[350px] shrink-0 order-2 lg:order-1">
-                                <div className="lg:sticky lg:top-32 space-y-12">
-                                    
-                                    {/* Tech Stack / Topics */}
-                                    <div>
-                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 flex items-center gap-3">
-                                            <span className="w-4 h-px bg-white/30" /> Topics
-                                        </h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {project.topics && project.topics.length > 0 ? (
-                                                project.topics.map(tag => (
-                                                    <span key={tag} className="px-4 py-2 text-[11px] font-mono uppercase bg-white/5 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 rounded-full transition-all duration-300 backdrop-blur-sm cursor-default">
-                                                        {tag}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-white/30 text-xs font-mono italic">No topics specified.</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Meta Details */}
-                                    <div>
-                                        <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 flex items-center gap-3">
-                                            <span className="w-4 h-px bg-white/30" /> Repository Metrics
-                                        </h3>
-                                        
-                                        <div className="space-y-6">
-                                            <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/70 group-hover:text-emerald-400 transition-colors duration-300">
-                                                    <Code2 className="w-4 h-4" />
-                                                    <span className="text-[11px] font-mono uppercase tracking-widest">Language</span>
-                                                </div>
-                                                <p className="text-white font-mono text-sm">{project.language || "N/A"}</p>
-                                            </div>
-                                            
-                                            <div className="w-full h-px bg-white/5" />
-
-                                            <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/70 group-hover:text-emerald-400 transition-colors duration-300">
-                                                    <Calendar className="w-4 h-4" />
-                                                    <span className="text-[11px] font-mono uppercase tracking-widest">Last Commit</span>
-                                                </div>
-                                                <p className="text-white font-mono text-sm">{new Date(project.updated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                                            </div>
-                                            
-                                            <div className="w-full h-px bg-white/5" />
-
-                                            <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/50 group-hover:text-emerald-400 transition-colors duration-300">
-                                                    <Star className="w-4 h-4" />
-                                                    <span className="text-[11px] font-mono uppercase tracking-widest">Stargazers</span>
-                                                </div>
-                                                <p className="text-white font-mono text-sm">{project.stargazers_count}</p>
-                                            </div>
-
-                                            <div className="w-full h-px bg-white/5" />
-
-                                            <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/50 group-hover:text-emerald-400 transition-colors duration-300">
-                                                    <GitFork className="w-4 h-4" />
-                                                    <span className="text-[11px] font-mono uppercase tracking-widest">Forks</span>
-                                                </div>
-                                                <p className="text-white font-mono text-sm">{project.forks_count}</p>
-                                            </div>
-
-                                            <div className="w-full h-px bg-white/5" />
-
-                                            <div className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-3 text-white/50 group-hover:text-emerald-400 transition-colors duration-300">
-                                                    <User className="w-4 h-4" />
-                                                    <span className="text-[11px] font-mono uppercase tracking-widest">Author</span>
-                                                </div>
-                                                <p className="text-white font-mono text-sm">@achyuthkp27</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-
-                            {/* Main content: clean overview, README lives on GitHub */}
-                            <div className="flex-1 min-w-0 order-1 lg:order-2 space-y-8">
-                                <div className="rounded-2xl border border-white/10 bg-[#0a0a0c] p-8 md:p-10">
-                                    <h2 className="text-[11px] font-body font-medium tracking-[0.25em] uppercase text-white/40 mb-6">About this repository</h2>
-                                    <p className="text-lg md:text-xl font-body font-light text-white/75 leading-relaxed">
-                                        {project.description || "No description yet — the code speaks for itself."}
-                                    </p>
-                                </div>
-
-                                {/* Clone panel in the site's terminal voice */}
-                                <div className="rounded-2xl border border-white/10 bg-[#101013] overflow-hidden">
-                                    <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-                                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-                                        <span className="w-2.5 h-2.5 rounded-full bg-white/15" />
-                                        <span className="ml-3 font-mono text-[11px] text-white/40">terminal</span>
-                                    </div>
-                                    <div className="p-5 font-mono text-[13px] text-emerald-100/90">
-                                        <span className="text-emerald-400">$ </span>git clone {project.html_url}.git
-                                    </div>
-                                </div>
-
-                                <a
-                                    href={project.html_url + "#readme"}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center justify-between rounded-2xl border border-white/10 bg-[#0a0a0c] p-8 md:p-10 hover:border-emerald-500/30 transition-colors"
-                                >
-                                    <div>
-                                        <div className="font-display font-bold text-white text-xl md:text-2xl tracking-tight mb-1">Read the full README</div>
-                                        <div className="text-sm font-body font-light text-white/45">Docs, setup, and screenshots — rendered properly on GitHub.</div>
-                                    </div>
-                                    <ExternalLink className="w-5 h-5 text-white/40 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0" />
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </motion.div>
+      <div className="theme-dark min-h-screen flex items-center justify-center">
+        <span role="status" className="t-figure text-xs text-muted">
+          Loading repository…
+        </span>
+      </div>
     );
+  }
+
+  if (!project) {
+    const unavailable = result?.status === "unavailable";
+    return (
+      <div className="theme-dark min-h-screen flex items-center justify-center flex-col px-6 text-center">
+        <h1 className="t-statement text-4xl md:text-6xl mb-4">
+          {unavailable ? "GitHub isn't responding right now" : "Repository not found"}
+        </h1>
+        <p className="max-w-md t-body text-muted mb-8">
+          {unavailable
+            ? "GitHub limits how often a browser can ask for repository details. Try again in a few minutes, or open it on GitHub directly."
+            : "There's no public repository with that name."}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {unavailable && slug && (
+            <PillLink
+              href={`https://github.com/achyuthkp27/${encodeURIComponent(slug)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open on GitHub
+            </PillLink>
+          )}
+          <Link to="/" className="t-body hover:opacity-70 inline-flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const facts: [string, string][] = [
+    ["Language", project.language || "Mixed"],
+    ["Last commit", formatDate(project.updated_at)],
+    ["Stars", String(project.stargazers_count)],
+    ["Forks", String(project.forks_count)],
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: DUR.base, ease: EASE }}
+      className="theme-dark"
+    >
+      <SEO
+        title={project.name}
+        description={project.description || "GitHub repository"}
+        url={`https://achyuthkp27.github.io/Portfolio/#/project/${slug}`}
+      />
+      <div className="min-h-screen px-6 md:px-10 lg:px-12 pt-28 md:pt-32 pb-24 max-w-[1400px] mx-auto">
+        <button
+          type="button"
+          onClick={() => navigate(`/?scrollTo=${slug}`)}
+          aria-label="Back to projects"
+          className="group inline-flex items-center gap-2 t-label hover:opacity-70 transition-opacity duration-fast"
+        >
+          <ArrowLeft
+            className="w-4 h-4 transition-transform duration-fast group-hover:-translate-x-1"
+            aria-hidden="true"
+          />
+          Back to open source
+        </button>
+
+        <div className="mt-10 grid lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-12 lg:gap-20 items-start">
+          <div>
+            <p className="t-label text-muted mb-6">Open source</p>
+            <h1 className="t-statement text-5xl sm:text-6xl md:text-7xl lg:text-8xl break-words mb-6">
+              {project.name}
+            </h1>
+            <p className="t-body text-muted max-w-2xl mb-8">
+              {project.description || "No description on GitHub yet. The README has the details."}
+            </p>
+            {project.topics && project.topics.length > 0 && (
+              <ul className="flex flex-wrap gap-2 mb-8" aria-label="Topics">
+                {project.topics.map((topic) => (
+                  <li
+                    key={topic}
+                    className="rounded-pill border border-line px-3 py-1 text-[12px] font-semibold text-muted"
+                  >
+                    {topic}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="flex flex-wrap gap-3">
+              <PillLink href={project.html_url} target="_blank" rel="noopener noreferrer">
+                View source
+              </PillLink>
+              {project.homepage && (
+                <PillLink tone="outline" href={project.homepage} target="_blank" rel="noopener noreferrer">
+                  Live site
+                </PillLink>
+              )}
+            </div>
+          </div>
+          <div className="rounded-lg bg-tile p-6 md:p-8">
+            <dl className="divide-y divide-line">
+              {facts.map(([term, value]) => (
+                <div key={term} className="flex justify-between gap-4 py-3">
+                  <dt className="t-label text-muted">{term}</dt>
+                  <dd className="t-figure text-sm">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <pre className="mt-6 rounded-sm bg-night p-4 overflow-x-auto t-figure text-xs text-snow/80">
+              <span className="text-emerald-400">$ </span>git clone {project.html_url}.git
+            </pre>
+            <a
+              href={`${project.html_url}#readme`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 block t-body hover:opacity-70 transition-opacity duration-fast"
+            >
+              Read the full README on GitHub ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 };
 
 export default ProjectDetail;

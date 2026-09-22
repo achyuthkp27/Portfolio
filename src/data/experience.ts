@@ -4,7 +4,7 @@ export interface Experience {
   company: string;
   role: string;
   period: string;
-  type: 'full-time' | 'internship' | 'contract';
+  type: "full-time" | "internship" | "contract";
   icon: LucideIcon;
   color: string;
   /** Roles sharing a platform form one unbroken lane on the rail, across employers */
@@ -52,7 +52,19 @@ export const experiences: Experience[] = [
       "Led end-to-end ELK Stack + Kafka rollout for centralized logging and cross-service tracing, shortening production triage; wrote JUnit/Mockito test suites as part of Jenkins CI/CD quality gates.",
       "Promoted to Senior Software Engineer; earned the Above and Beyond Individual Award (Q1 2024) for critical project delivery.",
     ],
-    technologies: ["Java", "Spring Boot", "Spring Security", "Kafka", "Redis", "PostgreSQL", "ELK Stack", "JUnit", "Mockito", "Docker", "AWS"],
+    technologies: [
+      "Java",
+      "Spring Boot",
+      "Spring Security",
+      "Kafka",
+      "Redis",
+      "PostgreSQL",
+      "ELK Stack",
+      "JUnit",
+      "Mockito",
+      "Docker",
+      "AWS",
+    ],
   },
   {
     company: "Aniworks",

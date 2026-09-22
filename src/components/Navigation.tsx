@@ -1,310 +1,234 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Download } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { hasKeyboardAndPointer, isMacPlatform, openCommandMenu } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { DUR, EASE } from "@/lib/motion";
+import { NAV_ITEMS } from "@/data/nav";
+import { PROFILE } from "@/data/profile";
+import { PillButton, PillLink } from "./ui/Pill";
 
+/** The bar the reference uses: wordmark left, uppercase links centred, one white pill right. */
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const location = useLocation();
   const scrollToSection = useSectionScroll();
   const isHomePage = location.pathname === "/" || location.pathname === "";
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(mobileMenuRef, isMobileMenuOpen);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(menuRef, isMenuOpen);
 
-  // Close mobile menu on Escape key
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMenuOpen) setIsMenuOpen(false);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isMobileMenuOpen]);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   const [activeSection, setActiveSection] = useState("");
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 50);
-    // Back in the hero, no section is current
+    setIsScrolled(latest > 40);
     if (latest < window.innerHeight * 0.5) setActiveSection("");
   });
 
-  const [shortcutHints, setShortcutHints] = useState<{ show: boolean; mod: string }>({ show: false, mod: "Ctrl" });
-
+  const [shortcut, setShortcut] = useState<{ show: boolean; mod: string }>({ show: false, mod: "Ctrl" });
   useEffect(() => {
-    setShortcutHints({ show: hasKeyboardAndPointer(), mod: isMacPlatform() ? "⌘" : "Ctrl" });
+    setShortcut({ show: hasKeyboardAndPointer(), mod: isMacPlatform() ? "⌘" : "Ctrl" });
   }, []);
 
+  // Scroll spy: the topmost section crossing a thin reading line mid-viewport is current
   useEffect(() => {
     if (!isHomePage) {
       setActiveSection("");
       return;
     }
-
-    // What the nav highlights, and what to watch for it. "Education" labels a 125px row
-    // inside the awards band — too short for a fast scroll to land on — so watch the whole
-    // band and report it as education. #writing has no nav item, so nothing watches it.
-    const spyTargets = [
-      { navId: "about", elementId: "about" },
-      { navId: "experience", elementId: "experience" },
-      { navId: "projects", elementId: "projects" },
-      { navId: "skills", elementId: "skills" },
-      { navId: "education", elementId: "awards" },
-      { navId: "contact", elementId: "contact" },
-    ];
-
-    // Which observed elements currently cross the reading line, and where each one is.
     const targets = new Map<string, Element>();
-    const navIdByElementId = new Map(spyTargets.map((t) => [t.elementId, t.navId]));
     const crossing = new Set<string>();
-
-    const sectionObserver = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const navId = navIdByElementId.get(entry.target.id);
-          if (!navId) return;
-          if (entry.isIntersecting) crossing.add(navId);
-          else crossing.delete(navId);
+          if (entry.isIntersecting) crossing.add(entry.target.id);
+          else crossing.delete(entry.target.id);
         });
-
-        // Sections are metres tall and often overlap the line together, so take the
-        // highest one on the page rather than whichever entry happened to fire last.
         const topmost = [...crossing]
           .map((id) => ({ id, top: targets.get(id)?.getBoundingClientRect().top ?? Infinity }))
           .sort((a, b) => a.top - b.top)[0];
-
         if (topmost) setActiveSection(topmost.id);
       },
-      // A thin band across the middle of the viewport is the reading line. threshold 0
-      // means "touches the line at all" — with a threshold, a section taller than the
-      // band could never satisfy it, which is every section on this page.
       { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
     );
-
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-    // A LazySection placeholder carries the section id until the real section mounts and
-    // replaces it. Following the id alone would leave us observing a detached node, so
-    // re-point whenever the element behind an id changes.
-    const observeAllSections = () => {
-      spyTargets.forEach(({ navId, elementId }) => {
-        const element = document.querySelector(`main #${elementId}`);
-        if (!element || targets.get(navId) === element) return;
-
-        const previous = targets.get(navId);
+    const rescan = () => {
+      NAV_ITEMS.forEach(({ id }) => {
+        const element = document.querySelector(`main #${id}`);
+        if (!element || targets.get(id) === element) return;
+        const previous = targets.get(id);
         if (previous) {
-          sectionObserver.unobserve(previous);
-          crossing.delete(navId);
+          observer.unobserve(previous);
+          crossing.delete(id);
         }
-        targets.set(navId, element);
-        sectionObserver.observe(element);
+        targets.set(id, element);
+        observer.observe(element);
       });
     };
-
-    // Re-scan (debounced) whenever the DOM changes — LazySection mounts
-    // replace placeholders with the real sections.
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const domObserver = new MutationObserver(() => {
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(observeAllSections, 300);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(rescan, 300);
     });
-
-    // Initial scan
-    observeAllSections();
-    domObserver.observe(document.body, { childList: true, subtree: true });
-
+    rescan();
+    const main = document.getElementById("main-content");
+    if (main) domObserver.observe(main, { childList: true, subtree: true });
     return () => {
-      if (debounceTimer) clearTimeout(debounceTimer);
-      sectionObserver.disconnect();
+      if (timer) clearTimeout(timer);
+      observer.disconnect();
       domObserver.disconnect();
     };
   }, [isHomePage]);
 
-  const navItems = [
-    { label: "About", id: "about" },
-    { label: "Experience", id: "experience" },
-    { label: "Projects", id: "projects" },
-    { label: "Skills", id: "skills" },
-    { label: "Education", id: "education" },
-    { label: "Contact", id: "contact" },
-  ];
-
-  // Buttons, not "#section" links: under HashRouter a real hash href is a route (and a 404).
-  const goToSection = (id: string) => {
-    setIsMobileMenuOpen(false);
+  const goTo = (id: string) => {
+    setIsMenuOpen(false);
     scrollToSection(id);
   };
+
+  const resumeHref = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`;
+  const link = (active: boolean) =>
+    `font-body text-[14px] font-medium uppercase tracking-[0.03em] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
       <motion.nav
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-all duration-500 ${
-          isScrolled
-            ? "py-4"
-            : "py-6"
-        }`}
+        transition={{ duration: DUR.base, ease: EASE, delay: 0.1 }}
+        className="fixed top-0 left-0 right-0 z-50 text-snow"
       >
-        {/* Glassmorphism Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isScrolled ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-          className="absolute inset-0 bg-black/85 border-b border-white/[0.06] pointer-events-none"
-        >
-          {/* Gradient shimmer line on bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
-        </motion.div>
-
-        <div className="max-w-[1800px] mx-auto flex items-center justify-between relative z-10">
-          {/* Logo / Name */}
+        <div
+          className={`absolute inset-0 bg-night/85 backdrop-blur-md border-b border-line transition-opacity duration-base pointer-events-none ${
+            isScrolled && !isMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
+        <div className="relative flex items-center justify-between gap-6 px-6 md:px-10 lg:px-12 h-[72px] md:h-[76px]">
           <button
             type="button"
-            onClick={() => goToSection("top")}
-            className="font-display text-lg font-bold tracking-tight text-white hover:text-white/80 transition-colors"
+            onClick={() => goTo("top")}
+            className="t-heading text-[22px] md:text-2xl whitespace-nowrap flex items-baseline gap-1.5"
           >
-            Achyuth KP
+            {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
+            <span className="t-figure text-[10px] text-muted -translate-y-2" aria-hidden="true">
+              ©
+            </span>
           </button>
 
-          {/* Desktop Nav — Pill-style active indicator */}
-          <div className="hidden md:flex items-center relative">
-            <ul className="flex items-center gap-1 p-1 bg-white/[0.03] border border-white/[0.06] rounded-full backdrop-blur-sm">
-              {navItems.map((item, index) => {
-                const isActive = activeSection === item.id;
-                return (
-                  <motion.li
-                    key={item.label}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.1 * index }}
-                    className="relative"
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNavPill"
-                        className="absolute inset-0 bg-white/10 rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => goToSection(item.id)}
-                      aria-current={isActive ? "location" : undefined}
-                      className={`relative z-10 block px-4 py-1.5 text-[13px] font-body font-medium transition-colors rounded-full ${
-                        isActive
-                          ? "text-white"
-                          : "text-white/60 hover:text-white"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  </motion.li>
-                );
-              })}
-            </ul>
-          </div>
+          <ul className="hidden md:flex items-center gap-8 lg:gap-10 absolute left-1/2 -translate-x-1/2">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onClick={() => goTo(item.id)}
+                  aria-current={activeSection === item.id ? "location" : undefined}
+                  className={link(activeSection === item.id)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
 
-          {/* Right side - CTA */}
-          <div className="flex items-center gap-4">
-            {/* Quick-menu key — desktop with a real keyboard only */}
-            {shortcutHints.show && (
+          <div className="flex items-center gap-3">
+            {shortcut.show && (
               <button
                 type="button"
                 onClick={openCommandMenu}
                 title="Quick menu"
-                aria-label={`Open quick menu (${shortcutHints.mod === "⌘" ? "Command" : "Control"} K)`}
-                className="hidden lg:inline-flex items-center gap-1 h-8 px-2.5 rounded-md border border-white/15 bg-white/[0.03] font-body text-xs font-medium text-white/70 hover:text-white hover:border-white/30 transition-colors"
+                aria-label={`Open quick menu (${shortcut.mod === "⌘" ? "Command" : "Control"} K)`}
+                className="hidden lg:inline-flex items-center gap-1 h-8 px-2.5 rounded-sm border border-line font-mono text-xs text-muted hover:text-snow transition-colors duration-fast"
               >
-                <span className={shortcutHints.mod === "⌘" ? "text-[13px] leading-none" : ""}>{shortcutHints.mod}</span>
+                <span>{shortcut.mod}</span>
                 <span>K</span>
               </button>
             )}
-
-            {/* Mobile Menu Button */}
+            <PillButton size="sm" className="hidden md:inline-flex" onClick={() => goTo("contact")}>
+              Let's talk
+            </PillButton>
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMobileMenuOpen}
-              className="md:hidden text-white hover:opacity-70 transition-opacity font-body text-sm font-medium"
+              type="button"
+              onClick={() => setIsMenuOpen((open) => !open)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+              className="md:hidden relative w-11 h-10 -mr-2 flex flex-col items-end justify-center gap-[6px]"
             >
-              {isMobileMenuOpen ? "Close" : "Menu"}
+              <span
+                className={`block h-[2px] bg-current transition-all duration-base ease-out ${isMenuOpen ? "w-6 translate-y-[4px] rotate-45" : "w-8"}`}
+              />
+              <span
+                className={`block h-[2px] bg-current transition-all duration-base ease-out ${isMenuOpen ? "w-6 -translate-y-[4px] -rotate-45" : "w-8"}`}
+              />
             </button>
-
-              <a
-                href={`${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`}
-                target="_blank"
-                rel="noopener noreferrer"
-                download="Achyuth_KP_Resume.pdf"
-                className="hidden md:flex items-center gap-2 text-[13px] font-body font-medium text-white/75 hover:text-white transition-colors px-4 py-2 hover:bg-white/5 rounded-full"
-              >
-                <Download className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Résumé</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={() => goToSection("contact")}
-                className="hidden md:flex items-center text-[13px] font-body font-medium text-white hover:text-white transition-colors border border-white/20 hover:border-emerald-400/50 px-5 py-2 rounded-full hover:bg-emerald-500/5"
-              >
-                <span>Get in touch</span>
-              </button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu — Improved stagger */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            ref={mobileMenuRef}
-            className="fixed inset-0 z-40 md:hidden"
+            transition={{ duration: DUR.fast }}
+            ref={menuRef}
+            className="fixed inset-0 z-40 md:hidden theme-dark bg-night text-snow px-6 pt-28 pb-10 overflow-y-auto"
             role="dialog"
             aria-modal="true"
             aria-label="Site menu"
           >
-            <div className="absolute inset-0 bg-black">
-              <div className="flex flex-col items-center justify-center h-full gap-6">
-                {navItems.map((item, index) => (
-                  <motion.button
-                    type="button"
-                    key={item.label}
-                    onClick={() => goToSection(item.id)}
-                    initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.4, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
-                    className={`text-3xl font-display font-semibold tracking-tight transition-colors ${
-                      activeSection === item.id
-                        ? "text-white"
-                        : "text-white/60 hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                  </motion.button>
-                ))}
-                <motion.button
-                  type="button"
-                  onClick={() => goToSection("contact")}
-                  initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, delay: 0.35 }}
-                  className="mt-6 px-8 py-3 text-sm font-body font-semibold bg-white text-black hover:bg-emerald-100 transition-colors"
+            <ol className="border-t border-line">
+              {NAV_ITEMS.map((item, index) => (
+                <motion.li
+                  key={item.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: DUR.base, ease: EASE, delay: 0.05 * index }}
+                  className="border-b border-line"
                 >
-                  Get in touch
-                </motion.button>
-              </div>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => goTo(item.id)}
+                    className="w-full flex items-baseline gap-6 py-5 text-left"
+                  >
+                    <span className="t-label w-12">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="t-statement text-5xl">{item.label}</span>
+                  </button>
+                </motion.li>
+              ))}
+            </ol>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: DUR.base, delay: 0.3 }}
+              className="mt-10 flex flex-wrap items-center gap-3"
+            >
+              <PillButton onClick={() => goTo("contact")}>Let's talk</PillButton>
+              <PillLink
+                tone="outline"
+                href={resumeHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                download="Achyuth_KP_Resume.pdf"
+              >
+                Résumé
+              </PillLink>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

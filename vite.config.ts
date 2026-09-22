@@ -28,7 +28,8 @@ export default defineConfig(({ command, isPreview }) => ({
       manifest: {
         name: "Achyuth KP | Software Engineer",
         short_name: "Achyuth KP",
-        description: "Achyuth KP, Software Engineer building secure banking microservices with Java, Spring Boot, and Kafka.",
+        description:
+          "Achyuth KP, Software Engineer building secure banking microservices with Java, Spring Boot, and Kafka.",
         theme_color: "#000000",
         background_color: "#000000",
         display: "standalone",
@@ -43,8 +44,6 @@ export default defineConfig(({ command, isPreview }) => ({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        // The 3D scene is desktop-only; don't make phones download it into the offline cache
-        globIgnores: ["**/three-*.js", "**/r3f-*.js", "**/SpaceScene-*.js"],
       },
     }),
   ],
@@ -64,10 +63,11 @@ export default defineConfig(({ command, isPreview }) => ({
             { name: "react-vendor", test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 40 },
             // Router kept apart from react-dom: bundling them together once left react-dom undefined at startup
             { name: "router", test: /node_modules[\\/](react-router|react-router-dom|@remix-run)[\\/]/, priority: 30 },
-            { name: "framer-motion", test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/, priority: 30 },
-            // three.js and React Three Fiber load only when the desktop 3D scene mounts
-            { name: "three", test: /node_modules[\\/]three[\\/]/, priority: 20 },
-            { name: "r3f", test: /node_modules[\\/]@react-three[\\/]/, priority: 20 },
+            {
+              name: "framer-motion",
+              test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
+              priority: 30,
+            },
           ],
         },
       },

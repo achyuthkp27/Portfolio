@@ -12,11 +12,7 @@ import { useEffect, useState } from "react";
  * @param idleTimeout  – max ms the idle callback can wait (default 12000)
  * @returns `true` once the component should be rendered
  */
-export function useIdleMount(
-  shouldMount: boolean,
-  delay: number = 8000,
-  idleTimeout: number = 12000,
-): boolean {
+export function useIdleMount(shouldMount: boolean, delay: number = 8000, idleTimeout: number = 12000): boolean {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {

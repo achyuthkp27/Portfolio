@@ -15,7 +15,7 @@ interface LazySectionProps {
 
 /**
  * Wraps a lazy-loaded component and only renders it (triggering the network request)
- * once it is near the viewport. This prevents "network storms" where 10+ chunks 
+ * once it is near the viewport. This prevents "network storms" where 10+ chunks
  * are requested simultaneously on page load.
  *
  * When `sectionId` is provided, the placeholder gets that id so that navigation
@@ -27,10 +27,10 @@ interface LazySectionProps {
  * by Navigation on nav-link click), all LazySection instances mount immediately
  * so the page reaches its true height before scrolling begins.
  */
-export const LazySection = ({ 
-  children, 
-  fallback, 
-  className = "", 
+export const LazySection = ({
+  children,
+  fallback,
+  className = "",
   threshold = 0.01,
   rootMargin = "400px 0px",
   sectionId,
@@ -45,7 +45,9 @@ export const LazySection = ({
   return (
     <div ref={ref} className={className} style={{ minHeight: inView ? undefined : minHeight }}>
       {inView ? (
-        <Suspense fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}>
+        <Suspense
+          fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}
+        >
           {children}
         </Suspense>
       ) : (

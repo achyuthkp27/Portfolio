@@ -5,7 +5,9 @@ const TerminalOverlay = lazy(() => import("./TerminalOverlay"));
 
 const isTyping = () => {
   const el = document.activeElement;
-  return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || (el as HTMLElement | null)?.isContentEditable;
+  return (
+    el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || (el as HTMLElement | null)?.isContentEditable
+  );
 };
 
 /** Opens the terminal with the ` key, by typing ">_", or from the nav badge / command menu. */

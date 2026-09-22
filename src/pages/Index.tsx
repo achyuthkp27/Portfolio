@@ -1,76 +1,80 @@
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import { LazySection } from "@/components/ui/LazySection";
+import { DUR } from "@/lib/motion";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-// Lazy load below-the-fold heavy components
-const AboutMeSection = lazy(() => import("@/components/AboutMeSection"));
-const ExperienceTimeline = lazy(() => import("@/components/ExperienceTimeline"));
-const ProjectsSection = lazy(() => import("@/components/ProjectsSection"));
-const SkillsSection = lazy(() => import("@/components/SkillsSection"));
-const AwardSection = lazy(() => import("@/components/AwardSection"));
-const WritingSection = lazy(() => import("@/components/WritingSection"));
+const WorkSection = lazy(() => import("@/components/WorkSection"));
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const ServicesSection = lazy(() => import("@/components/ServicesSection"));
+const StackMarquee = lazy(() => import("@/components/StackMarquee"));
+const NumbersSection = lazy(() => import("@/components/NumbersSection"));
+const VisionSection = lazy(() => import("@/components/VisionSection"));
+const RecordSection = lazy(() => import("@/components/RecordSection"));
+const ExperienceSection = lazy(() => import("@/components/ExperienceSection"));
+const OpenSourceSection = lazy(() => import("@/components/OpenSourceSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 
+/** Home, in the reference's order: work, who, services, stack, numbers, principles, record, experience, updates, contact. */
 const Index = () => {
   const location = useLocation();
+  const root = useRef<HTMLDivElement>(null);
+  useScrollReveal(root);
 
-  // "Back to projects" lands here with ?scrollTo=<repo>. Projects is lazy-mounted, so jump
-  // to its placeholder first; once it mounts and loads, ProjectsSection centres the card.
   useEffect(() => {
     if (!new URLSearchParams(location.search).has("scrollTo")) return;
     const frame = requestAnimationFrame(() => {
-      document.getElementById("projects")?.scrollIntoView({ behavior: "instant", block: "start" });
+      document.getElementById("open-source")?.scrollIntoView({ behavior: "instant", block: "start" });
     });
     return () => cancelAnimationFrame(frame);
   }, [location.search]);
 
   return (
     <motion.div
+      ref={root}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
+      transition={{ duration: DUR.base }}
+      className="bg-night"
     >
-      {/* Global Fixed Grid Pattern covering the entire viewport continuously */}
-      <div className="fixed inset-0 grid-pattern opacity-[0.03] z-0 pointer-events-none" />
-
-      <div className="min-h-screen bg-transparent text-white selection:bg-white/20 relative z-10">
-        <main id="main-content" tabIndex={-1} className="outline-none">
-            <Hero />
-
-            <LazySection sectionId="about" minHeight="1200px">
-              <AboutMeSection />
-            </LazySection>
-
-            <LazySection sectionId="experience" minHeight="900px">
-              <ExperienceTimeline />
-            </LazySection>
-
-            <LazySection sectionId="projects" minHeight="1000px">
-              <ProjectsSection />
-            </LazySection>
-
-            <LazySection sectionId="skills" minHeight="800px">
-              <SkillsSection />
-            </LazySection>
-
-            <LazySection sectionId="awards" minHeight="600px">
-              <AwardSection />
-            </LazySection>
-
-            <LazySection sectionId="writing" minHeight="500px">
-              <WritingSection />
-            </LazySection>
-
-            <LazySection sectionId="contact" minHeight="800px">
-              <ContactSection />
-            </LazySection>
-          </main>
-          <Footer />
-      </div>
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        <Hero />
+        <LazySection sectionId="work" minHeight="6000px">
+          <WorkSection />
+        </LazySection>
+        <LazySection sectionId="about" minHeight="1100px">
+          <AboutSection />
+        </LazySection>
+        <LazySection sectionId="services" minHeight="800px">
+          <ServicesSection />
+        </LazySection>
+        <LazySection minHeight="400px">
+          <StackMarquee />
+        </LazySection>
+        <LazySection minHeight="600px">
+          <NumbersSection />
+        </LazySection>
+        <LazySection sectionId="vision" minHeight="490vh">
+          <VisionSection />
+        </LazySection>
+        <LazySection minHeight="700px">
+          <RecordSection />
+        </LazySection>
+        <LazySection sectionId="experience" minHeight="1200px">
+          <ExperienceSection />
+        </LazySection>
+        <LazySection sectionId="open-source" minHeight="1000px">
+          <OpenSourceSection />
+        </LazySection>
+        <LazySection sectionId="contact" minHeight="700px">
+          <ContactSection />
+        </LazySection>
+      </main>
+      <Footer />
     </motion.div>
   );
 };

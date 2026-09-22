@@ -10,16 +10,19 @@ interface LogEntry {
 }
 
 const STATUS_COPY: Record<Status, { label: string; className: string }> = {
-  draft: { label: "No request", className: "text-white/60 border-white/15" },
-  pending: { label: "Pending approval", className: "text-amber-200 border-amber-300/40 bg-amber-300/[0.06]" },
-  posted: { label: "Posted to core banking", className: "text-emerald-300 border-emerald-400/50 bg-emerald-400/[0.08]" },
-  rejected: { label: "Rejected, returned to maker", className: "text-white/80 border-white/30 bg-white/[0.05]" },
+  draft: { label: "No request", className: "text-muted border-line" },
+  pending: { label: "Pending approval", className: "text-snow border-snow/40 bg-snow/[0.06]" },
+  posted: {
+    label: "Posted to core banking",
+    className: "text-emerald-300 border-emerald-400/60 bg-emerald-400/[0.08]",
+  },
+  rejected: { label: "Rejected, returned to maker", className: "text-snow/80 border-line bg-snow/[0.05]" },
 };
 
 const TONE_CLASS: Record<LogEntry["tone"], string> = {
   ok: "text-emerald-300",
-  warn: "text-amber-200",
-  info: "text-white/70",
+  warn: "text-snow",
+  info: "text-snow/80",
 };
 
 /**
@@ -52,45 +55,71 @@ const MakerCheckerDemo = () => {
   };
 
   const btn =
-    "px-3 py-2 rounded-md text-xs md:text-[13px] font-body font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed";
+    "px-3 py-2 rounded-sm text-xs md:text-[13px] font-body font-medium border transition-colors duration-fast disabled:opacity-30 disabled:cursor-not-allowed";
 
   return (
-    <div className="w-full max-w-md">
+    <div data-reveal-skip className="w-full max-w-md">
       <div className="flex items-center justify-between gap-3 mb-5">
-        <span className="font-mono text-[11px] text-white/55">wire transfer · USD 250,000.00</span>
-        <span className={`px-2.5 py-1 rounded-full border text-[11px] font-body font-medium ${STATUS_COPY[status].className}`} role="status">
+        <span className="t-figure text-[11px] text-muted">wire transfer · USD 250,000.00</span>
+        <span
+          className={`px-2.5 py-1 rounded-sm border text-[11px] font-body font-medium ${STATUS_COPY[status].className}`}
+          role="status"
+        >
           {STATUS_COPY[status].label}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="rounded-lg border border-white/15 bg-white/[0.03] p-3">
-          <div className="text-[11px] font-body uppercase tracking-[0.15em] text-white/55 mb-2.5">Maker</div>
+        <div className="rounded-sm border border-line bg-snow/[0.06] p-3">
+          <div className="t-figure text-[11px] uppercase tracking-[0.15em] mb-2.5">Maker</div>
           <div className="flex flex-col gap-2">
-            <button type="button" onClick={initiate} disabled={status === "pending"} className={`${btn} border-white/20 text-white hover:bg-white/10`}>
+            <button
+              type="button"
+              onClick={initiate}
+              disabled={status === "pending"}
+              className={`${btn} border-line text-snow hover:bg-snow/10`}
+            >
               Submit transfer
             </button>
-            <button type="button" onClick={selfApprove} disabled={status !== "pending"} className={`${btn} border-white/15 text-white/80 hover:bg-white/5`}>
+            <button
+              type="button"
+              onClick={selfApprove}
+              disabled={status !== "pending"}
+              className={`${btn} border-line text-snow/80 hover:bg-snow/5`}
+            >
               Approve own request
             </button>
           </div>
         </div>
-        <div className="rounded-lg border border-white/15 bg-white/[0.03] p-3">
-          <div className="text-[11px] font-body uppercase tracking-[0.15em] text-white/55 mb-2.5">Checker</div>
+        <div className="rounded-sm border border-line bg-snow/[0.06] p-3">
+          <div className="t-figure text-[11px] uppercase tracking-[0.15em] mb-2.5">Checker</div>
           <div className="flex flex-col gap-2">
-            <button type="button" onClick={approve} disabled={status !== "pending"} className={`${btn} border-emerald-400/40 text-emerald-200 hover:bg-emerald-400/10`}>
+            <button
+              type="button"
+              onClick={approve}
+              disabled={status !== "pending"}
+              className={`${btn} border-emerald-400/60 text-emerald-200 hover:bg-emerald-400/10`}
+            >
               Approve
             </button>
-            <button type="button" onClick={reject} disabled={status !== "pending"} className={`${btn} border-white/15 text-white/80 hover:bg-white/5`}>
+            <button
+              type="button"
+              onClick={reject}
+              disabled={status !== "pending"}
+              className={`${btn} border-line text-snow/80 hover:bg-snow/5`}
+            >
               Reject
             </button>
           </div>
         </div>
       </div>
 
-      <div className="min-h-[108px] rounded-lg border border-white/10 bg-black/40 p-3 font-mono text-[11px] leading-relaxed" aria-live="polite">
+      <div
+        className="min-h-[108px] rounded-sm border border-line bg-night/60 p-3 font-mono text-[11px] leading-relaxed"
+        aria-live="polite"
+      >
         {log.length === 0 ? (
-          <p className="text-white/45">Submit a transfer as the maker, then try approving it yourself.</p>
+          <p className="text-muted">Submit a transfer as the maker, then try approving it yourself.</p>
         ) : (
           <AnimatePresence initial={false}>
             {log.map((entry, i) => (
@@ -108,9 +137,13 @@ const MakerCheckerDemo = () => {
       </div>
 
       <div className="flex items-center justify-between mt-3">
-        <span className="text-[11px] font-body text-white/45">Illustrative model, not production code</span>
+        <span className="text-[11px] font-body text-muted">Illustrative model, not production code</span>
         {status !== "draft" && (
-          <button type="button" onClick={reset} className="text-[11px] font-body text-white/60 hover:text-white underline underline-offset-2">
+          <button
+            type="button"
+            onClick={reset}
+            className="text-[11px] font-body text-muted hover:text-snow underline underline-offset-2"
+          >
             Reset
           </button>
         )}

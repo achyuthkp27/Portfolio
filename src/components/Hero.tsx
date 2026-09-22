@@ -1,214 +1,111 @@
-import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { Fragment, lazy, Suspense, useRef } from "react";
-import { useSmoothScroll } from "./ui/SmoothScroll";
-import ExperienceTimer from "./ui/ExperienceTimer";
-import { useLowEndDevice } from "@/hooks/useLowEndDevice";
-import { useMobile } from "@/hooks/useMobile";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { ArrowDownRight } from "lucide-react";
 import { useLoading } from "@/context/LoadingContext";
+import { useLocalTime } from "@/hooks/useLocalTime";
+import { PROFILE } from "@/data/profile";
+import { DUR, EASE } from "@/lib/motion";
 
-const SpaceScene = lazy(() => import("@/components/3d/SpaceScene"));
-
-const CAREER_START = new Date("2021-07-26");
-
-const HERO_EASE = [0.16, 1, 0.3, 1] as const;
+/** Small fact tiles that drift in from the edges as the visitor scrolls, where the reference floats photographs. */
+const TILES = [
+  { label: "Based in", value: "Bengaluru", side: "left", top: "18%", depth: 1 },
+  { label: "Since", value: "Jul 2021", side: "right", top: "26%", depth: 0.7 },
+  { label: "Audited platform", value: "PCI-DSS · SOX", side: "left", top: "66%", depth: 0.55 },
+  { label: "Estate", value: "30+ services", side: "right", top: "70%", depth: 0.9 },
+] as const;
 
 /**
- * The estate in one line. Deliberately the same five words as the skills map, and
- * deliberately not the stat bar's numbers — this is the shape, those are the counts.
+ * The introduction, the way the reference opens: the name at wordmark scale, one uppercase
+ * line, and an invitation to scroll. Facts drift in from the edges as the page moves.
  */
-const FLOW = ["channels", "api gateway", "kafka", "services", "stores"];
-
-/**
- * Proof rather than claim: the path a request actually takes, with one request
- * travelling it. Still legible when the motion is switched off.
- */
-const FlowStrip = () => {
+const Hero = () => {
+  const { isLoading } = useLoading();
   const reduceMotion = useReducedMotion();
+  const time = useLocalTime(PROFILE.timeZone);
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -80]);
+  const titleScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 1.6]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const tileIn = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
+
+  const enter = (delay: number) => ({
+    initial: { opacity: 0, y: 12 },
+    animate: !isLoading ? { opacity: 1, y: 0 } : {},
+    transition: { duration: DUR.base, ease: EASE, delay },
+  });
 
   return (
-    <div className="relative inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 overflow-hidden">
-      {!reduceMotion && (
-        <motion.span
-          aria-hidden="true"
-          initial={{ left: "-6%" }}
-          animate={{ left: "106%" }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "linear", repeatDelay: 0.6 }}
-          className="absolute top-0 bottom-0 w-24 pointer-events-none bg-[linear-gradient(90deg,transparent,rgba(16,185,129,0.16),transparent)]"
-        />
-      )}
-      {FLOW.map((node, i) => (
-        <Fragment key={node}>
-          {i > 0 && (
-            <span className="font-mono text-[11px] text-emerald-500/70" aria-hidden="true">
-              →
-            </span>
-          )}
-          <span className="relative font-mono text-[10px] md:text-[11px] text-white/65 whitespace-nowrap">{node}</span>
-        </Fragment>
-      ))}
-    </div>
+    <section
+      ref={ref}
+      data-reveal-skip
+      className="theme-dark relative min-h-screen bg-night text-snow overflow-hidden flex flex-col"
+    >
+      {/* Drifting facts */}
+      {!reduceMotion && TILES.map((tile) => <FactTile key={tile.label} tile={tile} progress={tileIn} />)}
+
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6 pt-28 pb-24 text-center">
+        <motion.div
+          style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
+          className="w-full origin-center will-change-transform"
+        >
+          <h1 className="px-4 py-[0.12em]">
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: DUR.slow, ease: EASE, delay: 0.15 }}
+              className="t-wordmark block leading-none text-[19vw] sm:text-[16vw] lg:text-[14vw] xl:text-[13vw] whitespace-nowrap"
+            >
+              {PROFILE.first} {PROFILE.last}
+              <span
+                aria-hidden="true"
+                className="inline-block align-top t-figure text-[0.09em] text-muted ml-[0.15em] mt-[0.12em]"
+              >
+                ©
+              </span>
+            </motion.span>
+          </h1>
+          <motion.p {...enter(0.5)} className="t-caps text-snow/85 max-w-xl mx-auto mt-6 md:mt-8">
+            {PROFILE.tagline}
+          </motion.p>
+        </motion.div>
+      </div>
+
+      <motion.div
+        {...enter(0.8)}
+        className="relative flex items-center justify-between px-6 md:px-10 lg:px-12 pb-8 text-[13px] md:text-[14px] font-medium uppercase tracking-[0.04em] text-muted"
+      >
+        <span className="hidden sm:inline">{PROFILE.title}</span>
+        <span className="inline-flex items-center gap-2 mx-auto sm:mx-0">
+          Scroll to explore <ArrowDownRight className="w-4 h-4" aria-hidden="true" />
+        </span>
+        <span className="hidden sm:inline t-figure normal-case tracking-normal">
+          {PROFILE.city.split(",")[0]} {time} IST
+        </span>
+      </motion.div>
+    </section>
   );
 };
 
-const StaticBackdrop = () => (
-  <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black z-0">
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/25 via-black to-black opacity-50" />
-  </div>
-);
-
-const STATS = [
-  { value: "30", suffix: "+", label: "Services in estate", detail: "Spring Boot · Kafka" },
-  { value: "3", label: "Banking channels", detail: "Retail · Mobile · Corporate" },
-  { value: "PCI", label: "Compliance-first", detail: "PCI-DSS · SOX audited" },
-];
-
-const Hero = () => {
-  const { isLoading } = useLoading();
-  const isMobile = useMobile();
-  const isLowEnd = useLowEndDevice();
-  const { lenis } = useSmoothScroll();
-  const ref = useRef<HTMLElement>(null);
-
-  const showSpaceScene = isLowEnd === false && !isMobile && !isLoading;
-
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 300]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
-  const springY = useSpring(y, { stiffness: 100, damping: 30 });
-
-  const reveal = (delay: number) => ({
-    initial: { opacity: 0, y: 20 },
-    animate: !isLoading ? { opacity: 1, y: 0 } : {},
-    transition: { duration: 0.45, delay },
-  });
-
-  // Buttons, not hash anchors — a real "#projects" href is a route under HashRouter.
-  const scrollToSection = (id: string) => {
-    const target = document.getElementById(id);
-    if (!target) return;
-    if (lenis) lenis.scrollTo(target, { duration: 1.2 });
-    else target.scrollIntoView({ behavior: "smooth" });
-  };
-
+const FactTile = ({
+  tile,
+  progress,
+}: {
+  tile: (typeof TILES)[number];
+  progress: ReturnType<typeof useTransform<number, number>>;
+}) => {
+  const from = tile.side === "left" ? -160 * tile.depth : 160 * tile.depth;
+  const x = useTransform(progress, [0, 1], [from, 0]);
+  const opacity = useTransform(progress, [0, 0.35, 1], [0, 0.6, 1]);
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 md:px-12 selection:bg-white/20">
-      {showSpaceScene ? (
-        <Suspense fallback={<StaticBackdrop />}>
-          <SpaceScene />
-        </Suspense>
-      ) : (
-        <StaticBackdrop />
-      )}
-
-      {/* Emerald aura grounding the headline */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_45%_40%_at_50%_45%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" aria-hidden="true" />
-
-      {/* Drifting light — transform-only so it never triggers layout */}
-      <motion.div
-        aria-hidden="true"
-        className="absolute left-0 top-0 z-[1] w-[55vw] h-[55vw] max-w-[900px] max-h-[900px] rounded-full pointer-events-none mix-blend-screen motion-reduce:hidden"
-        style={{ background: "radial-gradient(circle, rgba(52,211,153,0.16) 0%, rgba(16,185,129,0.07) 35%, transparent 65%)" }}
-        animate={{
-          x: ["-15vw", "45vw", "75vw", "30vw", "-15vw"],
-          y: ["-10vh", "-20vh", "35vh", "55vh", "-10vh"],
-        }}
-        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <motion.div style={{ opacity, scale, y: springY }} className="relative z-10 max-w-[1600px] w-full mx-auto pt-20 pointer-events-none">
-        <div className="flex flex-col items-center text-center">
-          <motion.div {...reveal(0.1)} className="mb-8 pointer-events-auto">
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 border border-white/10 bg-white/[0.04] rounded-full">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-              <span className="text-xs font-body text-white/75">Open to opportunities</span>
-            </div>
-          </motion.div>
-
-          <h1 className="mb-8 pointer-events-auto">
-            <motion.span {...reveal(0.16)} className="block mb-4 text-sm md:text-base font-body font-medium tracking-[0.2em] uppercase text-white/75">
-              Achyuth KP <span className="text-emerald-400" aria-hidden="true">·</span> Software Engineer
-            </motion.span>
-            {["Systems that", "move money."].map((line, i) => (
-              <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
-                <motion.span
-                  initial={{ y: "100%" }}
-                  animate={!isLoading ? { y: 0 } : {}}
-                  transition={{ duration: 0.7, ease: HERO_EASE, delay: 0.2 + i * 0.08 }}
-                  className="block font-condensed uppercase text-[13vw] md:text-[9vw] lg:text-[7.6vw] leading-[0.92] tracking-wide bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
-                >
-                  {line}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
-
-          <motion.p
-            {...reveal(0.46)}
-            className="text-base md:text-lg font-body font-light text-white/70 max-w-xl mx-auto mb-12 leading-relaxed pointer-events-auto"
-          >
-            Five years building secure banking microservices in Java, Spring Boot, and Kafka —
-            maker-checker controls, card tokenization, and MFA for retail, mobile, and corporate channels.
-          </motion.p>
-
-          <motion.div {...reveal(0.54)} className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pointer-events-auto">
-            <button
-              type="button"
-              onClick={() => scrollToSection("projects")}
-              className="group inline-flex items-center justify-center gap-2 px-8 py-3 w-full sm:w-auto bg-white text-black font-semibold text-sm transition-colors hover:bg-emerald-100"
-            >
-              See the work <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center justify-center px-8 py-3 w-full sm:w-auto border border-white/25 text-white font-semibold text-sm transition-colors hover:border-emerald-400/60 hover:bg-emerald-500/5"
-            >
-              Get in touch
-            </button>
-          </motion.div>
-        </div>
-
-        {/* One request's path across the estate, before the numbers */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.62 }}
-          className="mt-14 flex justify-center pointer-events-auto"
-        >
-          <FlowStrip />
-        </motion.div>
-
-        {/* Stat bar — live experience counter anchors three quiet facts */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-10 lg:mt-12 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-center pointer-events-auto"
-        >
-          <ExperienceTimer startDate={CAREER_START} />
-          {STATS.map((stat) => (
-            <div key={stat.label}>
-              <div className="text-4xl md:text-5xl font-display font-bold text-white tracking-tighter">
-                {stat.value}
-                {stat.suffix && <span className="text-emerald-400">{stat.suffix}</span>}
-              </div>
-              <div className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-white/60 mt-2">{stat.label}</div>
-              <div className="font-mono text-xs text-white/50 mt-1.5">{stat.detail}</div>
-            </div>
-          ))}
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={!isLoading ? { opacity: 1 } : {}}
-        transition={{ delay: 0.8, duration: 0.5 }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[1px] bg-gradient-to-b from-transparent to-white/20"
-        aria-hidden="true"
-      />
-    </section>
+    <motion.div
+      style={{ x, opacity, top: tile.top, [tile.side]: "4%" }}
+      aria-hidden="true"
+      className="absolute hidden md:block rounded-md bg-tile/90 border border-line px-5 py-4 min-w-[170px] pointer-events-none"
+    >
+      <p className="text-[11px] uppercase tracking-[0.08em] text-muted">{tile.label}</p>
+      <p className="t-heading text-2xl mt-1.5">{tile.value}</p>
+    </motion.div>
   );
 };
 

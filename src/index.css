@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens. Two themes, one type family. A section picks its theme with
+ * `.theme-dark` or `.theme-light`; everything inside reads bg / fg / muted / line / tile
+ * from the theme, so components never hard-code a colour.
+ */
 @layer base {
   :root {
-    /* Accent Color System — default: Emerald */
+    /* Emerald: the only accent, used sparingly for status and focus */
     --accent-100: 152 81% 96%;
     --accent-300: 156 72% 67%;
     --accent-400: 158 64% 52%;
@@ -12,194 +17,214 @@
     --accent-900: 164 86% 16%;
     --accent-950: 166 91% 9%;
 
-    /* Titan Theme: Deep Black & Monochrome */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* Palette */
+    --night: 120 6% 3%;
+    --graphite: 0 0% 9%;
+    --snow: 0 0% 100%;
+    --stone: 0 0% 96%;
 
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 100%;
+    /* Default theme: dark */
+    --bg: var(--night);
+    --fg: var(--snow);
+    --muted: 0 0% 100% / 0.6;
+    --line: 0 0% 100% / 0.12;
+    --tile: var(--graphite);
+    --tile-fg: var(--snow);
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 100%;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur-fast: 200ms;
+    --dur-base: 400ms;
+    --dur-slow: 800ms;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
+    /* Layered soft shadow under pill buttons */
+    --shadow-pill:
+      -1px 1px 0.5px hsl(0 0% 27% / 0.02), -3px 3px 1px hsl(0 0% 27% / 0.03), -6px 7px 2px hsl(0 0% 27% / 0.04),
+      -12px 13px 4px hsl(0 0% 27% / 0.05), -23px 25px 8px hsl(0 0% 27% / 0.06);
 
-    --muted: 0 0% 15%;
+    /* Legacy names used by the terminal */
+    --background: var(--night);
+    --foreground: var(--snow);
+    --card: var(--graphite);
+    --card-foreground: var(--snow);
+    --popover: var(--graphite);
+    --popover-foreground: var(--snow);
+    --primary: var(--snow);
+    --primary-foreground: var(--night);
+    --secondary: var(--graphite);
+    --secondary-foreground: var(--snow);
     --muted-foreground: 0 0% 70%;
-
-    --accent: 210 20% 20%;
-    --accent-foreground: 0 0% 100%;
-
+    --accent: var(--graphite);
+    --accent-foreground: var(--snow);
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.12;
+    --ring: var(--accent-400);
+    --radius: var(--radius-sm);
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 0% 100%;
-
-    --radius: 0rem;
-    /* Institutional = Sharp Edges? Or slight rounded. Let's go 0.25rem for "tech" feel */
-
-    /* Titan Gradients - Subtle & Deep */
-    --gradient-cyber: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 70%));
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 5% / 0.8), hsl(0 0% 0% / 0.9));
-
-    /* Shadows - Clean & Sharp */
-    --shadow-neon: 0 0 20px hsl(0 0% 100% / 0.1);
-    --shadow-card: 0 10px 40px -10px hsl(0 0% 0% / 1);
-
-    /* Custom Fonts */
-    --font-display: "Inter", sans-serif;
+    --font-display: "Antonio", "Inter", sans-serif;
     --font-body: "Inter", sans-serif;
     --font-mono: "JetBrains Mono", monospace;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  .theme-dark {
+    --bg: var(--night);
+    --fg: var(--snow);
+    --muted: 0 0% 100% / 0.6;
+    --line: 0 0% 100% / 0.12;
+    --tile: var(--graphite);
+    --tile-fg: var(--snow);
+  }
+  .theme-graphite {
+    --bg: var(--graphite);
+    --fg: var(--snow);
+    --muted: 0 0% 100% / 0.6;
+    --line: 0 0% 100% / 0.12;
+    --tile: 0 0% 13%;
+    --tile-fg: var(--snow);
+  }
+  .theme-light {
+    --bg: var(--stone);
+    --fg: var(--night);
+    --muted: 0 0% 0% / 0.55;
+    --line: 0 0% 0% / 0.12;
+    --tile: var(--snow);
+    --tile-fg: var(--night);
+  }
+  .theme-white {
+    --bg: var(--snow);
+    --fg: var(--night);
+    --muted: 0 0% 0% / 0.55;
+    --line: 0 0% 0% / 0.12;
+    --tile: var(--stone);
+    --tile-fg: var(--night);
   }
 
+  /* No fixed height on html either: with overflow-x hidden it would become the scroll
+     container, which breaks position: sticky on phones where Lenis is off. */
   html {
-    scroll-behavior: smooth;
     overflow-x: hidden;
-    height: 100%;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-night text-snow antialiased;
     font-family: var(--font-body);
-    cursor: default;
-    overflow-y: auto;
-    overflow-x: hidden;
+    font-weight: 400;
+    /* No overflow on body: it must not become a scroll container, or position: sticky
+       measures against it instead of the viewport and never pins on phones. */
     min-height: 100%;
     position: relative;
     -webkit-overflow-scrolling: touch;
+    font-feature-settings: "ss01", "cv11";
   }
 
-  /* Lenis Recommended CSS */
   html.lenis,
   html.lenis body {
     height: auto;
   }
-
   .lenis.lenis-smooth {
     scroll-behavior: auto !important;
   }
-
   .lenis.lenis-smooth [data-lenis-prevent] {
     overscroll-behavior: contain;
   }
-
   .lenis.lenis-stopped {
     overflow: hidden;
   }
 
-  .lenis.lenis-scrolling iframe {
-    pointer-events: none;
-  }
-
-  /* Hide scrollbar but keep functionality */
   body::-webkit-scrollbar {
     display: none;
-    /* Chrome/Safari/Webkit */
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-display);
   }
 
   code,
-  pre {
+  pre,
+  kbd {
     font-family: var(--font-mono);
   }
-}
 
-@layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-cyber);
+  ::selection {
+    background: hsl(var(--accent-500) / 0.35);
   }
 
-  .bg-gradient-cyber {
-    background-image: var(--gradient-cyber);
-  }
-
-  .shadow-neon {
-    box-shadow: var(--shadow-neon);
-  }
-
-  .glass {
-    @apply backdrop-blur-xl border border-border/50;
-    background-image: var(--gradient-glass);
-  }
-
-  .glass-card {
-    @apply backdrop-blur-xl bg-card/80 border border-border/30 rounded-2xl;
-  }
-
-  .grid-pattern {
-    background-size: 40px 40px;
-    background-image:
-      linear-gradient(to right, hsl(var(--border) / 0.1) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.1) 1px, transparent 1px);
-    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-  }
-
-  section {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 900px;
-  }
-
-  /* LazySection wrapper divs also benefit from content-visibility */
-  #main-content > div {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 800px;
-  }
-
-  #main-content > section:first-child,
-  #main-content > div:first-child {
-    content-visibility: visible;
-    contain-intrinsic-size: none;
+  :focus-visible {
+    outline: 2px solid hsl(var(--accent-400));
+    outline-offset: 2px;
   }
 }
 
-/* ── Mobile Performance Overrides ── */
-@media (max-width: 768px) {
-  /* Reduce expensive backdrop-blur on mobile GPUs */
-  .backdrop-blur-xl {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+@layer components {
+  /* Display voice: condensed, uppercase, tight. Wordmark, section titles, tile titles. */
+  .t-wordmark {
+    @apply font-display font-semibold uppercase leading-[0.9] tracking-[-0.01em];
   }
-  .backdrop-blur-md {
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+  .t-statement {
+    @apply font-display font-semibold uppercase leading-[0.95] tracking-[-0.005em];
   }
-  .backdrop-blur-2xl {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+  .t-heading {
+    @apply font-display font-medium uppercase leading-[1] tracking-[0];
   }
-  .glass,
-  .glass-card {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  /* Slash label, the way the reference labels its sections: "/ Selected work" */
+  .t-label {
+    @apply font-body text-[14px] md:text-[15px] font-medium tracking-[-0.01em] text-fg;
   }
-
-  .grid-pattern {
-    display: none !important;
+  .t-label::before {
+    content: "/ ";
+    @apply text-muted;
+  }
+  /* Uppercase support copy under headlines */
+  .t-caps {
+    @apply font-body text-[14px] md:text-[16px] font-medium uppercase leading-[1.55] tracking-[0.01em];
+  }
+  /* Body copy */
+  .t-body {
+    @apply font-body text-[16px] md:text-[17px] font-normal leading-[1.55] tracking-[-0.005em];
+  }
+  /* Figures: tabular mono for counters and dates */
+  .t-figure {
+    @apply font-mono tabular-nums;
+  }
+  /* Marquee */
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 }
 
-/* ── Reduced Motion Support ── */
+/* ── Scroll reveal ────────────────────────────────────────────────────────
+   Applied by useScrollReveal: blurred, faded and slightly low until first seen. */
+.reveal {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(14px);
+  transition:
+    opacity 0.8s var(--ease),
+    filter 0.8s var(--ease),
+    transform 0.8s var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-in {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+/* Once settled, drop the filter so nothing stays on the compositor */
+.reveal.is-in:not(:hover) {
+  will-change: auto;
+}
+
+/* Scroll-scrubbed kinetic text is set up in the component; only the reduced-motion
+   escape hatch lives here so it applies without JavaScript. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

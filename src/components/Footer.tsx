@@ -1,67 +1,101 @@
-import { Github, Linkedin, Mail, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ArrowUp } from "lucide-react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { hasKeyboardAndPointer, isMacPlatform } from "@/lib/shortcuts";
+import { PROFILE } from "@/data/profile";
+import { NAV_ITEMS } from "@/data/nav";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
+import ScrambleNumber from "@/components/ui/ScrambleNumber";
 
-const kbdClass =
-  "inline-flex h-6 min-w-6 items-center justify-center gap-0.5 rounded border border-white/15 bg-white/[0.04] px-1.5 font-body text-xs font-medium leading-none text-white/80";
+const kbd =
+  "inline-flex h-6 min-w-6 items-center justify-center rounded-sm border border-line px-1.5 font-mono text-[11px] leading-none text-snow/80";
 
-const SOCIAL_LINKS = [
-  { icon: Github, href: "https://github.com/achyuthkp27", label: "GitHub" },
-  { icon: Linkedin, href: "https://www.linkedin.com/in/kpachyuth", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:kpachyuthz@gmail.com", label: "Email" },
-  { icon: FileText, href: "https://medium.com/@kpachyuthz", label: "Medium" },
-];
-
+/**
+ * Footer: the reference's bar (wordmark, links, scroll to top, copyright), then the name at
+ * wordmark scale, filled with a dot matrix and clipped by the bottom of the page.
+ */
 const Footer = () => {
   const { lenis } = useSmoothScroll();
-  // Only advertise shortcuts where they work: a real keyboard and pointer
-  const [shortcutMod, setShortcutMod] = useState<string | null>(null);
+  const scrollTo = useSectionScroll();
+  const [mod, setMod] = useState<string | null>(null);
   useEffect(() => {
-    if (hasKeyboardAndPointer()) setShortcutMod(isMacPlatform() ? "⌘" : "Ctrl");
+    if (hasKeyboardAndPointer()) setMod(isMacPlatform() ? "⌘" : "Ctrl");
   }, []);
-
   const backToTop = () => {
     if (lenis) lenis.scrollTo(0, { duration: 1.2 });
     else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer className="relative py-12 px-6 md:px-12 border-t border-white/10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex flex-col items-center md:items-start gap-1.5">
-          <button type="button" onClick={backToTop} className="font-display text-lg font-bold tracking-tight text-white">
-            Achyuth KP
+    <footer className="theme-dark relative bg-night text-snow overflow-hidden">
+      <svg
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full opacity-[0.06] pointer-events-none mix-blend-screen"
+      >
+        <filter id="footer-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#footer-grain)" />
+      </svg>
+
+      <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 py-8 border-t border-line">
+          <button type="button" onClick={backToTop} className="t-heading text-2xl flex items-baseline gap-1.5">
+            {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
+            <span className="t-figure text-[10px] text-muted -translate-y-2" aria-hidden="true">
+              ©
+            </span>
           </button>
-          <p className="text-sm font-body text-white/60">
-            Software Engineer · Bengaluru · © {new Date().getFullYear()}
-          </p>
+          <ul className="flex flex-wrap items-center gap-6">
+            {NAV_ITEMS.map((n) => (
+              <li key={n.id}>
+                <button
+                  type="button"
+                  onClick={() => scrollTo(n.id)}
+                  className="text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
+                >
+                  {n.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={backToTop}
+            className="inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
+          >
+            Scroll to top <ArrowUp className="w-4 h-4" aria-hidden="true" />
+          </button>
         </div>
-
-        {shortcutMod ? (
-          <p className="hidden lg:flex items-center gap-2 text-sm font-body text-white/55">
-            <kbd className={kbdClass}>{shortcutMod} K</kbd> quick menu
-            <span className="text-white/25" aria-hidden="true">·</span>
-            <kbd className={kbdClass}><span className="text-lg leading-none translate-y-[3px]">`</span></kbd> terminal
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-6 border-t border-line">
+          <p className="text-sm text-muted">
+            © <ScrambleNumber value={String(new Date().getFullYear())} /> {PROFILE.name}. {PROFILE.title},{" "}
+            {PROFILE.city.split(",")[0]}.
           </p>
-        ) : (
-          <p className="hidden md:block text-sm font-body text-white/50">Built with React, TypeScript, and Tailwind</p>
-        )}
-
-        <div className="flex items-center gap-3">
-          {SOCIAL_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={link.label}
-              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/65 hover:text-white hover:border-white/30 transition-colors"
-            >
-              <link.icon className="w-4 h-4" aria-hidden="true" />
-            </a>
-          ))}
+          {mod ? (
+            <p className="hidden lg:flex items-center gap-2 t-figure text-xs text-muted">
+              <kbd className={kbd}>{mod} K</kbd> quick menu <span className="opacity-40">·</span>{" "}
+              <kbd className={kbd}>`</kbd> terminal
+            </p>
+          ) : (
+            <p className="text-sm text-muted">React · TypeScript · Tailwind</p>
+          )}
         </div>
+      </div>
+
+      {/* The name, dot-matrix filled, cut by the bottom edge of the page */}
+      <div aria-hidden="true" className="relative h-[26vw] md:h-[23vw] lg:h-[21vw] overflow-hidden select-none">
+        <span
+          className="absolute left-1/2 -translate-x-1/2 top-[0.02em] font-body font-semibold tracking-[-0.05em] leading-[0.86] whitespace-nowrap text-[32vw] md:text-[29vw] lg:text-[27vw] text-transparent bg-clip-text"
+          style={{
+            backgroundImage: "radial-gradient(circle at center, hsl(0 0% 100% / 0.2) 0.9px, transparent 1.2px)",
+            backgroundSize: "6px 6px",
+            WebkitTextStroke: "1px hsl(0 0% 100% / 0.05)",
+          }}
+        >
+          {PROFILE.first}
+        </span>
       </div>
     </footer>
   );

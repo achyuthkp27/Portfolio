@@ -15,7 +15,7 @@ test("home page renders the splash screen, then the site", async ({ page }) => {
   await expect(page.getByTestId("splash-screen")).toBeVisible();
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("move money");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Achyuth");
   await expect(page.locator("#app-shell-loader")).toHaveCount(0);
   expect(errors).toEqual([]);
 });
@@ -25,8 +25,8 @@ test("case studies and the maker-checker demo work", async ({ page }) => {
   await page.goto("./");
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
-  // Sections mount lazily as they near the viewport, so bring Projects into view first
-  await page.locator("#projects").first().scrollIntoViewIfNeeded();
+  // Sections mount lazily as they near the viewport, so bring Work into view first
+  await page.locator("#work").first().scrollIntoViewIfNeeded();
   const submit = page.getByRole("button", { name: "Submit transfer" });
   await expect(submit).toBeAttached({ timeout: 15_000 });
   await submit.scrollIntoViewIfNeeded();

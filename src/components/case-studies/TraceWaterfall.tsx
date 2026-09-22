@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
+import { DUR, EASE } from "@/lib/motion";
 
 /**
  * A corporate wire transfer drawn as a distributed trace — the artifact I actually
@@ -167,31 +168,22 @@ const TraceWaterfall = () => {
   const active = SPANS[selected];
 
   return (
-    <div className="relative rounded-[1.75rem] border border-white/10 bg-[#0a0a0a] p-5 md:p-8 lg:p-10 shadow-[0_30px_80px_rgba(0,0,0,0.5)] overflow-hidden">
-      <div
-        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none"
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10">
+    <div data-reveal-skip className="rounded-lg bg-tile text-snow p-5 md:p-8 lg:p-10">
+      <div className="relative">
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-white/10">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-line">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="px-2.5 py-1 rounded-full border border-emerald-400/40 bg-emerald-400/[0.08] text-[11px] font-body font-medium text-emerald-200 shrink-0">
+            <span className="px-2.5 py-1 rounded-full border border-emerald-400/50 bg-emerald-400/[0.08] text-[11px] font-body font-medium text-emerald-200 shrink-0">
               Trace
             </span>
-            <span className="font-mono text-[11px] md:text-xs text-white/55 truncate">
+            <span className="t-figure text-[11px] md:text-xs text-muted truncate">
               wire transfer · {SPANS.length} spans · {COMPONENTS} components
             </span>
           </div>
           <button
             type="button"
             onClick={() => setRun((r) => r + 1)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 text-[11px] font-body font-medium text-white/80 hover:text-white hover:border-emerald-400/50 hover:bg-emerald-400/[0.06] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-sm border border-line text-[11px] font-body font-medium text-snow hover:border-emerald-400/70 hover:bg-emerald-400/[0.06] transition-colors duration-fast"
           >
             <Play className="w-3 h-3" aria-hidden="true" /> Replay
           </button>
@@ -211,15 +203,15 @@ const TraceWaterfall = () => {
                   onFocus={() => setSelected(i)}
                   aria-pressed={isActive}
                   aria-controls="trace-span-detail"
-                  className={`w-full block rounded-md px-2 py-1.5 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 ${
-                    isActive ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                  className={`w-full block rounded-sm px-2 py-1.5 text-left transition-colors duration-fast ${
+                    isActive ? "bg-snow/[0.06]" : "hover:bg-snow/[0.03]"
                   }`}
                 >
                   <span className="md:grid md:grid-cols-[13rem_1fr] md:items-center md:gap-5">
                     <span className={`block min-w-0 ${INDENT[span.depth]}`}>
                       <span
                         className={`block font-mono text-[10px] md:text-[11px] truncate transition-colors ${
-                          isActive ? "text-emerald-300" : span.infra ? "text-white/45" : "text-white/75"
+                          isActive ? "text-emerald-300" : span.infra ? "text-muted" : "text-snow/80"
                         }`}
                       >
                         {span.service}
@@ -227,25 +219,28 @@ const TraceWaterfall = () => {
                     </span>
 
                     <span className="relative block h-[22px] mt-1 md:mt-0">
-                      <span className="absolute inset-y-0 left-0 right-0 rounded-[3px] bg-white/[0.03]" aria-hidden="true" />
+                      <span
+                        className="absolute inset-y-0 left-0 right-0 rounded-[3px] bg-snow/[0.03]"
+                        aria-hidden="true"
+                      />
                       <motion.span
                         initial={{ scaleX: 0 }}
                         whileInView={{ scaleX: 1 }}
                         viewport={{ once: true, margin: "-15%" }}
-                        transition={{ duration: 0.35, delay: (span.start / 100) * 1.1, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: DUR.base, delay: (span.start / 100) * 1.1, ease: EASE }}
                         style={{
                           left: `${span.start}%`,
                           width: `${Math.max(span.end - span.start, 2)}%`,
                           transformOrigin: "left",
                         }}
                         className={`absolute inset-y-[3px] rounded-[3px] border ${
-                          span.infra ? "bg-white/[0.07] border-white/20" : "bg-emerald-400/25 border-emerald-400/50"
+                          span.infra ? "bg-snow/[0.08] border-line" : "bg-emerald-400/25 border-emerald-400/60"
                         } ${isActive ? "ring-1 ring-emerald-300/70" : ""}`}
                       />
                       <span
                         style={label}
                         className={`absolute inset-y-0 flex items-center ${label.justify} ${label.pad} font-mono text-[10px] md:text-[11px] pointer-events-none overflow-hidden transition-colors ${
-                          isActive ? "text-white" : "text-white/60"
+                          isActive ? "text-snow" : "text-muted"
                         }`}
                       >
                         <span className="truncate">{span.name}</span>
@@ -261,33 +256,27 @@ const TraceWaterfall = () => {
         {/* Axis */}
         <div className="mt-3 grid md:grid-cols-[13rem_1fr] md:gap-5 px-2">
           <span className="hidden md:block" />
-          <span className="flex items-center gap-2 font-mono text-[10px] text-white/30">
-            <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
-            relative order and nesting — not measured timings
-            <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+          <span className="flex items-center gap-2 font-mono text-[10px] text-muted">
+            <span className="h-px flex-1 bg-line" aria-hidden="true" />
+            relative order and nesting, not measured timings
+            <span className="h-px flex-1 bg-line" aria-hidden="true" />
           </span>
         </div>
 
         {/* Selected span */}
-        <div
-          id="trace-span-detail"
-          aria-live="polite"
-          className="mt-6 pt-6 border-t border-white/10 min-h-[6.5rem]"
-        >
+        <div id="trace-span-detail" aria-live="polite" className="mt-6 pt-6 border-t border-line min-h-[6.5rem]">
           <motion.div
             key={selected}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: DUR.fast, ease: EASE }}
           >
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span className="font-mono text-xs text-emerald-300">{active.service}</span>
-              <span className="font-mono text-xs text-white/40">·</span>
-              <span className="font-mono text-xs text-white/75">{active.name}</span>
+              <span className="font-mono text-xs text-muted">·</span>
+              <span className="font-mono text-xs text-snow/80">{active.name}</span>
             </div>
-            <p className="mt-2.5 text-[15px] font-body font-light text-white/70 leading-relaxed max-w-3xl">
-              {active.note}
-            </p>
+            <p className="mt-2.5 text-[15px] text-snow/80 leading-relaxed max-w-3xl">{active.note}</p>
           </motion.div>
         </div>
       </div>
