@@ -84,22 +84,15 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
         id={`case-${study.slug}`}
         className={`flex flex-col rounded-lg border border-line bg-tile shadow-[0_-24px_60px_rgba(0,0,0,0.85)] scroll-mt-28 overflow-hidden ${isLast ? "" : "mb-6"}`}
       >
-        {/* Title bar, like a window */}
+        {/* Header: index, title, category */}
         <div className="flex items-center justify-between gap-4 px-4 md:px-5 h-11 border-b border-line bg-night/70">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="flex gap-1.5" aria-hidden="true">
-              <span className="h-2.5 w-2.5 rounded-full bg-snow/15" />
-              <span className="h-2.5 w-2.5 rounded-full bg-snow/15" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-            </span>
-            <span className="t-figure text-[11px] text-muted break-words">{study.slug}</span>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="t-figure text-[11px] text-emerald-300">
+            <span className="t-figure text-[11px] text-emerald-300 shrink-0">
               {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
             </span>
-            <Chip className="hidden md:inline-flex">{study.category ?? "Backend"}</Chip>
+            <span className="t-caps text-[11px] text-muted break-words">{study.title}</span>
           </div>
+          <Chip className="hidden md:inline-flex shrink-0">{study.category ?? "Backend"}</Chip>
         </div>
 
         {/* Stage */}

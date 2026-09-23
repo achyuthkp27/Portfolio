@@ -1,5 +1,5 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 /**
  * One key visual per work card: a single large object in the stage, set in the site's
@@ -27,101 +27,52 @@ const Caption = ({ children, sub }: { children: ReactNode; sub?: ReactNode }) =>
   </motion.div>
 );
 
-/* 01 — Platform: a constellation of services drifting on one bus */
-const Constellation = () => {
-  const ref = useRef<HTMLCanvasElement>(null);
-  const reduceMotion = useReducedMotion();
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let raf = 0;
-    let visible = false;
-    const N = 34;
-    const pts = Array.from({ length: N }, (_, i) => ({
-      x: Math.random(),
-      y: Math.random(),
-      vx: (Math.random() - 0.5) * 0.0006,
-      vy: (Math.random() - 0.5) * 0.0006,
-      r: i < 3 ? 4 : 1.6 + Math.random() * 1.4,
-    }));
-    const resize = () => {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      canvas.width = canvas.clientWidth * dpr;
-      canvas.height = canvas.clientHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    const draw = () => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < N; i++) {
-        for (let j = i + 1; j < N; j++) {
-          const a = pts[i];
-          const b = pts[j];
-          const dx = (a.x - b.x) * w;
-          const dy = (a.y - b.y) * h;
-          const d = Math.hypot(dx, dy);
-          if (d < 150) {
-            ctx.strokeStyle = `hsl(153 60% 62% / ${(1 - d / 150) * 0.35})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x * w, a.y * h);
-            ctx.lineTo(b.x * w, b.y * h);
-            ctx.stroke();
-          }
-        }
-      }
-      pts.forEach((p, i) => {
-        ctx.fillStyle = i < 3 ? "hsl(153 60% 62%)" : "hsl(0 0% 100% / 0.75)";
-        ctx.beginPath();
-        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2);
-        ctx.fill();
-        if (i < 3) {
-          ctx.fillStyle = "hsl(153 60% 62% / 0.18)";
-          ctx.beginPath();
-          ctx.arc(p.x * w, p.y * h, 14, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-    };
-    const step = () => {
-      pts.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0.02 || p.x > 0.98) p.vx *= -1;
-        if (p.y < 0.05 || p.y > 0.95) p.vy *= -1;
-      });
-      draw();
-      if (visible && !reduceMotion) raf = requestAnimationFrame(step);
-    };
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      if (visible && !reduceMotion) raf = requestAnimationFrame(step);
-      else cancelAnimationFrame(raf);
-    });
-    const ro = new ResizeObserver(() => {
-      resize();
-      draw();
-    });
-    resize();
-    draw();
-    io.observe(canvas);
-    ro.observe(canvas);
-    return () => {
-      cancelAnimationFrame(raf);
-      io.disconnect();
-      ro.disconnect();
-    };
-  }, [reduceMotion]);
-  return <canvas ref={ref} aria-hidden="true" className="absolute inset-0 w-full h-full" />;
-};
+/* 01 — Platform: three channels feeding one bus, thirty services drawing from it */
+const CHANNELS = ["Retail", "Mobile", "Corporate"];
 export const PlatformScreen = () => (
-  <Stage>
-    <Constellation />
-    <div className="relative">
-      <Caption sub="Retail · Mobile · Corporate · one Kafka bus">30+ services. One platform.</Caption>
+  <Stage className="px-6 md:px-14">
+    <div className="w-full max-w-2xl flex flex-col items-stretch">
+      <div className="grid grid-cols-3 gap-2 md:gap-3">
+        {CHANNELS.map((c) => (
+          <motion.span
+            key={c}
+            variants={rise}
+            className="t-heading text-lg md:text-2xl text-center rounded-md border border-snow/15 bg-night/70 py-3 md:py-4"
+          >
+            {c}
+          </motion.span>
+        ))}
+      </div>
+      <motion.svg variants={rise} viewBox="0 0 600 60" className="w-full h-10 md:h-14" aria-hidden="true">
+        {[100, 300, 500].map((x) => (
+          <path
+            key={x}
+            d={`M ${x} 0 C ${x} 30, 300 30, 300 60`}
+            fill="none"
+            stroke="hsl(153 60% 62% / 0.6)"
+            strokeWidth="1.5"
+          />
+        ))}
+      </motion.svg>
+      <motion.div
+        variants={rise}
+        className="relative rounded-md border border-emerald-400/60 bg-emerald-500/[0.08] py-3 md:py-4 text-center t-figure text-[11px] md:text-xs tracking-[0.3em] uppercase text-emerald-300 shadow-[0_0_40px_-10px_hsl(153_60%_50%/0.6)]"
+      >
+        <span className="absolute inset-0 bus-flow rounded-md" aria-hidden="true" />
+        <span className="relative">Kafka event bus</span>
+      </motion.div>
+      <motion.div variants={rise} className="mt-4 md:mt-6 grid grid-cols-10 gap-1.5 md:gap-2" aria-hidden="true">
+        {Array.from({ length: 30 }, (_, i) => (
+          <span
+            key={i}
+            className="h-2.5 md:h-3 rounded-[3px] bg-snow/[0.14] svc-pip"
+            style={{ animationDelay: `${(i * 137) % 2400}ms` }}
+          />
+        ))}
+      </motion.div>
+    </div>
+    <div className="mt-6 md:mt-8">
+      <Caption sub="Spring Boot · PostgreSQL · Redis">30+ services. One platform.</Caption>
     </div>
   </Stage>
 );

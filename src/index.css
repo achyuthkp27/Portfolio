@@ -499,3 +499,38 @@
     animation: none;
   }
 }
+
+/* Platform card: pulses moving along the bus, services lighting as they draw from it */
+.bus-flow {
+  background: linear-gradient(90deg, transparent 0%, hsl(153 60% 62% / 0.25) 50%, transparent 100%);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: bus-flow 2.4s linear infinite;
+}
+@keyframes bus-flow {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+.svc-pip {
+  animation: svc-pip 2.4s ease-in-out infinite;
+}
+@keyframes svc-pip {
+  0%,
+  70%,
+  100% {
+    background-color: hsl(0 0% 100% / 0.14);
+  }
+  80% {
+    background-color: hsl(153 60% 62% / 0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bus-flow,
+  .svc-pip {
+    animation: none;
+  }
+}
