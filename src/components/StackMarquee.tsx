@@ -22,12 +22,14 @@ const StackMarquee = () => {
   const items = PROFILE.stack;
   const ref = useRef<HTMLDivElement>(null);
   const measure = useRef<HTMLUListElement>(null);
-  const [offset, setOffset] = useState(0);
+  const drum = useRef<HTMLDivElement>(null);
   const [geom, setGeom] = useState<{ radius: number; glyphs: Glyph[]; length: number }>({
     radius: 400,
     glyphs: [],
     length: 1,
   });
+  const geomRef = useRef(geom);
+  geomRef.current = geom;
 
   useEffect(() => {
     const el = ref.current;
@@ -47,15 +49,54 @@ const StackMarquee = () => {
     size();
     document.fonts?.ready.then(size);
     window.addEventListener("resize", size);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-      return () => window.removeEventListener("resize", size);
+    return () => window.removeEventListener("resize", size);
+  }, []);
+
+  // The turn is written straight to each glyph's style every frame: no React re-render
+  // for ~400 spans at 60fps. Geometry changes (resize, font load) re-render the spans.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let offset = 0;
+    const paint = () => {
+      const { radius, glyphs, length } = geomRef.current;
+      const spans = drum.current?.children;
+      if (!spans) return;
+      const degPerPx = 180 / (Math.PI * radius);
+      const head = offset % length;
+      for (let j = 0; j < glyphs.length && j < spans.length; j++) {
+        const span = spans[j] as HTMLElement;
+        let d = (glyphs[j].pos - head) % length;
+        if (d > length / 2) d -= length;
+        if (d < -length / 2) d += length;
+        const deg = d * degPerPx;
+        const a = Math.abs(deg);
+        if (a > 180) {
+          span.style.display = "none";
+          continue;
+        }
+        const front = a <= 90;
+        const t = Math.min(1, Math.max(0, (a - 12) / 78));
+        const opacity = front ? 1 - t * 0.65 : 0.32;
+        const blur = front ? t * 6 : 9;
+        span.style.display = "";
+        span.style.transform = `rotateY(${deg}deg) translateZ(${radius}px) translate(-50%, -50%)`;
+        span.style.opacity = String(opacity);
+        span.style.filter = blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : "none";
+      }
+    };
+    paint();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
     let visible = false;
     let last = performance.now();
     const loop = (t: number) => {
       const dt = t - last;
       last = t;
-      if (visible) setOffset((o) => o + dt * 0.09);
+      if (visible) {
+        offset += dt * 0.09;
+        paint();
+      }
       raf = requestAnimationFrame(loop);
     };
     const io = new IntersectionObserver(([e]) => {
@@ -66,13 +107,10 @@ const StackMarquee = () => {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      window.removeEventListener("resize", size);
     };
-  }, []);
+  }, [geom]);
 
-  const { radius, glyphs, length } = geom;
-  const degPerPx = 180 / (Math.PI * radius);
-  const head = offset % length;
+  const { radius, glyphs } = geom;
 
   return (
     <section className="theme-dark bg-night text-snow pt-20 lg:pt-24 pb-6 lg:pb-8 overflow-hidden">
@@ -106,39 +144,19 @@ const StackMarquee = () => {
         aria-label={`Technologies: ${items.join(", ")}`}
       >
         <div
+          ref={drum}
           className="absolute inset-0 [transform-style:preserve-3d]"
           style={{ transform: `translateZ(-${radius}px)` }}
         >
-          {glyphs.map((g, j) => {
-            // Distance along the strip from the point currently at the front, wrapped to the nearest copy
-            let d = (g.pos - head) % length;
-            if (d > length / 2) d -= length;
-            if (d < -length / 2) d += length;
-            const deg = d * degPerPx;
-            const a = Math.abs(deg);
-            if (a > 180) return null;
-            const front = a <= 90;
-            // Front half: sharp near the centre, blurring and dimming with the angle. Back half: faint ghosts.
-            const t = Math.min(1, Math.max(0, (a - 12) / 78));
-            // Back ghosts read clearly through, like the reversed logos behind Spector's ring
-            const opacity = front ? 1 - t * 0.65 : 0.32;
-            const blur = front ? t * 6 : 9;
-            return (
-              <span
-                key={j}
-                aria-hidden="true"
-                className={`absolute left-1/2 top-1/2 text-snow will-change-transform ${TYPE}`}
-                style={{
-                  // Centre the glyph on its anchor first, then push it out to the drum and turn it
-                  transform: `rotateY(${deg}deg) translateZ(${radius}px) translate(-50%, -50%)`,
-                  opacity,
-                  filter: blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : "none",
-                }}
-              >
-                {g.ch}
-              </span>
-            );
-          })}
+          {glyphs.map((g, j) => (
+            <span
+              key={j}
+              aria-hidden="true"
+              className={`absolute left-1/2 top-1/2 text-snow will-change-transform ${TYPE}`}
+            >
+              {g.ch}
+            </span>
+          ))}
         </div>
       </div>
     </section>

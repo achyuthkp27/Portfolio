@@ -112,13 +112,7 @@ export const Smoke = ({ className = "" }: { className?: string }) => {
   return (
     <div aria-hidden="true" className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       <canvas ref={ref} className="absolute inset-[-8%] w-[116%] h-[116%] opacity-50 blur-[7px] mix-blend-screen" />
-      <svg className="absolute inset-0 w-full h-full opacity-[0.07] mix-blend-screen">
-        <filter id="smoke-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#smoke-grain)" />
-      </svg>
+      <div className="grain absolute inset-0 opacity-[0.07] mix-blend-screen" />
     </div>
   );
 };

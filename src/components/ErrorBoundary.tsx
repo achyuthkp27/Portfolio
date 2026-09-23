@@ -60,19 +60,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             </div>
 
             <div className="space-y-2">
-              <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-                Oops! Something went wrong
-              </h1>
-              <p className="text-muted-foreground">
-                We encountered an unexpected error. Don't worry, it's not your fault!
-              </p>
+              <h1 className="t-heading text-3xl md:text-4xl text-snow">Oops! Something went wrong</h1>
+              <p className="t-body text-muted">We encountered an unexpected error. Don't worry, it's not your fault!</p>
             </div>
 
             {this.state.error && (
               <div className="text-left">
-                <details className="glass-card p-4 rounded-lg cursor-pointer">
-                  <summary className="text-sm font-mono text-muted-foreground">Error Details</summary>
-                  <pre className="mt-3 text-xs text-destructive overflow-auto">{this.state.error.toString()}</pre>
+                <details className="rounded-lg border border-line bg-tile p-4 cursor-pointer">
+                  <summary className="text-sm font-mono text-muted">Error Details</summary>
+                  <pre className="mt-3 text-xs text-red-300 overflow-auto">{this.state.error.toString()}</pre>
                 </details>
               </div>
             )}
@@ -80,13 +76,13 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={this.handleReset}
-                className="px-6 py-3 bg-gradient-cyber text-primary-foreground rounded-full font-medium hover:shadow-neon transition-all"
+                className="px-6 py-3 rounded-pill bg-snow text-night font-medium hover:bg-stone transition-colors"
               >
                 Try Again
               </button>
               <button
                 onClick={() => (window.location.href = import.meta.env.BASE_URL)}
-                className="px-6 py-3 glass rounded-full font-medium hover:bg-secondary/80 transition-all"
+                className="px-6 py-3 rounded-pill border border-line text-snow font-medium hover:bg-snow/10 transition-colors"
               >
                 Go Home
               </button>

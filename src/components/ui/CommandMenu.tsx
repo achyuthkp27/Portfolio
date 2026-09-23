@@ -3,6 +3,7 @@ import { Command } from "cmdk";
 import { Home, Briefcase, Mail, Code, User, Terminal, FileDown, GitBranch } from "lucide-react";
 import { OPEN_COMMAND_MENU_EVENT, openTerminal } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { PROFILE } from "@/data/profile";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 import { useSmoothScroll } from "@/context/smoothScroll";
@@ -59,8 +60,8 @@ export function CommandMenu() {
   const downloadResume = () =>
     runCommand(() => {
       const a = document.createElement("a");
-      a.href = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`;
-      a.download = "Achyuth_KP_Resume.pdf";
+      a.href = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
+      a.download = PROFILE.resumeDownloadName;
       a.click();
     });
 

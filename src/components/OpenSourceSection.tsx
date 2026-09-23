@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 import { posts } from "@/data/writing";
 import { PillButton } from "./ui/Pill";
@@ -63,6 +63,7 @@ const OpenSourceSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!inView) return;
@@ -84,12 +85,13 @@ const OpenSourceSection = () => {
     if (!slug) return;
     const target = repos.findIndex((r) => r.name === slug);
     if (target >= 0) setVisible((v) => Math.max(v, Math.ceil((target + 1) / REPO_PAGE) * REPO_PAGE));
-    const id = window.setTimeout(
-      () => document.getElementById(`project-card-${slug}`)?.scrollIntoView({ behavior: "instant", block: "center" }),
-      100,
-    );
+    const id = window.setTimeout(() => {
+      document.getElementById(`project-card-${slug}`)?.scrollIntoView({ behavior: "instant", block: "center" });
+      // One jump only, and a refresh must not jump again
+      navigate({ search: "" }, { replace: true });
+    }, 100);
     return () => window.clearTimeout(id);
-  }, [isLoading, repos, location.search]);
+  }, [isLoading, repos, location.search, navigate]);
 
   const remaining = repos.length - visible;
 

@@ -29,7 +29,7 @@ const ServiceRow = ({ index, title, isOpen, onOpen, detail }: ServiceRowProps) =
         type="button"
         onClick={onOpen}
         aria-expanded={isOpen}
-        aria-controls="service-detail"
+        aria-controls={`service-detail-${index}`}
         className="group w-full flex items-center gap-5 py-6 md:py-7 text-left"
       >
         <span className="t-label shrink-0 w-12">{String(index + 1).padStart(2, "0")}</span>
@@ -44,13 +44,13 @@ const ServiceRow = ({ index, title, isOpen, onOpen, detail }: ServiceRowProps) =
           aria-hidden="true"
         />
       </button>
-      <div className="lg:hidden overflow-hidden">
+      <div className="lg:hidden">
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6, transition: { duration: DUR.fast } }}
               transition={{ duration: DUR.base, ease: EASE }}
             >
               {detail}

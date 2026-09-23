@@ -32,7 +32,8 @@ const ScrambleNumber = ({
   dateTime,
 }: ScrambleNumberProps) => {
   const ref = useRef<HTMLElement>(null);
-  const [display, setDisplay] = useState(() => value.replace(/\d/g, "0"));
+  // The real value is in the HTML from the first paint; the scramble is purely visual
+  const [display, setDisplay] = useState(value);
   const [done, setDone] = useState(false);
 
   useEffect(() => {

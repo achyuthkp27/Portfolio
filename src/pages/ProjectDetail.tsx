@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, GitCommitHorizontal } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import SEO from "@/components/SEO";
 import {
   fetchLatestRepositories,
@@ -151,6 +151,26 @@ const CommitTimeline = ({ commits }: { commits: RepoExtras["commits"] }) => (
     ))}
   </ol>
 );
+
+/** A README's own "#section" links scroll within the page; under a hash router they would otherwise route to the 404 page. */
+const slugify = (t: string) =>
+  t
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-");
+const onReadmeClick = (e: MouseEvent<HTMLDivElement>) => {
+  const a = (e.target as HTMLElement).closest("a");
+  const href = a?.getAttribute("href") ?? "";
+  if (!a || !href.startsWith("#")) return;
+  e.preventDefault();
+  const want = decodeURIComponent(href.slice(1))
+    .replace(/^user-content-/, "")
+    .toLowerCase();
+  const headings = e.currentTarget.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  const hit = [...headings].find((h) => slugify(h.textContent ?? "") === want);
+  hit?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
 const ProjectDetail = () => {
   const { slug } = useParams();
@@ -348,7 +368,7 @@ const ProjectDetail = () => {
               Open on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
             </a>
           </div>
-          <div className="readme min-w-0 overflow-hidden">
+          <div className="readme min-w-0 overflow-hidden" onClick={onReadmeClick}>
             {extras?.readme ? (
               <div dangerouslySetInnerHTML={{ __html: extras.readme }} />
             ) : (

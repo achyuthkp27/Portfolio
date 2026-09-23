@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
+import { PROFILE } from "@/data/profile";
 import { Terminal, X } from "lucide-react";
 import { projects } from "@/data/projects";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
@@ -12,7 +13,7 @@ interface TerminalOverlayProps {
 
 type HistoryEntry = { type: "input" | "output" | "system" | "error"; text: string | React.ReactNode };
 
-const CAREER_START = new Date("2021-07-26");
+const CAREER_START = PROFILE.careerStart;
 
 const COMMAND_LIST = [
   "help",
@@ -325,7 +326,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                   ["socials", "External nodes (LinkedIn, Mail)"],
                   ["neofetch", "System configuration overview"],
                   ["theme", "Toggle UI color matrix"],
-                  ["diagnostics", "System health report"],
+                  ["diagnostics", "This session, honestly"],
                   ["hack", "Initialize breach simulation"],
                   ["clear", "Flush buffer"],
                   ["exit", "Terminate session"],
@@ -352,7 +353,9 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         case "about":
           newHistory.push({
             type: "output",
-            text: "IDENTITY: ACHYUTH KP\nROLE: SOFTWARE ENGINEER\nLOC: BENGALURU, IN\nFOCUS: BANKING MICROSERVICES & AI INTEGRATION\nEMAIL: kpachyuthz@gmail.com",
+            text:
+              "IDENTITY: ACHYUTH KP\nROLE: SOFTWARE ENGINEER\nLOC: BENGALURU, IN\nFOCUS: BANKING MICROSERVICES & AI INTEGRATION\nEMAIL: " +
+              PROFILE.email,
           });
           break;
         case "gh":
@@ -468,7 +471,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
             text: (
               <pre className="my-2 text-[11px] sm:text-xs leading-relaxed whitespace-pre overflow-x-auto">{`* 2026 ── cognizant · associate software engineer
 │         merge: fis-global → cognizant (client rebadge)
-* 2024 ── fis global · senior software engineer
+* 2026 ── fis global · senior software engineer
 │         tag: above-and-beyond-award (q1 2024)
 * 2021 ── fis global · software engineer
 │         retail · mobile · corporate banking
@@ -486,16 +489,16 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
         case "resume": {
           newHistory.push({ type: "system", text: "FETCHING RESUME.PDF … download started." });
           const a = document.createElement("a");
-          a.href = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`;
-          a.download = "Achyuth_KP_Resume.pdf";
+          a.href = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
+          a.download = PROFILE.resumeDownloadName;
           document.body.appendChild(a);
           a.click();
           a.remove();
           break;
         }
         case "contact":
-          newHistory.push({ type: "system", text: "OPENING SECURE MAIL CHANNEL → kpachyuthz@gmail.com" });
-          window.location.href = "mailto:kpachyuthz@gmail.com";
+          newHistory.push({ type: "system", text: `OPENING SECURE MAIL CHANNEL → ${PROFILE.email}` });
+          window.location.href = `mailto:${PROFILE.email}`;
           break;
         case "socials":
           newHistory.push({
@@ -505,7 +508,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                 {[
                   { label: "github", value: "achyuthkp27", href: "https://github.com/achyuthkp27" },
                   { label: "linkedin", value: "kpachyuth", href: "https://www.linkedin.com/in/kpachyuth" },
-                  { label: "email", value: "kpachyuthz@gmail.com", href: "mailto:kpachyuthz@gmail.com" },
+                  { label: "email", value: PROFILE.email, href: `mailto:${PROFILE.email}` },
                 ].map((node) => (
                   <a
                     key={node.label}
@@ -568,36 +571,34 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
             newHistory.push({ type: "output", text: "Usage: theme <name>\nAvailable themes: emerald, amber, zinc" });
           }
           break;
-        case "diagnostics":
-          newHistory.push({ type: "system", text: "RUNNING_SYSTEM_INTEGRITY_CHECK..." });
+        case "diagnostics": {
+          // Real facts about this session only; nothing invented
+          const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const rows: [string, string][] = [
+            ["BUILD", import.meta.env.MODE],
+            ["VIEWPORT", `${window.innerWidth}×${window.innerHeight}`],
+            ["DEVICE_PIXEL_RATIO", String(window.devicePixelRatio)],
+            ["REDUCED_MOTION", reduced ? "on" : "off"],
+            ["NETWORK", navigator.onLine ? "online" : "offline"],
+            ["SERVICE_WORKER", "serviceWorker" in navigator ? "supported" : "unavailable"],
+            ["LOCAL_TIME", new Date().toLocaleTimeString("en-GB", { timeZone: PROFILE.timeZone })],
+          ];
+          newHistory.push({ type: "system", text: "RUNNING_SESSION_CHECK..." });
           newHistory.push({
             type: "output",
             text: (
               <div className="space-y-1 my-2 text-xs">
-                <div className="flex justify-between">
-                  <span>CPU_CORES [8]</span>
-                  <span className="text-emerald-400">[ONLINE]</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>MEMORY_LOAD</span>
-                  <span>[||||------] 42%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>LATENCY</span>
-                  <span>24ms (Secure Node)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>FIREWALL</span>
-                  <span className="text-emerald-400">ACTIVE</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>UPTIME</span>
-                  <span>99.98%</span>
-                </div>
+                {rows.map(([k, v]) => (
+                  <div key={k} className="flex justify-between">
+                    <span>{k}</span>
+                    <span className="text-emerald-400">{v}</span>
+                  </div>
+                ))}
               </div>
             ),
           });
           break;
+        }
         case "hack":
           setHistory((prev) => [...prev, ...newHistory, { type: "system", text: "INITIALIZING_BREACH_SEQUENCE…" }]);
           setInput("");

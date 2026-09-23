@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /*
- * Design tokens. Two themes, one type family. A section picks its theme with
- * `.theme-dark` or `.theme-light`; everything inside reads bg / fg / muted / line / tile
+ * Design tokens. One theme, one type family. A section picks its theme with
+ * `.theme-dark`; everything inside reads bg / fg / muted / line / tile
  * from the theme, so components never hard-code a colour.
  */
 @layer base {
@@ -78,30 +78,6 @@
     --line: 0 0% 100% / 0.12;
     --tile: var(--graphite);
     --tile-fg: var(--snow);
-  }
-  .theme-graphite {
-    --bg: var(--graphite);
-    --fg: var(--snow);
-    --muted: 0 0% 100% / 0.6;
-    --line: 0 0% 100% / 0.12;
-    --tile: 0 0% 13%;
-    --tile-fg: var(--snow);
-  }
-  .theme-light {
-    --bg: var(--stone);
-    --fg: var(--night);
-    --muted: 0 0% 0% / 0.55;
-    --line: 0 0% 0% / 0.12;
-    --tile: var(--snow);
-    --tile-fg: var(--night);
-  }
-  .theme-white {
-    --bg: var(--snow);
-    --fg: var(--night);
-    --muted: 0 0% 0% / 0.55;
-    --line: 0 0% 0% / 0.12;
-    --tile: var(--stone);
-    --tile-fg: var(--night);
   }
 
   /* No fixed height on html either: with overflow-x hidden it would become the scroll
@@ -191,9 +167,6 @@
     @apply font-mono tabular-nums;
   }
   /* Marquee */
-  .marquee-track {
-    animation: marquee 40s linear infinite;
-  }
   @keyframes marquee {
     from {
       transform: translateX(0);
@@ -533,4 +506,10 @@
   .svc-pip {
     animation: none;
   }
+}
+
+/* Film grain: one tiny pre-rendered tile, repeated. Cheaper than a live SVG filter over the whole element. */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
 }

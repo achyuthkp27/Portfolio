@@ -95,11 +95,11 @@ const ExperienceSection = () => {
                         {shown.map((a, j) => (
                           <motion.li
                             key={a}
-                            initial={j >= VISIBLE ? { opacity: 0, height: 0 } : false}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: DUR.base, ease: EASE }}
-                            className="flex gap-3 t-body text-snow/85 overflow-hidden"
+                            initial={j >= VISIBLE ? { opacity: 0, y: 6 } : false}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4, transition: { duration: DUR.fast } }}
+                            transition={{ duration: DUR.base, ease: EASE, delay: (j - VISIBLE) * 0.03 }}
+                            className="flex gap-3 t-body text-snow/85"
                           >
                             <span
                               className="mt-[0.75em] w-1.5 h-1.5 rounded-full bg-snow shrink-0"

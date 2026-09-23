@@ -1,5 +1,5 @@
 import { useInView } from "react-intersection-observer";
-import { Suspense, ReactNode } from "react";
+import { Suspense, ReactNode, useEffect, useState } from "react";
 
 interface LazySectionProps {
   children: ReactNode;
@@ -23,9 +23,8 @@ interface LazySectionProps {
  * <section id="about"> has mounted. Once the real section renders, the placeholder
  * id is removed to avoid duplicate ids.
  *
- * Listens for a `force-mount-sections` custom event on window — when fired (e.g.
- * by Navigation on nav-link click), all LazySection instances mount immediately
- * so the page reaches its true height before scrolling begins.
+ * A few seconds after load, once the browser is idle, every section mounts anyway, so
+ * crawlers that run JavaScript see the whole page and a fast scroll never meets a placeholder.
  */
 export const LazySection = ({
   children,
@@ -36,11 +35,21 @@ export const LazySection = ({
   sectionId,
   minHeight = "600px",
 }: LazySectionProps) => {
-  const { ref, inView } = useInView({
+  const { ref, inView: near } = useInView({
     triggerOnce: true,
     threshold,
     rootMargin,
   });
+  const [idle, setIdle] = useState(false);
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const t = window.setTimeout(() => {
+      if (w.requestIdleCallback) w.requestIdleCallback(() => setIdle(true), { timeout: 2000 });
+      else setIdle(true);
+    }, 4000);
+    return () => window.clearTimeout(t);
+  }, []);
+  const inView = near || idle;
 
   return (
     <div ref={ref} className={`relative ${className}`} style={{ minHeight: inView ? undefined : minHeight }}>

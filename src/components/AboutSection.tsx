@@ -30,8 +30,10 @@ const AboutSection = () => {
   const [latest, setLatest] = useState<GitHubRepo | null>(null);
   useEffect(() => {
     const c = new AbortController();
-    fetchLatestRepositories(1, c.signal).then((r) => {
-      if (!c.signal.aborted && r[0]) setLatest(r[0]);
+    fetchLatestRepositories(12, c.signal).then((r) => {
+      // Newest by push date, not the featured ordering the list uses
+      const newest = [...r].sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at))[0];
+      if (!c.signal.aborted && newest) setLatest(newest);
     });
     return () => c.abort();
   }, []);

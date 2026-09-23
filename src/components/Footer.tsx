@@ -9,7 +9,7 @@ const LINKS = [
   { label: "LinkedIn", href: PROFILE.links.linkedin },
   { label: "GitHub", href: PROFILE.links.github },
   { label: "Medium", href: PROFILE.links.medium },
-  { label: "Résumé", href: `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf` },
+  { label: "Résumé", href: `${import.meta.env.BASE_URL}${PROFILE.resume}` },
 ];
 
 const kbd =
@@ -32,16 +32,7 @@ const Footer = () => {
 
   return (
     <footer data-reveal-skip className="theme-dark relative bg-night text-snow overflow-hidden">
-      <svg
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full opacity-[0.06] pointer-events-none mix-blend-screen"
-      >
-        <filter id="footer-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#footer-grain)" />
-      </svg>
+      <div aria-hidden="true" className="grain absolute inset-0 opacity-[0.06] pointer-events-none mix-blend-screen" />
 
       <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 py-8 border-t border-line">

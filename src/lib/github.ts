@@ -139,16 +139,25 @@ export interface RepoExtras {
   commits: { sha: string; message: string; date: string; url: string }[];
 }
 
-const EMPTY_EXTRAS: RepoExtras = { readme: null, languages: [], commits: [] };
-
 /** Strip GitHub's heading anchors and permalinks so the README reads as plain document HTML. */
-const cleanReadme = (html: string) =>
+const cleanReadme = (html: string, repoName: string) =>
   html
     .replace(/<a id="user-content-[^"]*" class="anchor"[\s\S]*?<\/a>/g, "")
     .replace(/<div class="markdown-heading" dir="auto">/g, "<div>")
     .replace(/ dir="auto"/g, "")
     .replace(/<img[^>]*data-canonical-src[^>]*>/g, (m) => (m.includes("shields.io") || m.includes("badge") ? "" : m))
-    .replace(/<p>\s*<\/p>/g, "");
+    .replace(/<p>\s*<\/p>/g, "")
+    // Relative images and links point back into the repository
+    .replace(/(<img[^>]*\ssrc=")(?!https?:|data:|\/\/)([^"]+)"/g, (_, pre, path) => `${pre}${rawUrl(repoName, path)}"`)
+    .replace(
+      /(<a[^>]*\shref=")(?!https?:|mailto:|#|\/\/)([^"]+)"/g,
+      (_, pre, path) => `${pre}${blobUrl(repoName, path)}"`,
+    );
+
+const rawUrl = (repo: string, path: string) =>
+  `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${repo}/HEAD/${path.replace(/^\.?\//, "")}`;
+const blobUrl = (repo: string, path: string) =>
+  `https://github.com/${GITHUB_USERNAME}/${repo}/blob/HEAD/${path.replace(/^\.?\//, "")}`;
 
 /**
  * README, languages, and recent commits for one repo. Each part fails on its own, so a
@@ -162,7 +171,7 @@ export async function fetchRepositoryExtras(repoName: string, signal?: AbortSign
 
   const readme = fetch(`${base}/readme`, { signal, headers: { Accept: "application/vnd.github.html" } })
     .then((r) => (r.ok ? r.text() : null))
-    .then((html) => (html ? cleanReadme(html) : null))
+    .then((html) => (html ? cleanReadme(html, repoName) : null))
     .catch(() => null);
 
   const languages = fetch(`${base}/languages`, { signal })
@@ -187,12 +196,8 @@ export async function fetchRepositoryExtras(repoName: string, signal?: AbortSign
     )
     .catch(() => []);
 
-  try {
-    const extras: RepoExtras = { readme: await readme, languages: await languages, commits: await commits };
-    if (extras.readme || extras.languages.length || extras.commits.length) writeCache(cacheKey, extras);
-    return extras;
-  } catch (error) {
-    if (isAbort(error)) return EMPTY_EXTRAS;
-    return EMPTY_EXTRAS;
-  }
+  // Each part already catches its own failure, so nothing here can throw
+  const extras: RepoExtras = { readme: await readme, languages: await languages, commits: await commits };
+  if (extras.readme || extras.languages.length || extras.commits.length) writeCache(cacheKey, extras);
+  return extras;
 }

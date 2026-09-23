@@ -1,5 +1,4 @@
-import { lazy, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { lazy, useRef } from "react";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
@@ -20,17 +19,8 @@ const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 /** Home: hero, belief, who, work, what I build, stack, principles, record, experience, updates, contact. */
 const Index = () => {
-  const location = useLocation();
   const root = useRef<HTMLDivElement>(null);
   useScrollReveal(root);
-
-  useEffect(() => {
-    if (!new URLSearchParams(location.search).has("scrollTo")) return;
-    const frame = requestAnimationFrame(() => {
-      document.getElementById("open-source")?.scrollIntoView({ behavior: "instant", block: "start" });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [location.search]);
 
   return (
     <motion.div

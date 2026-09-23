@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 const MOBILE_BREAKPOINT = 768;
 
 export function useMobile() {
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(
+    () => typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT,
+  );
 
   useEffect(() => {
     const checkMobile = () => {

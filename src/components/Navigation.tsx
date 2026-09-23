@@ -63,7 +63,7 @@ const Navigation = () => {
         const topmost = [...crossing]
           .map((id) => ({ id, top: targets.get(id)?.getBoundingClientRect().top ?? Infinity }))
           .sort((a, b) => a.top - b.top)[0];
-        if (topmost) setActiveSection(topmost.id);
+        setActiveSection(topmost ? topmost.id : "");
       },
       { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
     );
@@ -100,7 +100,7 @@ const Navigation = () => {
     scrollToSection(id);
   };
 
-  const resumeHref = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`;
+  const resumeHref = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   const link = (active: boolean) =>
     `group/roll relative block overflow-hidden font-body text-[14px] font-medium uppercase tracking-[0.03em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
@@ -232,7 +232,7 @@ const Navigation = () => {
                 href={resumeHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                download="Achyuth_KP_Resume.pdf"
+                download={PROFILE.resumeDownloadName}
               >
                 Résumé
               </PillLink>

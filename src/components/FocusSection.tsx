@@ -82,7 +82,7 @@ const FocusSection = () => {
               />
             ))}
           </span>
-          <span>[ AKP® — What I believe ]</span>
+          <span>[ AKP — What I believe ]</span>
         </p>
         <span
           aria-hidden="true"

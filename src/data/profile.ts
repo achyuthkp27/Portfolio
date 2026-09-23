@@ -1,3 +1,4 @@
+import { projects } from "./projects";
 /** The person, as the site introduces them. Facts only; nothing here is invented. */
 export const PROFILE = {
   name: "Achyuth KP",
@@ -5,6 +6,9 @@ export const PROFILE = {
   last: "KP",
   title: "Software Engineer",
   email: "kpachyuthz@gmail.com",
+  /** Under public/, relative to BASE_URL */
+  resume: "achyuth-kp-resume.pdf",
+  resumeDownloadName: "achyuth-kp-resume.pdf",
   city: "Bengaluru, India",
   timeZone: "Asia/Kolkata",
   careerStart: new Date("2021-07-26"),
@@ -54,7 +58,7 @@ export const PROFILE = {
   numbers: [
     { value: "30+", label: "Services in the estate" },
     { value: "3", label: "Banking channels" },
-    { value: "7", label: "Case studies on this page" },
+    { value: String(projects.length), label: "Case studies on this page" },
   ],
   /** How work moves, as four phases; the hero rail ticks through them on scroll */
   phases: ["Learn", "Build", "Ship", "Verify"],
