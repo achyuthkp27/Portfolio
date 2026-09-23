@@ -1,6 +1,7 @@
 import { useReducedMotion } from "framer-motion";
 import { FillText } from "./ui/FillText";
 import { PROFILE } from "@/data/profile";
+import { Terrain } from "./ui/Terrain";
 
 const LINE = "I build things that work when it matters, even when nobody is watching and everything is on the line.";
 
@@ -18,6 +19,24 @@ const FocusSection = () => {
       className="theme-dark bg-night text-snow relative overflow-hidden"
       style={{ minHeight: reduceMotion ? "70vh" : "100vh" }}
     >
+      {/* Ground: an emerald wash behind the portrait, a second glow in the far corner */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(60% 70% at 18% 40%, hsl(153 45% 24% / 0.7), transparent 70%), radial-gradient(45% 50% at 92% 95%, hsl(153 55% 32% / 0.5), transparent 70%)",
+        }}
+      />
+
+      {/* Wireframe terrain in the bottom corner */}
+      <div
+        aria-hidden="true"
+        className="absolute right-0 bottom-0 w-[70vw] md:w-[46vw] max-w-[760px] h-[34vh] md:h-[46vh] max-h-[520px] opacity-60 md:opacity-100 pointer-events-none [mask-image:linear-gradient(to_left,black_35%,transparent),linear-gradient(to_top,black_65%,transparent)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_left,black_35%,transparent),linear-gradient(to_top,black_65%,transparent)] [-webkit-mask-composite:source-in]"
+      >
+        <Terrain className="w-full h-full" />
+      </div>
+
       {/* Faint grid */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-y-0 left-[4%] w-px bg-snow/[0.05]" />
@@ -40,6 +59,7 @@ const FocusSection = () => {
           decoding="async"
         />
         <div className="absolute inset-0 bg-emerald-400 mix-blend-multiply" />
+        <div className="absolute inset-0 shadow-[inset_0_0_120px_hsl(153_60%_50%/0.35)]" />
         <div className="absolute inset-0 bg-emerald-300/25 mix-blend-screen" />
         <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-night/60" />
