@@ -2,34 +2,47 @@ import { useEffect, useRef, useState } from "react";
 import { PROFILE } from "@/data/profile";
 import { SectionHeader } from "./ui/SectionHeader";
 
-const TYPE = "t-heading text-5xl md:text-7xl lg:text-8xl whitespace-nowrap";
+const TYPE = "t-heading text-4xl md:text-5xl lg:text-6xl whitespace-nowrap";
+const GAP = 56;
+
+interface Glyph {
+  ch: string;
+  /** Position along the strip of all names, in px */
+  pos: number;
+}
 
 /**
- * (The stack): a small drum turning about its vertical axis with big names on its faces.
- * Each face is exactly one chord wide, and the chord is measured from the widest name at
- * the current type size, so names never collide. Only the face at the front is sharp;
- * every other face blurs and dims in proportion to its angle away, and the back is hidden.
- * The full list cycles onto the faces as each passes through the back.
+ * (The stack): names wrapped around a small drum that turns about its vertical axis. All
+ * names are laid end to end with a fixed gap on a strip, and the strip is bent onto the
+ * cylinder letter by letter, so words curve and there are no empty slots. Letters at the
+ * front are sharp; they blur and dim as they turn away, and the back half shows through as
+ * faint reversed ghosts, the way a real drum would.
  */
 const StackMarquee = () => {
   const items = PROFILE.stack;
   const ref = useRef<HTMLDivElement>(null);
   const measure = useRef<HTMLUListElement>(null);
-  const [angle, setAngle] = useState(0);
-  const [geom, setGeom] = useState({ faces: 6, radius: 640 });
+  const [offset, setOffset] = useState(0);
+  const [geom, setGeom] = useState<{ radius: number; glyphs: Glyph[]; length: number }>({
+    radius: 400,
+    glyphs: [],
+    length: 1,
+  });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const size = () => {
       const w = el.clientWidth;
-      const widest = Math.max(
-        80,
-        ...Array.from(measure.current?.children ?? []).map((c) => (c as HTMLElement).offsetWidth),
-      );
-      const chord = widest + (w < 640 ? 32 : 64);
-      const faces = w < 640 ? 4 : w < 1024 ? 4 : 6;
-      setGeom({ faces, radius: (chord * faces) / (2 * Math.PI) });
+      const glyphs: Glyph[] = [];
+      let cursor = 0;
+      Array.from(measure.current?.children ?? []).forEach((li) => {
+        const spans = Array.from(li.children) as HTMLElement[];
+        spans.forEach((s) => glyphs.push({ ch: s.textContent ?? "", pos: cursor + s.offsetLeft + s.offsetWidth / 2 }));
+        cursor += (li as HTMLElement).offsetWidth + GAP;
+      });
+      // A small drum: its radius sets how tight the curve looks, not how many names fit
+      setGeom({ radius: Math.max(190, Math.min(420, w * 0.28)), glyphs, length: cursor || 1 });
     };
     size();
     document.fonts?.ready.then(size);
@@ -42,7 +55,7 @@ const StackMarquee = () => {
     const loop = (t: number) => {
       const dt = t - last;
       last = t;
-      if (visible) setAngle((a) => a + dt * 0.012);
+      if (visible) setOffset((o) => o + dt * 0.09);
       raf = requestAnimationFrame(loop);
     };
     const io = new IntersectionObserver(([e]) => {
@@ -57,8 +70,9 @@ const StackMarquee = () => {
     };
   }, []);
 
-  const { faces, radius } = geom;
-  const step = 360 / faces;
+  const { radius, glyphs, length } = geom;
+  const degPerPx = 180 / (Math.PI * radius);
+  const head = offset % length;
 
   return (
     <section className="theme-dark bg-night text-snow py-20 lg:py-24 overflow-hidden">
@@ -72,11 +86,15 @@ const StackMarquee = () => {
         />
       </div>
 
-      {/* Off-screen copies of every name, used only to measure the widest one */}
-      <ul ref={measure} aria-hidden="true" className="absolute -left-[9999px] top-0 flex gap-0 invisible">
+      {/* Off-screen copies of every name, letter by letter, used only for measuring */}
+      <ul ref={measure} aria-hidden="true" className="absolute -left-[9999px] top-0 invisible">
         {items.map((item) => (
-          <li key={item} className={TYPE}>
-            {item}
+          <li key={item} className={`${TYPE} inline-block mr-10`}>
+            {[...item].map((ch, i) => (
+              <span key={i} className="inline-block">
+                {ch === " " ? " " : ch}
+              </span>
+            ))}
           </li>
         ))}
       </ul>
@@ -84,43 +102,44 @@ const StackMarquee = () => {
       <div
         ref={ref}
         data-reveal-skip
-        className="relative h-[220px] md:h-[280px] [perspective:1000px]"
-        aria-label="Technologies"
+        className="relative h-[200px] md:h-[240px] [perspective:900px]"
+        aria-label={`Technologies: ${items.join(", ")}`}
       >
-        <ul
+        <div
           className="absolute inset-0 [transform-style:preserve-3d]"
-          style={{ transform: `translateZ(-${radius}px) rotateY(${angle % 360}deg)` }}
+          style={{ transform: `translateZ(-${radius}px)` }}
         >
-          {Array.from({ length: faces }, (_, k) => {
-            const u = angle - k * step;
-            let rel = u % 360;
-            if (rel > 180) rel -= 360;
-            if (rel < -180) rel += 360;
-            const a = Math.abs(rel);
-            const lap = Math.floor((u + 180) / 360);
-            const item = items[(((k + faces * lap) % items.length) + items.length) % items.length];
-            const hidden = a >= 90;
-            // Sharp for the middle of a face's front pass, then blur and dim grow with the angle
-            const sharp = step * 0.22;
-            const t = Math.min(1, Math.max(0, (a - sharp) / (90 - sharp)));
+          {glyphs.map((g, j) => {
+            // Distance along the strip from the point currently at the front, wrapped to the nearest copy
+            let d = (g.pos - head) % length;
+            if (d > length / 2) d -= length;
+            if (d < -length / 2) d += length;
+            const deg = d * degPerPx;
+            const a = Math.abs(deg);
+            if (a > 180) return null;
+            const front = a <= 90;
+            // Front half: sharp near the centre, blurring and dimming with the angle. Back half: faint ghosts.
+            const t = Math.min(1, Math.max(0, (a - 12) / 78));
+            // Back ghosts read clearly through, like the reversed logos behind Spector's ring
+            const opacity = front ? 1 - t * 0.65 : 0.32;
+            const blur = front ? t * 6 : 9;
             return (
-              <li
-                key={k}
-                aria-hidden={hidden ? true : undefined}
-                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-snow will-change-transform ${TYPE}`}
+              <span
+                key={j}
+                aria-hidden="true"
+                className={`absolute left-1/2 top-1/2 text-snow will-change-transform ${TYPE}`}
                 style={{
-                  transform: `rotateY(${-k * step}deg) translateZ(${radius}px)`,
-                  opacity: hidden ? 0 : 1 - t * 0.75,
-                  filter: t > 0 ? `blur(${(t * 9).toFixed(1)}px)` : "none",
-                  visibility: hidden ? "hidden" : "visible",
-                  backfaceVisibility: "hidden",
+                  // Centre the glyph on its anchor first, then push it out to the drum and turn it
+                  transform: `rotateY(${deg}deg) translateZ(${radius}px) translate(-50%, -50%)`,
+                  opacity,
+                  filter: blur > 0.1 ? `blur(${blur.toFixed(1)}px)` : "none",
                 }}
               >
-                {item}
-              </li>
+                {g.ch}
+              </span>
             );
           })}
-        </ul>
+        </div>
       </div>
     </section>
   );
