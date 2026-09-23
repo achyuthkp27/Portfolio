@@ -1,70 +1,87 @@
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { useMemo, useRef, useState } from "react";
 import { PROFILE } from "@/data/profile";
-import { DUR, EASE } from "@/lib/motion";
 
 /**
- * (How I think): principles one at a time on a sticky graphite stage, scrubbed by scroll,
- * the way the reference's vision section moves. Each line's letters swing in from the
- * left with a stagger and fall away when the next line takes over. A crosshair with a
- * marker tracks progress. With reduced motion the lines simply stack.
+ * (How I think): a continuous stream of letters scrubbed by scroll, as the reference's
+ * vision section moves. Every letter of every line sits on one global timeline: it rises
+ * in from below, holds, then leaves upward, one letter after another, so the tail of one
+ * line is still fading while the head of the next arrives. All lines stack in the same
+ * spot. No rotation, no blur, only travel and opacity. With reduced motion the lines
+ * simply stack as a list.
  */
-const lines = PROFILE.principles.map((p) => p.title);
+const LINES = PROFILE.principles.map((p) => p.title);
 
-const KineticLine = ({ text }: { text: string }) => (
-  <motion.p
-    key={text}
-    initial="hidden"
-    animate="show"
-    exit="exit"
-    variants={{
-      hidden: {},
-      show: { transition: { staggerChildren: 0.028 } },
-      exit: { transition: { staggerChildren: 0.014 } },
-    }}
-    className="font-body font-semibold tracking-[-0.035em] leading-[1.12] text-[2.6rem] sm:text-6xl md:text-7xl lg:text-[6.5rem] text-snow text-center text-balance"
-    aria-label={text}
-  >
-    {text.split(" ").map((word, w) => (
-      <span key={w} className="inline-block whitespace-nowrap">
-        {word.split("").map((ch, i) => (
-          <motion.span
-            key={i}
-            aria-hidden="true"
-            variants={{
-              hidden: { opacity: 0, y: 48, rotate: -8, filter: "blur(4px)" },
-              show: { opacity: 1, y: 0, rotate: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: EASE } },
-              exit: { opacity: 0, y: -40, rotate: 6, filter: "blur(3px)", transition: { duration: DUR.fast } },
-            }}
-            className="inline-block origin-bottom-left will-change-transform px-[0.01em] pt-[0.08em] pb-[0.22em] -mb-[0.22em]"
-          >
-            {ch}
-          </motion.span>
-        ))}
-        {w < text.split(" ").length - 1 && <span aria-hidden="true">&nbsp;</span>}
-      </span>
-    ))}
-  </motion.p>
-);
+/** Timeline units: one per letter, plus these spans */
+const ENTER = 10;
+const HOLD = 22;
+const EXIT = 10;
+/** Vertical travel in and out, in px */
+const TRAVEL = 125;
+/** Scroll distance per letter, in px */
+const PX_PER_LETTER = 46;
+
+interface LetterProps {
+  ch: string;
+  start: number;
+  progress: MotionValue<number>;
+}
+
+const Letter = ({ ch, start, progress }: LetterProps) => {
+  const inEnd = start + ENTER;
+  const outStart = inEnd + HOLD;
+  const outEnd = outStart + EXIT;
+  const y = useTransform(progress, [start, inEnd, outStart, outEnd], [TRAVEL, 0, 0, -TRAVEL]);
+  const opacity = useTransform(progress, [start, inEnd, outStart, outEnd], [0, 1, 1, 0]);
+  return (
+    <motion.span style={{ y, opacity }} className="inline-block will-change-transform" aria-hidden="true">
+      {ch}
+    </motion.span>
+  );
+};
 
 const VisionSection = () => {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+
+  // Global letter indices: each line starts where the previous one ended
+  const plan = useMemo(() => {
+    let cursor = 0;
+    return LINES.map((text) => {
+      const words = text.split(" ").map((word) => {
+        const letters = [...word].map((ch) => ({ ch, start: cursor++ }));
+        cursor += 1; // the space
+        return letters;
+      });
+      return { text, words, from: words[0][0].start, to: cursor - 1 };
+    });
+  }, []);
+  const total = plan[plan.length - 1].to + ENTER + HOLD + EXIT;
+
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const [index, setIndex] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const next = Math.min(lines.length - 1, Math.max(0, Math.floor(v * lines.length)));
-    if (next !== index) setIndex(next);
-  });
-  // The crosshair marker travels along the horizontal line with progress
+  const units = useTransform(scrollYProgress, [0, 1], [-ENTER, total]);
   const markerX = useTransform(scrollYProgress, [0, 1], ["8%", "92%"]);
+
+  const [index, setIndex] = useState(0);
+  useMotionValueEvent(units, "change", (u) => {
+    const next = plan.findIndex((l) => u < l.to + ENTER + HOLD / 2);
+    const clamped = next < 0 ? plan.length - 1 : next;
+    if (clamped !== index) setIndex(clamped);
+  });
 
   if (reduceMotion) {
     return (
       <section id="vision" className="theme-dark bg-night text-snow py-24 px-6 md:px-10 lg:px-12">
         <p className="t-label text-center mb-10">How I think</p>
         <ul className="max-w-4xl mx-auto space-y-6 text-center">
-          {lines.map((l) => (
+          {LINES.map((l) => (
             <li key={l} className="font-body font-semibold tracking-[-0.03em] text-4xl md:text-6xl">
               {l}
             </li>
@@ -80,7 +97,7 @@ const VisionSection = () => {
       ref={ref}
       data-reveal-skip
       className="theme-dark bg-night text-snow relative"
-      style={{ height: `${lines.length * 90 + 40}vh` }}
+      style={{ height: `calc(${total * PX_PER_LETTER}px + 100vh)` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-between px-6 md:px-10 lg:px-12 pt-24 md:pt-28 pb-10">
         {/* Crosshair */}
@@ -95,14 +112,30 @@ const VisionSection = () => {
 
         <p className="t-label relative">How I think</p>
 
-        <div className="relative w-full max-w-6xl min-h-[9rem] flex items-center justify-center">
-          <KineticLine key={index} text={lines[index]} />
+        {/* All lines stack in the same spot; the timeline decides what is visible */}
+        <div className="relative w-full max-w-[1300px] h-[9rem] md:h-[12rem]">
+          {plan.map((line) => (
+            <p
+              key={line.text}
+              aria-label={line.text}
+              className="absolute inset-x-0 top-1/2 -translate-y-1/2 font-body font-semibold tracking-[-0.035em] leading-[1.12] text-[2.4rem] sm:text-5xl md:text-6xl lg:text-[4.6rem] xl:text-[5.4rem] text-snow text-center text-balance"
+            >
+              {line.words.map((letters, w) => (
+                <span key={w} className="inline-block whitespace-nowrap">
+                  {letters.map((l) => (
+                    <Letter key={l.start} ch={l.ch} start={l.start} progress={units} />
+                  ))}
+                  {w < line.words.length - 1 && <span aria-hidden="true">&nbsp;</span>}
+                </span>
+              ))}
+            </p>
+          ))}
         </div>
 
         <div className="relative flex items-center gap-3 t-figure text-xs text-muted">
           <span>{String(index + 1).padStart(2, "0")}</span>
           <span className="w-8 h-px bg-line" aria-hidden="true" />
-          <span>{String(lines.length).padStart(2, "0")}</span>
+          <span>{String(LINES.length).padStart(2, "0")}</span>
           <span className="ml-4 font-body normal-case">(Scroll for more)</span>
         </div>
       </div>
