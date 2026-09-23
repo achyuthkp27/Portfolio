@@ -1,69 +1,126 @@
+import { useEffect, useRef } from "react";
+
 /**
- * Slow drifting smoke for a dark card, drawn in code: three soft blobs move on long
- * loops behind a turbulence-displaced layer, with grain on top. No video, no asset.
- * Reduced motion shows the blobs still.
+ * Drifting smoke for a dark card, rendered on a canvas: layered value noise, domain-warped
+ * and advected over time, drawn at low resolution and upscaled with blur so wisps curl
+ * and move like Spector's smoke video, with no asset. Pauses off screen and when the tab
+ * is hidden; renders one still frame under reduced motion.
  */
-export const Smoke = ({ id = "smoke" }: { id?: string }) => (
-  <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none">
-    <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 400 600">
-      <defs>
-        <filter id={`${id}-warp`} x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="3" seed="7" result="noise">
-            <animate
-              attributeName="baseFrequency"
-              values="0.006 0.009;0.008 0.007;0.006 0.009"
-              dur="28s"
-              repeatCount="indefinite"
-            />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="90" xChannelSelector="R" yChannelSelector="G" />
-          <feGaussianBlur stdDeviation="18" />
+
+// Small deterministic hash for value noise
+const hash = (x: number, y: number) => {
+  const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+};
+const smooth = (t: number) => t * t * (3 - 2 * t);
+const noise = (x: number, y: number) => {
+  const xi = Math.floor(x),
+    yi = Math.floor(y);
+  const xf = x - xi,
+    yf = y - yi;
+  const a = hash(xi, yi),
+    b = hash(xi + 1, yi),
+    c = hash(xi, yi + 1),
+    d = hash(xi + 1, yi + 1);
+  const u = smooth(xf),
+    v = smooth(yf);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+};
+const fbm = (x: number, y: number) => {
+  let v = 0,
+    amp = 0.5,
+    f = 1;
+  for (let i = 0; i < 4; i++) {
+    v += amp * noise(x * f, y * f);
+    amp *= 0.5;
+    f *= 2.1;
+  }
+  return v;
+};
+
+export const Smoke = ({ className = "" }: { className?: string }) => {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const W = 96,
+      H = 128;
+    canvas.width = W;
+    canvas.height = H;
+    const img = ctx.createImageData(W, H);
+    const data = img.data;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let raf = 0;
+    let visible = true;
+    let last = 0;
+
+    const draw = (t: number) => {
+      const time = t * 0.00012;
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const nx = x / W,
+            ny = y / H;
+          // Domain warp: two noise fields bend the sampling coordinates, then advect upward
+          const qx = fbm(nx * 3 + time * 0.7, ny * 3 - time * 0.9);
+          const qy = fbm(nx * 3 + 5.2 + time * 0.5, ny * 3 + 1.3 - time * 0.6);
+          const v = fbm(nx * 2.2 + qx * 1.6, ny * 2.2 + qy * 1.6 - time * 1.4);
+          // Contrast so wisps read as strands, and a centre vignette so edges stay dark
+          const dx = nx - 0.5,
+            dy = ny - 0.5;
+          const vignette = Math.max(0, 1 - (dx * dx * 2.2 + dy * dy * 1.3));
+          const s = Math.max(0, v - 0.28) * 2.1 * vignette;
+          const lum = Math.min(255, s * s * 255);
+          const i = (y * W + x) * 4;
+          data[i] = data[i + 1] = data[i + 2] = lum;
+          data[i + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+    };
+
+    const loop = (t: number) => {
+      if (visible && t - last > 40) {
+        last = t;
+        draw(t);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+
+    draw(0);
+    if (reduce) return;
+
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting && document.visibilityState === "visible";
+    });
+    io.observe(canvas);
+    const onVis = () => {
+      visible = document.visibilityState === "visible";
+    };
+    document.addEventListener("visibilitychange", onVis);
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
+
+  return (
+    <div aria-hidden="true" className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+      <canvas ref={ref} className="absolute inset-[-8%] w-[116%] h-[116%] opacity-50 blur-[7px] mix-blend-screen" />
+      <svg className="absolute inset-0 w-full h-full opacity-[0.07] mix-blend-screen">
+        <filter id="smoke-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
         </filter>
-        <radialGradient id={`${id}-g`}>
-          <stop offset="0%" stopColor="white" stopOpacity="0.55" />
-          <stop offset="60%" stopColor="white" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="white" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <g filter={`url(#${id}-warp)`} opacity="0.55" className="motion-reduce:[animation:none]">
-        <ellipse cx="140" cy="220" rx="150" ry="110" fill={`url(#${id}-g)`}>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0;60 40;-30 20;0 0"
-            dur="36s"
-            repeatCount="indefinite"
-          />
-        </ellipse>
-        <ellipse cx="270" cy="330" rx="170" ry="120" fill={`url(#${id}-g)`}>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0;-50 -30;30 -50;0 0"
-            dur="42s"
-            repeatCount="indefinite"
-          />
-        </ellipse>
-        <ellipse cx="200" cy="120" rx="130" ry="90" fill={`url(#${id}-g)`}>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0;30 60;-40 30;0 0"
-            dur="31s"
-            repeatCount="indefinite"
-          />
-        </ellipse>
-      </g>
-    </svg>
-    <svg className="absolute inset-0 w-full h-full opacity-[0.07] mix-blend-screen">
-      <filter id={`${id}-grain`}>
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <rect width="100%" height="100%" filter={`url(#${id}-grain)`} />
-    </svg>
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,hsl(0_0%_0%/0.6)_100%)]" />
-  </div>
-);
+        <rect width="100%" height="100%" filter="url(#smoke-grain)" />
+      </svg>
+    </div>
+  );
+};
 
 export default Smoke;

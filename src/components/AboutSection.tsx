@@ -88,7 +88,7 @@ const AboutSection = () => {
               {...reveal(0.1)}
               className={`${card} md:col-span-3 lg:col-span-3 bg-night min-h-[420px] lg:min-h-0 flex flex-col items-center text-center p-6 md:p-8`}
             >
-              <Smoke id="about-smoke" />
+              <Smoke />
               <span className="relative t-figure text-[11px] tracking-[0.3em] uppercase text-snow/70">Achyuth KP</span>
               <div className="relative my-auto py-8">
                 <ExperienceTimer startDate={PROFILE.careerStart} compact />
