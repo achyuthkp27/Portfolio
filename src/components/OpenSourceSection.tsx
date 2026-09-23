@@ -28,7 +28,7 @@ const Row = ({
   const inner = (
     <>
       <span className="min-w-0">
-        <span className="block t-heading text-2xl md:text-3xl text-snow group-hover:text-snow/80 transition-colors duration-fast truncate max-w-full">
+        <span className="block t-heading text-2xl md:text-3xl text-snow group-hover:text-snow/80 transition-colors duration-fast break-words max-w-full">
           {title}
         </span>
         {sub && <span className="block t-body text-muted mt-1 line-clamp-2">{sub}</span>}

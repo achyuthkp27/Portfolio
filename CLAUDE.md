@@ -26,5 +26,6 @@ Do not wrap headings or any text in a container with `overflow-hidden` to animat
 sliding in. Antonio and large Inter glyphs extend below the line box, so the container
 clips descenders and baselines (the owner has reported cropped C, U, g, y and full stops
 several times). Animate text with opacity and transform on the text element itself,
-with no clipping parent. The only permitted clipped text is the footer wordmark, which
-is cut by the page edge on purpose.
+with no clipping parent. This includes Tailwind's `truncate`, which sets `overflow: hidden`
+and clips descenders the same way: use `break-words` or `line-clamp-*` instead. The only
+permitted clipped text is the footer wordmark, which is cut by the page edge on purpose.

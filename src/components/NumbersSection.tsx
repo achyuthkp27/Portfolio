@@ -80,19 +80,23 @@ const NumbersSection = () => {
 
           {/* Service areas as a bar row */}
           <Tile label="What I do" className="col-span-2 lg:col-span-2" delay={0.15}>
-            <ul className="mt-6 grid grid-cols-5 gap-2 items-end h-24">
+            <ul className="mt-6 grid grid-cols-5 gap-2">
               {SERVICES.map((s, i) => (
-                <li key={s.title} className="flex flex-col justify-end h-full">
-                  <motion.span
-                    initial={{ scaleY: 0 }}
-                    whileInView={{ scaleY: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 + i * 0.07 }}
-                    className={`block w-full rounded-sm origin-bottom ${i === 0 ? "bg-emerald-400" : "bg-snow/25"}`}
-                    style={{ height: `${100 - i * 12}%` }}
-                    aria-hidden="true"
-                  />
-                  <span className="mt-2 t-figure text-[10px] text-muted truncate">{s.title.split(" ")[0]}</span>
+                <li key={s.title} className="flex flex-col">
+                  <span className="flex items-end h-24">
+                    <motion.span
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 + i * 0.07 }}
+                      className={`block w-full rounded-sm origin-bottom ${i === 0 ? "bg-emerald-400" : "bg-snow/25"}`}
+                      style={{ height: `${100 - i * 12}%` }}
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <span className="mt-2 t-figure text-[10px] leading-relaxed text-muted whitespace-nowrap">
+                    {s.title.split(" ")[0]}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -116,7 +120,7 @@ const NumbersSection = () => {
                 className="group mt-6 flex items-end justify-between gap-6"
               >
                 <span className="min-w-0">
-                  <span className="block t-heading text-2xl md:text-3xl truncate group-hover:text-snow/80 transition-colors duration-fast">
+                  <span className="block t-heading text-2xl md:text-3xl break-words group-hover:text-snow/80 transition-colors duration-fast">
                     {latest.name}
                   </span>
                   <span className="block t-body text-muted mt-1 line-clamp-2">{latest.description}</span>
