@@ -56,7 +56,7 @@ const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
   const pad = (n: number) => n.toString().padStart(2, "0");
 
   return (
-    <div ref={ref} className="mt-4">
+    <div ref={ref} className="mt-4 flex-1 flex flex-col justify-end">
       <p className="t-wordmark leading-none text-[6rem] md:text-[8rem]">
         <ScrambleNumber value={String(years)} suffix="+" />
       </p>

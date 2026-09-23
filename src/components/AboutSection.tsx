@@ -52,7 +52,7 @@ const AboutSection = () => {
           </p>
         </div>
 
-        <div className="mt-16 lg:mt-24 grid md:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.3fr)] gap-6 lg:gap-8 items-start">
+        <div className="mt-16 lg:mt-24 grid md:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.3fr)] gap-6 lg:gap-8 items-stretch">
           {/* Portrait: the person, on the same near-black as the page */}
           <motion.figure
             {...reveal()}
@@ -75,11 +75,14 @@ const AboutSection = () => {
             </figcaption>
           </motion.figure>
 
-          <motion.div {...reveal(0.05)} className="rounded-md bg-tile border border-line p-6 md:p-8">
+          <motion.div
+            {...reveal(0.05)}
+            className="rounded-md bg-tile border border-line p-6 md:p-8 flex flex-col justify-between"
+          >
             <p className="t-label mb-2">Time in banking</p>
             <ExperienceTimer startDate={PROFILE.careerStart} />
           </motion.div>
-          <div className="space-y-6 md:col-span-2 lg:col-span-1">
+          <div className="md:col-span-2 lg:col-span-1 flex flex-col gap-6 lg:py-1">
             <motion.p {...reveal(0.05)} className="t-body text-snow/85 max-w-2xl">
               {PROFILE.intro}
             </motion.p>
@@ -88,7 +91,7 @@ const AboutSection = () => {
               client to Cognizant when the client rebadged the team. Lately the interesting problems sit where banking
               meets AI: LLM-powered assistants that verify who they're talking to, and real-time Video KYC over WebRTC.
             </motion.p>
-            <motion.div {...reveal(0.15)} className="flex flex-wrap gap-3 pt-2">
+            <motion.div {...reveal(0.15)} className="flex flex-wrap gap-3 lg:mt-auto">
               <PillButton onClick={() => scrollTo("work")}>See the work</PillButton>
               <PillButton tone="outline" onClick={() => scrollTo("contact")}>
                 Get in touch
