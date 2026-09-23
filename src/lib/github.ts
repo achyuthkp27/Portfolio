@@ -112,3 +112,70 @@ export async function fetchRepositoryDetails(repoName: string, signal?: AbortSig
     return (await fromSnapshot()) ?? { status: "unavailable" };
   }
 }
+
+export interface RepoExtras {
+  /** README as GitHub-rendered HTML, with GitHub's anchor chrome removed; null when unavailable */
+  readme: string | null;
+  /** Bytes per language, largest first */
+  languages: { name: string; bytes: number; share: number }[];
+  /** Latest commits on the default branch */
+  commits: { sha: string; message: string; date: string; url: string }[];
+}
+
+const EMPTY_EXTRAS: RepoExtras = { readme: null, languages: [], commits: [] };
+
+/** Strip GitHub's heading anchors and permalinks so the README reads as plain document HTML. */
+const cleanReadme = (html: string) =>
+  html
+    .replace(/<a id="user-content-[^"]*" class="anchor"[\s\S]*?<\/a>/g, "")
+    .replace(/<div class="markdown-heading" dir="auto">/g, "<div>")
+    .replace(/ dir="auto"/g, "")
+    .replace(/<img[^>]*data-canonical-src[^>]*>/g, (m) => (m.includes("shields.io") || m.includes("badge") ? "" : m))
+    .replace(/<p>\s*<\/p>/g, "");
+
+/**
+ * README, languages, and recent commits for one repo. Each part fails on its own, so a
+ * rate-limited README still leaves the language bar and commits intact. Cached a day.
+ */
+export async function fetchRepositoryExtras(repoName: string, signal?: AbortSignal): Promise<RepoExtras> {
+  const cacheKey = `gh_extras_${repoName}`;
+  const cached = readCache<RepoExtras>(cacheKey);
+  if (cached) return cached;
+  const base = `https://api.github.com/repos/${GITHUB_USERNAME}/${encodeURIComponent(repoName)}`;
+
+  const readme = fetch(`${base}/readme`, { signal, headers: { Accept: "application/vnd.github.html" } })
+    .then((r) => (r.ok ? r.text() : null))
+    .then((html) => (html ? cleanReadme(html) : null))
+    .catch(() => null);
+
+  const languages = fetch(`${base}/languages`, { signal })
+    .then((r): Promise<Record<string, number>> => (r.ok ? r.json() : Promise.resolve({})))
+    .then((map) => {
+      const total = Object.values(map).reduce((a, b) => a + b, 0) || 1;
+      return Object.entries(map)
+        .map(([name, bytes]) => ({ name, bytes, share: bytes / total }))
+        .sort((a, b) => b.bytes - a.bytes);
+    })
+    .catch(() => []);
+
+  const commits = fetch(`${base}/commits?per_page=5`, { signal })
+    .then((r) => (r.ok ? r.json() : []))
+    .then((list: { sha: string; html_url: string; commit: { message: string; author: { date: string } } }[]) =>
+      list.map((c) => ({
+        sha: c.sha.slice(0, 7),
+        message: c.commit.message.split("\n")[0],
+        date: c.commit.author.date,
+        url: c.html_url,
+      })),
+    )
+    .catch(() => []);
+
+  try {
+    const extras: RepoExtras = { readme: await readme, languages: await languages, commits: await commits };
+    if (extras.readme || extras.languages.length || extras.commits.length) writeCache(cacheKey, extras);
+    return extras;
+  } catch (error) {
+    if (isAbort(error)) return EMPTY_EXTRAS;
+    return EMPTY_EXTRAS;
+  }
+}

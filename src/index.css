@@ -232,6 +232,113 @@
   animation: plus-pulse 3.2s ease-in-out infinite;
 }
 
+/* ── README, GitHub-rendered HTML in the site's type ──────────────────── */
+.readme {
+  font-family: var(--font-body);
+  color: hsl(0 0% 100% / 0.82);
+  line-height: 1.6;
+}
+.readme h1,
+.readme h2,
+.readme h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 1;
+  color: hsl(var(--snow));
+  margin: 2rem 0 0.9rem;
+}
+.readme h1 {
+  font-size: 2.6rem;
+  margin-top: 0;
+}
+.readme h2 {
+  font-size: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid hsl(var(--line));
+}
+.readme h3 {
+  font-size: 1.5rem;
+}
+.readme p,
+.readme ul,
+.readme ol,
+.readme table,
+.readme pre,
+.readme blockquote {
+  margin: 0 0 1rem;
+}
+.readme ul,
+.readme ol {
+  padding-left: 1.4rem;
+}
+.readme li {
+  margin: 0.3rem 0;
+}
+.readme a {
+  color: hsl(var(--snow));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--line));
+  text-underline-offset: 3px;
+}
+.readme a:hover {
+  text-decoration-color: hsl(var(--accent-400));
+}
+.readme code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: hsl(0 0% 100% / 0.06);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+}
+.readme pre {
+  max-width: 100%;
+  background: hsl(var(--night));
+  border: 1px solid hsl(var(--line));
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+}
+.readme pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.readme table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+}
+.readme th,
+.readme td {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid hsl(var(--line));
+  vertical-align: top;
+}
+.readme th {
+  font-family: var(--font-body);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--muted));
+}
+.readme img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+.readme blockquote {
+  border-left: 2px solid hsl(var(--accent-400));
+  padding-left: 1rem;
+  color: hsl(var(--muted));
+}
+.readme hr {
+  border: 0;
+  border-top: 1px solid hsl(var(--line));
+  margin: 1.5rem 0;
+}
+
 /* ── Scroll reveal ────────────────────────────────────────────────────────
    Applied by useScrollReveal: blurred, faded and slightly low until first seen. */
 .reveal {
