@@ -12,7 +12,6 @@ import { PillButton, PillLink } from "./ui/Pill";
 /** The bar the reference uses: wordmark left, uppercase links centred, one white pill right. */
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [pastHero, setPastHero] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const location = useLocation();
@@ -39,7 +38,6 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState("");
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 40);
-    setPastHero(latest > window.innerHeight * 0.9);
     if (latest < window.innerHeight * 0.5) setActiveSection("");
   });
 
@@ -180,34 +178,6 @@ const Navigation = () => {
           </div>
         </div>
       </motion.nav>
-
-      {/* Dock: a floating pill of section links that rises once the hero is behind you, as the reference has it */}
-      <AnimatePresence>
-        {isHomePage && pastHero && !isMenuOpen && (
-          <motion.nav
-            aria-label="Sections"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ duration: DUR.base, ease: EASE }}
-            className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center gap-1 rounded-pill bg-snow text-night p-1.5 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]"
-          >
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => goTo(item.id)}
-                aria-current={activeSection === item.id ? "location" : undefined}
-                className={`h-10 px-4 rounded-pill font-body text-[13px] font-medium uppercase tracking-[0.03em] transition-colors duration-fast ${
-                  activeSection === item.id ? "bg-night text-snow" : "hover:bg-stone"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </motion.nav>
-        )}
-      </AnimatePresence>
 
       <AnimatePresence>
         {isMenuOpen && (
