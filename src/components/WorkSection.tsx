@@ -216,23 +216,18 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
           ref={tile}
           className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[240px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-5 md:p-12"
         >
-          {/* Depth: blueprint grid, an emerald aura that drifts with the parallax, a vignette, and grain */}
+          {/* Depth without colour: a soft top highlight, a faint vignette, and grain */}
           <div
-            className="absolute inset-0 pointer-events-none bg-[linear-gradient(hsl(0_0%_100%/0.035)_1px,transparent_1px),linear-gradient(90deg,hsl(0_0%_100%/0.035)_1px,transparent_1px)] bg-[size:28px_28px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black_30%,transparent_100%)]"
-            aria-hidden="true"
-          />
-          <motion.div
-            style={{ y: artY }}
-            className="absolute -inset-[20%] pointer-events-none bg-[radial-gradient(ellipse_40%_45%_at_50%_45%,hsl(var(--accent-500)/0.16),transparent_70%)]"
+            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,hsl(0_0%_100%/0.07),transparent_70%)]"
             aria-hidden="true"
           />
           <div
-            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,hsl(0_0%_0%/0.45)_100%)]"
+            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_60%,hsl(0_0%_0%/0.35)_100%)]"
             aria-hidden="true"
           />
           <svg
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full opacity-[0.045] pointer-events-none mix-blend-screen"
+            className="absolute inset-0 w-full h-full opacity-[0.05] pointer-events-none mix-blend-screen"
           >
             <filter id={`grain-${study.slug}`}>
               <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
