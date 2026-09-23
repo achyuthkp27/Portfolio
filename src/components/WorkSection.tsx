@@ -2,7 +2,7 @@ import { useRef, type CSSProperties, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
-import { ChatScreen, KairoScreen, KycScreen, LogScreen, TokenScreen, VoxScreen } from "./case-studies/Screens";
+import { ChatScreen, KairoScreen, LogScreen, VoxScreen } from "./case-studies/Screens";
 import TotpDemo from "./case-studies/TotpDemo";
 import { PillLink, Chip } from "./ui/Pill";
 import { FillText } from "./ui/FillText";
@@ -79,8 +79,45 @@ const DIAGRAMS: Record<string, ReactNode> = {
   ),
   "maker-checker-authorization": <MakerCheckerDemo />,
   "totp-authentication-system": <TotpDemo />,
-  "card-tokenization": <TokenScreen />,
-  "video-kyc-onboarding": <KycScreen />,
+  "card-tokenization": (
+    <Stack>
+      <motion.div
+        variants={itemVariants}
+        className="w-44 md:w-52 rounded-md bg-snow/[0.06] border border-line p-3 text-left"
+      >
+        <div className="font-mono text-[10px] text-muted line-through">5412 7534 9821 0067</div>
+        <div className="font-mono text-xs md:text-sm text-emerald-300 mt-1">tok_9f3a…e71c</div>
+        <div className="flex justify-between mt-2">
+          <span className="font-mono text-[9px] text-muted">CARD ON FILE</span>
+          <span className="font-mono text-[9px] text-muted">MC · VISA</span>
+        </div>
+      </motion.div>
+      <Arrow down />
+      <Row>
+        <Node label="Token vault" sub="JWE / JWS" />
+        <Arrow />
+        <Node label="Card networks" sub="Mastercard · Visa" />
+      </Row>
+    </Stack>
+  ),
+  "video-kyc-onboarding": (
+    <Stack>
+      <Row>
+        <Node label="Customer" sub="camera" />
+        <motion.div
+          variants={itemVariants}
+          className="font-mono text-[10px] text-emerald-300 border-t border-b border-dashed border-emerald-400/50 px-2 py-1"
+        >
+          WebRTC ⇄
+        </motion.div>
+        <Node label="Agent" sub="verifies" />
+      </Row>
+      <Arrow down />
+      <Node label="Signaling" sub="WebSockets" wide />
+      <Arrow down />
+      <Node label="KYC complete" sub="account opened" />
+    </Stack>
+  ),
   "llm-banking-chatbot": <ChatScreen />,
   voxos: <VoxScreen />,
   "kairo-offline-ai-bank": <KairoScreen />,
@@ -99,6 +136,8 @@ const HEADLINES: Record<string, string> = {
   "kairo-offline-ai-bank": "A bank that thinks on the phone",
 };
 const INTERACTIVE = new Set(["maker-checker-authorization", "totp-authentication-system"]);
+/** Diagrams drawn in the node style sit centred in the tile like the demos */
+const CENTRED = new Set(["corporate-banking-microservices", "card-tokenization", "video-kyc-onboarding"]);
 
 /**
  * One case study as a sticky card: it pins below the nav with a small stagger per card, so
@@ -111,7 +150,7 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
   const { scrollYProgress } = useScroll({ target: tile, offset: ["start end", "end start"] });
   const artY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
-  const interactive = INTERACTIVE.has(study.slug) || study.slug === "corporate-banking-microservices";
+  const interactive = INTERACTIVE.has(study.slug) || CENTRED.has(study.slug);
   return (
     <div
       className={isLast ? "relative" : "relative md:sticky md:top-[calc(6rem+var(--stack-offset))]"}

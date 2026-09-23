@@ -22,86 +22,15 @@ const Stage = ({ children, className = "" }: { children: ReactNode; className?: 
 );
 const Caption = ({ children, sub }: { children: ReactNode; sub?: ReactNode }) => (
   <motion.div variants={rise} className="text-center">
-    <p className="t-heading text-3xl md:text-4xl lg:text-5xl">{children}</p>
-    {sub && <p className="t-figure text-[11px] text-muted mt-2 tracking-[0.2em] uppercase">{sub}</p>}
+    <p className="t-heading text-2xl md:text-3xl">{children}</p>
+    {sub && <p className="t-figure text-[10px] text-muted mt-1.5 tracking-[0.2em] uppercase">{sub}</p>}
   </motion.div>
-);
-
-/* 04 — Card on file: one card, the number giving way to a token */
-export const TokenScreen = () => (
-  <Stage>
-    <motion.div
-      variants={rise}
-      whileHover={{ rotateX: -6, rotateY: 8 }}
-      transition={{ type: "spring", stiffness: 120, damping: 14 }}
-      className="relative w-[78%] max-w-[420px] aspect-[1.586] rounded-lg border border-snow/20 p-5 md:p-7 flex flex-col justify-between shadow-[0_50px_80px_-30px_rgba(0,0,0,0.95)] [transform-style:preserve-3d]"
-      style={{
-        background: "linear-gradient(135deg, hsl(200 6% 18%) 0%, hsl(200 8% 8%) 55%, hsl(153 30% 12%) 100%)",
-      }}
-    >
-      <div className="absolute inset-0 rounded-lg pointer-events-none trophy-gloss" />
-      <div className="flex items-center justify-between">
-        <span className="h-7 w-10 md:h-8 md:w-12 rounded-[4px] bg-gradient-to-br from-amber-200/80 to-amber-500/60" />
-        <span className="t-figure text-[10px] text-snow/50 tracking-[0.3em]">CARD ON FILE</span>
-      </div>
-      <div>
-        <p className="font-mono text-lg md:text-2xl tracking-[0.16em] text-snow/35 line-through decoration-emerald-400/80 decoration-2">
-          5412 7534 9821 0067
-        </p>
-        <p className="font-mono text-lg md:text-2xl tracking-[0.12em] text-emerald-300 mt-1">tok_9f3a2c…e71c</p>
-      </div>
-      <div className="flex items-center justify-between t-figure text-[11px] text-snow/60">
-        <span>never touches disk</span>
-        <span>MC · VISA</span>
-      </div>
-    </motion.div>
-    <div className="absolute inset-x-0 bottom-6 md:bottom-8">
-      <Caption sub="JWE · JWS · network tokens">The number leaves. The token stays.</Caption>
-    </div>
-  </Stage>
-);
-
-/* 05 — Video KYC: a scanning ring around the face */
-export const KycScreen = () => (
-  <Stage>
-    <motion.div variants={rise} className="relative h-[200px] w-[200px] md:h-[250px] md:w-[250px]">
-      <span aria-hidden="true" className="absolute inset-0 rounded-full border border-snow/15" />
-      <span aria-hidden="true" className="absolute inset-0 rounded-full kyc-ring" />
-      <span aria-hidden="true" className="absolute inset-[14%] rounded-full bg-snow/[0.05] border border-snow/10" />
-      <span
-        aria-hidden="true"
-        className="absolute left-1/2 top-[30%] -translate-x-1/2 h-[24%] aspect-square rounded-full bg-snow/[0.12]"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute left-1/2 top-[56%] -translate-x-1/2 h-[30%] w-[46%] rounded-t-[50%] bg-snow/[0.09]"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-[14%] h-px bg-emerald-400/80 shadow-[0_0_12px_hsl(153_60%_62%)] kyc-scan"
-      />
-    </motion.div>
-    <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-2">
-      {["ID captured", "Liveness", "Face match"].map((c) => (
-        <motion.span
-          key={c}
-          variants={rise}
-          className="flex items-center gap-2 rounded-pill border border-emerald-400/40 px-3 py-1 t-figure text-[11px] text-emerald-300"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {c}
-        </motion.span>
-      ))}
-    </div>
-    <div className="mt-5">
-      <Caption sub="WebRTC · WebSockets">Verified on camera.</Caption>
-    </div>
-  </Stage>
 );
 
 /* 06 — Assistant: three bubbles at reading size, the gate between them */
 export const ChatScreen = () => (
   <Stage className="px-6 md:px-14">
-    <div className="w-full max-w-xl flex flex-col gap-3 font-body text-[15px] md:text-lg">
+    <div className="w-full max-w-xl flex flex-col gap-3 font-body text-sm md:text-base">
       <motion.p variants={rise} className="self-end max-w-[85%] rounded-2xl rounded-br-sm bg-snow text-night px-5 py-3">
         What's my account balance?
       </motion.p>
@@ -164,7 +93,7 @@ export const LogScreen = () => (
     </div>
     <motion.div
       variants={rise}
-      className="relative w-full max-w-xl rounded-md border border-snow/20 bg-night/90 backdrop-blur px-5 py-4 font-mono text-base md:text-xl flex items-center gap-3 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]"
+      className="relative w-full max-w-xl rounded-md border border-snow/20 bg-night/90 backdrop-blur px-4 py-3 font-mono text-sm md:text-base flex items-center gap-3 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]"
     >
       <span className="text-muted">⌕</span>
       <span>
@@ -199,7 +128,7 @@ export const VoxScreen = () => (
     </motion.div>
     <motion.p
       variants={rise}
-      className="mt-6 md:mt-8 font-body font-semibold text-xl md:text-3xl text-center max-w-xl text-balance"
+      className="mt-5 md:mt-6 font-body font-semibold text-lg md:text-2xl text-center max-w-xl text-balance"
     >
       "Open the billing pull request and run the tests."
     </motion.p>
