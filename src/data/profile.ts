@@ -24,18 +24,21 @@ export const PROFILE = {
       note: "When the software moves money, a bug is not a defect. It is someone's balance.",
     },
     {
-      title: "Boring on purpose.",
-      note: "Proven patterns, plain code, obvious failure modes. Excitement belongs in the product, not the runtime.",
+      title: "Money never moves twice.",
+      note: "Idempotent APIs, one ledger transaction for both legs, and replay checks on every code. A retry can never become a second payment.",
     },
     {
-      title: "Four eyes on every transfer.",
+      title: "Two signatures on every transfer.",
       note: "The maker never approves their own request. Controls are built into the flow, not bolted on.",
     },
     {
       title: "Prove it before release.",
       note: "Unit tests, RFC test vectors, and CI gates. If it isn't verified, it isn't done.",
     },
-    { title: "Readable at 2 AM.", note: "Logs, traces, and names written for the person paged at night. Usually me." },
+    {
+      title: "Trusted with other people's money.",
+      note: "Five years on a PCI-DSS and SOX audited platform. The bar is set by auditors, not by me.",
+    },
   ],
   /** On the record: dated facts, one row each */
   record: [

@@ -230,6 +230,9 @@
 }
 .rv-u {
   display: inline-block;
+  /* The blur filter clips each unit to its own box; pad it so descenders and accents survive */
+  padding: 0.08em 0.01em 0.22em;
+  margin-bottom: -0.22em;
   opacity: 0;
   filter: blur(8px);
   transform: translateY(0.18em);

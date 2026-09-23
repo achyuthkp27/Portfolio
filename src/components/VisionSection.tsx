@@ -22,7 +22,7 @@ const KineticLine = ({ text }: { text: string }) => (
       show: { transition: { staggerChildren: 0.028 } },
       exit: { transition: { staggerChildren: 0.014 } },
     }}
-    className="font-body font-semibold tracking-[-0.035em] leading-[1.05] text-[2.6rem] sm:text-6xl md:text-7xl lg:text-[6.5rem] text-snow text-center text-balance"
+    className="font-body font-semibold tracking-[-0.035em] leading-[1.12] text-[2.6rem] sm:text-6xl md:text-7xl lg:text-[6.5rem] text-snow text-center text-balance"
     aria-label={text}
   >
     {text.split(" ").map((word, w) => (
@@ -36,7 +36,7 @@ const KineticLine = ({ text }: { text: string }) => (
               show: { opacity: 1, y: 0, rotate: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: EASE } },
               exit: { opacity: 0, y: -40, rotate: 6, filter: "blur(3px)", transition: { duration: DUR.fast } },
             }}
-            className="inline-block origin-bottom-left will-change-transform"
+            className="inline-block origin-bottom-left will-change-transform px-[0.01em] pt-[0.08em] pb-[0.22em] -mb-[0.22em]"
           >
             {ch}
           </motion.span>
