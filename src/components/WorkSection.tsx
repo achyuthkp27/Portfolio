@@ -4,6 +4,7 @@ import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
 import TotpDemo from "./case-studies/TotpDemo";
 import { PillLink, Chip } from "./ui/Pill";
+import { FillText } from "./ui/FillText";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
 
@@ -248,10 +249,11 @@ const WorkSection = () => (
       <div className="lg:sticky lg:top-32">
         <p className="t-label mb-5">Selected work</p>
         <h2 className="t-statement text-6xl md:text-7xl lg:text-[5.5rem]">My work</h2>
-        <p className="t-caps text-muted mt-6 max-w-sm">
-          Seven systems from a regulated banking platform. Client specifics are generalised and no metrics are invented.
-          Two are interactive.
-        </p>
+        <FillText
+          text="Seven systems from a regulated banking platform. Client specifics are generalised and no metrics are invented. Two are interactive."
+          className="t-caps text-snow mt-6 max-w-sm"
+          offset={["start 0.9", "start 0.4"]}
+        />
         <div className="mt-8">
           <PillLink tone="outline" href={PROFILE.links.github} target="_blank" rel="noopener noreferrer">
             All code on GitHub

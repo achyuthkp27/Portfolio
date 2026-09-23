@@ -56,6 +56,8 @@ export const PROFILE = {
     { value: "3", label: "Banking channels" },
     { value: "7", label: "Case studies on this page" },
   ],
+  /** How work moves, as four phases; the hero rail ticks through them on scroll */
+  phases: ["Learn", "Build", "Ship", "Verify"],
   /** The stack, for the marquee */
   stack: [
     "Java 21",

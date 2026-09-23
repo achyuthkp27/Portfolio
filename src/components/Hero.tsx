@@ -1,4 +1,4 @@
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
 import { ArrowDownRight } from "lucide-react";
 import { useLoading } from "@/context/LoadingContext";
@@ -128,6 +128,17 @@ const Hero = () => {
               </div>
             ))}
           </motion.dl>
+
+          {/* Phase rail: four thin rules with a tick that advances through the hero scroll */}
+          <motion.ol
+            {...enter(0.85)}
+            aria-label="How work moves"
+            className="relative w-full max-w-[1400px] mt-8 grid grid-cols-4 gap-x-4 text-left"
+          >
+            {PROFILE.phases.map((phase, i) => (
+              <PhaseRule key={phase} phase={phase} index={i} progress={scrollYProgress} />
+            ))}
+          </motion.ol>
         </div>
 
         <motion.div
@@ -144,6 +155,28 @@ const Hero = () => {
         </motion.div>
       </motion.div>
     </section>
+  );
+};
+
+const PhaseRule = ({ phase, index, progress }: { phase: string; index: number; progress: MotionValue<number> }) => {
+  // Each rule owns a quarter of the hero scroll; its fill grows as that quarter passes
+  const from = index * 0.25;
+  const fill = useTransform(progress, [from, from + 0.25], [0, 1]);
+  const active = useTransform(progress, [from - 0.01, from, from + 0.25, from + 0.26], [0.35, 1, 1, 0.5]);
+  return (
+    <li className="relative pt-3 border-t border-line">
+      <motion.span
+        style={{ scaleX: fill }}
+        className="absolute -top-px left-0 h-px w-full bg-snow origin-left"
+        aria-hidden="true"
+      />
+      <motion.span style={{ opacity: active }} className="block t-figure text-[10px] md:text-[11px] text-snow">
+        {String(index + 1).padStart(3, "0")}
+      </motion.span>
+      <motion.span style={{ opacity: active }} className="block mt-1 t-figure text-[10px] md:text-[11px] text-muted">
+        phase/<span className="text-emerald-300">{phase.toLowerCase()}</span>
+      </motion.span>
+    </li>
   );
 };
 

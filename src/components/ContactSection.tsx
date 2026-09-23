@@ -4,6 +4,7 @@ import { Check, Copy } from "lucide-react";
 import { PROFILE } from "@/data/profile";
 import { PillLink, PillButton } from "./ui/Pill";
 import { reveal } from "@/lib/motion";
+import { FillText } from "./ui/FillText";
 
 /** The closing block, as the reference closes: an uppercase statement, one line, one pill. Then the address. */
 const ContactSection = () => {
@@ -26,12 +27,12 @@ const ContactSection = () => {
   return (
     <section id="contact" className="theme-dark bg-night text-snow py-28 lg:py-40 px-6 md:px-10 lg:px-12 scroll-mt-16">
       <div className="max-w-[1400px] mx-auto text-center">
-        <motion.h2
-          {...reveal()}
+        <FillText
+          as="h2"
+          text="Building something serious with AI or backend systems? Let's talk."
           className="t-statement text-[3.4rem] sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl mx-auto text-balance"
-        >
-          Building something serious with AI or backend systems? Let's talk.
-        </motion.h2>
+          offset={["start 0.9", "end 0.5"]}
+        />
         <motion.p {...reveal(0.05)} className="t-caps text-muted max-w-xl mx-auto mt-8">
           Hiring for backend, platform, or AI engineering, or have a systems question? Email gets the fastest response,
           usually within a day.

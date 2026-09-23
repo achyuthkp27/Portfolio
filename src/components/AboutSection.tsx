@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
+import { FillText } from "./ui/FillText";
 import { PROFILE } from "@/data/profile";
 import ExperienceTimer from "./ui/ExperienceTimer";
 import { PillButton } from "./ui/Pill";
@@ -10,34 +10,9 @@ import { Curve } from "./ui/Curve";
 const STATEMENT =
   "I spent five years building the systems that move money. Now I build the AI that works on top of them, with the same standards.";
 
-/** One word that brightens as the reading line passes it, the way the reference's statement fills in on scroll. */
-const Word = ({
-  word,
-  index,
-  total,
-  progress,
-}: {
-  word: string;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-}) => {
-  const start = index / total;
-  const end = start + 1 / total;
-  const opacity = useTransform(progress, [start, end], [0.22, 1]);
-  return (
-    <motion.span style={{ opacity }} className="inline-block mr-[0.28em]">
-      {word}
-    </motion.span>
-  );
-};
-
 /** (Who I am): a statement that fills in as you read it, the bio, and the live counter. */
 const AboutSection = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const scrollTo = useSectionScroll();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
-  const words = STATEMENT.split(" ");
 
   return (
     <section id="about" className="theme-dark bg-night text-snow scroll-mt-16">
@@ -48,13 +23,10 @@ const AboutSection = () => {
           <motion.p {...reveal()} className="t-label mb-8">
             Who I am
           </motion.p>
-          <div ref={ref} className="relative" data-no-split>
-            <p className="t-statement text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl max-w-6xl">
-              {words.map((w, i) => (
-                <Word key={i} word={w} index={i} total={words.length} progress={scrollYProgress} />
-              ))}
-            </p>
-          </div>
+          <FillText
+            text={STATEMENT}
+            className="t-statement text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl max-w-6xl"
+          />
 
           <div className="mt-16 lg:mt-24 grid md:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.3fr)] gap-6 lg:gap-8 items-stretch">
             {/* Portrait: the person, on the same near-black as the page */}
