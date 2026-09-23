@@ -7,7 +7,7 @@ import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { reveal } from "@/lib/motion";
 
 const STATEMENT =
-  "I've spent five years inside the systems that move money: the microservices behind retail, mobile, and corporate banking for hundreds of corporate clients.";
+  "I spent five years building the systems that move money. Now I build the AI that works on top of them, with the same standards.";
 
 /** One word that brightens as the reading line passes it, the way the reference's statement fills in on scroll. */
 const Word = ({
@@ -88,8 +88,8 @@ const AboutSection = () => {
             </motion.p>
             <motion.p {...reveal(0.1)} className="t-body text-muted max-w-2xl">
               I started at FIS Global, was promoted to Senior Software Engineer, and moved with the same platform and
-              client to Cognizant when the client rebadged the team. Lately the interesting problems sit where banking
-              meets AI: LLM-powered assistants that verify who they're talking to, and real-time Video KYC over WebRTC.
+              client to Cognizant. The interesting problems now sit where reliable systems meet AI: models that are
+              useful, gated, and observable in production, not just in a demo.
             </motion.p>
             <motion.div {...reveal(0.15)} className="flex flex-wrap gap-3 lg:mt-auto">
               <PillButton onClick={() => scrollTo("work")}>See the work</PillButton>

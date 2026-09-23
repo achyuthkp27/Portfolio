@@ -37,10 +37,10 @@ const ContactSection = () => {
           {...reveal()}
           className="t-statement text-[3.4rem] sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl mx-auto text-balance"
         >
-          Backend problems worth solving? Let's talk.
+          Building something serious with AI or backend systems? Let's talk.
         </motion.h2>
         <motion.p {...reveal(0.05)} className="t-caps text-muted max-w-xl mx-auto mt-8">
-          Hiring for backend or banking platform work, or have a systems question? Email gets the fastest response,
+          Hiring for backend, platform, or AI engineering, or have a systems question? Email gets the fastest response,
           usually within a day.
         </motion.p>
         <motion.div {...reveal(0.1)} className="mt-10 flex flex-wrap items-center justify-center gap-3">

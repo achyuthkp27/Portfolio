@@ -9,9 +9,9 @@ export const PROFILE = {
   timeZone: "Asia/Kolkata",
   careerStart: new Date("2021-07-26"),
   /** The hero line, uppercase under the name */
-  tagline: "Software engineer building the backend systems banks trust with money.",
+  tagline: "Software engineer building reliable backend systems and the AI that runs on top of them.",
   intro:
-    "Five years inside the microservices behind retail, mobile, and corporate banking: dual-approval controls, card tokenization, MFA, and the observability that keeps a 30+ service estate debuggable at 2 AM.",
+    "Five years building the microservices behind retail, mobile, and corporate banking taught me what production actually demands: correctness, security, and observability. I now bring that discipline to AI: LLM-powered assistants that verify who they're talking to, and an on-device AI banking app where the model never leaves the phone.",
   links: {
     github: "https://github.com/achyuthkp27",
     linkedin: "https://www.linkedin.com/in/kpachyuth",
@@ -36,8 +36,8 @@ export const PROFILE = {
       note: "Unit tests, RFC test vectors, and CI gates. If it isn't verified, it isn't done.",
     },
     {
-      title: "Trusted with other people's money.",
-      note: "Five years on a PCI-DSS and SOX audited platform. The bar is set by auditors, not by me.",
+      title: "AI with guardrails.",
+      note: "An LLM endpoint sits behind the same identity checks as everything else. A model never gets access a user wouldn't.",
     },
   ],
   /** On the record: dated facts, one row each */
@@ -85,6 +85,11 @@ export const PROFILE = {
 /** What I do: five services with the real stack behind each */
 export const SERVICES: { title: string; blurb: string; stack: string[] }[] = [
   {
+    title: "AI-powered products",
+    blurb: "LLM assistants that verify identity before they answer, and on-device models that keep data on the phone.",
+    stack: ["Spring AI", "LangChain4j", "On-device LLMs", "RAG", "WebRTC"],
+  },
+  {
     title: "Backend engineering",
     blurb: "Spring Boot services that carry real money: REST APIs, domain rules, concurrency, resilience patterns.",
     stack: ["Java 21", "Spring Boot", "Spring Data JPA", "JUnit", "Mockito"],
@@ -95,7 +100,7 @@ export const SERVICES: { title: string; blurb: string; stack: string[] }[] = [
     stack: ["Apache Kafka", "NATS JetStream", "Redis", "PostgreSQL", "Circuit breakers"],
   },
   {
-    title: "Payments & security",
+    title: "Security & payments",
     blurb: "Maker-checker controls, card tokenization, TOTP, and token security under PCI-DSS and SOX.",
     stack: ["Spring Security", "OAuth2", "JWT / JWE / JWS", "TOTP", "Mastercard · Visa"],
   },
@@ -103,10 +108,5 @@ export const SERVICES: { title: string; blurb: string; stack: string[] }[] = [
     title: "Cloud & delivery",
     blurb: "Containerised, released repeatedly, and watched: from Jenkins to Kubernetes to Kibana.",
     stack: ["AWS", "Docker", "Kubernetes", "Jenkins", "ELK · Prometheus · Grafana"],
-  },
-  {
-    title: "AI integration",
-    blurb: "LLM endpoints behind the same identity checks as everything else in the bank.",
-    stack: ["Spring AI", "LangChain4j", "WebRTC", "WebSockets"],
   },
 ];
