@@ -28,6 +28,10 @@ const Hero = () => {
   const titleScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 1.6]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const tileIn = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
+  // The whole stage pulls away into a rounded, dimming card as the next section slides over it
+  const stageScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 0.9]);
+  const stageRadius = useTransform(scrollYProgress, [0, 0.6], [0, reduceMotion ? 0 : 28]);
+  const stageDim = useTransform(scrollYProgress, [0.2, 1], [0, reduceMotion ? 0 : 0.55]);
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: 12 },
@@ -36,52 +40,58 @@ const Hero = () => {
   });
 
   return (
-    <section
-      ref={ref}
-      data-reveal-skip
-      className="theme-dark relative min-h-screen bg-night text-snow overflow-hidden flex flex-col"
-    >
-      {/* Drifting facts */}
-      {!reduceMotion && TILES.map((tile) => <FactTile key={tile.label} tile={tile} progress={tileIn} />)}
-
-      <div className="relative flex-1 flex flex-col items-center justify-center px-6 pt-28 pb-24 text-center">
-        <motion.div
-          style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
-          className="w-full origin-center will-change-transform"
-        >
-          <h1 className="px-4 py-[0.12em]">
-            <motion.span
-              initial={{ opacity: 0, y: 40 }}
-              animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: DUR.slow, ease: EASE, delay: 0.15 }}
-              className="t-wordmark block leading-none text-[19vw] sm:text-[16vw] lg:text-[14vw] xl:text-[13vw] whitespace-nowrap"
-            >
-              {PROFILE.first} {PROFILE.last}
-              <span
-                aria-hidden="true"
-                className="inline-block align-top t-figure text-[0.09em] text-muted ml-[0.15em] mt-[0.12em]"
-              >
-                ©
-              </span>
-            </motion.span>
-          </h1>
-          <motion.p {...enter(0.5)} className="t-caps text-snow/85 max-w-xl mx-auto mt-6 md:mt-8">
-            {PROFILE.tagline}
-          </motion.p>
-        </motion.div>
-      </div>
-
+    <section ref={ref} data-reveal-skip className="theme-dark relative h-screen bg-night text-snow">
       <motion.div
-        {...enter(0.8)}
-        className="relative flex items-center justify-between px-6 md:px-10 lg:px-12 pb-8 text-[13px] md:text-[14px] font-medium uppercase tracking-[0.04em] text-muted"
+        style={{ scale: stageScale, borderRadius: stageRadius }}
+        className="sticky top-0 h-screen overflow-hidden flex flex-col bg-night origin-center will-change-transform"
       >
-        <span className="hidden sm:inline">{PROFILE.title}</span>
-        <span className="inline-flex items-center gap-2 mx-auto sm:mx-0">
-          Scroll to explore <ArrowDownRight className="w-4 h-4" aria-hidden="true" />
-        </span>
-        <span className="hidden sm:inline t-figure normal-case tracking-normal">
-          {PROFILE.city.split(",")[0]} {time} IST
-        </span>
+        <motion.div
+          style={{ opacity: stageDim }}
+          aria-hidden="true"
+          className="absolute inset-0 z-20 bg-night pointer-events-none"
+        />
+        {/* Drifting facts */}
+        {!reduceMotion && TILES.map((tile) => <FactTile key={tile.label} tile={tile} progress={tileIn} />)}
+
+        <div className="relative flex-1 flex flex-col items-center justify-center px-6 pt-28 pb-24 text-center">
+          <motion.div
+            style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
+            className="w-full origin-center will-change-transform"
+          >
+            <h1 className="px-4 py-[0.12em]">
+              <motion.span
+                initial={{ opacity: 0, y: 40 }}
+                animate={!isLoading ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: DUR.slow, ease: EASE, delay: 0.15 }}
+                className="t-wordmark block leading-none text-[19vw] sm:text-[16vw] lg:text-[14vw] xl:text-[13vw] whitespace-nowrap"
+              >
+                {PROFILE.first} {PROFILE.last}
+                <span
+                  aria-hidden="true"
+                  className="inline-block align-top t-figure text-[0.09em] text-muted ml-[0.15em] mt-[0.12em]"
+                >
+                  ©
+                </span>
+              </motion.span>
+            </h1>
+            <motion.p {...enter(0.5)} className="t-caps text-snow/85 max-w-xl mx-auto mt-6 md:mt-8">
+              {PROFILE.tagline}
+            </motion.p>
+          </motion.div>
+        </div>
+
+        <motion.div
+          {...enter(0.8)}
+          className="relative flex items-center justify-between px-6 md:px-10 lg:px-12 pb-8 text-[13px] md:text-[14px] font-medium uppercase tracking-[0.04em] text-muted"
+        >
+          <span className="hidden sm:inline">{PROFILE.title}</span>
+          <span className="inline-flex items-center gap-2 mx-auto sm:mx-0">
+            Scroll to explore <ArrowDownRight className="w-4 h-4" aria-hidden="true" />
+          </span>
+          <span className="hidden sm:inline t-figure normal-case tracking-normal">
+            {PROFILE.city.split(",")[0]} {time} IST
+          </span>
+        </motion.div>
       </motion.div>
     </section>
   );

@@ -1,9 +1,8 @@
-import { type CSSProperties, type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
 import TotpDemo from "./case-studies/TotpDemo";
-import TraceWaterfall from "./case-studies/TraceWaterfall";
 import { PillLink, Chip } from "./ui/Pill";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
@@ -174,59 +173,70 @@ const INTERACTIVE = new Set(["maker-checker-authorization", "totp-authentication
  * each earlier card peeks out above as the next one slides over it. Pure CSS sticky, every
  * screen size, no scroll-jacking. The last card never pins: nothing slides over it.
  */
-const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isLast: boolean }) => (
-  <div
-    className={
-      isLast ? "relative" : "sticky top-[calc(5rem+var(--stack-offset))] md:top-[calc(6rem+var(--stack-offset))]"
-    }
-    style={{ "--stack-offset": `${index * 0.75}rem`, zIndex: index + 1 } as CSSProperties}
-  >
-    <motion.article
-      {...reveal()}
-      id={`case-${study.slug}`}
-      className={`rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
+const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isLast: boolean }) => {
+  // Parallax: the artwork drifts a little slower than the card as it passes through the viewport
+  const tile = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: tile, offset: ["start end", "end start"] });
+  const artY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
+  const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
+  return (
+    <div
+      className={
+        isLast ? "relative" : "sticky top-[calc(5rem+var(--stack-offset))] md:top-[calc(6rem+var(--stack-offset))]"
+      }
+      style={{ "--stack-offset": `${index * 0.75}rem`, zIndex: index + 1 } as CSSProperties}
     >
-      <div className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12">
+      <motion.article
+        {...reveal()}
+        id={`case-${study.slug}`}
+        className={`rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
+      >
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(0_0%_100%/0.06),transparent_60%)] pointer-events-none"
-          aria-hidden="true"
-        />
-        <div
-          data-reveal-skip
-          className={`relative w-full flex items-center justify-center ${INTERACTIVE.has(study.slug) ? "pt-8 md:pt-0" : ""}`}
+          ref={tile}
+          className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12"
         >
-          {DIAGRAMS[study.slug]}
+          <div
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(0_0%_100%/0.06),transparent_60%)] pointer-events-none"
+            aria-hidden="true"
+          />
+          <motion.div
+            style={{ y: artY, scale: artScale }}
+            data-reveal-skip
+            className={`relative w-full flex items-center justify-center will-change-transform ${INTERACTIVE.has(study.slug) ? "pt-8 md:pt-0" : ""}`}
+          >
+            {DIAGRAMS[study.slug]}
+          </motion.div>
+          {INTERACTIVE.has(study.slug) && (
+            <span className="absolute top-4 left-4 md:top-6 md:left-6 rounded-pill bg-snow text-night px-3 py-1 text-[12px] font-medium uppercase tracking-[0.04em]">
+              Try it
+            </span>
+          )}
         </div>
-        {INTERACTIVE.has(study.slug) && (
-          <span className="absolute top-4 left-4 md:top-6 md:left-6 rounded-pill bg-snow text-night px-3 py-1 text-[12px] font-medium uppercase tracking-[0.04em]">
-            Try it
-          </span>
-        )}
-      </div>
-      <div className="flex items-start justify-between gap-6 pt-5">
-        <div className="min-w-0">
-          <h3 className="t-heading text-3xl md:text-4xl text-snow text-balance">
-            {HEADLINES[study.slug] ?? study.title}
-          </h3>
-          <p className="t-caps text-muted mt-2">{study.title}</p>
-        </div>
-        <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
-      </div>
-      <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8">
-        {[
-          ["Problem", study.problem],
-          ["Approach", study.solution],
-          ["Outcome", study.outcome],
-        ].map(([term, detail]) => (
-          <div key={term}>
-            <dt className="t-label mb-1.5">{term}</dt>
-            <dd className="t-body text-snow/80">{detail}.</dd>
+        <div className="flex items-start justify-between gap-6 pt-5">
+          <div className="min-w-0">
+            <h3 className="t-heading text-3xl md:text-4xl text-snow text-balance">
+              {HEADLINES[study.slug] ?? study.title}
+            </h3>
+            <p className="t-caps text-muted mt-2">{study.title}</p>
           </div>
-        ))}
-      </dl>
-    </motion.article>
-  </div>
-);
+          <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
+        </div>
+        <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8">
+          {[
+            ["Problem", study.problem],
+            ["Approach", study.solution],
+            ["Outcome", study.outcome],
+          ].map(([term, detail]) => (
+            <div key={term}>
+              <dt className="t-label mb-1.5">{term}</dt>
+              <dd className="t-body text-snow/80">{detail}.</dd>
+            </div>
+          ))}
+        </dl>
+      </motion.article>
+    </div>
+  );
+};
 
 /**
  * (Selected work): sticky heading on the left, a stack of pinning cards on the right.
@@ -255,15 +265,6 @@ const WorkSection = () => (
             <WorkCard key={study.slug} study={study} index={index} isLast={index === projects.length - 1} />
           ))}
         </div>
-
-        {/* Above the stacked cards so nothing pinned can cover it */}
-        <motion.div {...reveal()} id="trace" className="relative z-10 mt-16 lg:mt-20 scroll-mt-28">
-          <p className="t-label mb-3">One wire transfer, end to end</p>
-          <p className="t-caps text-muted mb-6 max-w-2xl">
-            The same flow the case studies describe, drawn the way I read it in production. Pick a span.
-          </p>
-          <TraceWaterfall />
-        </motion.div>
       </div>
     </div>
   </section>

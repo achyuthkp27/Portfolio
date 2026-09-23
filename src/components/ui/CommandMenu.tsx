@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Command } from "cmdk";
-import { Home, Briefcase, Mail, Code, User, Terminal, FileDown, Activity, GitBranch } from "lucide-react";
+import { Home, Briefcase, Mail, Code, User, Terminal, FileDown, GitBranch } from "lucide-react";
 import { OPEN_COMMAND_MENU_EVENT, openTerminal } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
@@ -75,7 +75,6 @@ export function CommandMenu() {
     { id: "top", label: "Home", icon: Home },
     { id: "about", label: "About", icon: User },
     { id: "work", label: "Work", icon: Code },
-    { id: "trace", label: "Trace", icon: Activity },
     { id: "experience", label: "Experience", icon: Briefcase },
     { id: "open-source", label: "Open source", icon: GitBranch },
     { id: "contact", label: "Contact", icon: Mail },
