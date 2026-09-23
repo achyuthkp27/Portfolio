@@ -8,7 +8,7 @@ export interface Experience {
   icon: LucideIcon;
   color: string;
   /** The employer's mark, under public/images, for the ID badge */
-  logo?: { src: string; width: number; height: number };
+  logo?: { src: string; dark?: string; width: number; height: number };
   /** Roles sharing a platform form one unbroken lane on the rail, across employers */
   platform?: string;
   /** How this role began, when it continued something rather than started it */
@@ -23,7 +23,7 @@ export const experiences: Experience[] = [
     role: "Associate Software Engineer · Client: First Citizens Bank",
     period: "Apr 2026 – Present",
     type: "full-time",
-    logo: { src: "images/cognizant-logo.png", width: 420, height: 180 },
+    logo: { src: "images/cognizant-logo.png", dark: "images/cognizant-logo-white.png", width: 416, height: 84 },
     icon: Briefcase,
     color: "primary",
     platform: "First Citizens Bank platform",

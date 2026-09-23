@@ -33,7 +33,7 @@ test("case studies and the maker-checker demo work", async ({ page }) => {
   // From the top, so the pinned card's real position is used rather than its stuck one
   // Browser code as strings: this file is type-checked under the node config, which has no DOM lib
   await page.evaluate("window.scrollTo(0, 0)");
-  await page.locator("#case-maker-checker-authorization").evaluate("el => el.scrollIntoView({ block: 'start' })");
+  await submit.evaluate("el => el.scrollIntoView({ block: 'center' })");
   await page.waitForTimeout(400);
   await submit.click();
   await page.getByRole("button", { name: "Approve own request" }).click();

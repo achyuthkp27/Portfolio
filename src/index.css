@@ -428,3 +428,22 @@
     background-position: 40% 0;
   }
 }
+
+/* VoxOs waveform bars */
+.vox-bar {
+  animation: vox-bar 1.1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+@keyframes vox-bar {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vox-bar {
+    animation: none;
+  }
+}

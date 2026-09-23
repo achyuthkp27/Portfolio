@@ -1,6 +1,16 @@
-import { Server, Database, MessageSquare, HardDrive, ShieldCheck, Bot, type LucideIcon } from "lucide-react";
+import {
+  Server,
+  Database,
+  MessageSquare,
+  HardDrive,
+  ShieldCheck,
+  Bot,
+  Mic,
+  Smartphone,
+  type LucideIcon,
+} from "lucide-react";
 
-export type ProjectCategory = "Backend" | "Infrastructure" | "Full-stack" | "DevOps";
+export type ProjectCategory = "Backend" | "Infrastructure" | "Full-stack" | "DevOps" | "AI";
 
 export interface Project {
   slug: string; // URL friendly identifier
@@ -91,6 +101,34 @@ export const projects: Project[] = [
     outcome: "Automated handling of routine banking queries in production",
     tags: ["Spring AI", "LangChain4j", "Java", "LLM"],
     icon: Bot,
+  },
+  {
+    slug: "voxos",
+    title: "VoxOs — voice agent for the Mac",
+    description:
+      "Native macOS voice dictation and voice-to-action agent in Swift, built for daily personal use. macOS 14.4+, GPL-3.0.",
+    category: "AI",
+    problem: "Dictation on the Mac stops at text; turning speech into actions meant leaving the keyboard for the mouse",
+    solution:
+      "Built a menu-bar agent in Swift that transcribes on-device and maps phrases to shell commands, app focus, and dictation into the active cursor",
+    outcome: "Open source under GPL-3.0 and in daily use; audio never leaves the machine",
+    tags: ["Swift", "macOS", "On-device speech", "Agents"],
+    icon: Mic,
+    featured: true,
+  },
+  {
+    slug: "kairo-offline-ai-bank",
+    title: "Kairo — offline-first AI bank",
+    description:
+      "Privacy-first mobile banking app with an embedded assistant (Qwen on-device): multi-account wealth, semantic transaction search, anomaly detection, and bill planning. All data stays on the phone.",
+    category: "AI",
+    problem: "Banking assistants send transaction history to a cloud model; the privacy cost is the whole ledger",
+    solution:
+      "Ran a small LLM on the phone with local vector search over transactions, so coaching, anomaly detection, and planning work with no network at all",
+    outcome: "Open source; every feature works in airplane mode",
+    tags: ["React Native", "Qwen", "On-device LLM", "Vector search", "SQLite"],
+    icon: Smartphone,
+    featured: true,
   },
   {
     slug: "elk-observability-rollout",

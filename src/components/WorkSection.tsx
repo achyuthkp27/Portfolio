@@ -2,160 +2,31 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
+import {
+  ChatScreen,
+  KairoScreen,
+  KycScreen,
+  LogScreen,
+  PlatformScreen,
+  TokenScreen,
+  VoxScreen,
+} from "./case-studies/Screens";
 import TotpDemo from "./case-studies/TotpDemo";
 import { PillLink, Chip } from "./ui/Pill";
 import { FillText } from "./ui/FillText";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
 
-// Diagram choreography: parent staggers, items rise in
-const stackVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
-const itemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: DUR.base, ease: EASE } },
-};
-
-const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?: boolean }) => (
-  <motion.div
-    variants={itemVariants}
-    className={`rounded-sm bg-night/80 border border-snow/15 px-3.5 py-2.5 text-center shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)] ${wide ? "flex-1" : ""}`}
-  >
-    <div className="font-mono text-xs md:text-[13px] text-snow leading-tight whitespace-nowrap">{label}</div>
-    {sub && (
-      <div className="font-mono text-[9px] md:text-[10px] text-muted leading-tight mt-0.5 whitespace-nowrap">{sub}</div>
-    )}
-  </motion.div>
-);
-const Arrow = ({ down = false }: { down?: boolean }) => (
-  <motion.div variants={itemVariants} className={`shrink-0 ${down ? "my-0.5" : ""}`} aria-hidden="true">
-    <span className="block text-emerald-400 font-mono text-sm">{down ? "↓" : "→"}</span>
-  </motion.div>
-);
-const Row = ({ children }: { children: ReactNode }) => (
-  <motion.div variants={itemVariants} className="flex items-center justify-center gap-2 flex-wrap">
-    {children}
-  </motion.div>
-);
-const Bus = ({ label }: { label: string }) => (
-  <motion.div
-    variants={itemVariants}
-    className="w-full max-w-[280px] mx-auto rounded-sm bg-emerald-500/[0.08] border border-emerald-400/50 border-dashed px-3 py-1.5 text-center"
-  >
-    <span className="font-mono text-[10px] md:text-[11px] text-emerald-300 tracking-widest uppercase">{label}</span>
-  </motion.div>
-);
-const Stack = ({ children }: { children: ReactNode }) => (
-  <motion.div
-    variants={stackVariants}
-    initial="hidden"
-    whileInView="show"
-    viewport={{ once: true, margin: "-10%" }}
-    className="flex flex-col items-center gap-2 w-full"
-  >
-    {children}
-  </motion.div>
-);
-
 const DIAGRAMS: Record<string, ReactNode> = {
-  "corporate-banking-microservices": (
-    <Stack>
-      <Row>
-        <Node label="Retail" />
-        <Node label="Mobile" />
-        <Node label="Corporate" />
-      </Row>
-      <Arrow down />
-      <Node label="API Gateway" sub="Spring Boot" />
-      <Arrow down />
-      <Bus label="Kafka event bus" />
-      <Arrow down />
-      <Row>
-        <Node label="30+ services" />
-        <Node label="PostgreSQL" />
-        <Node label="Redis" />
-      </Row>
-    </Stack>
-  ),
+  "corporate-banking-microservices": <PlatformScreen />,
   "maker-checker-authorization": <MakerCheckerDemo />,
   "totp-authentication-system": <TotpDemo />,
-  "card-tokenization": (
-    <Stack>
-      <motion.div
-        variants={itemVariants}
-        className="w-44 md:w-52 rounded-md bg-snow/[0.06] border border-line p-3 text-left"
-      >
-        <div className="font-mono text-[10px] text-muted line-through">5412 7534 9821 0067</div>
-        <div className="font-mono text-xs md:text-sm text-emerald-300 mt-1">tok_9f3a…e71c</div>
-        <div className="flex justify-between mt-2">
-          <span className="font-mono text-[9px] text-muted">CARD ON FILE</span>
-          <span className="font-mono text-[9px] text-muted">MC · VISA</span>
-        </div>
-      </motion.div>
-      <Arrow down />
-      <Row>
-        <Node label="Token vault" sub="JWE / JWS" />
-        <Arrow />
-        <Node label="Card networks" sub="Mastercard · Visa" />
-      </Row>
-    </Stack>
-  ),
-  "video-kyc-onboarding": (
-    <Stack>
-      <Row>
-        <Node label="Customer" sub="camera" />
-        <motion.div
-          variants={itemVariants}
-          className="font-mono text-[10px] text-emerald-300 border-t border-b border-dashed border-emerald-400/50 px-2 py-1"
-        >
-          WebRTC ⇄
-        </motion.div>
-        <Node label="Agent" sub="verifies" />
-      </Row>
-      <Arrow down />
-      <Node label="Signaling" sub="WebSockets" wide />
-      <Arrow down />
-      <Node label="KYC complete" sub="account opened" />
-    </Stack>
-  ),
-  "llm-banking-chatbot": (
-    <Stack>
-      <motion.div variants={itemVariants} className="w-full max-w-[280px] space-y-1.5">
-        <div className="rounded-md rounded-bl-none bg-snow/[0.08] border border-line px-3 py-1.5 font-mono text-[10px] md:text-[11px] text-snow w-fit">
-          What's my account balance?
-        </div>
-        <div className="rounded-md rounded-br-none bg-snow px-3 py-1.5 font-mono text-[10px] md:text-[11px] text-night w-fit ml-auto">
-          Verifying your identity first…
-        </div>
-      </motion.div>
-      <Arrow down />
-      <Row>
-        <Node label="Chat API" sub="Spring AI" />
-        <Arrow />
-        <Node label="LLM" sub="LangChain4j" />
-        <Arrow />
-        <Node label="Accounts" sub="identity-gated" />
-      </Row>
-    </Stack>
-  ),
-  "elk-observability-rollout": (
-    <Stack>
-      <Row>
-        <Node label="svc-payments" />
-        <Node label="svc-auth" />
-        <Node label="svc-cards" />
-      </Row>
-      <Arrow down />
-      <Bus label="Kafka transport" />
-      <Arrow down />
-      <Row>
-        <Node label="Logstash" />
-        <Arrow />
-        <Node label="Elasticsearch" />
-        <Arrow />
-        <Node label="Kibana" sub="one search bar" />
-      </Row>
-    </Stack>
-  ),
+  "card-tokenization": <TokenScreen />,
+  "video-kyc-onboarding": <KycScreen />,
+  "llm-banking-chatbot": <ChatScreen />,
+  voxos: <VoxScreen />,
+  "kairo-offline-ai-bank": <KairoScreen />,
+  "elk-observability-rollout": <LogScreen />,
 };
 
 const HEADLINES: Record<string, string> = {
@@ -166,6 +37,8 @@ const HEADLINES: Record<string, string> = {
   "video-kyc-onboarding": "KYC without the branch visit",
   "llm-banking-chatbot": "A banker that answers at 3 AM",
   "elk-observability-rollout": "Every log, one search bar",
+  voxos: "Say it. The Mac does it.",
+  "kairo-offline-ai-bank": "A bank that thinks on the phone",
 };
 const INTERACTIVE = new Set(["maker-checker-authorization", "totp-authentication-system"]);
 
@@ -233,7 +106,7 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
         {/* Stage */}
         <div
           ref={tile}
-          className="relative text-snow overflow-hidden min-h-[260px] md:min-h-[420px] lg:[@media(min-height:900px)]:min-h-[460px] flex items-center justify-center p-5 md:p-10 lg:p-12"
+          className={`relative text-snow overflow-hidden h-[340px] md:h-[440px] lg:[@media(min-height:900px)]:h-[480px] ${INTERACTIVE.has(study.slug) ? "flex items-center justify-center p-5 md:p-10 lg:p-12" : ""}`}
         >
           {/* A drafting grid, a highlight from above, a breath of the accent, and grain */}
           <div
@@ -254,13 +127,19 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
             </filter>
             <rect width="100%" height="100%" filter={`url(#grain-${study.slug})`} />
           </svg>
-          <motion.div
-            style={{ y: artY, scale: artScale }}
-            data-reveal-skip
-            className={`relative w-full flex items-center justify-center will-change-transform ${INTERACTIVE.has(study.slug) ? "pt-12 md:pt-0 max-w-2xl" : "max-w-xl lg:scale-[1.15]"}`}
-          >
-            {DIAGRAMS[study.slug]}
-          </motion.div>
+          {INTERACTIVE.has(study.slug) ? (
+            <motion.div
+              style={{ y: artY, scale: artScale }}
+              data-reveal-skip
+              className="relative w-full max-w-2xl flex items-center justify-center will-change-transform pt-12 md:pt-0"
+            >
+              {DIAGRAMS[study.slug]}
+            </motion.div>
+          ) : (
+            <div data-reveal-skip className="absolute inset-0">
+              {DIAGRAMS[study.slug]}
+            </div>
+          )}
           {INTERACTIVE.has(study.slug) && (
             <span className="absolute top-4 left-4 md:top-5 md:left-5 inline-flex items-center gap-2 rounded-pill bg-snow text-night pl-2.5 pr-3 py-1 text-[12px] font-medium uppercase tracking-[0.04em]">
               <span className="relative flex h-2 w-2">
@@ -372,7 +251,7 @@ const WorkSection = () => {
           <p className="t-label mb-5">Selected work</p>
           <h2 className="t-statement text-6xl md:text-7xl lg:text-[4.5rem]">My work</h2>
           <FillText
-            text="Seven systems from a regulated banking platform. Client specifics are generalised and no metrics are invented. Two are interactive."
+            text="Seven systems from a regulated banking platform, and two AI products built on my own time. Client specifics are generalised and no metrics are invented. Two are interactive."
             className="t-caps text-snow mt-5 max-w-sm"
             offset={["start 0.9", "start 0.4"]}
           />

@@ -33,7 +33,7 @@ const mockFetch = (api: () => Promise<Response>, snapshot: () => Promise<Respons
     .mockImplementation((input) => (String(input).includes("data/github.json") ? snapshot() : api()));
 
 describe("fetchLatestRepositories", () => {
-  it("requests the most recently updated repos with the given page size", async () => {
+  it("requests the full page of recently updated repos and trims to the limit", async () => {
     const fetchSpy = mockFetch(
       async () => json([mockRepo]),
       async () => json({ repos: [] }),
@@ -45,7 +45,25 @@ describe("fetchLatestRepositories", () => {
     const url = new URL(String(fetchSpy.mock.calls[0][0]));
     expect(url.pathname).toBe("/users/achyuthkp27/repos");
     expect(url.searchParams.get("sort")).toBe("updated");
-    expect(url.searchParams.get("per_page")).toBe("6");
+    expect(url.searchParams.get("per_page")).toBe("100");
+  });
+
+  it("puts the featured repos first in their given order and hides the profile repo", async () => {
+    const make = (name: string, updated_at: string) => ({ ...mockRepo, name, updated_at });
+    mockFetch(
+      async () =>
+        json([
+          make("achyuthkp27", "2026-09-23T00:00:00Z"),
+          make("Portfolio", "2026-09-22T00:00:00Z"),
+          make("forge-fit", "2026-05-13T00:00:00Z"),
+          make("VoxOs", "2026-09-21T00:00:00Z"),
+        ]),
+      async () => json({ repos: [] }),
+    );
+
+    const repos = await fetchLatestRepositories(10);
+
+    expect(repos.map((r) => r.name)).toEqual(["VoxOs", "forge-fit", "Portfolio"]);
   });
 
   it("leaves forks out, matching what the build-time snapshot keeps", async () => {

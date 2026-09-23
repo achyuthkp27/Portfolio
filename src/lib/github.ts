@@ -65,13 +65,30 @@ export const resetSnapshotForTests = () => {
   snapshotPromise = null;
 };
 
+/** Repos the owner wants first, in this order, ahead of the rest by last update. */
+export const FEATURED_REPOS = ["VoxOs", "spring-ai-langchain4j", "kairo-offline-ai-bank", "forge-fit"];
+/** Repos that never show: the profile README repo carries nothing worth listing. */
+export const HIDDEN_REPOS = new Set(["achyuthkp27"]);
+
+/** Featured first in their given order, then everything else as GitHub returned it, hidden ones dropped. */
+export function arrangeRepositories(repos: GitHubRepo[]): GitHubRepo[] {
+  const rank = new Map(FEATURED_REPOS.map((name, i) => [name.toLowerCase(), i]));
+  const kept = repos.filter((r) => !HIDDEN_REPOS.has(r.name.toLowerCase()) && !HIDDEN_REPOS.has(r.name));
+  const featured = kept
+    .filter((r) => rank.has(r.name.toLowerCase()))
+    .sort((a, b) => rank.get(a.name.toLowerCase())! - rank.get(b.name.toLowerCase())!);
+  const rest = kept.filter((r) => !rank.has(r.name.toLowerCase()));
+  return [...featured, ...rest];
+}
+
 export async function fetchLatestRepositories(limit: number = 6, signal?: AbortSignal): Promise<GitHubRepo[]> {
-  const cacheKey = `gh_repos_${limit}`;
+  const cacheKey = "gh_repos_all";
   const cached = readCache<GitHubRepo[]>(cacheKey);
-  if (cached) return cached;
+  if (cached) return arrangeRepositories(cached).slice(0, limit);
 
   try {
-    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${limit}`, {
+    // Always the full page: the featured repos must be present whatever the limit
+    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`, {
       signal,
     });
     if (!res.ok) throw new Error(`GitHub responded ${res.status}`);
@@ -80,11 +97,11 @@ export async function fetchLatestRepositories(limit: number = 6, signal?: AbortS
     // appear here at all — this endpoint is public-only for unauthenticated calls.
     const data = ((await res.json()) as GitHubRepo[]).filter((repo) => !repo.fork);
     writeCache(cacheKey, data);
-    return data;
+    return arrangeRepositories(data).slice(0, limit);
   } catch (error) {
     if (isAbort(error)) return [];
     // Rate-limited or offline: fall back to the build-time snapshot
-    return (await loadSnapshot()).slice(0, limit);
+    return arrangeRepositories(await loadSnapshot()).slice(0, limit);
   }
 }
 

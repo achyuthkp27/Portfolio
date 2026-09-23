@@ -15,7 +15,7 @@ export interface IdBadgeFace {
   company: string;
   role: string;
   period: string;
-  logo?: { src: string; width: number; height: number };
+  logo?: { src: string; dark?: string; width: number; height: number };
 }
 
 /**
@@ -74,27 +74,27 @@ export const IdBadge = ({
             animate={{ rotateY: 0, opacity: 1 }}
             exit={{ rotateY: reduceMotion ? 0 : -90, opacity: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-xl bg-snow text-night p-6 xl:p-7 shadow-[0_40px_70px_-25px_rgba(0,0,0,0.9)] border border-snow/60 [backface-visibility:hidden]"
+            className="relative rounded-xl text-snow p-5 xl:p-6 shadow-[0_40px_70px_-25px_rgba(0,0,0,0.9)] border border-snow/15 [backface-visibility:hidden] bg-[linear-gradient(160deg,hsl(200_6%_14%),hsl(200_8%_7%))]"
           >
-            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-12 h-1.5 rounded-pill bg-night/15" />
+            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-12 h-1.5 rounded-pill bg-snow/20" />
             {/* Employer */}
-            <div className="mt-6 flex items-center justify-center min-h-[36px]">
+            <div className="mt-4 flex items-center justify-center min-h-[32px]">
               {face.logo ? (
                 <img
-                  src={`${import.meta.env.BASE_URL}${face.logo.src}`}
+                  src={`${import.meta.env.BASE_URL}${face.logo.dark ?? face.logo.src}`}
                   alt=""
                   width={face.logo.width}
                   height={face.logo.height}
                   loading="lazy"
                   decoding="async"
-                  className="h-8 xl:h-9 w-auto"
+                  className="h-7 xl:h-8 w-auto"
                 />
               ) : (
                 <span className="t-heading text-2xl">{face.company}</span>
               )}
             </div>
             {/* Photo */}
-            <picture className="block mt-5">
+            <picture className="block mt-4">
               <source srcSet={`${import.meta.env.BASE_URL}images/portrait.webp`} type="image/webp" />
               <img
                 src={`${import.meta.env.BASE_URL}images/portrait.jpg`}
@@ -103,28 +103,28 @@ export const IdBadge = ({
                 height={640}
                 loading="lazy"
                 decoding="async"
-                className="w-full aspect-[4/4.4] rounded-md object-cover object-top"
+                className="w-full aspect-[4/3.4] rounded-md object-cover object-top"
               />
             </picture>
             {/* Name and role */}
-            <p className="mt-4 font-body text-[19px] font-semibold leading-tight">{PROFILE.name}</p>
-            <p className="t-body text-[13px] text-night/70 mt-1 leading-snug">{face.role}</p>
-            <div className="mt-5 pt-4 border-t border-night/10 flex items-end justify-between gap-4">
+            <p className="mt-3.5 font-body text-[18px] font-semibold leading-tight">{PROFILE.name}</p>
+            <p className="t-body text-[13px] text-snow/70 mt-1 leading-snug">{face.role}</p>
+            <div className="mt-4 pt-3.5 border-t border-snow/10 flex items-end justify-between gap-4">
               <div>
-                <p className="t-figure text-[10px] text-night/50 uppercase tracking-[0.2em]">Period</p>
+                <p className="t-figure text-[10px] text-snow/50 uppercase tracking-[0.2em]">Period</p>
                 <p className="t-figure text-[12px] mt-1">{face.period}</p>
               </div>
               <div className="text-right">
-                <p className="t-figure text-[10px] text-night/50 uppercase tracking-[0.2em]">ID</p>
+                <p className="t-figure text-[10px] text-snow/50 uppercase tracking-[0.2em]">ID</p>
                 <p className="t-figure text-[12px] mt-1">{id}</p>
               </div>
             </div>
             {/* Barcode */}
-            <div aria-hidden="true" className="mt-5 flex items-end justify-center gap-[2px] h-8">
+            <div aria-hidden="true" className="mt-4 flex items-end justify-center gap-[2px] h-7">
               {Array.from({ length: 42 }, (_, i) => (
                 <span
                   key={i}
-                  className="block bg-night"
+                  className="block bg-snow/85"
                   style={{ width: (i * 7) % 3 === 0 ? 3 : 1.5, height: `${60 + ((i * 13) % 40)}%` }}
                 />
               ))}
