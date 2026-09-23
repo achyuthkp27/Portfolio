@@ -28,7 +28,6 @@ const ServiceRow = ({ index, title, isOpen, onOpen, detail }: ServiceRowProps) =
       <button
         type="button"
         onClick={onOpen}
-        onMouseEnter={onOpen}
         aria-expanded={isOpen}
         aria-controls="service-detail"
         className="group w-full flex items-center gap-5 py-6 md:py-7 text-left"
