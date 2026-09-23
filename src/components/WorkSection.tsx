@@ -150,7 +150,8 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
   const { scrollYProgress } = useScroll({ target: tile, offset: ["start end", "end start"] });
   const artY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
-  const interactive = INTERACTIVE.has(study.slug) || CENTRED.has(study.slug);
+  const interactive = INTERACTIVE.has(study.slug);
+  const centred = interactive || CENTRED.has(study.slug);
   return (
     <div
       className={isLast ? "relative" : "relative md:sticky md:top-[calc(6rem+var(--stack-offset))]"}
@@ -163,7 +164,7 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
       >
         <div
           ref={tile}
-          className={`relative rounded-md bg-tile text-snow overflow-hidden ${interactive ? "min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12" : "h-[300px] md:h-[400px] lg:[@media(min-height:900px)]:h-[440px]"}`}
+          className={`relative rounded-md bg-tile text-snow overflow-hidden ${centred ? "min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12" : "h-[300px] md:h-[400px] lg:[@media(min-height:900px)]:h-[440px]"}`}
         >
           <div
             className="absolute inset-0 pointer-events-none opacity-[0.35] [background-image:linear-gradient(hsl(0_0%_100%/0.06)_1px,transparent_1px),linear-gradient(90deg,hsl(0_0%_100%/0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]"
@@ -173,7 +174,7 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
             className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,hsl(0_0%_100%/0.08),transparent_70%),radial-gradient(60%_50%_at_100%_100%,hsl(153_50%_35%/0.22),transparent_70%)]"
             aria-hidden="true"
           />
-          {interactive ? (
+          {centred ? (
             <motion.div
               style={{ y: artY, scale: artScale }}
               data-reveal-skip
