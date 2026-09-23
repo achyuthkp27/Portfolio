@@ -28,8 +28,7 @@ export default defineConfig(({ command, isPreview }) => ({
       manifest: {
         name: "Achyuth KP | Software Engineer",
         short_name: "Achyuth KP",
-        description:
-          "Achyuth KP, Software Engineer building secure banking microservices with Java, Spring Boot, and Kafka.",
+        description: "Achyuth KP, Software Engineer building reliable backend systems and AI-powered products.",
         theme_color: "#000000",
         background_color: "#000000",
         display: "standalone",
