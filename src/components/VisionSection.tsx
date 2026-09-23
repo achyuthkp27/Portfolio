@@ -135,7 +135,7 @@ const VisionSection = () => {
             <p
               key={line.text}
               aria-label={line.text}
-              className="absolute inset-x-0 top-1/2 -translate-y-1/2 font-body font-semibold tracking-[-0.035em] leading-[1.12] text-[2.1rem] sm:text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.6rem] text-snow text-center text-balance"
+              className="absolute inset-x-0 top-1/2 -translate-y-1/2 font-body font-semibold tracking-[-0.035em] leading-[1.12] text-[1.9rem] sm:text-[2.1rem] md:text-[2.7rem] lg:text-[3.5rem] xl:text-[4rem] text-snow text-center text-balance"
             >
               {line.words.map((letters, w) => (
                 <span key={w} className="inline-block whitespace-nowrap">
