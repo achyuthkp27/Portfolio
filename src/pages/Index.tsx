@@ -18,7 +18,7 @@ const ExperienceSection = lazy(() => import("@/components/ExperienceSection"));
 const OpenSourceSection = lazy(() => import("@/components/OpenSourceSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 
-/** Home, in the reference's order: work, who, services, stack, principles, record, experience, updates, contact. */
+/** Home: hero, belief, who, work, what I build, stack, principles, record, experience, updates, contact. */
 const Index = () => {
   const location = useLocation();
   const root = useRef<HTMLDivElement>(null);
@@ -43,14 +43,14 @@ const Index = () => {
     >
       <main id="main-content" tabIndex={-1} className="relative outline-none">
         <Hero />
-        <LazySection sectionId="work" minHeight="6000px">
-          <WorkSection />
-        </LazySection>
         <LazySection minHeight="100vh">
           <FocusSection />
         </LazySection>
         <LazySection sectionId="about" minHeight="1100px">
           <AboutSection />
+        </LazySection>
+        <LazySection sectionId="work" minHeight="6000px">
+          <WorkSection />
         </LazySection>
         <LazySection sectionId="services" minHeight="800px">
           <ServicesSection />

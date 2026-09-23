@@ -447,3 +447,55 @@
     animation: none;
   }
 }
+
+/* Work stages: KYC ring and scan line, typing dots, log stream */
+.kyc-ring {
+  background: conic-gradient(from 0deg, transparent 0 70%, hsl(153 60% 62% / 0.9) 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 2px));
+  animation: kyc-ring 3s linear infinite;
+}
+@keyframes kyc-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.kyc-scan {
+  animation: kyc-scan 2.6s ease-in-out infinite alternate;
+  top: 20%;
+}
+@keyframes kyc-scan {
+  to {
+    top: 80%;
+  }
+}
+.typing-dot {
+  animation: typing-dot 1s ease-in-out infinite;
+}
+@keyframes typing-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.log-stream {
+  animation: log-stream 18s linear infinite;
+}
+@keyframes log-stream {
+  to {
+    transform: translateY(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kyc-ring,
+  .kyc-scan,
+  .typing-dot,
+  .log-stream {
+    animation: none;
+  }
+}

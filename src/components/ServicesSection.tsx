@@ -98,7 +98,7 @@ const ServicesSection = () => {
   return (
     <section id="services" className="theme-dark bg-night text-snow py-24 lg:py-32 px-6 md:px-10 lg:px-12">
       <div className="max-w-[1400px] mx-auto">
-        <SectionHeader label="What I do" title="My services" align="center" />
+        <SectionHeader label="What I do" title="What I build" align="center" />
         <div className="grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-start">
           <ol className="border-t border-line">
             {SERVICES.map((s, i) => (

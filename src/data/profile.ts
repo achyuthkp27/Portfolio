@@ -98,28 +98,30 @@ export const PROFILE = {
 /** What I do: five services with the real stack behind each */
 export const SERVICES: { title: string; blurb: string; stack: string[] }[] = [
   {
-    title: "AI-powered products",
-    blurb: "LLM assistants that verify identity before they answer, and on-device models that keep data on the phone.",
+    title: "AI products",
+    blurb:
+      "Assistants that check who is asking before they answer, and models that run on the device so the data stays there.",
     stack: ["Spring AI", "LangChain4j", "On-device LLMs", "RAG", "WebRTC"],
   },
   {
-    title: "Backend engineering",
-    blurb: "Spring Boot services that carry real money: REST APIs, domain rules, concurrency, resilience patterns.",
+    title: "Backend systems",
+    blurb:
+      "Spring Boot services that move real money: APIs, domain rules, concurrency, and the failure handling around them.",
     stack: ["Java 21", "Spring Boot", "Spring Data JPA", "JUnit", "Mockito"],
   },
   {
-    title: "Distributed systems",
-    blurb: "Event-driven estates where a slow consumer never takes a payment path down with it.",
+    title: "Event-driven platforms",
+    blurb: "Kafka estates where one slow consumer never stalls a payment.",
     stack: ["Apache Kafka", "NATS JetStream", "Redis", "PostgreSQL", "Circuit breakers"],
   },
   {
-    title: "Security & payments",
-    blurb: "Maker-checker controls, card tokenization, TOTP, and token security under PCI-DSS and SOX.",
+    title: "Security and payments",
+    blurb: "Maker-checker approval, card tokenisation, TOTP, and token security under PCI-DSS and SOX.",
     stack: ["Spring Security", "OAuth2", "JWT / JWE / JWS", "TOTP", "Mastercard · Visa"],
   },
   {
-    title: "Cloud & delivery",
-    blurb: "Containerised, released repeatedly, and watched: from Jenkins to Kubernetes to Kibana.",
+    title: "Delivery and operations",
+    blurb: "Containerised, shipped often, and observable: Jenkins, Kubernetes, and the ELK stack.",
     stack: ["AWS", "Docker", "Kubernetes", "Jenkins", "ELK · Prometheus · Grafana"],
   },
 ];
