@@ -2,33 +2,37 @@ import { useEffect, useRef, useState } from "react";
 import { PROFILE } from "@/data/profile";
 import { SectionHeader } from "./ui/SectionHeader";
 
+const TYPE = "t-heading text-5xl md:text-7xl lg:text-8xl whitespace-nowrap";
+
 /**
- * (The stack): tool names on one slowly revolving ring, the way Spector spins its client
- * logos. Only the names facing the viewer are sharp; as a name turns toward the edge it
- * stretches into a horizontal motion streak and fades, and anything past the edge is
- * hidden. One requestAnimationFrame, paused off screen, still under reduced motion.
+ * (The stack): a small drum turning about its vertical axis with big names on its faces.
+ * Each face is exactly one chord wide, and the chord is measured from the widest name at
+ * the current type size, so names never collide. Only the face at the front is sharp;
+ * every other face blurs and dims in proportion to its angle away, and the back is hidden.
+ * The full list cycles onto the faces as each passes through the back.
  */
 const StackMarquee = () => {
   const items = PROFILE.stack;
-  const n = items.length;
-  const step = 360 / n;
   const ref = useRef<HTMLDivElement>(null);
+  const measure = useRef<HTMLUListElement>(null);
   const [angle, setAngle] = useState(0);
-  const [radius, setRadius] = useState(2200);
-  const [cone, setCone] = useState(22);
+  const [geom, setGeom] = useState({ faces: 6, radius: 640 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Large radius so the front of the ring is nearly flat and only a few names are visible
     const size = () => {
       const w = el.clientWidth;
-      // Neighbours sit 15° apart; a radius of ~1.5× width puts them ~0.39× width apart, so
-      // three names fit on a desktop with clear air between them, and one on a phone
-      setRadius(w * 1.85);
-      setCone(w < 768 ? 10 : 22);
+      const widest = Math.max(
+        80,
+        ...Array.from(measure.current?.children ?? []).map((c) => (c as HTMLElement).offsetWidth),
+      );
+      const chord = widest + (w < 640 ? 32 : 64);
+      const faces = w < 640 ? 4 : w < 1024 ? 4 : 6;
+      setGeom({ faces, radius: (chord * faces) / (2 * Math.PI) });
     };
     size();
+    document.fonts?.ready.then(size);
     window.addEventListener("resize", size);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       return () => window.removeEventListener("resize", size);
@@ -38,7 +42,7 @@ const StackMarquee = () => {
     const loop = (t: number) => {
       const dt = t - last;
       last = t;
-      if (visible) setAngle((a) => (a + dt * 0.006) % 360);
+      if (visible) setAngle((a) => a + dt * 0.012);
       raf = requestAnimationFrame(loop);
     };
     const io = new IntersectionObserver(([e]) => {
@@ -53,6 +57,9 @@ const StackMarquee = () => {
     };
   }, []);
 
+  const { faces, radius } = geom;
+  const step = 360 / faces;
+
   return (
     <section className="theme-dark bg-night text-snow py-20 lg:py-24 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
@@ -65,38 +72,46 @@ const StackMarquee = () => {
         />
       </div>
 
+      {/* Off-screen copies of every name, used only to measure the widest one */}
+      <ul ref={measure} aria-hidden="true" className="absolute -left-[9999px] top-0 flex gap-0 invisible">
+        {items.map((item) => (
+          <li key={item} className={TYPE}>
+            {item}
+          </li>
+        ))}
+      </ul>
+
       <div
         ref={ref}
         data-reveal-skip
-        className="relative h-[220px] md:h-[260px] [perspective:3000px]"
+        className="relative h-[220px] md:h-[280px] [perspective:1000px]"
         aria-label="Technologies"
       >
         <ul
           className="absolute inset-0 [transform-style:preserve-3d]"
-          style={{ transform: `translateZ(-${radius}px) rotateY(${angle}deg)` }}
+          style={{ transform: `translateZ(-${radius}px) rotateY(${angle % 360}deg)` }}
         >
-          {items.map((item, i) => {
-            // Signed angle from the front, -180..180
-            // Item i is placed at -i·step on the ring and the ring turns by +angle
-            let rel = (angle - i * step) % 360;
+          {Array.from({ length: faces }, (_, k) => {
+            const u = angle - k * step;
+            let rel = u % 360;
             if (rel > 180) rel -= 360;
             if (rel < -180) rel += 360;
             const a = Math.abs(rel);
-            // Visible cone: sharp inside half the cone, streaking out to its edge, gone beyond
-            const t = Math.min(1, Math.max(0, (a - cone / 2) / (cone / 2)));
-            const hidden = a > cone;
-            const opacity = hidden ? 0 : 1 - t * 0.9;
-            const blur = t * 10;
-            const stretch = 1 + t * 1.6;
+            const lap = Math.floor((u + 180) / 360);
+            const item = items[(((k + faces * lap) % items.length) + items.length) % items.length];
+            const hidden = a >= 90;
+            // Sharp for the middle of a face's front pass, then blur and dim grow with the angle
+            const sharp = step * 0.22;
+            const t = Math.min(1, Math.max(0, (a - sharp) / (90 - sharp)));
             return (
               <li
-                key={item}
+                key={k}
                 aria-hidden={hidden ? true : undefined}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap t-heading text-5xl md:text-6xl lg:text-7xl text-snow will-change-transform"
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-snow will-change-transform ${TYPE}`}
                 style={{
-                  transform: `rotateY(${-i * step}deg) translateZ(${radius}px) scaleX(${stretch.toFixed(3)})`,
-                  opacity,
-                  filter: blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : "none",
+                  transform: `rotateY(${-k * step}deg) translateZ(${radius}px)`,
+                  opacity: hidden ? 0 : 1 - t * 0.75,
+                  filter: t > 0 ? `blur(${(t * 9).toFixed(1)}px)` : "none",
                   visibility: hidden ? "hidden" : "visible",
                   backfaceVisibility: "hidden",
                 }}
