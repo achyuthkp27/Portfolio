@@ -27,56 +27,6 @@ const Caption = ({ children, sub }: { children: ReactNode; sub?: ReactNode }) =>
   </motion.div>
 );
 
-/* 01 — Platform: three channels feeding one bus, thirty services drawing from it */
-const CHANNELS = ["Retail", "Mobile", "Corporate"];
-export const PlatformScreen = () => (
-  <Stage className="px-6 md:px-14">
-    <div className="w-full max-w-2xl flex flex-col items-stretch">
-      <div className="grid grid-cols-3 gap-2 md:gap-3">
-        {CHANNELS.map((c) => (
-          <motion.span
-            key={c}
-            variants={rise}
-            className="t-heading text-lg md:text-2xl text-center rounded-md border border-snow/15 bg-night/70 py-3 md:py-4"
-          >
-            {c}
-          </motion.span>
-        ))}
-      </div>
-      <motion.svg variants={rise} viewBox="0 0 600 60" className="w-full h-10 md:h-14" aria-hidden="true">
-        {[100, 300, 500].map((x) => (
-          <path
-            key={x}
-            d={`M ${x} 0 C ${x} 30, 300 30, 300 60`}
-            fill="none"
-            stroke="hsl(153 60% 62% / 0.6)"
-            strokeWidth="1.5"
-          />
-        ))}
-      </motion.svg>
-      <motion.div
-        variants={rise}
-        className="relative rounded-md border border-emerald-400/60 bg-emerald-500/[0.08] py-3 md:py-4 text-center t-figure text-[11px] md:text-xs tracking-[0.3em] uppercase text-emerald-300 shadow-[0_0_40px_-10px_hsl(153_60%_50%/0.6)]"
-      >
-        <span className="absolute inset-0 bus-flow rounded-md" aria-hidden="true" />
-        <span className="relative">Kafka event bus</span>
-      </motion.div>
-      <motion.div variants={rise} className="mt-4 md:mt-6 grid grid-cols-10 gap-1.5 md:gap-2" aria-hidden="true">
-        {Array.from({ length: 30 }, (_, i) => (
-          <span
-            key={i}
-            className="h-2.5 md:h-3 rounded-[3px] bg-snow/[0.14] svc-pip"
-            style={{ animationDelay: `${(i * 137) % 2400}ms` }}
-          />
-        ))}
-      </motion.div>
-    </div>
-    <div className="mt-6 md:mt-8">
-      <Caption sub="Spring Boot · PostgreSQL · Redis">30+ services. One platform.</Caption>
-    </div>
-  </Stage>
-);
-
 /* 04 — Card on file: one card, the number giving way to a token */
 export const TokenScreen = () => (
   <Stage>

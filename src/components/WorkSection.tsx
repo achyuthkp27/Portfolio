@@ -2,23 +2,81 @@ import { useRef, type CSSProperties, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
-import {
-  ChatScreen,
-  KairoScreen,
-  KycScreen,
-  LogScreen,
-  PlatformScreen,
-  TokenScreen,
-  VoxScreen,
-} from "./case-studies/Screens";
+import { ChatScreen, KairoScreen, KycScreen, LogScreen, TokenScreen, VoxScreen } from "./case-studies/Screens";
 import TotpDemo from "./case-studies/TotpDemo";
 import { PillLink, Chip } from "./ui/Pill";
 import { FillText } from "./ui/FillText";
 import { PROFILE } from "@/data/profile";
-import { reveal } from "@/lib/motion";
+import { DUR, EASE, reveal } from "@/lib/motion";
+
+// Diagram choreography: parent staggers, items rise in
+const stackVariants = { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } } };
+const itemVariants = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { duration: DUR.base, ease: EASE } },
+};
+
+const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?: boolean }) => (
+  <motion.div
+    variants={itemVariants}
+    className={`rounded-sm bg-snow/[0.06] border border-line px-3 py-2 text-center ${wide ? "flex-1" : ""}`}
+  >
+    <div className="font-mono text-[11px] md:text-xs text-snow leading-tight whitespace-nowrap">{label}</div>
+    {sub && (
+      <div className="font-mono text-[9px] md:text-[10px] text-muted leading-tight mt-0.5 whitespace-nowrap">{sub}</div>
+    )}
+  </motion.div>
+);
+const Arrow = ({ down = false }: { down?: boolean }) => (
+  <motion.div variants={itemVariants} className={`shrink-0 ${down ? "my-0.5" : ""}`} aria-hidden="true">
+    <span className="block text-emerald-400 font-mono text-sm">{down ? "↓" : "→"}</span>
+  </motion.div>
+);
+const Row = ({ children }: { children: ReactNode }) => (
+  <motion.div variants={itemVariants} className="flex items-center justify-center gap-2 flex-wrap">
+    {children}
+  </motion.div>
+);
+const Bus = ({ label }: { label: string }) => (
+  <motion.div
+    variants={itemVariants}
+    className="w-full max-w-[280px] mx-auto rounded-sm bg-emerald-500/[0.08] border border-emerald-400/50 border-dashed px-3 py-1.5 text-center"
+  >
+    <span className="font-mono text-[10px] md:text-[11px] text-emerald-300 tracking-widest uppercase">{label}</span>
+  </motion.div>
+);
+const Stack = ({ children }: { children: ReactNode }) => (
+  <motion.div
+    variants={stackVariants}
+    initial="hidden"
+    whileInView="show"
+    viewport={{ once: true, margin: "-10%" }}
+    className="flex flex-col items-center gap-1.5 w-full"
+  >
+    {children}
+  </motion.div>
+);
 
 const DIAGRAMS: Record<string, ReactNode> = {
-  "corporate-banking-microservices": <PlatformScreen />,
+  "corporate-banking-microservices": (
+    <Stack>
+      <Row>
+        <Node label="Retail" />
+        <Node label="Mobile" />
+        <Node label="Corporate" />
+      </Row>
+      <Arrow down />
+      <Node label="API Gateway" sub="Spring Boot" />
+      <Arrow down />
+      <Bus label="Kafka event bus" />
+      <Arrow down />
+      <Row>
+        <Node label="30+ services" />
+        <Node label="PostgreSQL" />
+        <Node label="Redis" />
+      </Row>
+    </Stack>
+  ),
   "maker-checker-authorization": <MakerCheckerDemo />,
   "totp-authentication-system": <TotpDemo />,
   "card-tokenization": <TokenScreen />,
@@ -53,7 +111,7 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
   const { scrollYProgress } = useScroll({ target: tile, offset: ["start end", "end start"] });
   const artY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
-  const interactive = INTERACTIVE.has(study.slug);
+  const interactive = INTERACTIVE.has(study.slug) || study.slug === "corporate-banking-microservices";
   return (
     <div
       className={isLast ? "relative" : "relative md:sticky md:top-[calc(6rem+var(--stack-offset))]"}
