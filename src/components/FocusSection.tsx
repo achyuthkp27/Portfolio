@@ -1,7 +1,7 @@
 import { useReducedMotion } from "framer-motion";
 import { FillText } from "./ui/FillText";
 
-const LINE = "I build things that still work at 2 AM, when nobody is watching and everything is on the line.";
+const LINE = "I build things that work when it matters, even when nobody is watching and everything is on the line.";
 
 /**
  * A breath between Work and About: a full-height black screen holding one line that fills
