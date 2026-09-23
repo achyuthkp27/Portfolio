@@ -398,3 +398,33 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* A specular band that sweeps across the glass award every few seconds */
+.trophy-gloss {
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    hsl(0 0% 100% / 0.05) 42%,
+    hsl(0 0% 100% / 0.22) 48%,
+    hsl(0 0% 100% / 0.05) 54%,
+    transparent 62%
+  );
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  animation: trophy-gloss 4.5s ease-in-out infinite;
+}
+@keyframes trophy-gloss {
+  0%,
+  55% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -40% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trophy-gloss {
+    animation: none;
+    background-position: 40% 0;
+  }
+}

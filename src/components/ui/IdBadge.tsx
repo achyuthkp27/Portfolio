@@ -52,11 +52,12 @@ export const IdBadge = ({
 
   return (
     <motion.div
+      data-reveal-skip
       style={{ y, rotate }}
-      className={`relative w-[280px] xl:w-[320px] origin-top will-change-transform ${className}`}
+      className={`relative w-[264px] xl:w-[300px] origin-top will-change-transform ${className}`}
     >
       {/* Strap */}
-      <div className="mx-auto w-11 h-28 lg:h-[560px] lg:-mt-[440px] rounded-b-sm bg-[hsl(200_6%_10%)] shadow-[inset_0_0_0_1px_hsl(0_0%_100%/0.08)] relative">
+      <div className="mx-auto w-11 h-28 lg:h-[600px] lg:-mt-[480px] rounded-b-sm bg-[hsl(200_6%_10%)] shadow-[inset_0_0_0_1px_hsl(0_0%_100%/0.08)] relative">
         <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-snow/10" />
       </div>
       {/* Clip */}
@@ -76,7 +77,8 @@ export const IdBadge = ({
             className="relative rounded-xl bg-snow text-night p-6 xl:p-7 shadow-[0_40px_70px_-25px_rgba(0,0,0,0.9)] border border-snow/60 [backface-visibility:hidden]"
           >
             <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-12 h-1.5 rounded-pill bg-night/15" />
-            <div className="mt-5 flex items-center justify-between gap-4 min-h-[44px]">
+            {/* Employer */}
+            <div className="mt-6 flex items-center justify-center min-h-[36px]">
               {face.logo ? (
                 <img
                   src={`${import.meta.env.BASE_URL}${face.logo.src}`}
@@ -85,32 +87,29 @@ export const IdBadge = ({
                   height={face.logo.height}
                   loading="lazy"
                   decoding="async"
-                  className="h-9 xl:h-10 w-auto"
+                  className="h-8 xl:h-9 w-auto"
                 />
               ) : (
                 <span className="t-heading text-2xl">{face.company}</span>
               )}
-              <span className="t-figure text-[10px] text-night/50 tracking-[0.2em] uppercase">Staff</span>
             </div>
-            <div className="mt-6 flex items-center gap-4">
-              <picture className="shrink-0">
-                <source srcSet={`${import.meta.env.BASE_URL}images/portrait.webp`} type="image/webp" />
-                <img
-                  src={`${import.meta.env.BASE_URL}images/portrait.jpg`}
-                  alt=""
-                  width={593}
-                  height={640}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-20 h-20 xl:w-24 xl:h-24 rounded-md object-cover object-top"
-                />
-              </picture>
-              <div className="min-w-0">
-                <p className="font-body text-[17px] font-semibold leading-tight">{PROFILE.name}</p>
-                <p className="t-body text-[13px] text-night/70 mt-1 leading-snug">{face.role}</p>
-              </div>
-            </div>
-            <div className="mt-6 pt-4 border-t border-night/10 flex items-end justify-between gap-4">
+            {/* Photo */}
+            <picture className="block mt-5">
+              <source srcSet={`${import.meta.env.BASE_URL}images/portrait.webp`} type="image/webp" />
+              <img
+                src={`${import.meta.env.BASE_URL}images/portrait.jpg`}
+                alt=""
+                width={593}
+                height={640}
+                loading="lazy"
+                decoding="async"
+                className="w-full aspect-[4/4.4] rounded-md object-cover object-top"
+              />
+            </picture>
+            {/* Name and role */}
+            <p className="mt-4 font-body text-[19px] font-semibold leading-tight">{PROFILE.name}</p>
+            <p className="t-body text-[13px] text-night/70 mt-1 leading-snug">{face.role}</p>
+            <div className="mt-5 pt-4 border-t border-night/10 flex items-end justify-between gap-4">
               <div>
                 <p className="t-figure text-[10px] text-night/50 uppercase tracking-[0.2em]">Period</p>
                 <p className="t-figure text-[12px] mt-1">{face.period}</p>
@@ -121,7 +120,7 @@ export const IdBadge = ({
               </div>
             </div>
             {/* Barcode */}
-            <div aria-hidden="true" className="mt-4 flex items-end gap-[2px] h-7">
+            <div aria-hidden="true" className="mt-5 flex items-end justify-center gap-[2px] h-8">
               {Array.from({ length: 42 }, (_, i) => (
                 <span
                   key={i}

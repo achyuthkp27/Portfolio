@@ -20,7 +20,18 @@ const Trophy = ({ target }: { target: React.RefObject<HTMLElement> }) => {
     damping: 18,
   });
   return (
-    <div className="relative w-[230px] md:w-[260px] [perspective:1200px]" aria-hidden="true">
+    <motion.div
+      initial={reduceMotion ? false : { y: -340, rotate: -5, opacity: 0 }}
+      whileInView={{ y: 0, rotate: 0, opacity: 1 }}
+      viewport={{ once: true, margin: "-15% 0px" }}
+      transition={{
+        y: { type: "spring", stiffness: 150, damping: 11, mass: 1.2 },
+        rotate: { type: "spring", stiffness: 90, damping: 7, mass: 1 },
+        opacity: { duration: 0.2 },
+      }}
+      className="relative w-[230px] md:w-[260px] [perspective:1200px] origin-bottom"
+      aria-hidden="true"
+    >
       <motion.div
         style={{ rotateY: tilt, transformStyle: "preserve-3d" }}
         className="relative origin-bottom will-change-transform"
@@ -37,11 +48,10 @@ const Trophy = ({ target }: { target: React.RefObject<HTMLElement> }) => {
         >
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(115deg, transparent 30%, hsl(0 0% 100% / 0.12) 45%, transparent 55%), linear-gradient(to right, hsl(0 0% 100% / 0.08), transparent 12%)",
-            }}
+            style={{ background: "linear-gradient(to right, hsl(0 0% 100% / 0.08), transparent 12%)" }}
           />
+          {/* Sweeping gloss */}
+          <div className="absolute inset-0 pointer-events-none trophy-gloss" />
           <p className="relative mt-6 font-body text-[16px] font-semibold leading-tight">
             Above &amp; Beyond
             <br />
@@ -68,7 +78,7 @@ const Trophy = ({ target }: { target: React.RefObject<HTMLElement> }) => {
       </motion.div>
       {/* Floor reflection */}
       <div className="absolute inset-x-6 -bottom-3 h-6 rounded-[50%] bg-emerald-400/20 blur-xl" />
-    </div>
+    </motion.div>
   );
 };
 
