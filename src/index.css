@@ -218,9 +218,31 @@
   filter: blur(0);
   transform: none;
 }
-/* Once settled, drop the filter so nothing stays on the compositor */
-.reveal.is-in:not(:hover) {
-  will-change: auto;
+/* Split text: the container only fades; its letters or words write themselves in,
+   left to right and top to bottom, each unit staggered by its index. */
+.reveal-split {
+  filter: none;
+  transform: none;
+}
+.rv-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+.rv-u {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(0.18em);
+  transition:
+    opacity 0.55s var(--ease),
+    filter 0.55s var(--ease),
+    transform 0.55s var(--ease);
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--u, 0) * var(--step, 20ms));
+}
+.reveal.is-in .rv-u {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
 }
 
 /* Scroll-scrubbed kinetic text is set up in the component; only the reduced-motion

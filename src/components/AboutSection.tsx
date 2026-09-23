@@ -44,7 +44,7 @@ const AboutSection = () => {
         <motion.p {...reveal()} className="t-label mb-8">
           Who I am
         </motion.p>
-        <div ref={ref} className="relative">
+        <div ref={ref} className="relative" data-no-split>
           <p className="t-statement text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl max-w-6xl">
             {words.map((w, i) => (
               <Word key={i} word={w} index={i} total={words.length} progress={scrollYProgress} />
