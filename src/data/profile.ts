@@ -24,16 +24,16 @@ export const PROFILE = {
       note: "I'd rather ask the obvious question than defend a wrong assumption. Most hard problems are misunderstandings in disguise.",
     },
     {
-      title: "Simple beats clever.",
-      note: "Clever code impresses for a day and costs for years. The best solution is the one the next person understands without me.",
+      title: "Correctness isn't negotiable.",
+      note: "Fast is good. Right is required. I don't ship what I can't stand behind.",
     },
     {
-      title: "Own the outcome, not the ticket.",
-      note: "Done means it works for the person using it, not that the task moved to a column. I stay with a problem until it's actually solved.",
+      title: "Depth over noise.",
+      note: "I'd rather understand one system to the bottom than skim ten. Real leverage comes from knowing how things actually work.",
     },
     {
-      title: "Learn in public.",
-      note: "I write, share, and ship half-finished ideas because feedback beats perfection. Every tool I build starts as a question I couldn't answer.",
+      title: "Say less, prove more.",
+      note: "Claims are cheap. I let working software, tests, and results speak, and I keep my word.",
     },
     {
       title: "Build for the long run.",
