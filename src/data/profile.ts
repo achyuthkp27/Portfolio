@@ -8,8 +8,11 @@ export const PROFILE = {
   city: "Bengaluru, India",
   timeZone: "Asia/Kolkata",
   careerStart: new Date("2021-07-26"),
-  /** The hero line, uppercase under the name */
-  tagline: "Software engineer building reliable backend systems and the AI that runs on top of them.",
+  /** The hero statement, two lines in Antonio */
+  headline: ["Reliable systems.", "Useful AI."],
+  /** The hero line under the statement */
+  tagline:
+    "Five years of backend engineering on a regulated banking platform, now applied to AI products that ship, verify, and hold up in production.",
   intro:
     "Five years building the microservices behind retail, mobile, and corporate banking taught me what production actually demands: correctness, security, and observability. I now bring that discipline to AI: LLM-powered assistants that verify who they're talking to, and an on-device AI banking app where the model never leaves the phone.",
   links: {

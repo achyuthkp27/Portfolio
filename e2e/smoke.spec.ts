@@ -15,7 +15,7 @@ test("home page renders the splash screen, then the site", async ({ page }) => {
   await expect(page.getByTestId("splash-screen")).toBeVisible();
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Achyuth");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Useful AI");
   await expect(page.locator("#app-shell-loader")).toHaveCount(0);
   expect(errors).toEqual([]);
 });

@@ -3,10 +3,12 @@ import ScrambleNumber from "@/components/ui/ScrambleNumber";
 
 interface ExperienceTimerProps {
   startDate: Date;
+  /** Smaller figure for the hero proof row */
+  compact?: boolean;
 }
 
 /** Live years-of-experience counter, calendar-correct, ticking once a second while on screen. */
-const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
+const ExperienceTimer = ({ startDate, compact = false }: ExperienceTimerProps) => {
   const [, setTick] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -55,12 +57,26 @@ const ExperienceTimer = ({ startDate }: ExperienceTimerProps) => {
   const ss = Math.floor(diff / 1000) % 60;
   const pad = (n: number) => n.toString().padStart(2, "0");
 
+  if (compact) {
+    return (
+      <div ref={ref} className="flex flex-col">
+        <dd className="t-wordmark leading-none text-5xl md:text-6xl order-1">
+          <ScrambleNumber value={String(years)} suffix="+" />
+        </dd>
+        <dt className="t-caps text-muted text-[12px] md:text-[13px] mt-3 order-2">Years in engineering</dt>
+        <dd className="t-figure text-[11px] text-emerald-300/80 mt-1.5 order-3" aria-hidden="true">
+          {years}y {months}m {days}d · {pad(hh)}:{pad(mm)}:{pad(ss)}
+        </dd>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className="mt-4 flex-1 flex flex-col justify-end">
       <p className="t-wordmark leading-none text-[6rem] md:text-[8rem]">
         <ScrambleNumber value={String(years)} suffix="+" />
       </p>
-      <p className="t-caps text-muted mt-6">Years building banking systems</p>
+      <p className="t-caps text-muted mt-6">Years building production systems</p>
       <p className="t-figure text-xs text-muted mt-2" aria-hidden="true">
         {years}y {months}m {days}d · {pad(hh)}:{pad(mm)}:{pad(ss)}
       </p>
