@@ -17,27 +17,27 @@ export const PROFILE = {
     linkedin: "https://www.linkedin.com/in/kpachyuth",
     medium: "https://medium.com/@kpachyuthz",
   },
-  /** How I think: principles from the work, as stacked cards */
+  /** How I think: who I am and how I work, in five lines */
   principles: [
     {
-      title: "Correctness isn't negotiable.",
-      note: "When the software moves money, a bug is not a defect. It is someone's balance.",
+      title: "Curious first, certain later.",
+      note: "I'd rather ask the obvious question than defend a wrong assumption. Most hard problems are misunderstandings in disguise.",
     },
     {
-      title: "Money never moves twice.",
-      note: "Idempotent APIs, one ledger transaction for both legs, and replay checks on every code. A retry can never become a second payment.",
+      title: "Simple beats clever.",
+      note: "Clever code impresses for a day and costs for years. The best solution is the one the next person understands without me.",
     },
     {
-      title: "Two signatures on every transfer.",
-      note: "The maker never approves their own request. Controls are built into the flow, not bolted on.",
+      title: "Own the outcome, not the ticket.",
+      note: "Done means it works for the person using it, not that the task moved to a column. I stay with a problem until it's actually solved.",
     },
     {
-      title: "Prove it before release.",
-      note: "Unit tests, RFC test vectors, and CI gates. If it isn't verified, it isn't done.",
+      title: "Learn in public.",
+      note: "I write, share, and ship half-finished ideas because feedback beats perfection. Every tool I build starts as a question I couldn't answer.",
     },
     {
-      title: "AI with guardrails.",
-      note: "An LLM endpoint sits behind the same identity checks as everything else. A model never gets access a user wouldn't.",
+      title: "Build for the long run.",
+      note: "Trends pass. Fundamentals, taste, and reliability compound. I choose the thing that will still make sense in five years.",
     },
   ],
   /** On the record: dated facts, one row each */
