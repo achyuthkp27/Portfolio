@@ -5,13 +5,6 @@ import { PROFILE } from "@/data/profile";
 import { PillLink, PillButton } from "./ui/Pill";
 import { reveal } from "@/lib/motion";
 
-const LINKS = [
-  { label: "LinkedIn", href: PROFILE.links.linkedin },
-  { label: "GitHub", href: PROFILE.links.github },
-  { label: "Medium", href: PROFILE.links.medium },
-  { label: "Résumé", href: `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf` },
-];
-
 /** The closing block, as the reference closes: an uppercase statement, one line, one pill. Then the address. */
 const ContactSection = () => {
   const [copied, setCopied] = useState(false);
@@ -56,20 +49,6 @@ const ContactSection = () => {
             {copied ? "Copied" : PROFILE.email}
           </PillButton>
         </motion.div>
-        <motion.ul {...reveal(0.15)} className="mt-16 flex flex-wrap justify-center gap-x-8 gap-y-3">
-          {LINKS.map((l) => (
-            <li key={l.label}>
-              <a
-                href={l.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[14px] font-medium uppercase tracking-[0.03em] text-muted hover:text-snow transition-colors duration-fast"
-              >
-                {l.label} ↗
-              </a>
-            </li>
-          ))}
-        </motion.ul>
       </div>
     </section>
   );

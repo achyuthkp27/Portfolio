@@ -3,20 +3,24 @@ import { ArrowUp } from "lucide-react";
 import { useSmoothScroll } from "./ui/SmoothScroll";
 import { hasKeyboardAndPointer, isMacPlatform } from "@/lib/shortcuts";
 import { PROFILE } from "@/data/profile";
-import { NAV_ITEMS } from "@/data/nav";
-import { useSectionScroll } from "@/hooks/useSectionScroll";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
+
+const LINKS = [
+  { label: "LinkedIn", href: PROFILE.links.linkedin },
+  { label: "GitHub", href: PROFILE.links.github },
+  { label: "Medium", href: PROFILE.links.medium },
+  { label: "Résumé", href: `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf` },
+];
 
 const kbd =
   "inline-flex h-6 min-w-6 items-center justify-center rounded-sm border border-line px-1.5 font-mono text-[11px] leading-none text-snow/80";
 
 /**
- * Footer: the reference's bar (wordmark, links, scroll to top, copyright), then the name at
+ * Footer: wordmark, the social links, scroll to top, then copyright, then the name at
  * wordmark scale, filled with a dot matrix and clipped by the bottom of the page.
  */
 const Footer = () => {
   const { lenis } = useSmoothScroll();
-  const scrollTo = useSectionScroll();
   const [mod, setMod] = useState<string | null>(null);
   useEffect(() => {
     if (hasKeyboardAndPointer()) setMod(isMacPlatform() ? "⌘" : "Ctrl");
@@ -27,7 +31,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="theme-dark relative bg-night text-snow overflow-hidden">
+    <footer data-reveal-skip className="theme-dark relative bg-night text-snow overflow-hidden">
       <svg
         aria-hidden="true"
         className="absolute inset-0 w-full h-full opacity-[0.06] pointer-events-none mix-blend-screen"
@@ -48,15 +52,16 @@ const Footer = () => {
             </span>
           </button>
           <ul className="flex flex-wrap items-center gap-6">
-            {NAV_ITEMS.map((n) => (
-              <li key={n.id}>
-                <button
-                  type="button"
-                  onClick={() => scrollTo(n.id)}
+            {LINKS.map((l) => (
+              <li key={l.label}>
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
                 >
-                  {n.label}
-                </button>
+                  {l.label} ↗
+                </a>
               </li>
             ))}
           </ul>

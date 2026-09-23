@@ -19,27 +19,34 @@ import { PROFILE } from "@/data/profile";
  */
 const LINES = PROFILE.principles.map((p) => p.title);
 
-/** Timeline units: one per letter, plus these spans */
+/**
+ * Timeline units: one per letter. A line enters letter by letter, holds whole, then exits
+ * letter by letter, and the next line begins only after it has fully gone, so lines never
+ * overlap on the stage.
+ */
 const ENTER = 10;
-const HOLD = 22;
-const EXIT = 10;
+const HOLD = 14;
+const EXIT = 8;
 /** Vertical travel in and out, in px */
 const TRAVEL = 125;
-/** Scroll distance per letter, in px */
-const PX_PER_LETTER = 46;
+/** Scroll distance per timeline unit, in px */
+const PX_PER_UNIT = 40;
 
-interface LetterProps {
+interface LetterTiming {
   ch: string;
-  start: number;
+  enter: number;
+  exit: number;
+}
+
+interface LetterProps extends LetterTiming {
   progress: MotionValue<number>;
 }
 
-const Letter = ({ ch, start, progress }: LetterProps) => {
-  const inEnd = start + ENTER;
-  const outStart = inEnd + HOLD;
-  const outEnd = outStart + EXIT;
-  const y = useTransform(progress, [start, inEnd, outStart, outEnd], [TRAVEL, 0, 0, -TRAVEL]);
-  const opacity = useTransform(progress, [start, inEnd, outStart, outEnd], [0, 1, 1, 0]);
+const Letter = ({ ch, enter, exit, progress }: LetterProps) => {
+  const inEnd = enter + ENTER;
+  const outEnd = exit + EXIT;
+  const y = useTransform(progress, [enter, inEnd, exit, outEnd], [TRAVEL, 0, 0, -TRAVEL]);
+  const opacity = useTransform(progress, [enter, inEnd, exit, outEnd], [0, 1, 1, 0]);
   return (
     <motion.span style={{ y, opacity }} className="inline-block will-change-transform" aria-hidden="true">
       {ch}
@@ -51,19 +58,29 @@ const VisionSection = () => {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
 
-  // Global letter indices: each line starts where the previous one ended
+  // Per-line schedule on one scroll timeline
   const plan = useMemo(() => {
-    let cursor = 0;
+    let base = 0;
     return LINES.map((text) => {
-      const words = text.split(" ").map((word) => {
-        const letters = [...word].map((ch) => ({ ch, start: cursor++ }));
-        cursor += 1; // the space
-        return letters;
-      });
-      return { text, words, from: words[0][0].start, to: cursor - 1 };
+      const letters = [...text.replace(/\s/g, "")].length;
+      // Every letter is in by base + letters + ENTER; the line then holds; then letters leave in order
+      const exitBase = base + letters + ENTER + HOLD;
+      let i = 0;
+      const words = text.split(" ").map((word) =>
+        [...word].map((ch) => {
+          const t = { ch, enter: base + i, exit: exitBase + i };
+          i += 1;
+          return t;
+        }),
+      );
+      const end = exitBase + letters + EXIT;
+      const line = { text, words, from: base, to: end };
+      // The next line starts only once every letter of this one has left
+      base = end;
+      return line;
     });
   }, []);
-  const total = plan[plan.length - 1].to + ENTER + HOLD + EXIT;
+  const total = plan[plan.length - 1].to;
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const units = useTransform(scrollYProgress, [0, 1], [-ENTER, total]);
@@ -71,7 +88,7 @@ const VisionSection = () => {
 
   const [index, setIndex] = useState(0);
   useMotionValueEvent(units, "change", (u) => {
-    const next = plan.findIndex((l) => u < l.to + ENTER + HOLD / 2);
+    const next = plan.findIndex((l) => u < l.to - EXIT - ENTER);
     const clamped = next < 0 ? plan.length - 1 : next;
     if (clamped !== index) setIndex(clamped);
   });
@@ -97,7 +114,7 @@ const VisionSection = () => {
       ref={ref}
       data-reveal-skip
       className="theme-dark bg-night text-snow relative"
-      style={{ height: `calc(${total * PX_PER_LETTER}px + 100vh)` }}
+      style={{ height: `calc(${total * PX_PER_UNIT}px + 100vh)` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-between px-6 md:px-10 lg:px-12 pt-24 md:pt-28 pb-10">
         {/* Crosshair */}
@@ -123,7 +140,7 @@ const VisionSection = () => {
               {line.words.map((letters, w) => (
                 <span key={w} className="inline-block whitespace-nowrap">
                   {letters.map((l) => (
-                    <Letter key={l.start} ch={l.ch} start={l.start} progress={units} />
+                    <Letter key={l.enter} ch={l.ch} enter={l.enter} exit={l.exit} progress={units} />
                   ))}
                   {w < line.words.length - 1 && <span aria-hidden="true">&nbsp;</span>}
                 </span>
