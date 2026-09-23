@@ -42,7 +42,7 @@ export const IdBadge = ({
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
   }, []);
-  const { scrollYProgress } = useScroll({ target, offset: ["start 0.9", "start 0.3"] });
+  const { scrollYProgress } = useScroll({ target, offset: ["start 0.55", "start 0.08"] });
   const drop = useTransform(scrollYProgress, [0, 1], reduceMotion || !wide ? [0, 0] : [-520, 0]);
   const y = useSpring(drop, { stiffness: 100, damping: 9, mass: 1.1 });
   const velocity = useVelocity(y);

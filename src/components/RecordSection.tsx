@@ -23,7 +23,7 @@ const Trophy = ({ target }: { target: React.RefObject<HTMLElement> }) => {
     <motion.div
       initial={reduceMotion ? false : { y: -340, rotate: -5, opacity: 0 }}
       whileInView={{ y: 0, rotate: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-15% 0px" }}
+      viewport={{ once: true, margin: "-35% 0px -35% 0px" }}
       transition={{
         y: { type: "spring", stiffness: 150, damping: 11, mass: 1.2 },
         rotate: { type: "spring", stiffness: 90, damping: 7, mass: 1 },
