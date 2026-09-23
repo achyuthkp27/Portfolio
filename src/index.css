@@ -204,6 +204,34 @@
   }
 }
 
+/* The + after a figure: a slow breathing pulse with a sharp blink every few cycles */
+@keyframes plus-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  46% {
+    opacity: 0.25;
+  }
+  52% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+.plus-pulse {
+  display: inline-block;
+  transform-origin: center;
+  animation: plus-pulse 3.2s ease-in-out infinite;
+}
+
 /* ── Scroll reveal ────────────────────────────────────────────────────────
    Applied by useScrollReveal: blurred, faded and slightly low until first seen. */
 .reveal {
