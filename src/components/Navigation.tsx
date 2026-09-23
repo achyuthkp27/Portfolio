@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 import { hasKeyboardAndPointer, isMacPlatform, openCommandMenu } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useScrollLock } from "@/hooks/useScrollLock";
+import { useSmoothScroll } from "@/context/smoothScroll";
 import { DUR, EASE } from "@/lib/motion";
 import { NAV_ITEMS } from "@/data/nav";
 import { PROFILE } from "@/data/profile";
@@ -18,6 +20,7 @@ const Navigation = () => {
   const scrollToSection = useSectionScroll();
   const isHomePage = location.pathname === "/" || location.pathname === "";
   const menuRef = useRef<HTMLDivElement>(null);
+  const { lenis } = useSmoothScroll();
   useFocusTrap(menuRef, isMenuOpen);
 
   useEffect(() => {
@@ -28,12 +31,7 @@ const Navigation = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
+  useScrollLock(isMenuOpen, lenis);
 
   const [activeSection, setActiveSection] = useState("");
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -125,9 +123,6 @@ const Navigation = () => {
             className="t-heading text-[22px] md:text-2xl whitespace-nowrap flex items-baseline gap-1.5"
           >
             {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
-            <span className="t-figure text-[10px] text-muted -translate-y-2" aria-hidden="true">
-              ©
-            </span>
           </button>
 
           <ul className="hidden md:flex items-center gap-8 lg:gap-10 absolute left-1/2 -translate-x-1/2">

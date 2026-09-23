@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { prefersReducedMotion } from "@/lib/motionPreference";
 
 /**
  * Drifting smoke for a dark card, rendered on a canvas: layered value noise, domain-warped
@@ -52,7 +53,7 @@ export const Smoke = ({ className = "" }: { className?: string }) => {
     canvas.height = H;
     const img = ctx.createImageData(W, H);
     const data = img.data;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = prefersReducedMotion();
 
     let raf = 0;
     let visible = true;

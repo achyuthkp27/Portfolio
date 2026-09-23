@@ -92,13 +92,37 @@ const ServicesSection = () => {
           </li>
         ))}
       </ul>
+      <p className="t-label mt-7 mb-2">Proof</p>
+      <ul className="space-y-1.5">
+        {current.proof.map((p) => (
+          <li key={p.href + p.label}>
+            <a
+              href={`${import.meta.env.BASE_URL}${p.href}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector(p.href)?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="group inline-flex items-center gap-2 t-body text-snow/85 hover:text-snow transition-colors duration-fast"
+            >
+              <span className="h-1 w-1 rounded-full bg-emerald-400" aria-hidden="true" />
+              {p.label}
+              <span
+                className="text-muted group-hover:translate-x-0.5 transition-transform duration-fast"
+                aria-hidden="true"
+              >
+                ↓
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </motion.div>
   );
 
   return (
     <section id="services" className="theme-dark bg-night text-snow py-24 lg:py-32 px-6 md:px-10 lg:px-12">
       <div className="max-w-[1400px] mx-auto">
-        <SectionHeader label="What I do" title="What I build" align="center" />
+        <SectionHeader label="What I work on" title="What I build" align="center" />
         <div className="grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-start">
           <ol className="border-t border-line">
             {SERVICES.map((s, i) => (

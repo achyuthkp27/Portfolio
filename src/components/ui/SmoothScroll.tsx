@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
+import { prefersReducedMotion } from "@/lib/motionPreference";
 import Lenis from "lenis";
 import { SmoothScrollContext } from "@/context/smoothScroll";
 import { useMobile } from "@/hooks/useMobile";
@@ -10,7 +11,7 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
   const isLowEnd = useLowEndDevice();
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = prefersReducedMotion();
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     // Initialize Lenis only on capable pointer devices. Mobile and low-end devices keep native scrolling.

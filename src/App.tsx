@@ -1,4 +1,6 @@
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
+import { useMotionOff } from "@/lib/motionPreference";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
@@ -82,36 +84,41 @@ const DeferredExperience = () => {
   );
 };
 
-const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
-      <LoadingProvider>
-        {/* PROTECTED: opening splash screen. Required on every visit and device — never remove. See CLAUDE.md. */}
-        <PremiumLoader />
-        <HashRouter>
-          {/* Skip to main content. A button, because "#main-content" would be a route under HashRouter. */}
-          <button
-            type="button"
-            onClick={() => {
-              const main = document.getElementById("main-content");
-              main?.focus();
-              main?.scrollIntoView();
-            }}
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:bg-snow focus:text-night focus:px-4 focus:py-2 focus:rounded-sm focus:text-sm"
-          >
-            Skip to content
-          </button>
-          {/* One Lenis instance for everything: nav, overlays, and pages share it */}
-          <SmoothScroll>
-            <KeyboardShortcuts />
-            <DeferredExperience />
-            <Navigation />
-            <AnimatedRoutes />
-          </SmoothScroll>
-        </HashRouter>
-      </LoadingProvider>
-    </HelmetProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  const motionOff = useMotionOff();
+  return (
+    <ErrorBoundary>
+      <HelmetProvider>
+        <LoadingProvider>
+          {/* PROTECTED: opening splash screen. Required on every visit and device — never remove. See CLAUDE.md. */}
+          <PremiumLoader />
+          <MotionConfig reducedMotion={motionOff ? "always" : "user"}>
+            <HashRouter>
+              {/* Skip to main content. A button, because "#main-content" would be a route under HashRouter. */}
+              <button
+                type="button"
+                onClick={() => {
+                  const main = document.getElementById("main-content");
+                  main?.focus();
+                  main?.scrollIntoView();
+                }}
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:bg-snow focus:text-night focus:px-4 focus:py-2 focus:rounded-sm focus:text-sm"
+              >
+                Skip to content
+              </button>
+              {/* One Lenis instance for everything: nav, overlays, and pages share it */}
+              <SmoothScroll>
+                <KeyboardShortcuts />
+                <DeferredExperience />
+                <Navigation />
+                <AnimatedRoutes />
+              </SmoothScroll>
+            </HashRouter>
+          </MotionConfig>
+        </LoadingProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;

@@ -20,14 +20,14 @@ export interface Experience {
 export const experiences: Experience[] = [
   {
     company: "Cognizant Technology Solutions",
-    role: "Associate Software Engineer · Client: First Citizens Bank",
+    role: "Software Engineer · Client: First Citizens Bank",
     period: "Apr 2026 – Present",
     type: "full-time",
     logo: { src: "images/cognizant-logo.png", dark: "images/cognizant-logo-white.png", width: 416, height: 84 },
     icon: Briefcase,
     color: "primary",
     platform: "First Citizens Bank platform",
-    handoff: "Client-driven rebadge — same platform, same team, same client",
+    handoff: "Client-driven rebadge: same platform, same team, same client",
     achievements: [
       "Leading backend API architecture for a next-generation banking platform using Java 21, Spring Boot 3.5, and Apache Kafka within a 25+ engineer delivery team.",
       "Mentoring 4 junior engineers on clean code, unit testing discipline (JUnit, Mockito), and CI/CD standards.",
@@ -45,13 +45,13 @@ export const experiences: Experience[] = [
     color: "primary",
     platform: "First Citizens Bank platform",
     achievements: [
-      "Designed, built, and maintained Spring Boot microservices across a 30+ service estate powering Retail, Mobile, and Corporate Online Banking for hundreds of corporate clients — delivering three major corporate banking modules end to end.",
+      "Designed, built, and maintained Spring Boot microservices across a 30+ service estate powering Retail, Mobile, and Corporate Online Banking for hundreds of corporate clients, and delivered three major corporate banking modules end to end.",
       "Implemented a maker-checker authorization framework enforcing dual-approval controls on financial transactions to meet PCI-DSS and SOX compliance and audit requirements.",
-      "Delivered Card on File — credit card tokenization for Mastercard and Visa — plus virtual card services, and implemented JWT/JWE/JWS token security across banking APIs.",
+      "Delivered Card on File, credit card tokenization for Mastercard and Visa, plus virtual card services, and implemented JWT/JWE/JWS token security across banking APIs.",
       "Built an RFC 6238-compliant TOTP authentication system (AES-256-GCM secret storage, QR-code enrollment, Redis-backed replay prevention) with push-notification-based transaction approval.",
       "Engineered Video KYC onboarding using WebRTC and WebSockets; shipped WhatsApp banking and contributed to Montran-based payment processing workflows.",
       "Built LLM-powered banking chatbots and conversational AI integration APIs for automated query handling and identity validation.",
-      "Applied Java concurrency and multithreading primitives with resilience patterns — timeouts, retries, and circuit breakers — to keep inter-service calls stable under high-load banking traffic.",
+      "Applied Java concurrency and multithreading primitives with resilience patterns, timeouts, retries, and circuit breakers, to keep inter-service calls stable under high-load banking traffic.",
       "Optimized API response times through Redis caching and PostgreSQL query tuning with Spring Data JPA.",
       "Led end-to-end ELK Stack + Kafka rollout for centralized logging and cross-service tracing, shortening production triage; wrote JUnit/Mockito test suites as part of Jenkins CI/CD quality gates.",
       "Promoted to Senior Software Engineer; earned the Above and Beyond Individual Award (Q1 2024) for critical project delivery.",

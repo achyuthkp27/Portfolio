@@ -5,6 +5,7 @@ import { OPEN_COMMAND_MENU_EVENT, openTerminal } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { PROFILE } from "@/data/profile";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 import { useSmoothScroll } from "@/context/smoothScroll";
 
@@ -35,19 +36,7 @@ export function CommandMenu() {
     };
   }, []);
 
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      lenis?.stop();
-    } else {
-      document.body.style.overflow = "unset";
-      lenis?.start();
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-      lenis?.start();
-    };
-  }, [open, lenis]);
+  useScrollLock(open, lenis);
 
   const runCommand = (command: () => void) => {
     setOpen(false);

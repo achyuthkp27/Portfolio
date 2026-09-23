@@ -162,7 +162,12 @@ const PhaseRule = ({ phase, index, progress }: { phase: string; index: number; p
   // Each rule owns a quarter of the hero scroll; its fill grows as that quarter passes
   const from = index * 0.25;
   const fill = useTransform(progress, [from, from + 0.25], [0, 1]);
-  const active = useTransform(progress, [from - 0.01, from, from + 0.25, from + 0.26], [0.35, 1, 1, 0.5]);
+  // Stops stay inside 0..1: the browser's animate() rejects offsets outside that range
+  const active = useTransform(
+    progress,
+    [Math.max(0, from - 0.01), from, from + 0.25, Math.min(1, from + 0.26)],
+    [0.35, 1, 1, 0.5],
+  );
   return (
     <li className="relative pt-3 border-t border-line">
       <motion.span

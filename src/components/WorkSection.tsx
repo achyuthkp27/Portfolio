@@ -1,6 +1,7 @@
 import { useRef, type CSSProperties, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
+import { ArrowUpRight } from "lucide-react";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
 import { ChatScreen, KairoScreen, LogScreen, VoxScreen } from "./case-studies/Screens";
 import TotpDemo from "./case-studies/TotpDemo";
@@ -152,6 +153,8 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
   const interactive = INTERACTIVE.has(study.slug);
   const centred = interactive || CENTRED.has(study.slug);
+  // Own-time products carry the accent: a lit border, a taller stage, and a link to the source
+  const own = Boolean(study.repo);
   return (
     <div
       className={isLast ? "relative" : "relative md:sticky md:top-[calc(6rem+var(--stack-offset))]"}
@@ -160,11 +163,11 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
       <motion.article
         {...reveal()}
         id={`case-${study.slug}`}
-        className={`rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
+        className={`rounded-lg border bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${own ? "border-emerald-400/40 shadow-[0_-24px_60px_rgba(0,0,0,0.85),0_0_80px_-30px_hsl(153_60%_50%/0.5)]" : "border-line"} ${isLast ? "" : "mb-6"}`}
       >
         <div
           ref={tile}
-          className={`relative rounded-md bg-tile text-snow overflow-hidden ${centred ? "min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12" : "h-[300px] md:h-[400px] lg:[@media(min-height:900px)]:h-[440px]"}`}
+          className={`relative rounded-md bg-tile text-snow overflow-hidden ${centred ? "min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12" : own ? "h-[340px] md:h-[460px] lg:[@media(min-height:900px)]:h-[520px]" : "h-[300px] md:h-[400px] lg:[@media(min-height:900px)]:h-[440px]"}`}
         >
           <div
             className="absolute inset-0 pointer-events-none opacity-[0.35] [background-image:linear-gradient(hsl(0_0%_100%/0.06)_1px,transparent_1px),linear-gradient(90deg,hsl(0_0%_100%/0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]"
@@ -203,8 +206,21 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
               {HEADLINES[study.slug] ?? study.title}
             </h3>
             <p className="t-caps text-muted mt-2">{study.title}</p>
+            {study.origin && <p className="t-figure text-[11px] text-emerald-300 mt-2">{study.origin}</p>}
           </div>
-          <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
+          <div className="flex items-center gap-2 shrink-0">
+            {study.repo && (
+              <a
+                href={study.repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-pill bg-emerald-400 text-night px-3 py-1 text-[12px] font-medium hover:bg-emerald-300 transition-colors duration-fast"
+              >
+                Source <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </a>
+            )}
+            <Chip>{study.category ?? "Backend"}</Chip>
+          </div>
         </div>
         <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8">
           {[

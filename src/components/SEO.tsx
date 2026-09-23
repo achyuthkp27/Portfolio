@@ -43,7 +43,7 @@ const websiteJsonLd = {
 
 const SEO = ({
   title = "Achyuth KP | Software Engineer",
-  description = "Portfolio of Achyuth KP — Software engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
+  description = "Portfolio of Achyuth KP, a software engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
   image = `${SITE_URL}og-image.jpg`,
   url = SITE_URL,
   type = "website",

@@ -4,6 +4,7 @@ import { useSmoothScroll } from "@/context/smoothScroll";
 import { hasKeyboardAndPointer, isMacPlatform } from "@/lib/shortcuts";
 import { PROFILE } from "@/data/profile";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
+import { setMotionOff, useMotionOff } from "@/lib/motionPreference";
 
 const LINKS = [
   { label: "LinkedIn", href: PROFILE.links.linkedin },
@@ -22,6 +23,7 @@ const kbd =
 const Footer = () => {
   const { lenis } = useSmoothScroll();
   const [mod, setMod] = useState<string | null>(null);
+  const motionOff = useMotionOff();
   useEffect(() => {
     if (hasKeyboardAndPointer()) setMod(isMacPlatform() ? "⌘" : "Ctrl");
   }, []);
@@ -69,14 +71,30 @@ const Footer = () => {
             © <ScrambleNumber value={String(new Date().getFullYear())} /> {PROFILE.name}. {PROFILE.title},{" "}
             {PROFILE.city.split(",")[0]}.
           </p>
-          {mod ? (
-            <p className="hidden lg:flex items-center gap-2 t-figure text-xs text-muted">
-              <kbd className={kbd}>{mod} K</kbd> quick menu <span className="opacity-40">·</span>{" "}
-              <kbd className={kbd}>`</kbd> terminal
-            </p>
-          ) : (
-            <p className="text-sm text-muted">React · TypeScript · Tailwind</p>
-          )}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 t-figure text-xs text-muted">
+            {mod && (
+              <p className="hidden lg:flex items-center gap-2">
+                <kbd className={kbd}>{mod} K</kbd> quick menu <span className="opacity-40">·</span>{" "}
+                <kbd className={kbd}>`</kbd> terminal
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => setMotionOff(!motionOff)}
+              aria-pressed={motionOff}
+              className="inline-flex items-center gap-2 hover:text-snow transition-colors duration-fast"
+            >
+              <span
+                aria-hidden="true"
+                className={`relative h-3.5 w-6 rounded-pill border border-line ${motionOff ? "bg-transparent" : "bg-emerald-400/80"}`}
+              >
+                <span
+                  className={`absolute top-0.5 h-2 w-2 rounded-full bg-snow transition-transform duration-fast ${motionOff ? "left-0.5" : "left-0.5 translate-x-2.5"}`}
+                />
+              </span>
+              Animations {motionOff ? "off" : "on"}
+            </button>
+          </div>
         </div>
       </div>
 

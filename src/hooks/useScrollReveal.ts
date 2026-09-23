@@ -1,4 +1,5 @@
 import { useEffect, type RefObject } from "react";
+import { prefersReducedMotion } from "@/lib/motionPreference";
 
 /** Text-bearing elements that reveal on first sight. Nested matches defer to their nearest revealing ancestor. */
 const SELECTOR = "h1, h2, h3, h4, p, li, dt, dd, pre, blockquote, a, button";
@@ -68,7 +69,7 @@ export function useScrollReveal(root: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const host = root.current;
     if (!host) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
 
     const io = new IntersectionObserver(
       (entries) => {

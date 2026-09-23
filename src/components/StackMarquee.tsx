@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { prefersReducedMotion } from "@/lib/motionPreference";
 import { PROFILE } from "@/data/profile";
 import { StepHeadline } from "./ui/StepHeadline";
 
@@ -86,7 +87,7 @@ const StackMarquee = () => {
       }
     };
     paint();
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     let raf = 0;
     let visible = false;
     let last = performance.now();

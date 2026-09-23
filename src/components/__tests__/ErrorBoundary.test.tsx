@@ -12,12 +12,16 @@ describe("ErrorBoundary", () => {
   // Suppress console.error for error boundary tests
   const originalError = console.error;
 
+  // React rethrows the caught error to window as well; jsdom would print it to the test output
+  const swallow = (e: ErrorEvent) => e.preventDefault();
   beforeAll(() => {
     console.error = vi.fn();
+    window.addEventListener("error", swallow);
   });
 
   afterAll(() => {
     console.error = originalError;
+    window.removeEventListener("error", swallow);
   });
 
   it("renders children when no error occurs", () => {

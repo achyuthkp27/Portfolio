@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   AnimatePresence,
   motion,
@@ -34,14 +34,7 @@ export const IdBadge = ({
   className?: string;
 }) => {
   const reduceMotion = useReducedMotion();
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const sync = () => setWide(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+  const wide = useMediaQuery("(min-width: 1024px)");
   const { scrollYProgress } = useScroll({ target, offset: ["start 0.55", "start 0.08"] });
   const drop = useTransform(scrollYProgress, [0, 1], reduceMotion || !wide ? [0, 0] : [-520, 0]);
   const y = useSpring(drop, { stiffness: 100, damping: 9, mass: 1.1 });

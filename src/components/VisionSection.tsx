@@ -6,7 +6,8 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PROFILE } from "@/data/profile";
 
 /**
@@ -84,14 +85,7 @@ const VisionSection = () => {
   }, []);
   const total = plan[plan.length - 1].to;
 
-  const [pxPerUnit, setPxPerUnit] = useState(PX_PER_UNIT);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const sync = () => setPxPerUnit(mq.matches ? PX_PER_UNIT_PHONE : PX_PER_UNIT);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+  const pxPerUnit = useMediaQuery("(max-width: 767px)") ? PX_PER_UNIT_PHONE : PX_PER_UNIT;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const units = useTransform(scrollYProgress, [0, 1], [-ENTER, total]);
   const markerX = useTransform(scrollYProgress, [0, 1], ["8%", "92%"]);

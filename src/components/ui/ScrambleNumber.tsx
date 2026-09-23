@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { prefersReducedMotion } from "@/lib/motionPreference";
 
 interface ScrambleNumberProps {
   /** The final text. Only its digits scramble; letters and punctuation stay put. */
@@ -39,7 +40,7 @@ const ScrambleNumber = ({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (prefersReducedMotion()) {
       setDisplay(value);
       setDone(true);
       return;

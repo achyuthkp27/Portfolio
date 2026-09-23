@@ -140,7 +140,7 @@ export interface RepoExtras {
 }
 
 /** Strip GitHub's heading anchors and permalinks so the README reads as plain document HTML. */
-const cleanReadme = (html: string, repoName: string) =>
+export const cleanReadme = (html: string, repoName: string) =>
   html
     .replace(/<a id="user-content-[^"]*" class="anchor"[\s\S]*?<\/a>/g, "")
     .replace(/<div class="markdown-heading" dir="auto">/g, "<div>")

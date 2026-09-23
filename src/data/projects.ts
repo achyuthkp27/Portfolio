@@ -23,6 +23,10 @@ export interface Project {
   tags: string[];
   featured?: boolean;
   icon: LucideIcon;
+  /** Own-time, open-source work: its repository */
+  repo?: string;
+  /** A line under the headline for own-time work */
+  origin?: string;
 }
 
 // Professional case studies from banking platform work (client details generalized).
@@ -36,7 +40,7 @@ export const projects: Project[] = [
     problem:
       "Corporate clients needed new banking modules on a platform serving hundreds of organizations, under strict compliance requirements",
     solution:
-      "Designed and delivered three corporate banking modules end to end — REST APIs, Kafka event flows, and PostgreSQL persistence",
+      "Designed and delivered three corporate banking modules end to end: REST APIs, Kafka event flows, and PostgreSQL persistence",
     outcome: "Modules shipped to production and in daily use by corporate banking customers",
     tags: ["Spring Boot", "Kafka", "PostgreSQL", "Redis", "Microservices"],
     icon: Server,
@@ -103,34 +107,6 @@ export const projects: Project[] = [
     icon: Bot,
   },
   {
-    slug: "voxos",
-    title: "VoxOs — voice agent for the Mac",
-    description:
-      "Native macOS voice dictation and voice-to-action agent in Swift, built for daily personal use. macOS 14.4+, GPL-3.0.",
-    category: "AI",
-    problem: "Dictation on the Mac stops at text; turning speech into actions meant leaving the keyboard for the mouse",
-    solution:
-      "Built a menu-bar agent in Swift that transcribes on-device and maps phrases to shell commands, app focus, and dictation into the active cursor",
-    outcome: "Open source under GPL-3.0 and in daily use; audio never leaves the machine",
-    tags: ["Swift", "macOS", "On-device speech", "Agents"],
-    icon: Mic,
-    featured: true,
-  },
-  {
-    slug: "kairo-offline-ai-bank",
-    title: "Kairo — offline-first AI bank",
-    description:
-      "Privacy-first mobile banking app with an embedded assistant (Qwen on-device): multi-account wealth, semantic transaction search, anomaly detection, and bill planning. All data stays on the phone.",
-    category: "AI",
-    problem: "Banking assistants send transaction history to a cloud model; the privacy cost is the whole ledger",
-    solution:
-      "Ran a small LLM on the phone with local vector search over transactions, so coaching, anomaly detection, and planning work with no network at all",
-    outcome: "Open source; every feature works in airplane mode",
-    tags: ["React Native", "Qwen", "On-device LLM", "Vector search", "SQLite"],
-    icon: Smartphone,
-    featured: true,
-  },
-  {
     slug: "elk-observability-rollout",
     title: "ELK + Kafka Observability Rollout",
     description: "Centralized logging and cross-service tracing for a 30+ service estate.",
@@ -140,5 +116,37 @@ export const projects: Project[] = [
     outcome: "Team-wide searchable logs; measurably faster production triage",
     tags: ["Elasticsearch", "Logstash", "Kibana", "Kafka"],
     icon: Database,
+  },
+  {
+    slug: "voxos",
+    title: "VoxOs, a voice agent for the Mac",
+    description:
+      "A macOS menu-bar app in Swift that turns speech into text and actions: dictation into any field, shell commands, and app control, all transcribed on the Mac. macOS 14.4 and up, GPL-3.0.",
+    category: "AI",
+    problem: "Dictation on the Mac stops at text; turning speech into actions meant leaving the keyboard for the mouse",
+    solution:
+      "Built a menu-bar agent in Swift that transcribes on-device and maps phrases to shell commands, app focus, and dictation into the active cursor",
+    outcome: "Open source under GPL-3.0 and in daily use; audio never leaves the machine",
+    tags: ["Swift", "macOS", "On-device speech", "Agents"],
+    icon: Mic,
+    featured: true,
+    repo: "https://github.com/achyuthkp27/VoxOs",
+    origin: "Own time · open source · GPL-3.0",
+  },
+  {
+    slug: "kairo-offline-ai-bank",
+    title: "Kairo, an offline-first AI bank",
+    description:
+      "A mobile banking app whose assistant runs on the phone. Qwen answers questions about your accounts, finds transactions by meaning, flags odd charges, and plans bills, with nothing sent to a server.",
+    category: "AI",
+    problem: "Banking assistants send transaction history to a cloud model; the privacy cost is the whole ledger",
+    solution:
+      "Ran a small LLM on the phone with local vector search over transactions, so coaching, anomaly detection, and planning work with no network at all",
+    outcome: "Open source; every feature works in airplane mode",
+    tags: ["React Native", "Qwen", "On-device LLM", "Vector search", "SQLite"],
+    icon: Smartphone,
+    featured: true,
+    repo: "https://github.com/achyuthkp27/kairo-offline-ai-bank",
+    origin: "Own time · open source",
   },
 ];

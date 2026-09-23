@@ -35,21 +35,13 @@ export const PROFILE = {
       note: "Fast is good. Right is required. I don't ship what I can't stand behind.",
     },
     {
-      title: "Depth over noise.",
-      note: "I'd rather understand one system to the bottom than skim ten. Real leverage comes from knowing how things actually work.",
-    },
-    {
-      title: "Say less, prove more.",
-      note: "Claims are cheap. I let working software, tests, and results speak, and I keep my word.",
-    },
-    {
       title: "Build for the long run.",
       note: "Trends pass. Fundamentals, taste, and reliability compound. I choose the thing that will still make sense in five years.",
     },
   ],
   /** On the record: dated facts, one row each */
   record: [
-    { year: "Apr 2026", title: "Associate Software Engineer, First Citizens Bank platform", org: "Cognizant" },
+    { year: "Apr 2026", title: "Software Engineer, First Citizens Bank platform", org: "Cognizant" },
     { year: "2024", title: "Above & Beyond Individual Award", org: "FIS Global" },
     { year: "2026", title: "Promoted to Senior Software Engineer", org: "FIS Global" },
     { year: "2021", title: "B.E. Computer Science & Engineering", org: "Sri Siddhartha Institute of Technology" },
@@ -63,69 +55,54 @@ export const PROFILE = {
   /** How work moves, as four phases; the hero rail ticks through them on scroll */
   phases: ["Learn", "Build", "Ship", "Verify"],
   /** The stack, for the marquee */
-  stack: [
-    "Java 21",
-    "Spring Boot",
-    "Python",
-    "Spring Security",
-    "Apache Kafka",
-    "LLMs",
-    "PostgreSQL",
-    "Redis",
-    "RAG",
-    "Docker",
-    "Kubernetes",
-    "On-device AI",
-    "AWS",
-    "Jenkins",
-    "Qwen",
-    "ELK Stack",
-    "Prometheus",
-    "Prompt engineering",
-    "Grafana",
-    "JUnit",
-    "Vector search",
-    "Mockito",
-    "NATS JetStream",
-    "Gemini API",
-    "Spring AI",
-    "LangChain4j",
-    "WebRTC",
-    "OAuth2",
-    "JWT / JWE / JWS",
-    "TOTP",
-    "gRPC",
-    "React",
-  ],
+  stack: ["Java", "Python", "React", "Spring Boot", "LLMs", "AI"],
 } as const;
 
 /** What I do: five services with the real stack behind each */
-export const SERVICES: { title: string; blurb: string; stack: string[] }[] = [
-  {
-    title: "AI products",
-    blurb:
-      "Assistants that check who is asking before they answer, and models that run on the device so the data stays there.",
-    stack: ["Spring AI", "LangChain4j", "On-device LLMs", "RAG", "WebRTC"],
-  },
+export const SERVICES: { title: string; blurb: string; stack: string[]; proof: { label: string; href: string }[] }[] = [
   {
     title: "Backend systems",
     blurb:
       "Spring Boot services that move real money: APIs, domain rules, concurrency, and the failure handling around them.",
     stack: ["Java 21", "Spring Boot", "Spring Data JPA", "JUnit", "Mockito"],
+    proof: [
+      { label: "Corporate banking microservices", href: "#case-corporate-banking-microservices" },
+      { label: "Maker-checker framework", href: "#case-maker-checker-authorization" },
+    ],
   },
   {
     title: "Event-driven platforms",
     blurb: "Kafka estates where one slow consumer never stalls a payment.",
     stack: ["Apache Kafka", "NATS JetStream", "Redis", "PostgreSQL", "Circuit breakers"],
+    proof: [
+      { label: "30+ service estate on one bus", href: "#case-corporate-banking-microservices" },
+      { label: "ELK and Kafka observability", href: "#case-elk-observability-rollout" },
+    ],
   },
   {
     title: "Security and payments",
     blurb: "Maker-checker approval, card tokenisation, TOTP, and token security under PCI-DSS and SOX.",
     stack: ["Spring Security", "OAuth2", "JWT / JWE / JWS", "TOTP", "Mastercard · Visa"],
+    proof: [
+      { label: "TOTP with replay prevention, live demo", href: "#case-totp-authentication-system" },
+      { label: "Card on file tokenisation", href: "#case-card-tokenization" },
+    ],
   },
   {
     title: "Delivery and operations",
     blurb: "Containerised, shipped often, and observable: Jenkins, Kubernetes, and the ELK stack.",
     stack: ["AWS", "Docker", "Kubernetes", "Jenkins", "ELK · Prometheus · Grafana"],
+    proof: [{ label: "Every log, one search bar", href: "#case-elk-observability-rollout" }],
+  },
+  {
+    title: "AI, the next chapter",
+    blurb:
+      "The same production standards applied to models: assistants that check who is asking before they answer, and AI that runs on the device so the data stays there.",
+    stack: ["Spring AI", "LangChain4j", "On-device LLMs", "RAG", "Qwen"],
+    proof: [
+      { label: "Kairo, offline-first AI bank", href: "#case-kairo-offline-ai-bank" },
+      { label: "VoxOs, voice agent for the Mac", href: "#case-voxos" },
+      { label: "LLM banking assistant APIs", href: "#case-llm-banking-chatbot" },
+    ],
   },
 ];

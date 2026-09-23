@@ -5,6 +5,7 @@ import { SectionHeader } from "./ui/SectionHeader";
 import { DUR, EASE, reveal } from "@/lib/motion";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { IdBadge } from "./ui/IdBadge";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const VISIBLE = 3;
 
@@ -31,14 +32,7 @@ const ExperienceSection = () => {
     return () => io.disconnect();
   }, []);
   // Below the desktop breakpoint the badge sits above the list, so it shows the current role
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const sync = () => setWide(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+  const wide = useMediaQuery("(min-width: 1024px)");
   const current = experiences[wide ? active : 0];
   const face = {
     key: current.company,

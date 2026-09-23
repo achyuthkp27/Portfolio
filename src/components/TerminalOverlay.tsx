@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { PROFILE } from "@/data/profile";
 import { Terminal, X } from "lucide-react";
 import { projects } from "@/data/projects";
@@ -197,28 +198,15 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
   }, []);
 
   // Freeze the page behind the overlay. Lenis drives scrolling itself, so overflow alone isn't enough.
-  useEffect(() => {
-    if (!isOpen || !lenis) return;
-    lenis.stop();
-    return () => lenis.start();
-  }, [isOpen, lenis]);
+  useScrollLock(isOpen, lenis);
 
-  // Scroll locking & Focus
+  // Focus on open; tell the owner on close
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
       const id = trackTimeout(setTimeout(() => inputRef.current?.focus(), 50));
-      return () => {
-        clearTimeout(id);
-        document.body.style.overflow = "";
-      };
-    } else {
-      document.body.style.overflow = "";
-      if (onClose) onClose();
+      return () => clearTimeout(id);
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    if (onClose) onClose();
   }, [isOpen, onClose]);
 
   // Auto-scroll terminal

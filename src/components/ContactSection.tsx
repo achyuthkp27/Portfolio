@@ -35,7 +35,7 @@ const ContactSection = () => {
       >
         <FillText
           as="h2"
-          text="Building something serious with AI or backend systems? Let's talk."
+          text="Building something serious with backend systems, or the AI on top of them? Let's talk."
           className="t-statement text-[3.4rem] sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl mx-auto text-balance"
           offset={["start 0.9", "end 0.5"]}
         />
