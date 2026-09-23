@@ -176,11 +176,7 @@ const AboutSection = () => {
             >
               <p className="relative t-heading text-3xl md:text-4xl text-night">Services in the estate</p>
               <p className="relative t-wordmark leading-none text-[6rem] md:text-[7.5rem] mt-auto pt-8 text-night">
-                <ScrambleNumber
-                  value="30"
-                  suffix="+"
-                  className="[&_span:last-child]:text-night/60 [&_span:last-child]:plus-pulse"
-                />
+                <ScrambleNumber value="30" suffix="+" suffixClassName="text-night/70 plus-pulse" />
               </p>
               <span className="relative block w-10 h-px bg-night/40 mt-4" aria-hidden="true" />
             </motion.div>

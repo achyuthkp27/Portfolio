@@ -5,6 +5,8 @@ interface ScrambleNumberProps {
   value: string;
   /** Kept after the value, coloured once the digits lock, e.g. "+" */
   suffix?: string;
+  /** Classes for the suffix once the digits lock; defaults to the accent colour */
+  suffixClassName?: string;
   durationMs?: number;
   className?: string;
   /** Element to render */
@@ -23,6 +25,7 @@ const isDigit = (ch: string) => ch >= "0" && ch <= "9";
 const ScrambleNumber = ({
   value,
   suffix = "",
+  suffixClassName,
   durationMs = 1400,
   className = "",
   as: Tag = "span",
@@ -97,7 +100,7 @@ const ScrambleNumber = ({
       {suffix && (
         <span
           aria-hidden="true"
-          className={`transition-colors duration-base ${done ? "text-emerald-400" : "text-emerald-400/60"}`}
+          className={`transition-colors duration-base ${done ? (suffixClassName ?? "text-emerald-400") : "text-emerald-400/60"}`}
         >
           {suffix}
         </span>
