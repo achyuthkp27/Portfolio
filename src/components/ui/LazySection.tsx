@@ -32,7 +32,7 @@ export const LazySection = ({
   fallback,
   className = "",
   threshold = 0.01,
-  rootMargin = "400px 0px",
+  rootMargin = "100% 0px",
   sectionId,
   minHeight = "600px",
 }: LazySectionProps) => {

@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect, useRef, useCallback } from "react";
 import { Terminal, X } from "lucide-react";
 import { projects } from "@/data/projects";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
-import { useSmoothScroll } from "@/components/ui/SmoothScroll";
+import { useSmoothScroll } from "@/context/smoothScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface TerminalOverlayProps {
@@ -163,9 +163,10 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
       }
     }, 16);
     trackInterval(id);
+    const timers = timersRef.current;
     return () => {
       clearInterval(id);
-      timersRef.current.intervals.delete(id);
+      timers.intervals.delete(id);
     };
   }, []);
 

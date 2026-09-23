@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
-import { useSmoothScroll } from "./ui/SmoothScroll";
+import { useSmoothScroll } from "@/context/smoothScroll";
 import { hasKeyboardAndPointer, isMacPlatform } from "@/lib/shortcuts";
 import { PROFILE } from "@/data/profile";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";

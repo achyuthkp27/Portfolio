@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSmoothScroll } from "@/components/ui/SmoothScroll";
+import { useSmoothScroll } from "@/context/smoothScroll";
 
 const WAIT_FOR_TARGET_MS = 3000;
 const TRACK_INTERVAL_MS = 200;

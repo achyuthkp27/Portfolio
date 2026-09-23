@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useAnalytics } from "@/lib/analytics";
+import { useAnalytics } from "@/lib/analyticsClient";
 
 /** Sends a PostHog pageview per route. Renders nothing; PostHog stays off without a key. */
 const Analytics = () => {

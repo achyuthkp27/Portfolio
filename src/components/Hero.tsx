@@ -1,7 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
 import { ArrowDownRight } from "lucide-react";
-import { useLoading } from "@/context/LoadingContext";
+import { useLoading } from "@/hooks/useLoading";
 import { useLocalTime } from "@/hooks/useLocalTime";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE } from "@/lib/motion";

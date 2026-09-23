@@ -6,7 +6,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PROFILE } from "@/data/profile";
 
 /**
@@ -31,6 +31,8 @@ const EXIT = 8;
 const TRAVEL = 125;
 /** Scroll distance per timeline unit, in px */
 const PX_PER_UNIT = 40;
+/** Phones scroll with a thumb: the same choreography over a little more than half the distance. */
+const PX_PER_UNIT_PHONE = 24;
 
 interface LetterTiming {
   ch: string;
@@ -82,6 +84,14 @@ const VisionSection = () => {
   }, []);
   const total = plan[plan.length - 1].to;
 
+  const [pxPerUnit, setPxPerUnit] = useState(PX_PER_UNIT);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setPxPerUnit(mq.matches ? PX_PER_UNIT_PHONE : PX_PER_UNIT);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const units = useTransform(scrollYProgress, [0, 1], [-ENTER, total]);
   const markerX = useTransform(scrollYProgress, [0, 1], ["8%", "92%"]);
@@ -114,7 +124,7 @@ const VisionSection = () => {
       ref={ref}
       data-reveal-skip
       className="theme-dark bg-night text-snow relative"
-      style={{ height: `calc(${total * PX_PER_UNIT}px + 100vh)` }}
+      style={{ height: `calc(${total * pxPerUnit}px + 100vh)` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-between px-6 md:px-10 lg:px-12 pt-24 md:pt-28 pb-10">
         {/* Crosshair */}

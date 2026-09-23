@@ -82,7 +82,7 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
       <motion.article
         {...reveal()}
         id={`case-${study.slug}`}
-        className={`flex flex-col rounded-lg border border-line bg-tile shadow-[0_-24px_60px_rgba(0,0,0,0.85)] scroll-mt-28 overflow-hidden ${isLast ? "" : "mb-6"}`}
+        className={`group flex flex-col rounded-lg border border-line bg-tile shadow-[0_-24px_60px_rgba(0,0,0,0.85)] scroll-mt-28 overflow-hidden transition-[transform,border-color] duration-slow ease-out lg:hover:-translate-y-1 lg:hover:border-snow/25 ${isLast ? "" : "mb-6"}`}
       >
         {/* Header: index, title, category */}
         <div className="flex items-center justify-between gap-4 px-4 md:px-5 h-11 border-b border-line bg-night/70">
@@ -108,6 +108,10 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
           <div
             className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,hsl(0_0%_100%/0.08),transparent_70%),radial-gradient(60%_50%_at_100%_100%,hsl(153_50%_35%/0.22),transparent_70%)]"
             aria-hidden="true"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-slow group-hover:opacity-100 bg-[radial-gradient(60%_60%_at_50%_100%,hsl(153_60%_50%/0.18),transparent_70%)]"
           />
           <svg
             aria-hidden="true"

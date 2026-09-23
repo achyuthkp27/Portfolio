@@ -5,7 +5,7 @@ import { OPEN_COMMAND_MENU_EVENT, openTerminal } from "@/lib/shortcuts";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
-import { useSmoothScroll } from "@/components/ui/SmoothScroll";
+import { useSmoothScroll } from "@/context/smoothScroll";
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);

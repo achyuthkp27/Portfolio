@@ -8,7 +8,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import PremiumLoader from "../PremiumLoader";
 import { LOADER_WORDS } from "@/data/loader";
-import { LoadingProvider, useLoading } from "@/context/LoadingContext";
+import { LoadingProvider } from "@/context/LoadingContext";
+import { useLoading } from "@/hooks/useLoading";
 
 const LoadingProbe = () => {
   const { isLoading } = useLoading();

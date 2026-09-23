@@ -45,7 +45,7 @@ export const PROFILE = {
   ],
   /** On the record: dated facts, one row each */
   record: [
-    { year: "2026", title: "Associate Software Engineer, First Citizens Bank platform", org: "Cognizant" },
+    { year: "Apr 2026", title: "Associate Software Engineer, First Citizens Bank platform", org: "Cognizant" },
     { year: "2024", title: "Above & Beyond Individual Award", org: "FIS Global" },
     { year: "2026", title: "Promoted to Senior Software Engineer", org: "FIS Global" },
     { year: "2021", title: "B.E. Computer Science & Engineering", org: "Sri Siddhartha Institute of Technology" },

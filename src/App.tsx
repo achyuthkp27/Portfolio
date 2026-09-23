@@ -10,7 +10,7 @@ import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { LoadingProvider } from "./context/LoadingContext";
-import { useLoading } from "./context/LoadingContext";
+import { useLoading } from "@/hooks/useLoading";
 import { useMobile } from "@/hooks/useMobile";
 import { useIdleMount } from "@/hooks/useIdleMount";
 
