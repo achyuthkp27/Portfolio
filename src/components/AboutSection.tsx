@@ -52,12 +52,34 @@ const AboutSection = () => {
           </p>
         </div>
 
-        <div className="mt-16 lg:mt-24 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-12 lg:gap-20 items-start">
-          <motion.div {...reveal()} className="rounded-md bg-tile border border-line p-6 md:p-8">
+        <div className="mt-16 lg:mt-24 grid md:grid-cols-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.3fr)] gap-6 lg:gap-8 items-start">
+          {/* Portrait: the person, on the same near-black as the page */}
+          <motion.figure
+            {...reveal()}
+            className="relative rounded-md overflow-hidden bg-tile border border-line aspect-[593/640]"
+          >
+            <picture>
+              <source srcSet={`${import.meta.env.BASE_URL}images/portrait.webp`} type="image/webp" />
+              <img
+                src={`${import.meta.env.BASE_URL}images/portrait.jpg`}
+                alt="Achyuth KP, in a striped shirt against a dark background"
+                width={593}
+                height={640}
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover object-top"
+              />
+            </picture>
+            <figcaption className="absolute left-4 bottom-4 md:left-5 md:bottom-5 rounded-pill bg-night/80 backdrop-blur px-3 py-1.5 text-[12px] font-medium uppercase tracking-[0.04em] text-snow">
+              {PROFILE.name} · {PROFILE.city.split(",")[0]}
+            </figcaption>
+          </motion.figure>
+
+          <motion.div {...reveal(0.05)} className="rounded-md bg-tile border border-line p-6 md:p-8">
             <p className="t-label mb-2">Time in banking</p>
             <ExperienceTimer startDate={PROFILE.careerStart} />
           </motion.div>
-          <div className="space-y-6">
+          <div className="space-y-6 md:col-span-2 lg:col-span-1">
             <motion.p {...reveal(0.05)} className="t-body text-snow/85 max-w-2xl">
               {PROFILE.intro}
             </motion.p>
