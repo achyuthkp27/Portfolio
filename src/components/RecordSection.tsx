@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useSpring, useTransform, useVelocity } from "framer-motion";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { PROFILE } from "@/data/profile";
 import { SectionHeader } from "./ui/SectionHeader";
@@ -8,63 +8,72 @@ import { reveal } from "@/lib/motion";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 
 /**
- * A lanyard badge, drawn in CSS: strap, clip, and a dark card carrying the award, the
- * organisation's mark set in type, and the year. It drops in from the top edge of the
- * card as the section scrolls into view, on a spring so it overshoots and settles, and
- * swings with its own velocity.
+ * A glass award plaque on a dark stone base, drawn in CSS: a bevelled slab with one cut
+ * corner, a bright edge, the award text and the FIS mark inside. It tilts a few degrees
+ * as the section scrolls, as if catching the light.
  */
-const Badge = ({ target }: { target: React.RefObject<HTMLElement> }) => {
+const Trophy = ({ target }: { target: React.RefObject<HTMLElement> }) => {
   const reduceMotion = useReducedMotion();
-  // The strap hangs from the card's top edge only when the badge sits beside the copy
-  const [beside, setBeside] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const sync = () => setBeside(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-  const { scrollYProgress } = useScroll({ target, offset: ["start 0.95", "start 0.4"] });
-  const drop = useTransform(scrollYProgress, [0, 1], reduceMotion || !beside ? [0, 0] : [-360, 0]);
-  const y = useSpring(drop, { stiffness: 110, damping: 9, mass: 1.05 });
-  const velocity = useVelocity(y);
-  const swing = useTransform(velocity, [-3000, 3000], [-9, 9]);
-  const rotate = useSpring(swing, { stiffness: 90, damping: 8 });
-
+  const { scrollYProgress } = useScroll({ target, offset: ["start end", "end start"] });
+  const tilt = useSpring(useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-7, 7]), {
+    stiffness: 60,
+    damping: 18,
+  });
   return (
-    <motion.div
-      style={{ y, rotate }}
-      className="relative w-[200px] md:w-[224px] origin-top will-change-transform"
-      aria-hidden="true"
-    >
-      {/* Strap: tall enough to stay attached to the top edge while the card drops */}
-      <div className="mx-auto w-9 h-24 md:h-[420px] md:-mt-[320px] bg-night rounded-b-sm shadow-[inset_0_0_0_1px_hsl(0_0%_100%/0.08)]" />
-      {/* Clip */}
-      <div className="relative mx-auto -mt-2 w-10 h-10">
-        <div className="absolute inset-0 rounded-full border-[5px] border-night" />
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[-6px] w-3 h-4 bg-night rounded-b-sm" />
-      </div>
-      {/* Card */}
-      <div className="relative mt-1 rounded-lg bg-night text-snow p-5 md:p-6 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)] border border-snow/10">
-        <div className="absolute left-1/2 -translate-x-1/2 top-2 w-10 h-1.5 rounded-pill bg-snow/15" />
-        <p className="mt-4 font-body text-[15px] font-semibold leading-tight text-snow/85">
-          Above &amp; Beyond
-          <br />
-          Individual Award
-        </p>
-        <p className="mt-1 text-[11px] font-medium text-emerald-300">FIS Global · Q1</p>
-        <p className="mt-10 t-heading text-4xl tracking-[0.12em] text-snow">FIS</p>
-        <p className="t-figure text-[10px] text-muted mt-1">Global</p>
-        <p className="mt-8 text-[12px] font-medium text-snow/85">Critical project delivery</p>
-        <p className="t-figure text-sm text-muted mt-1">2024</p>
-      </div>
-    </motion.div>
+    <div className="relative w-[230px] md:w-[260px] [perspective:1200px]" aria-hidden="true">
+      <motion.div
+        style={{ rotateY: tilt, transformStyle: "preserve-3d" }}
+        className="relative origin-bottom will-change-transform"
+      >
+        {/* Slab */}
+        <div
+          className="relative rounded-md p-6 md:p-7 text-snow border border-snow/25 shadow-[0_40px_60px_-30px_rgba(0,0,0,0.9),inset_0_1px_0_hsl(0_0%_100%/0.35),inset_0_-1px_0_hsl(0_0%_100%/0.08)]"
+          style={{
+            clipPath: "polygon(14% 0, 100% 0, 100% 100%, 0 100%, 0 9%)",
+            background:
+              "linear-gradient(160deg, hsl(153 25% 20% / 0.85), hsl(153 20% 8% / 0.9) 45%, hsl(153 30% 14% / 0.9))",
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(115deg, transparent 30%, hsl(0 0% 100% / 0.12) 45%, transparent 55%), linear-gradient(to right, hsl(0 0% 100% / 0.08), transparent 12%)",
+            }}
+          />
+          <p className="relative mt-6 font-body text-[16px] font-semibold leading-tight">
+            Above &amp; Beyond
+            <br />
+            Individual Award
+          </p>
+          <p className="relative mt-2 text-[12px] font-medium text-emerald-300">FIS Global · Q1</p>
+          <span className="relative block w-10 h-px bg-snow/50 mt-5 mb-6" />
+          <img
+            src={`${import.meta.env.BASE_URL}images/fis-logo-white.png`}
+            alt=""
+            width={422}
+            height={178}
+            loading="lazy"
+            decoding="async"
+            className="relative w-[84px] h-auto"
+          />
+          <p className="relative t-figure text-[10px] text-snow/60 mt-1 tracking-[0.2em]">Global</p>
+          <p className="relative mt-7 text-[12px] font-medium text-snow/90">Critical project delivery</p>
+          <p className="relative t-figure text-sm text-snow/60 mt-1 mb-1">2024</p>
+        </div>
+        {/* Base */}
+        <div className="relative mx-[-14px] mt-[-2px] h-7 rounded-[4px] bg-gradient-to-b from-[hsl(200_6%_16%)] to-[hsl(200_8%_6%)] shadow-[0_24px_40px_-16px_rgba(0,0,0,0.9),inset_0_1px_0_hsl(0_0%_100%/0.12)]" />
+        <div className="relative mx-[-6px] h-2 rounded-b-[4px] bg-[hsl(200_8%_4%)]" />
+      </motion.div>
+      {/* Floor reflection */}
+      <div className="absolute inset-x-6 -bottom-3 h-6 rounded-[50%] bg-emerald-400/20 blur-xl" />
+    </div>
   );
 };
 
 /**
- * (On the record): the award as an emerald card with a hanging badge, beside dated rows,
- * after Spector's recognition block.
+ * (On the record): the award as a deep-green card with a glass trophy, beside dated rows.
  */
 const RecordSection = () => {
   const scrollTo = useSectionScroll();
@@ -81,18 +90,30 @@ const RecordSection = () => {
             {...reveal()}
             data-reveal-skip
             ref={awardRef}
-            className="relative rounded-lg bg-emerald-400 text-night overflow-hidden p-7 md:p-10 grid md:grid-cols-[minmax(0,1fr)_224px] gap-x-10"
+            className="relative rounded-lg overflow-hidden border border-emerald-300/15 p-7 md:p-10 grid md:grid-cols-[minmax(0,1fr)_260px] gap-x-10 text-snow"
+            style={{
+              background:
+                "radial-gradient(70% 90% at 85% 10%, hsl(153 45% 30% / 0.9), transparent 60%), radial-gradient(60% 70% at 10% 90%, hsl(153 35% 14% / 0.8), transparent 65%), linear-gradient(160deg, hsl(153 30% 10%), hsl(150 20% 5%))",
+            }}
           >
-            <div className="flex flex-col min-w-0">
-              <p className="t-figure text-[11px] uppercase tracking-[0.2em] text-night/60">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-screen"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+              }}
+            />
+            <div className="relative flex flex-col min-w-0">
+              <p className="t-figure text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
                 Individual recognition · Q1 2024
               </p>
-              <h3 className="t-heading text-4xl md:text-5xl text-night mt-5">
+              <h3 className="t-heading text-4xl md:text-5xl mt-5">
                 Above &amp; Beyond
                 <br />
-                Award
+                <span className="text-emerald-400">Award</span>
               </h3>
-              <p className="mt-6 t-body text-night/75 max-w-sm">
+              <p className="mt-6 t-body text-snow/75 max-w-sm">
                 Given by FIS Global for critical project delivery on the First Citizens Bank platform. One of the
                 individual awards for the quarter, not a team credit.
               </p>
@@ -100,7 +121,7 @@ const RecordSection = () => {
                 <button
                   type="button"
                   onClick={() => scrollTo("experience")}
-                  className="group inline-flex items-center gap-3 rounded-pill bg-snow text-night px-6 py-3 text-[14px] font-medium self-start whitespace-nowrap hover:bg-stone transition-colors duration-fast"
+                  className="group inline-flex items-center gap-3 rounded-pill bg-snow text-night px-6 py-3 text-[14px] font-medium whitespace-nowrap hover:bg-stone transition-colors duration-fast"
                 >
                   See the role{" "}
                   <ArrowRight
@@ -110,10 +131,8 @@ const RecordSection = () => {
                 </button>
               </div>
             </div>
-            <div className="mt-10 md:mt-0 flex justify-center md:justify-end md:-mt-10 md:-mb-10 md:pb-0 md:items-start">
-              <div className="md:pt-0 md:h-full md:-mb-2">
-                <Badge target={awardRef} />
-              </div>
+            <div className="relative mt-12 md:mt-0 flex justify-center md:justify-end items-end md:pb-2">
+              <Trophy target={awardRef} />
             </div>
           </motion.div>
 

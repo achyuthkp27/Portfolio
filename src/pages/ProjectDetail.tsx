@@ -31,7 +31,6 @@ const SplitRow = ({
   body,
   children,
   visual,
-  flip = false,
 }: {
   meta: ReactNode;
   title: ReactNode;
@@ -39,25 +38,26 @@ const SplitRow = ({
   body?: ReactNode;
   children?: ReactNode;
   visual: ReactNode;
+  /** Kept for call sites; every row now stacks its copy over its visual in one card */
   flip?: boolean;
 }) => (
-  <motion.section {...reveal()} className="grid lg:grid-cols-2 gap-1.5 min-w-0">
-    <div
-      className={`rounded-lg bg-tile p-7 md:p-10 lg:p-12 flex flex-col min-h-[440px] lg:min-h-[560px] ${flip ? "lg:order-2" : ""}`}
-    >
-      <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-        {meta}
+  <motion.section {...reveal()} className="rounded-lg bg-tile border border-line p-7 md:p-10 lg:p-12 min-w-0">
+    <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-12 gap-y-6 items-end">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+          {meta}
+        </div>
+        <h2 className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">{title}</h2>
+        <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
+        {by && <p className="t-body mt-5 text-muted">{by}</p>}
       </div>
-      <h2 className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">{title}</h2>
-      <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
-      {by && <p className="t-body mt-5 text-muted">{by}</p>}
-      {body && <p className="t-body text-snow/80 mt-auto pt-12 max-w-md">{body}</p>}
-      {children}
+      <div className="min-w-0 lg:pb-2">
+        {body && <p className="t-body text-snow/80 max-w-md lg:ml-auto">{body}</p>}
+        {children}
+      </div>
     </div>
-    <div
-      className={`relative rounded-lg bg-night border border-line overflow-hidden min-h-[360px] lg:min-h-[560px] flex items-center justify-center p-6 md:p-10 ${flip ? "lg:order-1" : ""}`}
-    >
+    <div className="relative mt-10 md:mt-12 rounded-md bg-night border border-line overflow-hidden min-h-[320px] flex items-center justify-center p-6 md:p-10">
       <div
         className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,hsl(0_0%_100%/0.07),transparent_70%)]"
         aria-hidden="true"
