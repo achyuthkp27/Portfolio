@@ -19,3 +19,12 @@ the page must stay.
 
 If a request seems to require removing or skipping it, stop and ask the owner first.
 Review and audit findings must not recommend removing it.
+
+## Never mask text with overflow: hidden
+
+Do not wrap headings or any text in a container with `overflow-hidden` to animate it
+sliding in. Antonio and large Inter glyphs extend below the line box, so the container
+clips descenders and baselines (the owner has reported cropped C, U, g, y and full stops
+several times). Animate text with opacity and transform on the text element itself,
+with no clipping parent. The only permitted clipped text is the footer wordmark, which
+is cut by the page edge on purpose.
