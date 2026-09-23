@@ -58,14 +58,14 @@ const FocusSection = () => {
             alt=""
             width={1024}
             height={1536}
-            className="w-full h-full object-cover object-top contrast-125 brightness-[0.55]"
+            className="w-full h-full object-cover object-top contrast-110"
             loading="lazy"
             decoding="async"
           />
         </picture>
         <div className="absolute inset-0 bg-emerald-400 mix-blend-multiply" />
         <div className="absolute inset-0 shadow-[inset_0_0_120px_hsl(153_60%_50%/0.35)]" />
-        <div className="absolute inset-0 bg-emerald-300/10 mix-blend-screen" />
+        <div className="absolute inset-0 bg-emerald-300/25 mix-blend-screen" />
         <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-night/60" />
       </div>

@@ -113,7 +113,7 @@ const Navigation = () => {
         className="fixed top-0 left-0 right-0 z-50 text-snow"
       >
         <div
-          className={`absolute inset-0 bg-night/85 backdrop-blur-md border-b border-line transition-opacity duration-base pointer-events-none ${
+          className={`absolute inset-0 bg-night/95 backdrop-blur-md border-b border-line shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-opacity duration-base pointer-events-none ${
             isScrolled && !isMenuOpen ? "opacity-100" : "opacity-0"
           }`}
           aria-hidden="true"

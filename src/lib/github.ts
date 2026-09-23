@@ -82,7 +82,7 @@ export function arrangeRepositories(repos: GitHubRepo[]): GitHubRepo[] {
 }
 
 export async function fetchLatestRepositories(limit: number = 6, signal?: AbortSignal): Promise<GitHubRepo[]> {
-  const cacheKey = "gh_repos_all";
+  const cacheKey = "gh_repos_all_v2";
   const cached = readCache<GitHubRepo[]>(cacheKey);
   if (cached) return arrangeRepositories(cached).slice(0, limit);
 
