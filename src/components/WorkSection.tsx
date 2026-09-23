@@ -44,8 +44,9 @@ const INTERACTIVE = new Set(["maker-checker-authorization", "totp-authentication
 
 /**
  * One case study as a sticky card: it pins below the nav with a small stagger per card, so
- * each earlier card peeks out above as the next one slides over it. Pure CSS sticky, every
- * screen size, no scroll-jacking. The last card never pins: nothing slides over it.
+ * each earlier card peeks out above as the next one slides over it. Pure CSS sticky, large
+ * screens only: below that a card can be taller than the viewport, and a pinned card taller
+ * than the viewport can never show its lower half. The last card never pins.
  */
 interface WorkCardProps {
   study: Project;
@@ -75,9 +76,7 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
   return (
     <div
-      className={
-        isLast ? "relative" : "sticky top-[calc(5rem+var(--stack-offset))] md:top-[calc(6rem+var(--stack-offset))]"
-      }
+      className={isLast ? "relative" : "relative lg:sticky lg:top-[calc(6rem+var(--stack-offset))]"}
       style={{ "--stack-offset": `${index * 0.75}rem`, zIndex: index + 1 } as CSSProperties}
     >
       <motion.article
@@ -106,7 +105,7 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
         {/* Stage */}
         <div
           ref={tile}
-          className={`relative text-snow overflow-hidden h-[340px] md:h-[440px] lg:[@media(min-height:900px)]:h-[480px] ${INTERACTIVE.has(study.slug) ? "flex items-center justify-center p-5 md:p-10 lg:p-12" : ""}`}
+          className={`relative text-snow overflow-hidden ${INTERACTIVE.has(study.slug) ? "min-h-[340px] md:min-h-[440px] lg:[@media(min-height:900px)]:min-h-[480px] flex items-center justify-center p-5 md:p-10 lg:p-12" : "h-[340px] md:h-[440px] lg:[@media(min-height:900px)]:h-[480px]"}`}
         >
           {/* A drafting grid, a highlight from above, a breath of the accent, and grain */}
           <div
