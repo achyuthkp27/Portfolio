@@ -108,6 +108,9 @@
      container, which breaks position: sticky on phones where Lenis is off. */
   html {
     overflow-x: hidden;
+    /* Framer's scroll tracking measures targets against the scroll container; a positioned
+       html keeps offsets exact and silences its dev warning. */
+    position: relative;
   }
 
   body {

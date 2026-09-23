@@ -18,7 +18,13 @@ const AboutSection = () => {
     <section id="about" className="theme-dark bg-night text-snow scroll-mt-16">
       {/* A graphite band with curved seams, the way the reference breaks its page into bands */}
       <Curve className="-mb-px" />
-      <div className="bg-graphite px-6 md:px-10 lg:px-12 py-16 lg:py-24">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.965, y: 24 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true, margin: "-15% 0px" }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-graphite px-6 md:px-10 lg:px-12 py-16 lg:py-24 origin-top"
+      >
         <div className="max-w-[1400px] mx-auto">
           <motion.p {...reveal()} className="t-label mb-8">
             Who I am
@@ -76,7 +82,7 @@ const AboutSection = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
       <Curve flip className="-mt-px" />
     </section>
   );

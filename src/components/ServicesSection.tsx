@@ -24,7 +24,7 @@ const ServiceRow = ({ index, title, isOpen, onOpen, detail }: ServiceRowProps) =
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 92%", "start 55%"] });
   const fill = useTransform(scrollYProgress, [0, 1], [0.28, 1]);
   return (
-    <motion.li ref={ref} {...reveal(index * 0.04)} className="border-b border-line">
+    <motion.li ref={ref} {...reveal(index * 0.04)} className="relative border-b border-line">
       <button
         type="button"
         onClick={onOpen}

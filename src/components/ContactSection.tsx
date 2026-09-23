@@ -26,7 +26,13 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="theme-dark bg-night text-snow py-28 lg:py-40 px-6 md:px-10 lg:px-12 scroll-mt-16">
-      <div className="max-w-[1400px] mx-auto text-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.965, y: 24 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true, margin: "-15% 0px" }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-[1400px] mx-auto text-center origin-top"
+      >
         <FillText
           as="h2"
           text="Building something serious with AI or backend systems? Let's talk."
@@ -50,7 +56,7 @@ const ContactSection = () => {
             {copied ? "Copied" : PROFILE.email}
           </PillButton>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };

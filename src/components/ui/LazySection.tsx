@@ -43,7 +43,7 @@ export const LazySection = ({
   });
 
   return (
-    <div ref={ref} className={className} style={{ minHeight: inView ? undefined : minHeight }}>
+    <div ref={ref} className={`relative ${className}`} style={{ minHeight: inView ? undefined : minHeight }}>
       {inView ? (
         <Suspense
           fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}

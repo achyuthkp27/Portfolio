@@ -8,6 +8,7 @@ import { DUR } from "@/lib/motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const WorkSection = lazy(() => import("@/components/WorkSection"));
+const FocusSection = lazy(() => import("@/components/FocusSection"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const ServicesSection = lazy(() => import("@/components/ServicesSection"));
 const StackMarquee = lazy(() => import("@/components/StackMarquee"));
@@ -41,10 +42,13 @@ const Index = () => {
       transition={{ duration: DUR.base }}
       className="bg-night"
     >
-      <main id="main-content" tabIndex={-1} className="outline-none">
+      <main id="main-content" tabIndex={-1} className="relative outline-none">
         <Hero />
         <LazySection sectionId="work" minHeight="6000px">
           <WorkSection />
+        </LazySection>
+        <LazySection minHeight="100vh">
+          <FocusSection />
         </LazySection>
         <LazySection sectionId="about" minHeight="1100px">
           <AboutSection />

@@ -686,30 +686,29 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
       ref={dialogRef}
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-4 animate-in fade-in zoom-in-95 duration-200"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-night/85 backdrop-blur-md p-4 animate-in fade-in zoom-in-95 duration-200"
       role="dialog"
       aria-modal="true"
       aria-label="Interactive terminal"
       data-lenis-prevent
     >
       <div
-        className={`w-full max-w-3xl h-[75vh] border bg-black rounded-lg flex flex-col overflow-hidden font-mono transition-all duration-500 ${themeColors[theme]}`}
+        className={`w-full max-w-3xl h-[75vh] border bg-tile rounded-lg flex flex-col overflow-hidden font-mono shadow-[0_30px_80px_hsl(0_0%_0%/0.8)] transition-all duration-500 ${themeColors[theme]}`}
       >
         {/* Terminal Header */}
-        <div
-          className={`border-b p-2.5 flex items-center justify-between ${theme === "amber" ? "bg-amber-500/10 border-amber-500/30" : theme === "zinc" ? "bg-zinc-500/10 border-zinc-500/30" : "bg-emerald-500/10 border-emerald-500/30"}`}
-        >
-          <div className="flex items-center gap-2 text-sm">
-            <Terminal size={16} />
-            <span className="font-bold tracking-tighter opacity-80 uppercase">achyuth@os:~</span>
+        <div className="border-b border-line px-4 py-3 flex items-center justify-between bg-night/40">
+          <div className="flex items-center gap-3">
+            <Terminal size={14} className="text-muted" aria-hidden="true" />
+            <span className="t-label">Terminal</span>
+            <span className="t-figure text-[11px] text-muted hidden sm:inline">achyuth@os:~</span>
           </div>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Close terminal"
-            className="hover:opacity-60 transition-opacity p-1"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-pill border border-line text-[11px] font-body font-medium uppercase tracking-[0.04em] text-snow/80 hover:text-snow hover:border-snow/40 transition-colors duration-fast"
           >
-            <X size={18} />
+            Esc <X size={14} aria-hidden="true" />
           </button>
         </div>
 

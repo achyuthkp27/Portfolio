@@ -146,3 +146,6 @@ public/data/github.json
 # Playwright
 test-results/
 playwright-report/
+
+# Local agent tooling
+.serena/
