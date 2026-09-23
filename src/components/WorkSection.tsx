@@ -18,9 +18,9 @@ const itemVariants = {
 const Node = ({ label, sub, wide = false }: { label: string; sub?: string; wide?: boolean }) => (
   <motion.div
     variants={itemVariants}
-    className={`rounded-sm bg-snow/[0.06] border border-line px-3 py-2 text-center ${wide ? "flex-1" : ""}`}
+    className={`rounded-sm bg-night/80 border border-snow/15 px-3.5 py-2.5 text-center shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)] ${wide ? "flex-1" : ""}`}
   >
-    <div className="font-mono text-[11px] md:text-xs text-snow leading-tight whitespace-nowrap">{label}</div>
+    <div className="font-mono text-xs md:text-[13px] text-snow leading-tight whitespace-nowrap">{label}</div>
     {sub && (
       <div className="font-mono text-[9px] md:text-[10px] text-muted leading-tight mt-0.5 whitespace-nowrap">{sub}</div>
     )}
@@ -50,7 +50,7 @@ const Stack = ({ children }: { children: ReactNode }) => (
     initial="hidden"
     whileInView="show"
     viewport={{ once: true, margin: "-10%" }}
-    className="flex flex-col items-center gap-1.5 w-full"
+    className="flex flex-col items-center gap-2 w-full"
   >
     {children}
   </motion.div>
@@ -210,19 +210,38 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
       <motion.article
         {...reveal()}
         id={`case-${study.slug}`}
-        className={`flex flex-col rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
+        className={`flex flex-col rounded-lg border border-line bg-tile shadow-[0_-24px_60px_rgba(0,0,0,0.85)] scroll-mt-28 overflow-hidden ${isLast ? "" : "mb-6"}`}
       >
+        {/* Title bar, like a window */}
+        <div className="flex items-center justify-between gap-4 px-4 md:px-5 h-11 border-b border-line bg-night/70">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex gap-1.5" aria-hidden="true">
+              <span className="h-2.5 w-2.5 rounded-full bg-snow/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-snow/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+            </span>
+            <span className="t-figure text-[11px] text-muted break-words">{study.slug}</span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="t-figure text-[11px] text-emerald-300">
+              {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+            </span>
+            <Chip className="hidden md:inline-flex">{study.category ?? "Backend"}</Chip>
+          </div>
+        </div>
+
+        {/* Stage */}
         <div
           ref={tile}
-          className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[240px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-5 md:p-12"
+          className="relative text-snow overflow-hidden min-h-[260px] md:min-h-[420px] lg:[@media(min-height:900px)]:min-h-[460px] flex items-center justify-center p-5 md:p-10 lg:p-12"
         >
-          {/* Depth without colour: a soft top highlight, a faint vignette, and grain */}
+          {/* A drafting grid, a highlight from above, a breath of the accent, and grain */}
           <div
-            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,hsl(0_0%_100%/0.07),transparent_70%)]"
+            className="absolute inset-0 pointer-events-none opacity-[0.35] [background-image:linear-gradient(hsl(0_0%_100%/0.06)_1px,transparent_1px),linear-gradient(90deg,hsl(0_0%_100%/0.06)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_80%)]"
             aria-hidden="true"
           />
           <div
-            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_60%,hsl(0_0%_0%/0.35)_100%)]"
+            className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,hsl(0_0%_100%/0.08),transparent_70%),radial-gradient(60%_50%_at_100%_100%,hsl(153_50%_35%/0.22),transparent_70%)]"
             aria-hidden="true"
           />
           <svg
@@ -238,37 +257,59 @@ const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
           <motion.div
             style={{ y: artY, scale: artScale }}
             data-reveal-skip
-            className={`relative w-full flex items-center justify-center will-change-transform ${INTERACTIVE.has(study.slug) ? "pt-8 md:pt-0" : ""}`}
+            className={`relative w-full flex items-center justify-center will-change-transform ${INTERACTIVE.has(study.slug) ? "pt-12 md:pt-0 max-w-2xl" : "max-w-xl lg:scale-[1.15]"}`}
           >
             {DIAGRAMS[study.slug]}
           </motion.div>
           {INTERACTIVE.has(study.slug) && (
-            <span className="absolute top-4 left-4 md:top-6 md:left-6 rounded-pill bg-snow text-night px-3 py-1 text-[12px] font-medium uppercase tracking-[0.04em]">
+            <span className="absolute top-4 left-4 md:top-5 md:left-5 inline-flex items-center gap-2 rounded-pill bg-snow text-night pl-2.5 pr-3 py-1 text-[12px] font-medium uppercase tracking-[0.04em]">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-70 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
               Try it
             </span>
           )}
         </div>
-        <div className="flex items-start justify-between gap-4 pb-4 lg:hidden order-first">
-          <div className="min-w-0">
-            <h3 className="t-heading text-2xl md:text-4xl text-snow text-balance">
-              {HEADLINES[study.slug] ?? study.title}
-            </h3>
-            <p className="t-caps text-muted text-[12px] mt-1.5">{study.title}</p>
-          </div>
-          <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
+
+        {/* Footer: the stack behind it */}
+        <div className="flex items-center justify-between gap-4 px-4 md:px-5 py-3 border-t border-line bg-night/70">
+          <ul className="flex flex-wrap gap-x-4 gap-y-1 min-w-0">
+            {study.tags.slice(0, 4).map((tag) => (
+              <li key={tag} className="t-figure text-[11px] text-snow/70">
+                {tag}
+              </li>
+            ))}
+          </ul>
+          <span className="t-figure text-[11px] text-muted shrink-0">
+            {INTERACTIVE.has(study.slug) ? "Interactive model" : "Architecture"}
+          </span>
         </div>
-        <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8 lg:hidden">
-          {[
-            ["Problem", study.problem],
-            ["Approach", study.solution],
-            ["Outcome", study.outcome],
-          ].map(([term, detail]) => (
-            <div key={term}>
-              <dt className="t-label mb-1.5">{term}</dt>
-              <dd className="t-body text-snow/80">{detail}.</dd>
+
+        {/* Below lg the card carries its own story */}
+        <div className="lg:hidden order-first px-5 md:px-7 pb-6 pt-5 border-b border-line">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h3 className="t-heading text-2xl md:text-4xl text-snow text-balance">
+                {HEADLINES[study.slug] ?? study.title}
+              </h3>
+              <p className="t-caps text-muted text-[12px] mt-1.5">{study.title}</p>
             </div>
-          ))}
-        </dl>
+            <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
+          </div>
+          <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8">
+            {[
+              ["Problem", study.problem],
+              ["Approach", study.solution],
+              ["Outcome", study.outcome],
+            ].map(([term, detail]) => (
+              <div key={term}>
+                <dt className="t-label mb-1.5">{term}</dt>
+                <dd className="t-body text-snow/80">{detail}.</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </motion.article>
     </div>
   );
