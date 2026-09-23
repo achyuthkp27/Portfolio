@@ -25,6 +25,31 @@ const pillClass = (tone: Tone, size: PillStyleProps["size"]) =>
     size === "sm" ? "h-9 px-4 text-[12px]" : size === "lg" ? "h-14 px-8 text-[15px]" : "h-11 px-6 text-[13px]",
   ].join(" ");
 
+/** Splits a plain string label so each letter can lift on hover with a small stagger */
+const Letters = ({ text }: { text: string }) => (
+  <span aria-hidden="true" className="inline-flex">
+    {text.split("").map((ch, i) => (
+      <span
+        key={i}
+        className="inline-block transition-transform duration-base ease-out group-hover/pill:-translate-y-[2px]"
+        style={{ transitionDelay: `${i * 14}ms` }}
+      >
+        {ch === " " ? "\u00A0" : ch}
+      </span>
+    ))}
+  </span>
+);
+
+const Label = ({ children }: { children: ReactNode }) =>
+  typeof children === "string" ? (
+    <>
+      <span className="sr-only">{children}</span>
+      <Letters text={children} />
+    </>
+  ) : (
+    <>{children}</>
+  );
+
 const Arrow = () => (
   <ArrowUpRight
     className="w-4 h-4 transition-transform duration-base ease-out group-hover/pill:translate-x-0.5 group-hover/pill:-translate-y-0.5"
@@ -38,7 +63,7 @@ type PillLinkProps = PillStyleProps & AnchorHTMLAttributes<HTMLAnchorElement>;
 export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
   ({ tone = "light", size = "md", className = "", children, arrow = true, ...rest }, ref) => (
     <button ref={ref} type="button" className={`${pillClass(tone, size)} ${className}`} {...rest}>
-      {children}
+      <Label>{children}</Label>
       {arrow && <Arrow />}
     </button>
   ),
@@ -48,7 +73,7 @@ PillButton.displayName = "PillButton";
 export const PillLink = forwardRef<HTMLAnchorElement, PillLinkProps>(
   ({ tone = "light", size = "md", className = "", children, arrow = true, ...rest }, ref) => (
     <a ref={ref} className={`${pillClass(tone, size)} ${className}`} {...rest}>
-      {children}
+      <Label>{children}</Label>
       {arrow && <Arrow />}
     </a>
   ),

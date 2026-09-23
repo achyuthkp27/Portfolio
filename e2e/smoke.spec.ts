@@ -25,11 +25,15 @@ test("case studies and the maker-checker demo work", async ({ page }) => {
   await page.goto("./");
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
-  // Sections mount lazily as they near the viewport, so bring Work into view first
+  // Sections mount lazily as they near the viewport, so bring Work into view first, then the
+  // maker-checker card itself: the cards pin and stack, so scrolling past one hides it under the next
   await page.locator("#work").first().scrollIntoViewIfNeeded();
   const submit = page.getByRole("button", { name: "Submit transfer" });
   await expect(submit).toBeAttached({ timeout: 15_000 });
-  await submit.scrollIntoViewIfNeeded();
+  // From the top, so the pinned card's real position is used rather than its stuck one
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.locator("#case-maker-checker-authorization").evaluate((el) => el.scrollIntoView({ block: "start" }));
+  await page.waitForTimeout(400);
   await submit.click();
   await page.getByRole("button", { name: "Approve own request" }).click();
   await expect(page.getByText("Blocked. The maker cannot approve their own request.")).toBeVisible();

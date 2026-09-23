@@ -102,7 +102,7 @@ const Navigation = () => {
 
   const resumeHref = `${import.meta.env.BASE_URL}Achyuth KP_Resume.pdf`;
   const link = (active: boolean) =>
-    `font-body text-[14px] font-medium uppercase tracking-[0.03em] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
+    `group/roll relative block overflow-hidden font-body text-[14px] font-medium uppercase tracking-[0.03em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
@@ -139,7 +139,15 @@ const Navigation = () => {
                   aria-current={activeSection === item.id ? "location" : undefined}
                   className={link(activeSection === item.id)}
                 >
-                  {item.label}
+                  <span className="block transition-transform duration-base ease-out group-hover/roll:-translate-y-full">
+                    {item.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-full block transition-transform duration-base ease-out group-hover/roll:-translate-y-full"
+                  >
+                    {item.label}
+                  </span>
                 </button>
               </li>
             ))}

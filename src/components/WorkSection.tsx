@@ -1,5 +1,5 @@
-import { useRef, type CSSProperties, type ReactNode } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import MakerCheckerDemo from "./case-studies/MakerCheckerDemo";
 import TotpDemo from "./case-studies/TotpDemo";
@@ -174,9 +174,29 @@ const INTERACTIVE = new Set(["maker-checker-authorization", "totp-authentication
  * each earlier card peeks out above as the next one slides over it. Pure CSS sticky, every
  * screen size, no scroll-jacking. The last card never pins: nothing slides over it.
  */
-const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isLast: boolean }) => {
+interface WorkCardProps {
+  study: Project;
+  index: number;
+  isLast: boolean;
+  onActive: (index: number) => void;
+}
+
+const WorkCard = ({ study, index, isLast, onActive }: WorkCardProps) => {
   // Parallax: the artwork drifts a little slower than the card as it passes through the viewport
   const tile = useRef<HTMLDivElement>(null);
+  // The card whose top crosses the reading line becomes the one the left column describes
+  useEffect(() => {
+    const el = tile.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) onActive(index);
+      },
+      { rootMargin: "-40% 0px -45% 0px", threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [index, onActive]);
   const { scrollYProgress } = useScroll({ target: tile, offset: ["start end", "end start"] });
   const artY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
   const artScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1, 1.04]);
@@ -190,11 +210,11 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
       <motion.article
         {...reveal()}
         id={`case-${study.slug}`}
-        className={`rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
+        className={`flex flex-col rounded-lg border border-line bg-night shadow-[0_-24px_60px_rgba(0,0,0,0.85)] p-5 md:p-7 scroll-mt-28 ${isLast ? "" : "mb-6"}`}
       >
         <div
           ref={tile}
-          className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[300px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-6 md:p-12"
+          className="relative rounded-md bg-tile text-snow overflow-hidden min-h-[240px] md:min-h-[400px] lg:[@media(min-height:900px)]:min-h-[440px] flex items-center justify-center p-5 md:p-12"
         >
           <div
             className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(0_0%_100%/0.06),transparent_60%)] pointer-events-none"
@@ -213,16 +233,16 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
             </span>
           )}
         </div>
-        <div className="flex items-start justify-between gap-6 pt-5">
+        <div className="flex items-start justify-between gap-4 pb-4 lg:hidden order-first">
           <div className="min-w-0">
-            <h3 className="t-heading text-3xl md:text-4xl text-snow text-balance">
+            <h3 className="t-heading text-2xl md:text-4xl text-snow text-balance">
               {HEADLINES[study.slug] ?? study.title}
             </h3>
-            <p className="t-caps text-muted mt-2">{study.title}</p>
+            <p className="t-caps text-muted text-[12px] mt-1.5">{study.title}</p>
           </div>
           <Chip className="shrink-0">{study.category ?? "Backend"}</Chip>
         </div>
-        <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8">
+        <dl className="mt-5 grid md:grid-cols-3 gap-4 md:gap-8 lg:hidden">
           {[
             ["Problem", study.problem],
             ["Approach", study.solution],
@@ -239,37 +259,97 @@ const WorkCard = ({ study, index, isLast }: { study: Project; index: number; isL
   );
 };
 
-/**
- * (Selected work): sticky heading on the left, a stack of pinning cards on the right.
- * The trace closes the section as the one request that ties them together.
- */
-const WorkSection = () => (
-  <section id="work" className="theme-dark bg-night text-snow py-24 lg:py-32 px-6 md:px-10 lg:px-12 scroll-mt-16">
-    <div className="max-w-[1400px] mx-auto grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] gap-12 lg:gap-16 items-start">
-      <div className="lg:sticky lg:top-32">
-        <p className="t-label mb-5">Selected work</p>
-        <h2 className="t-statement text-6xl md:text-7xl lg:text-[5.5rem]">My work</h2>
-        <FillText
-          text="Seven systems from a regulated banking platform. Client specifics are generalised and no metrics are invented. Two are interactive."
-          className="t-caps text-snow mt-6 max-w-sm"
-          offset={["start 0.9", "start 0.4"]}
-        />
-        <div className="mt-8">
-          <PillLink tone="outline" href={PROFILE.links.github} target="_blank" rel="noopener noreferrer">
-            All code on GitHub
-          </PillLink>
-        </div>
-      </div>
-
-      <div className="min-w-0">
-        <div className="relative">
-          {projects.map((study, index) => (
-            <WorkCard key={study.slug} study={study} index={index} isLast={index === projects.length - 1} />
-          ))}
-        </div>
-      </div>
+/** The story for one case study, shown in the sticky left column on large screens. */
+const Story = ({ study, index }: { study: Project; index: number }) => (
+  <motion.div
+    key={study.slug}
+    initial={{ opacity: 0, y: 14 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ duration: DUR.base, ease: EASE }}
+    className="absolute inset-x-0 top-0"
+  >
+    <div className="flex items-center gap-3">
+      <span className="t-figure text-xs text-emerald-300">
+        {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+      </span>
+      <Chip>{study.category ?? "Backend"}</Chip>
     </div>
-  </section>
+    <h3 className="t-heading text-4xl xl:text-5xl text-snow mt-5 text-balance">
+      {HEADLINES[study.slug] ?? study.title}
+    </h3>
+    <p className="t-caps text-muted mt-3">{study.title}</p>
+    <dl className="mt-7 space-y-4">
+      {[
+        ["Problem", study.problem],
+        ["Approach", study.solution],
+        ["Outcome", study.outcome],
+      ].map(([term, detail]) => (
+        <div key={term}>
+          <dt className="t-label mb-1">{term}</dt>
+          <dd className="t-body text-snow/80">{detail}.</dd>
+        </div>
+      ))}
+    </dl>
+    <ul className="mt-6 flex flex-wrap gap-2">
+      {study.tags.map((tag) => (
+        <li key={tag} className="rounded-pill border border-line px-3 py-1 text-[12px] text-snow/80">
+          {tag}
+        </li>
+      ))}
+    </ul>
+  </motion.div>
 );
+
+/**
+ * (Selected work): split screen. The left column is static framing plus the story of
+ * whichever card is under the reading line; the right is the stack of pinning cards,
+ * artwork only on large screens (after niallmcdermott.webflow.io and laplaya.studio).
+ * Below lg each card carries its own story.
+ */
+const WorkSection = () => {
+  const [active, setActive] = useState(0);
+  return (
+    <section id="work" className="theme-dark bg-night text-snow py-24 lg:py-32 px-6 md:px-10 lg:px-12 scroll-mt-16">
+      <div className="max-w-[1400px] mx-auto grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] gap-12 lg:gap-16 items-start">
+        <div className="lg:sticky lg:top-28">
+          <p className="t-label mb-5">Selected work</p>
+          <h2 className="t-statement text-6xl md:text-7xl lg:text-[4.5rem]">My work</h2>
+          <FillText
+            text="Seven systems from a regulated banking platform. Client specifics are generalised and no metrics are invented. Two are interactive."
+            className="t-caps text-snow mt-5 max-w-sm"
+            offset={["start 0.9", "start 0.4"]}
+          />
+          <div className="mt-6">
+            <PillLink tone="outline" size="sm" href={PROFILE.links.github} target="_blank" rel="noopener noreferrer">
+              All code on GitHub
+            </PillLink>
+          </div>
+
+          {/* The current card's story, large screens only */}
+          <div className="hidden lg:block relative mt-10 pt-8 border-t border-line min-h-[26rem]">
+            <AnimatePresence mode="wait">
+              <Story key={projects[active].slug} study={projects[active]} index={active} />
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <div className="relative">
+            {projects.map((study, index) => (
+              <WorkCard
+                key={study.slug}
+                study={study}
+                index={index}
+                isLast={index === projects.length - 1}
+                onActive={setActive}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 export default WorkSection;

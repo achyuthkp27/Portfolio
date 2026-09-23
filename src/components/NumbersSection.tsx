@@ -107,7 +107,7 @@ const NumbersSection = () => {
           ))}
 
           {/* Latest public push */}
-          <Tile label="Latest on GitHub" className="col-span-2 lg:col-span-3" delay={0.35}>
+          <Tile label="Latest on GitHub" className="col-span-2 md:col-span-4 lg:col-span-6" delay={0.35}>
             {latest ? (
               <a
                 href={latest.html_url}
