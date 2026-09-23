@@ -47,7 +47,7 @@ export const PROFILE = {
   record: [
     { year: "2026", title: "Associate Software Engineer, First Citizens Bank platform", org: "Cognizant" },
     { year: "2024", title: "Above & Beyond Individual Award", org: "FIS Global" },
-    { year: "2023", title: "Promoted to Senior Software Engineer", org: "FIS Global" },
+    { year: "2026", title: "Promoted to Senior Software Engineer", org: "FIS Global" },
     { year: "2021", title: "B.E. Computer Science & Engineering", org: "Sri Siddhartha Institute of Technology" },
   ],
   /** Real counts, not claims */
@@ -84,6 +84,14 @@ export const PROFILE = {
     "TOTP",
     "gRPC",
     "React",
+    "Python",
+    "LLMs",
+    "RAG",
+    "On-device AI",
+    "Qwen",
+    "Prompt engineering",
+    "Vector search",
+    "Gemini API",
   ],
 } as const;
 

@@ -1,11 +1,14 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { FillText } from "./ui/FillText";
 import { PROFILE, SERVICES } from "@/data/profile";
 import ExperienceTimer from "./ui/ExperienceTimer";
 import ScrambleNumber from "./ui/ScrambleNumber";
 import { Smoke } from "./ui/Smoke";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useLocalTime } from "@/hooks/useLocalTime";
+import { fetchLatestRepositories, type GitHubRepo } from "@/lib/github";
 import { reveal } from "@/lib/motion";
 import { Curve } from "./ui/Curve";
 
@@ -19,8 +22,19 @@ const card = "relative rounded-lg border border-line bg-tile overflow-hidden";
  * bio, a vertical label strip, a tall dark card with the live counter over drifting smoke,
  * a principle card, a phases card, and two counts.
  */
+const monthDay = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+
 const AboutSection = () => {
   const scrollTo = useSectionScroll();
+  const time = useLocalTime(PROFILE.timeZone);
+  const [latest, setLatest] = useState<GitHubRepo | null>(null);
+  useEffect(() => {
+    const c = new AbortController();
+    fetchLatestRepositories(1, c.signal).then((r) => {
+      if (!c.signal.aborted && r[0]) setLatest(r[0]);
+    });
+    return () => c.abort();
+  }, []);
 
   return (
     <section id="about" className="theme-dark bg-night text-snow scroll-mt-16">
@@ -172,13 +186,67 @@ const AboutSection = () => {
             <motion.div
               {...reveal(0.3)}
               data-reveal-skip
-              className="relative rounded-lg overflow-hidden md:col-span-6 lg:col-span-4 bg-emerald-400 p-6 md:p-8 flex flex-col"
+              className="relative rounded-lg overflow-hidden md:col-span-6 lg:col-span-4 bg-snow p-6 md:p-8 flex flex-col"
             >
               <p className="relative t-heading text-3xl md:text-4xl text-night">Services in the estate</p>
               <p className="relative t-wordmark leading-none text-[6rem] md:text-[7.5rem] mt-auto pt-8 text-night">
-                <ScrambleNumber value="30" suffix="+" suffixClassName="text-night/70 plus-pulse" />
+                <ScrambleNumber value="30" suffix="+" suffixClassName="text-emerald-500 plus-pulse" />
               </p>
               <span className="relative block w-10 h-px bg-night/40 mt-4" aria-hidden="true" />
+            </motion.div>
+
+            {/* Local time and availability */}
+            <motion.div {...reveal(0.35)} className={`${card} md:col-span-2 lg:col-span-4 p-6 md:p-8 flex flex-col`}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="t-label">Local time</p>
+                  <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5">{time}</p>
+                  <p className="t-caps text-muted text-[12px] mt-2">{PROFILE.city.split(",")[0]} · IST</p>
+                </div>
+                <div className="text-right">
+                  <p className="t-label">Status</p>
+                  <p className="flex items-center justify-end gap-2.5 t-heading text-2xl md:text-3xl mt-5">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    </span>
+                    Open
+                  </p>
+                  <p className="t-caps text-muted text-[12px] mt-2">To opportunities</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Latest public push */}
+            <motion.div
+              {...reveal(0.4)}
+              className={`${card} md:col-span-4 lg:col-span-8 p-6 md:p-8 flex flex-col min-w-0`}
+            >
+              <p className="t-label mb-auto">Latest on GitHub</p>
+              {latest ? (
+                <a
+                  href={latest.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group mt-6 flex items-end justify-between gap-6 min-w-0"
+                >
+                  <span className="min-w-0">
+                    <span className="block t-heading text-2xl md:text-3xl break-words group-hover:text-snow/80 transition-colors duration-fast">
+                      {latest.name}
+                    </span>
+                    <span className="block t-body text-muted mt-1 line-clamp-2">{latest.description}</span>
+                  </span>
+                  <span className="shrink-0 flex items-center gap-3 t-figure text-xs text-muted">
+                    {monthDay(latest.updated_at)}
+                    <ArrowUpRight
+                      className="w-4 h-4 group-hover:text-emerald-300 transition-colors duration-fast"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </a>
+              ) : (
+                <p className="mt-6 t-figure text-xs text-muted">Fetching…</p>
+              )}
             </motion.div>
           </div>
         </div>

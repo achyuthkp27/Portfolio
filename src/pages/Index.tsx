@@ -12,14 +12,13 @@ const FocusSection = lazy(() => import("@/components/FocusSection"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const ServicesSection = lazy(() => import("@/components/ServicesSection"));
 const StackMarquee = lazy(() => import("@/components/StackMarquee"));
-const NumbersSection = lazy(() => import("@/components/NumbersSection"));
 const VisionSection = lazy(() => import("@/components/VisionSection"));
 const RecordSection = lazy(() => import("@/components/RecordSection"));
 const ExperienceSection = lazy(() => import("@/components/ExperienceSection"));
 const OpenSourceSection = lazy(() => import("@/components/OpenSourceSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 
-/** Home, in the reference's order: work, who, services, stack, numbers, principles, record, experience, updates, contact. */
+/** Home, in the reference's order: work, who, services, stack, principles, record, experience, updates, contact. */
 const Index = () => {
   const location = useLocation();
   const root = useRef<HTMLDivElement>(null);
@@ -56,11 +55,8 @@ const Index = () => {
         <LazySection sectionId="services" minHeight="800px">
           <ServicesSection />
         </LazySection>
-        <LazySection minHeight="400px">
+        <LazySection minHeight="640px">
           <StackMarquee />
-        </LazySection>
-        <LazySection minHeight="600px">
-          <NumbersSection />
         </LazySection>
         <LazySection sectionId="vision" minHeight="7000px">
           <VisionSection />

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PROFILE } from "@/data/profile";
-import { SectionHeader } from "./ui/SectionHeader";
+import { StepHeadline } from "./ui/StepHeadline";
 
 const TYPE = "t-heading text-4xl md:text-5xl lg:text-6xl whitespace-nowrap";
 const GAP = 56;
@@ -75,15 +75,15 @@ const StackMarquee = () => {
   const head = offset % length;
 
   return (
-    <section className="theme-dark bg-night text-snow py-20 lg:py-24 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
-        <SectionHeader
-          label="The stack"
-          title="Tools I ship with"
-          description="Every technology here has carried production banking traffic under my name."
-          align="center"
-          className="mb-2 lg:mb-4"
-        />
+    <section className="theme-dark bg-night text-snow pt-20 lg:pt-24 pb-6 lg:pb-8 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 mb-4 lg:mb-6">
+        <div className="flex items-start justify-between gap-6 mb-8">
+          <p className="t-label">The stack</p>
+          <p className="t-caps text-muted text-right hidden sm:block">
+            Every tool here has carried production traffic.
+          </p>
+        </div>
+        <StepHeadline lines={["Tools", "I have shipped with.", "Every one of them", "in production."]} />
       </div>
 
       {/* Off-screen copies of every name, letter by letter, used only for measuring */}
@@ -102,7 +102,7 @@ const StackMarquee = () => {
       <div
         ref={ref}
         data-reveal-skip
-        className="relative h-[200px] md:h-[240px] [perspective:900px]"
+        className="relative h-[120px] md:h-[150px] [perspective:900px]"
         aria-label={`Technologies: ${items.join(", ")}`}
       >
         <div
