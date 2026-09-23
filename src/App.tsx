@@ -17,6 +17,7 @@ import { useIdleMount } from "@/hooks/useIdleMount";
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const Analytics = import.meta.env.PROD ? lazy(() => import("@/components/Analytics")) : null;
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
+import { GlassEdge } from "@/components/ui/GlassEdge";
 const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
 const CommandMenu = lazy(() =>
   import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })),
@@ -76,6 +77,7 @@ const DeferredExperience = () => {
     <Suspense fallback={null}>
       {Analytics ? <Analytics /> : null}
       {!isMobile && <ScrollProgress />}
+      <GlassEdge />
     </Suspense>
   );
 };

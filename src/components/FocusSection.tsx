@@ -106,16 +106,6 @@ const FocusSection = () => {
           <p className="t-body text-muted text-[14px]">{PROFILE.title}</p>
         </div>
       </div>
-
-      {/* Liquid glass: a frosted band along the bottom that content blurs into */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-52 backdrop-blur-xl [mask-image:linear-gradient(to_top,black_30%,transparent)] [-webkit-mask-image:linear-gradient(to_top,black_30%,transparent)]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-52 bg-gradient-to-t from-night/70 to-transparent"
-      />
     </section>
   );
 };
