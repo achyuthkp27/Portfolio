@@ -52,7 +52,7 @@ export const PROFILE = {
     { value: "3", label: "Banking channels" },
     { value: String(projects.length), label: "Case studies on this page" },
   ],
-  /** How work moves, as four phases; the hero rail ticks through them on scroll */
+  /** How work moves, as four phases; the About card lists them */
   phases: ["Learn", "Build", "Ship", "Verify"],
   /** The stack, for the marquee */
   stack: ["Java", "Python", "React", "Spring Boot", "LLMs", "AI"],

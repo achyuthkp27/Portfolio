@@ -84,12 +84,6 @@ const FocusSection = () => {
           </span>
           <span>[ AKP — What I believe ]</span>
         </p>
-        <span
-          aria-hidden="true"
-          className="mt-3 ml-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-snow/40"
-        >
-          <span className="h-2 w-2 rounded-full bg-snow" />
-        </span>
 
         <FillText
           text={LINE}

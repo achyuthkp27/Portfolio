@@ -205,6 +205,45 @@
   animation: plus-pulse 3.2s ease-in-out infinite;
 }
 
+/* "Open to opportunities": an emerald status light that blinks, with a ring that ripples out */
+@keyframes live-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes live-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: hsl(153 60% 55%);
+  box-shadow: 0 0 10px hsl(153 60% 55% / 0.8);
+  animation: live-blink 1.6s ease-in-out infinite;
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: live-ring 1.6s ease-out infinite;
+}
+
 /* ── README, GitHub-rendered HTML in the site's type ──────────────────── */
 .readme {
   font-family: var(--font-body);
