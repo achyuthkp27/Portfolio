@@ -44,9 +44,10 @@ const Trophy = ({
   const glossX = useTransform(px, (x) => `${-x * 40}%`);
   return (
     <motion.div
-      initial={reduceMotion ? false : { y: -340, rotate: -5, opacity: 0 }}
+      initial={reduceMotion ? false : { y: -420, rotate: -8, opacity: 0 }}
       whileInView={{ y: 0, rotate: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-25% 0px -25% 0px" }}
+      // Drop only once the card has settled high on screen, so the fall is seen, not missed while it slides in
+      viewport={{ once: true, margin: "0px 0px -55% 0px" }}
       transition={{
         y: { type: "spring", stiffness: 150, damping: 11, mass: 1.2 },
         rotate: { type: "spring", stiffness: 90, damping: 7, mass: 1 },

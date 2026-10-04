@@ -1,202 +1,160 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useInView, useReducedMotionConfig, useScroll } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { GraduationCap } from "lucide-react";
 import { experiences } from "@/data/experience";
-import { SectionHeader } from "./ui/SectionHeader";
 import { DUR, EASE, reveal } from "@/lib/motion";
-import ScrambleNumber from "@/components/ui/ScrambleNumber";
-import { IdBadge } from "./ui/IdBadge";
 import { AwardCard } from "./ui/AwardCard";
 import { PROFILE } from "@/data/profile";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { DASH, StackCard, StackTile } from "./ui/StackCard";
 
 const VISIBLE = 3;
+const base = import.meta.env.BASE_URL;
 
-/** (Experience): one row per role on the dark ground beside the ID badge, expandable, as the reference lists its news. */
+/**
+ * (Experience), in the same card stack as What I build: a short header, then one card per
+ * role and one for education on a dashed three-column grid — period and company, the
+ * company's mark (and the award, in the role that earned it), then the role, highlights and
+ * stack. Each card pins under the nav and the next slides up over it. Pure CSS sticky:
+ * nothing lags behind a fast scroll, and phones flow normally.
+ */
 const ExperienceSection = () => {
   const [open, setOpen] = useState<number[]>([]);
   const toggle = (i: number) => setOpen((c) => (c.includes(i) ? c.filter((x) => x !== i) : [...c, i]));
-  const sectionRef = useRef<HTMLElement>(null);
-  const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const [active, setActive] = useState(0);
-  const listRef = useRef<HTMLOListElement>(null);
-  const still = useReducedMotionConfig();
-  // Education lights its stop once it reaches the upper half of the viewport
-  const eduRef = useRef<HTMLLIElement>(null);
-  const eduLit = useInView(eduRef, { margin: "0px 0px -45% 0px" });
-  // The rail beside the roles fills as the list passes the reading line
-  const { scrollYProgress: railFill } = useScroll({ target: listRef, offset: ["start 0.6", "end 0.6"] });
-
-  // The badge shows whichever role crosses the middle band of the viewport
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        const hit = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (hit) setActive(Number((hit.target as HTMLElement).dataset.index));
-      },
-      { rootMargin: "-35% 0px -45% 0px", threshold: 0 },
-    );
-    rowRefs.current.forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
-  }, []);
-  // Below the desktop breakpoint the badge sits above the list, so it shows the current role
-  const wide = useMediaQuery("(min-width: 1024px)");
-  const current = experiences[wide ? active : 0];
-  const face = {
-    key: current.company,
-    company: current.company.split(" ")[0],
-    role: current.role.split(" · ")[0],
-    period: current.period,
-    logo: current.logo,
-  };
 
   return (
-    <section id="experience" ref={sectionRef} className="theme-dark text-snow relative scroll-mt-16">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 py-24 lg:py-32">
-        <SectionHeader
-          label="Experience"
-          title="Experience"
-          description="Hired at FIS Global, recognised with an individual award, promoted to Senior Software Engineer, then moved with the same platform and team to Cognizant."
-        />
-        <div className="lg:grid lg:grid-cols-[340px_minmax(0,1fr)] xl:grid-cols-[400px_minmax(0,1fr)] lg:gap-12">
-          {/* The ID, hanging beside the roles, pinned while they scroll past */}
-          <div className="mb-14 lg:mb-0 flex justify-center lg:block">
-            <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] lg:flex lg:items-start lg:justify-center lg:overflow-hidden lg:pt-0">
-              <IdBadge face={face} target={sectionRef} />
-            </div>
-          </div>
-          <div className="relative lg:pl-10">
-            {/* Progress rail: desktop only, where the badge follows the active role */}
-            <span className="hidden lg:block absolute left-3 top-0 bottom-0 w-px bg-line" aria-hidden="true" />
-            <motion.span
-              className="hidden lg:block absolute left-3 top-0 bottom-0 w-px bg-emerald-400 origin-top"
-              style={{ scaleY: still ? 1 : railFill }}
-              aria-hidden="true"
-            />
-            <ol ref={listRef} className="border-t border-line">
-              {experiences.map((exp, i) => {
-                const isOpen = open.includes(i);
-                const shown = isOpen ? exp.achievements : exp.achievements.slice(0, VISIBLE);
-                const hidden = exp.achievements.length - VISIBLE;
-                const panel = `exp-${i}`;
-                const isActive = i === active;
-                return (
-                  <motion.li
-                    key={exp.company}
-                    ref={(el) => {
-                      rowRefs.current[i] = el;
-                    }}
-                    data-index={i}
-                    {...reveal()}
-                    className="relative border-b border-line py-8 md:py-10 grid md:grid-cols-[10rem_1fr] lg:grid-cols-[11rem_1fr] gap-4 md:gap-10"
-                  >
-                    {/* This role's stop on the rail: lit once reached, glowing while it is the badge's role */}
-                    <span
-                      aria-hidden="true"
-                      className={`hidden lg:block absolute -left-[33px] top-[2.85rem] h-[9px] w-[9px] rounded-full border transition-all duration-500 ${
-                        i <= active ? "bg-emerald-400 border-emerald-400" : "bg-night border-line"
-                      } ${isActive ? "scale-125 shadow-[0_0_14px_hsl(158_64%_52%/0.8)]" : ""}`}
-                    />
-                    <div>
-                      <p className="t-figure text-xs text-muted">
-                        <ScrambleNumber value={exp.period} />
-                      </p>
-                      {exp.platform && (
-                        <p className="t-caps text-muted mt-2 hidden md:block text-[12px]">Same platform</p>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <h3
-                        className={`t-heading text-3xl md:text-4xl transition-colors duration-500 ${isActive ? "" : "lg:text-snow/45"}`}
-                      >
-                        {exp.company}
-                      </h3>
-                      <p className="t-caps text-muted mt-2">{exp.role}</p>
-                      {/* The award sits in the role that earned it */}
-                      {exp.award && (
-                        <div className="mt-8 max-w-3xl">
-                          <AwardCard />
-                        </div>
-                      )}
-                      <ul id={panel} className="mt-6 space-y-3 max-w-3xl">
-                        <AnimatePresence initial={false}>
-                          {shown.map((a, j) => (
-                            <motion.li
-                              key={a}
-                              initial={j >= VISIBLE ? { opacity: 0, y: 6 } : false}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4, transition: { duration: DUR.fast } }}
-                              transition={{ duration: DUR.base, ease: EASE, delay: (j - VISIBLE) * 0.03 }}
-                              className="flex gap-3 t-body text-snow/85"
-                            >
-                              <span
-                                className={`mt-[0.75em] w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-500 bg-snow ${isActive ? "lg:bg-emerald-400" : ""}`}
-                                aria-hidden="true"
-                              />
-                              <span>{a}</span>
-                            </motion.li>
-                          ))}
-                        </AnimatePresence>
-                      </ul>
-                      {hidden > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => toggle(i)}
-                          aria-expanded={isOpen}
-                          aria-controls={panel}
-                          className="mt-5 text-[13px] font-medium uppercase tracking-[0.03em] text-muted hover:text-snow transition-colors duration-fast"
-                        >
-                          {isOpen ? "Show less" : `Show ${hidden} more`}
-                        </button>
-                      )}
-                      <ul className="mt-6 flex flex-wrap gap-2">
-                        {exp.technologies.map((t, k) => (
-                          <motion.li
-                            key={t}
-                            initial={{ opacity: 0, y: 6 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-40px" }}
-                            transition={{ duration: DUR.base, ease: EASE, delay: 0.15 + k * 0.04 }}
-                            className="rounded-pill border border-line px-3 py-1 text-[12px] text-snow/80"
-                          >
-                            {t}
-                          </motion.li>
-                        ))}
-                      </ul>
-                    </div>
-                  </motion.li>
-                );
-              })}
-              {/* Education closes the line with its own stop; the badge stays on the last role */}
-              <motion.li
-                ref={eduRef}
-                {...reveal()}
-                className="relative py-8 md:py-10 grid md:grid-cols-[10rem_1fr] lg:grid-cols-[11rem_1fr] gap-4 md:gap-10"
-              >
-                <span
-                  aria-hidden="true"
-                  className={`hidden lg:block absolute -left-[33px] top-[2.85rem] h-[9px] w-[9px] rounded-full border transition-all duration-500 ${
-                    eduLit
-                      ? "bg-emerald-400 border-emerald-400 scale-125 shadow-[0_0_14px_hsl(158_64%_52%/0.8)]"
-                      : "bg-night border-line"
-                  }`}
-                />
-                <p className="t-figure text-xs text-muted">{PROFILE.education.year}</p>
-                <div className="min-w-0">
-                  <h3
-                    className={`t-heading text-3xl md:text-4xl transition-colors duration-500 ${eduLit ? "" : "lg:text-snow/45"}`}
-                  >
-                    Education
-                  </h3>
-                  <p className="t-caps text-muted mt-2">{PROFILE.education.title}</p>
-                  <p className="mt-6 t-body text-snow/85">{PROFILE.education.org}</p>
-                </div>
-              </motion.li>
-            </ol>
-          </div>
+    <section id="experience" className="theme-dark text-snow relative scroll-mt-16">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-24 lg:pt-32 pb-16 lg:pb-20">
+        <motion.p {...reveal()} className="t-label mb-10 lg:mb-14">
+          Experience
+        </motion.p>
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 items-end">
+          <motion.h2 {...reveal(0.05)} className="t-statement text-5xl md:text-7xl lg:text-[5.5rem]">
+            Five years,
+            <br />
+            one platform.
+          </motion.h2>
+          <motion.p
+            {...reveal(0.1)}
+            className="t-body text-snow/60 text-[17px] md:text-[19px] max-w-md lg:justify-self-end"
+          >
+            Hired at FIS Global, recognised with an individual award, promoted to Senior Software Engineer, then{" "}
+            <span className="text-snow">moved with the same platform and team to Cognizant</span>.
+          </motion.p>
         </div>
       </div>
+
+      <ol>
+        {experiences.map((exp, i) => {
+          const isOpen = open.includes(i);
+          const shown = isOpen ? exp.achievements : exp.achievements.slice(0, VISIBLE);
+          const hidden = exp.achievements.length - VISIBLE;
+          const panel = `exp-${i}`;
+          return (
+            <StackCard key={exp.company} index={i}>
+              {/* Period and company */}
+              <div className={`p-6 md:p-10 lg:py-16 lg:border-r ${DASH}`}>
+                <p className="t-figure text-[12px] text-muted">{exp.period}</p>
+                <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem]">
+                  {exp.company}
+                </h3>
+                {exp.platform && <p className="mt-3 t-figure text-[12px] text-emerald-300">{exp.platform}</p>}
+              </div>
+
+              {/* The company's mark, or the award in the role that earned it */}
+              <div className={`px-6 md:px-10 lg:px-0 lg:border-r ${DASH}`}>
+                <div className="lg:mt-16">
+                  {exp.award ? (
+                    <AwardCard />
+                  ) : (
+                    <StackTile>
+                      {exp.logo ? (
+                        <img
+                          src={`${base}${exp.logo.dark ?? exp.logo.src}`}
+                          alt={`${exp.company} logo`}
+                          width={exp.logo.width}
+                          height={exp.logo.height}
+                          loading="lazy"
+                          decoding="async"
+                          className={`relative w-[55%] max-w-[220px] h-auto ${exp.logo.dark ? "" : "brightness-0 invert"}`}
+                        />
+                      ) : (
+                        <span className="relative t-heading text-4xl text-snow/80">{exp.company.split(" ")[0]}</span>
+                      )}
+                    </StackTile>
+                  )}
+                </div>
+              </div>
+
+              {/* Role, highlights and stack */}
+              <div className="p-6 md:p-10 lg:py-16">
+                <p className="t-figure text-[12px] text-muted">Role</p>
+                <p className="mt-3 text-[19px] md:text-[21px] leading-snug text-snow">{exp.role}</p>
+                <ul id={panel} className="mt-6 space-y-3">
+                  <AnimatePresence initial={false}>
+                    {shown.map((a, j) => (
+                      <motion.li
+                        key={a}
+                        initial={j >= VISIBLE ? { opacity: 0, y: 6 } : false}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4, transition: { duration: DUR.fast } }}
+                        transition={{ duration: DUR.base, ease: EASE, delay: (j - VISIBLE) * 0.03 }}
+                        className="flex gap-3 text-[15px] leading-relaxed text-snow/75"
+                      >
+                        <span className="mt-[0.7em] w-1 h-1 rounded-full shrink-0 bg-emerald-400" aria-hidden="true" />
+                        <span>{a}</span>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
+                </ul>
+                {hidden > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => toggle(i)}
+                    aria-expanded={isOpen}
+                    aria-controls={panel}
+                    className="mt-4 text-[13px] font-medium uppercase tracking-[0.03em] text-muted hover:text-snow transition-colors duration-fast"
+                  >
+                    {isOpen ? "Show less" : `Show ${hidden} more`}
+                  </button>
+                )}
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {exp.technologies.map((t) => (
+                    <li key={t} className="rounded-pill border border-line px-3 py-1 text-[12px] text-snow/75">
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </StackCard>
+          );
+        })}
+
+        {/* Education closes the stack */}
+        <StackCard index={experiences.length}>
+          <div className={`p-6 md:p-10 lg:py-16 lg:border-r ${DASH}`}>
+            <p className="t-figure text-[12px] text-muted">{PROFILE.education.year}</p>
+            <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem]">
+              Education
+            </h3>
+          </div>
+          <div className={`px-6 md:px-10 lg:px-0 lg:border-r ${DASH}`}>
+            <div className="lg:mt-16">
+              <StackTile>
+                <GraduationCap
+                  className="relative w-20 h-20 md:w-24 md:h-24 text-emerald-300"
+                  strokeWidth={1}
+                  aria-hidden="true"
+                />
+              </StackTile>
+            </div>
+          </div>
+          <div className="p-6 md:p-10 lg:py-16">
+            <p className="t-figure text-[12px] text-muted">Degree</p>
+            <p className="mt-3 text-[19px] md:text-[21px] leading-snug text-snow">{PROFILE.education.title}</p>
+            <p className="mt-4 text-[15px] text-snow/70">{PROFILE.education.org}</p>
+          </div>
+        </StackCard>
+      </ol>
     </section>
   );
 };

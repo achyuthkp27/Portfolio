@@ -53,19 +53,19 @@ const Index = () => {
         <LazySection sectionId="about" minHeight="1770px" minHeightMobile="3020px">
           <AboutSection />
         </LazySection>
-        <LazySection sectionId="work" minHeight="2710px" minHeightMobile="3460px">
+        <LazySection sectionId="work" minHeight="6960px" minHeightMobile="9810px">
           <WorkSection />
         </LazySection>
-        <LazySection sectionId="services" minHeight="1290px" minHeightMobile="1460px">
+        <LazySection sectionId="services" minHeight="3760px" minHeightMobile="4250px">
           <ServicesSection />
         </LazySection>
         <LazySection sectionId="vision" minHeight="580vh">
           <VisionSection />
         </LazySection>
-        <LazySection sectionId="experience" minHeight="2410px" minHeightMobile="3430px">
+        <LazySection sectionId="experience" minHeight="2600px" minHeightMobile="3690px">
           <ExperienceSection />
         </LazySection>
-        <LazySection sectionId="open-source" minHeight="1355px" minHeightMobile="3365px">
+        <LazySection sectionId="open-source" minHeight="1720px" minHeightMobile="2175px">
           <OpenSourceSection />
         </LazySection>
         <LazySection sectionId="contact" minHeight="320vh">

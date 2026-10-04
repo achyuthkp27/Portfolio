@@ -1,5 +1,5 @@
 import { motion, useInView, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useLoading } from "@/hooks/useLoading";
 import { PROFILE } from "@/data/profile";
 
@@ -65,6 +65,15 @@ const Hero = () => {
   const ref = useRef<HTMLElement>(null);
   const show = !isLoading;
   const orbOn = useInView(ref, { margin: "200px 0px" });
+  // The photo fades in only once it has decoded, so a slow download never pops it in mid-fade
+  const [photoReady, setPhotoReady] = useState(false);
+  const markReady = useCallback(() => setPhotoReady(true), []);
+  const photoRef = useCallback(
+    (img: HTMLImageElement | null) => {
+      if (img?.complete) markReady();
+    },
+    [markReady],
+  );
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["end 0.6", "end 0.1"] });
   // The photo moves with the page: a slow push-in, a drift up and to the left, a gentle dim
@@ -97,27 +106,50 @@ const Hero = () => {
       {/* The original photo, pinned to the right while the copy scrolls over it */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
         <div className="sticky top-0 h-screen overflow-hidden">
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={show ? { opacity: 1 } : {}}
-            transition={{ duration: 1.4, ease: OUT, delay: 0.2 }}
-            className="absolute inset-y-0 right-0 z-[1] w-full md:w-[64%]"
-          >
+          <div className="absolute inset-y-0 right-0 z-[1] w-full md:w-[64%]">
             <motion.picture
               style={{ scale: photoScale, x: photoX, y: photoY, opacity: photoDim }}
               className="absolute inset-0 block origin-[70%_100%] will-change-transform [mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [-webkit-mask-composite:source-in]"
             >
-              <img
-                src={`${base}images/avatar-cutout.webp`}
-                alt=""
-                width={1672}
-                height={941}
-                // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
-                {...{ fetchpriority: "high" }}
-                className="w-full h-full object-cover object-[70%_top] opacity-40 md:opacity-100"
-              />
+              {/* The photo fades in once its silhouette has been drawn (about 2.3s) */}
+              <motion.div
+                className="absolute inset-0"
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={show && photoReady ? { opacity: 1 } : {}}
+                transition={{ duration: 3, ease: OUT, delay: 2.2 }}
+              >
+                <img
+                  ref={photoRef}
+                  onLoad={markReady}
+                  onError={markReady}
+                  src={`${base}images/avatar-cutout.webp`}
+                  alt=""
+                  width={1672}
+                  height={941}
+                  // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
+                  {...{ fetchpriority: "high" }}
+                  className="w-full h-full object-cover object-[70%_top] opacity-40 md:opacity-100"
+                />
+              </motion.div>
+              {/* An emerald outline traced from the cutout's edge draws itself first, then gives way
+                  to the photo. Both halves start at the crown and meet the frame together; the SVG animates on its own, so it mounts only when the draw should start. */}
+              {!reduceMotion && show && photoReady && (
+                // Dimmed on phones to match the photo, which sits at 40% behind the copy there
+                <div className="absolute inset-0 opacity-40 md:opacity-100">
+                  <motion.img
+                    src={`${base}images/avatar-outline.svg`}
+                    alt=""
+                    width={1672}
+                    height={941}
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 1.8, ease: "easeInOut", delay: 3.4 }}
+                    className="absolute inset-0 w-full h-full object-cover object-[70%_top]"
+                  />
+                </div>
+              )}
             </motion.picture>
-          </motion.div>
+          </div>
           {/* The light from the earlier hero: a soft emerald orb on a wide orbit, lingering behind the
               copy on the left and passing behind the figure on the right */}
           {/* Mounted only while the hero is near the screen: its endless orbit otherwise keeps

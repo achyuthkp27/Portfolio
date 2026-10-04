@@ -20,19 +20,16 @@ test("home page renders the splash screen, then the site", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("work shows the AI card and opens a banking system row", async ({ page }) => {
+test("work shows every project as a stacked card", async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto("./");
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
   // Sections mount lazily as they near the viewport, so bring Work into view first
   await page.locator("#work").first().scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "AI a bank can trust" })).toBeAttached({ timeout: 15_000 });
-  const row = page.getByRole("button", { name: /Card on File Tokenization/ });
-  await row.scrollIntoViewIfNeeded();
-  await row.click();
-  await expect(row).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator("#more-card-tokenization")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "AegisAI" })).toBeAttached({ timeout: 15_000 });
+  await expect(page.locator("#case-card-tokenization")).toBeAttached();
+  await expect(page.locator("#work ol > li")).toHaveCount(9);
   expect(errors).toEqual([]);
 });
 
