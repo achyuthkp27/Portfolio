@@ -77,7 +77,7 @@ const FocusSection = () => {
               Reliable systems are built through clear thinking, small verified steps, and decisions that still make
               sense at 2 AM.
             </p>
-            <p className="mt-5 t-heading text-2xl md:text-3xl leading-none text-snow">{PROFILE.first}</p>
+            <p className="mt-4 font-signature text-[2.8rem] md:text-[3.4rem] leading-none text-snow">{PROFILE.first}</p>
           </div>
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8">
             {STATS.map((stat) => (
@@ -138,7 +138,7 @@ const FocusSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
             </div>
             <div className="flex flex-col-reverse items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-              <p className="t-heading text-2xl md:text-3xl leading-none text-snow shrink-0">{PROFILE.first}</p>
+              <p className="font-signature text-[2.6rem] md:text-[3.4rem] leading-none text-snow -mb-2 shrink-0">{PROFILE.first}</p>
               <p className="sm:text-right text-[14px] md:text-[15px] leading-[1.55] text-snow/85 sm:max-w-[230px]">
                 Reliable systems are built through clear thinking, small verified steps, and decisions that still make
                 sense at 2 AM.

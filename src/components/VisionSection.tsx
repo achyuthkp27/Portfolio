@@ -125,7 +125,8 @@ const Principle = ({
     if (v <= 0.82) return 1;
     return 1 - clamp01((v - 0.82) / 0.12);
   });
-  const blur = useTransform(t, (v) => (v > 0.8 ? `blur(${clamp01((v - 0.8) / 0.16) * 10}px)` : "blur(0px)"));
+  // "none" at rest: WebKit clips a filtered element's glyphs to its box, which cut the descenders
+  const blur = useTransform(t, (v) => (v > 0.8 ? `blur(${clamp01((v - 0.8) / 0.16) * 10}px)` : "none"));
   const noteOpacity = useTransform(t, (v) =>
     v < 0.28 || v > 0.8 ? 0 : Math.min(clamp01((v - 0.28) / 0.08), clamp01((0.8 - v) / 0.06)),
   );
@@ -138,7 +139,7 @@ const Principle = ({
     >
       <motion.p
         style={{ scale, filter: blur }}
-        className="font-display font-semibold uppercase leading-[0.95] tracking-[-0.005em] text-[17vw] md:text-[8vw] lg:text-[min(8rem,15vh)] max-w-[14ch] text-balance will-change-transform"
+        className="font-display font-semibold uppercase leading-[0.95] tracking-[-0.005em] text-[17vw] md:text-[8vw] lg:text-[min(8rem,15vh)] max-w-[14ch] text-balance will-change-transform py-[0.18em] -my-[0.18em]"
       >
         {title}
       </motion.p>

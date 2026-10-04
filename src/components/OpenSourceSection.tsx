@@ -50,7 +50,7 @@ const Row = ({
     </>
   );
   const cls =
-    "group relative flex flex-col-reverse items-start gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 py-8 md:py-10 px-3 -ml-3 rounded-sm hover:bg-snow/[0.03] transition-colors duration-fast";
+    "group relative flex flex-col-reverse items-start gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 py-8 md:py-10 px-[max(1.5rem,calc((100vw-1400px)/2))] md:px-[max(2.5rem,calc((100vw-1400px)/2))] lg:px-[max(3rem,calc((100vw-1400px)/2))] hover:bg-snow/[0.03] transition-colors duration-fast";
   return to ? (
     <Link to={to} className={cls}>
       {inner}
@@ -150,7 +150,8 @@ const OpenSourceSection = () => {
           </p>
         ) : (
           <>
-            <ol className="divide-y divide-line border-y border-line">
+            {/* Edge to edge: the list leaves the column, and each row pads its content back in line with the heading */}
+            <ol className="w-screen ml-[calc(50%-50vw)] divide-y divide-line border-y border-line">
               {repos.slice(0, SHOWN + visible).map((r, i) => (
                 <motion.li
                   key={r.name}

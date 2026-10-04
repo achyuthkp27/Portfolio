@@ -288,9 +288,10 @@ const Hero = () => {
           </motion.span>
           {/* The name arrives whole: one soft rise out of a blur, no per-letter tumble */}
           <motion.span
-            className="block -mt-2 md:-mt-6 pb-[0.12em]"
+            className="block -mt-2 md:-mt-6 pb-[0.26em] -mb-[0.14em]"
             initial={reduceMotion ? false : { opacity: 0, y: 28, filter: "blur(12px)" }}
-            animate={show ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+            // The filter is dropped once the blur has cleared: WebKit clips a filtered element's glyphs to its box
+            animate={show ? { opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } } : {}}
             transition={{ duration: 1.1, ease: OUT, delay: 0.75 }}
           >
             {`${PROFILE.first}.`}
