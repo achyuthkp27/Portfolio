@@ -360,6 +360,10 @@
     transform 0.8s var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
+/* Revealed and settled: no transition left on the element for Framer transforms to fight */
+.reveal.reveal-done {
+  transition: none;
+}
 .reveal.is-in {
   opacity: 1;
   /* none, not blur(0): blur(0) would leave a filter layer on every revealed element */

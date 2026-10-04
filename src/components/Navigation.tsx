@@ -5,6 +5,7 @@ import { hasKeyboardAndPointer, isMacPlatform, openCommandMenu } from "@/lib/sho
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSmoothScroll } from "@/context/smoothScroll";
 import { DUR, EASE } from "@/lib/motion";
 import { NAV_ITEMS } from "@/data/nav";
@@ -32,6 +33,12 @@ const Navigation = () => {
   }, [isMenuOpen]);
 
   useScrollLock(isMenuOpen, lenis);
+  // The phone menu is hidden from md up: crossing that width (rotating a large phone) closes it,
+  // or its scroll lock and focus trap would stay on behind an invisible dialog
+  const mdUp = useMediaQuery("(min-width: 768px)");
+  useEffect(() => {
+    if (mdUp) setIsMenuOpen(false);
+  }, [mdUp]);
 
   const [activeSection, setActiveSection] = useState("");
   useMotionValueEvent(scrollY, "change", (latest) => {

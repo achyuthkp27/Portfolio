@@ -18,6 +18,8 @@ export default function TerminalTrigger() {
     let keyBuffer = "";
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isTyping() || e.metaKey || e.ctrlKey || e.altKey) return;
+      // One overlay at a time
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
 
       if (e.key.length === 1) {
         keyBuffer = (keyBuffer + e.key).slice(-2);

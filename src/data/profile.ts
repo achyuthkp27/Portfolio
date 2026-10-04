@@ -40,8 +40,6 @@ export const PROFILE = {
       note: "Trends pass. Fundamentals, taste, and reliability compound. I choose the thing that will still make sense in five years.",
     },
   ],
-  /** The hero's proof line: verifiable facts only, each one shown in full under Experience */
-  proof: ["FIS Global → Cognizant", "Promoted to Senior Software Engineer", "Above & Beyond Award, 2024"],
   /** Closes the Experience list */
   education: {
     year: "2021",
@@ -63,17 +61,14 @@ export const SERVICES: { title: string; blurb: string; stack: string[]; proof: {
     blurb:
       "Spring Boot services that move real money: APIs, domain rules, concurrency, and the failure handling around them.",
     stack: ["Java 21", "Spring Boot", "Spring Data JPA", "JUnit", "Mockito"],
-    proof: [
-      { label: "Corporate banking microservices", href: "#case-corporate-banking-microservices" },
-      { label: "Maker-checker framework", href: "#case-maker-checker-authorization" },
-    ],
+    proof: [{ label: "Five years on a banking platform", href: "#experience" }],
   },
   {
     title: "Event-driven platforms",
     blurb: "Kafka estates where one slow consumer never stalls a payment.",
     stack: ["Apache Kafka", "NATS JetStream", "Redis", "PostgreSQL", "Circuit breakers"],
     proof: [
-      { label: "30+ service estate on one bus", href: "#case-corporate-banking-microservices" },
+      { label: "30+ service estate on one bus", href: "#experience" },
       { label: "ELK and Kafka observability", href: "#case-elk-observability-rollout" },
     ],
   },
@@ -82,7 +77,7 @@ export const SERVICES: { title: string; blurb: string; stack: string[]; proof: {
     blurb: "Maker-checker approval, card tokenisation, TOTP, and token security under PCI-DSS and SOX.",
     stack: ["Spring Security", "OAuth2", "JWT / JWE / JWS", "TOTP", "Mastercard · Visa"],
     proof: [
-      { label: "TOTP with replay prevention, live demo", href: "#case-totp-authentication-system" },
+      { label: "TOTP with replay prevention", href: "#case-totp-authentication-system" },
       { label: "Card on file tokenisation", href: "#case-card-tokenization" },
     ],
   },
@@ -98,6 +93,7 @@ export const SERVICES: { title: string; blurb: string; stack: string[]; proof: {
       "The same production standards applied to models: assistants that check who is asking before they answer, and AI that runs on the device so the data stays there.",
     stack: ["Spring AI", "LangChain4j", "On-device LLMs", "RAG", "Qwen"],
     proof: [
+      { label: "AegisAI, GenAI platform for banking operations", href: "#case-aegis-ai" },
       { label: "Kairo, offline-first AI bank", href: "#case-kairo-offline-ai-bank" },
       { label: "VoxOs, voice agent for the Mac", href: "#case-voxos" },
       { label: "LLM banking assistant APIs", href: "#case-llm-banking-chatbot" },

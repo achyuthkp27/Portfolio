@@ -10,45 +10,23 @@ interface SEOProps {
 
 const SITE_URL = "https://achyuthkp27.github.io/Portfolio/";
 
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Achyuth KP",
-  url: SITE_URL,
-  jobTitle: "Software Engineer",
-  description:
-    "Software Engineer with 5+ years building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
-  sameAs: ["https://github.com/achyuthkp27", "https://linkedin.com/in/kpachyuth", "https://medium.com/@kpachyuthz"],
-  knowsAbout: [
-    "Java",
-    "Spring Boot",
-    "Microservices",
-    "Apache Kafka",
-    "AWS",
-    "JUnit",
-    "Java Concurrency",
-    "React",
-    "TypeScript",
-    "Three.js",
-  ],
-};
+const DEFAULT_TITLE = "Achyuth KP | Software Engineer | Backend systems & AI products";
+const DEFAULT_DESCRIPTION =
+  "Achyuth KP, Software Engineer building reliable backend systems and AI-powered products: Java, Spring Boot, Kafka, Spring AI, and LangChain4j, proven on a regulated banking platform.";
 
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "Achyuth KP | Software Engineer",
-  url: SITE_URL,
-  author: { "@type": "Person", name: "Achyuth KP" },
-};
-
+/**
+ * Per-route meta. index.html carries the same tags marked data-rh, so Helmet replaces them
+ * instead of adding a second set, and the structured data lives only in index.html.
+ * Mount it on every route so leaving a project page restores the home title.
+ */
 const SEO = ({
-  title = "Achyuth KP | Software Engineer",
-  description = "Portfolio of Achyuth KP, a software engineer building secure banking microservices with Java, Spring Boot, Kafka, and AWS.",
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
   image = `${SITE_URL}og-image.jpg`,
   url = SITE_URL,
   type = "website",
 }: SEOProps) => {
-  const fullTitle = title === "Achyuth KP | Software Engineer" ? title : `${title} | Achyuth KP`;
+  const fullTitle = title === DEFAULT_TITLE ? title : `${title} | Achyuth KP`;
 
   return (
     <Helmet>
@@ -65,15 +43,11 @@ const SEO = ({
       <meta property="og:image" content={image} />
 
       {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={fullTitle} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={image} />
-
-      {/* Structured Data — helps Google rich snippets */}
-      <script type="application/ld+json">{JSON.stringify(personJsonLd)}</script>
-      <script type="application/ld+json">{JSON.stringify(websiteJsonLd)}</script>
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={url} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
     </Helmet>
   );
 };

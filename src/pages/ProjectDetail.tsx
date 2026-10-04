@@ -254,7 +254,11 @@ const ProjectDetail = () => {
         description={project.description || "GitHub repository"}
         url={`https://achyuthkp27.github.io/Portfolio/#/project/${slug}`}
       />
-      <div className="min-h-screen px-3 md:px-4 pt-24 md:pt-28 pb-16 space-y-1.5">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="min-h-screen px-3 md:px-4 pt-24 md:pt-28 pb-16 space-y-1.5 outline-none"
+      >
         <div className="px-4 md:px-8 pb-6 flex items-center justify-between gap-6">
           <button
             type="button"
@@ -410,7 +414,7 @@ const ProjectDetail = () => {
             </div>
           }
         />
-      </div>
+      </main>
     </motion.div>
   );
 };

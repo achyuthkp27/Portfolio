@@ -21,6 +21,11 @@ export function CommandMenu() {
     const down = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
+        // One overlay at a time: never open under another open dialog (the terminal, the phone menu)
+        const other = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].some(
+          (d) => d !== dialogRef.current,
+        );
+        if (other) return;
         setOpen((open) => !open);
       } else if (e.key === "Escape") {
         setOpen(false);

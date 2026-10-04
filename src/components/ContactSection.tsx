@@ -105,12 +105,19 @@ const ContactSection = () => {
     >
       {/* Keyboard way in: the actions only become visible near the end of the scroll, so
           tabbing here jumps to that finished state and the next Tab lands on "Contact me" */}
-      {!reduceMotion && (
-        <button type="button" onFocus={jumpToEnd} onClick={jumpToEnd} className="sr-only">
-          Show contact options
-        </button>
-      )}
       <div className="sticky top-0 h-screen overflow-hidden bg-night">
+        {/* Inside the pinned pane so it is always in view while pinned, and the jump waits two
+            frames so the browser's own scroll-into-view on focus can't undo it */}
+        {!reduceMotion && (
+          <button
+            type="button"
+            onFocus={() => requestAnimationFrame(() => requestAnimationFrame(jumpToEnd))}
+            onClick={jumpToEnd}
+            className="sr-only"
+          >
+            Show contact options
+          </button>
+        )}
         {/* The pale ground lights up around the card once the section has pinned: no hard edge with the dark page above */}
         <motion.div aria-hidden="true" style={{ opacity: paleIn }} className="absolute inset-0 bg-pale" />
         {/* The same faint grid as What I believe */}
@@ -158,6 +165,37 @@ const ContactSection = () => {
                 {copied ? "Copied" : PROFILE.email}
               </PillButton>
             </div>
+            {/* Reduced motion has no side details floating round a card, so they sit here instead */}
+            {reduceMotion && (
+              <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-snow/70">
+                <li>
+                  {PROFILE.city.split(",")[0]} · {time.time} {time.period} IST
+                </li>
+                <li className="inline-flex items-center gap-2">
+                  <span className="live-dot" aria-hidden="true" /> Open to opportunities
+                </li>
+                {[
+                  ["LinkedIn", PROFILE.links.linkedin],
+                  ["GitHub", PROFILE.links.github],
+                  ["Medium", PROFILE.links.medium],
+                ].map(([name, href]) => (
+                  <li key={name}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-snow">
+                      {name}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a
+                    href={`${import.meta.env.BASE_URL}${PROFILE.resume}`}
+                    download={PROFILE.resumeDownloadName}
+                    className="hover:text-snow"
+                  >
+                    Résumé (PDF)
+                  </a>
+                </li>
+              </ul>
+            )}
           </motion.div>
         </motion.div>
       </div>
@@ -187,7 +225,10 @@ const Fact = ({
   appear: MotionValue<number>;
 }) => {
   // In: slides in from its side once the ground is lit. Out: drifts away as the card grows over it.
-  const opacity = useTransform([appear, grow], ([a, k]: number[]) => a * (1 - clamp01((k - 0.2) / (0.3 + index * 0.05))));
+  const opacity = useTransform(
+    [appear, grow],
+    ([a, k]: number[]) => a * (1 - clamp01((k - 0.2) / (0.3 + index * 0.05))),
+  );
   const x = useTransform(
     [appear, grow],
     ([a, k]: number[]) => (fact.side === "left" ? -1 : 1) * ((1 - a) * 40 + k * 60),

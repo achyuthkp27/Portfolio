@@ -161,43 +161,62 @@ const blobUrl = (repo: string, path: string) =>
 
 /**
  * README, languages, and recent commits for one repo. Each part fails on its own, so a
- * rate-limited README still leaves the language bar and commits intact. Cached a day.
+ * rate-limited README still leaves the language bar and commits intact. Cached a day, but
+ * only when every part answered (a missing README, 404, counts as an answer).
  */
 export async function fetchRepositoryExtras(repoName: string, signal?: AbortSignal): Promise<RepoExtras> {
   const cacheKey = `gh_extras_${repoName}`;
   const cached = readCache<RepoExtras>(cacheKey);
-  if (cached) return cached;
+  // Cached languages and commits are reused; the README is always fetched fresh (see below)
+  const cachedParts = cached && !cached.readme ? cached : null;
   const base = `https://api.github.com/repos/${GITHUB_USERNAME}/${encodeURIComponent(repoName)}`;
+  // Any part that failed (rate limit, network, abort) keeps the result out of the day-long cache,
+  // so a partial answer is shown now but asked for again next visit
+  let failed = false;
+  const ok = (r: Response) => {
+    if (!r.ok && r.status !== 404) failed = true;
+    return r.ok;
+  };
+  const fail = <T>(fallback: T) => {
+    failed = true;
+    return fallback;
+  };
 
   const readme = fetch(`${base}/readme`, { signal, headers: { Accept: "application/vnd.github.html" } })
-    .then((r) => (r.ok ? r.text() : null))
+    .then((r) => (ok(r) ? r.text() : null))
     .then((html) => (html ? cleanReadme(html, repoName) : null))
-    .catch(() => null);
+    .catch(() => fail(null));
 
-  const languages = fetch(`${base}/languages`, { signal })
-    .then((r): Promise<Record<string, number>> => (r.ok ? r.json() : Promise.resolve({})))
-    .then((map) => {
-      const total = Object.values(map).reduce((a, b) => a + b, 0) || 1;
-      return Object.entries(map)
-        .map(([name, bytes]) => ({ name, bytes, share: bytes / total }))
-        .sort((a, b) => b.bytes - a.bytes);
-    })
-    .catch(() => []);
+  const languages = cachedParts
+    ? Promise.resolve(cachedParts.languages)
+    : fetch(`${base}/languages`, { signal })
+        .then((r): Promise<Record<string, number>> => (ok(r) ? r.json() : Promise.resolve({})))
+        .then((map) => {
+          const total = Object.values(map).reduce((a, b) => a + b, 0) || 1;
+          return Object.entries(map)
+            .map(([name, bytes]) => ({ name, bytes, share: bytes / total }))
+            .sort((a, b) => b.bytes - a.bytes);
+        })
+        .catch(() => fail([]));
 
-  const commits = fetch(`${base}/commits?per_page=5`, { signal })
-    .then((r) => (r.ok ? r.json() : []))
-    .then((list: { sha: string; html_url: string; commit: { message: string; author: { date: string } } }[]) =>
-      list.map((c) => ({
-        sha: c.sha.slice(0, 7),
-        message: c.commit.message.split("\n")[0],
-        date: c.commit.author.date,
-        url: c.html_url,
-      })),
-    )
-    .catch(() => []);
+  const commits = cachedParts
+    ? Promise.resolve(cachedParts.commits)
+    : fetch(`${base}/commits?per_page=5`, { signal })
+        .then((r) => (ok(r) ? r.json() : []))
+        .then((list: { sha: string; html_url: string; commit: { message: string; author: { date: string } } }[]) =>
+          list.map((c) => ({
+            sha: c.sha.slice(0, 7),
+            message: c.commit.message.split("\n")[0],
+            date: c.commit.author.date,
+            url: c.html_url,
+          })),
+        )
+        .catch(() => fail([]));
 
   // Each part already catches its own failure, so nothing here can throw
   const extras: RepoExtras = { readme: await readme, languages: await languages, commits: await commits };
-  if (extras.readme || extras.languages.length || extras.commits.length) writeCache(cacheKey, extras);
+  // The README is rendered as HTML, so it is never kept in localStorage: every Pages site on
+  // this github.io origin shares that storage and could plant markup there
+  if (!failed && !signal?.aborted) writeCache(cacheKey, { ...extras, readme: null });
   return extras;
 }

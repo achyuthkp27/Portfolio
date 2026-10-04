@@ -71,6 +71,8 @@ export function useSectionScroll() {
 
       let lastY = aimOffset(initial) + window.scrollY;
       let ticks = 0;
+      // Without Lenis there is no isScrolling flag, so "still moving" is read from the page itself
+      let prevScroll = window.scrollY;
       const interval = window.setInterval(() => {
         const current = document.getElementById(id);
         if (current) {
@@ -78,12 +80,14 @@ export function useSectionScroll() {
           const y = viewportTop + window.scrollY;
           const shifted = Math.abs(y - lastY) > SHIFT_THRESHOLD_PX;
           // Also re-aim if a scroll finished short of the target (e.g. clamped by a stale page height)
-          const stalledShort = Math.abs(viewportTop) > ARRIVED_PX && !(lenis?.isScrolling ?? false);
+          const moving = lenis ? lenis.isScrolling : Math.abs(window.scrollY - prevScroll) > 1;
+          const stalledShort = Math.abs(viewportTop) > ARRIVED_PX && !moving;
           if (shifted || stalledShort) {
             lastY = y;
             scrollToElement(current);
           }
         }
+        prevScroll = window.scrollY;
         if (++ticks >= TRACK_MAX_TICKS) cancel();
       }, TRACK_INTERVAL_MS);
 
@@ -92,12 +96,15 @@ export function useSectionScroll() {
       window.addEventListener("wheel", stop, { passive: true });
       window.addEventListener("touchstart", stop, { passive: true });
       window.addEventListener("keydown", stop);
+      // Grabbing the scrollbar fires none of the above
+      window.addEventListener("pointerdown", stop, { passive: true });
 
       cleanupRef.current = () => {
         window.clearInterval(interval);
         window.removeEventListener("wheel", stop);
         window.removeEventListener("touchstart", stop);
         window.removeEventListener("keydown", stop);
+        window.removeEventListener("pointerdown", stop);
       };
     },
     [cancel, lenis, scrollToElement],

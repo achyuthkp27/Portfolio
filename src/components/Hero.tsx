@@ -10,7 +10,7 @@ import { useSectionScroll } from "@/hooks/useSectionScroll";
 const OUT = [0.16, 1, 0.3, 1] as const;
 
 /**
- * A line whose words blur up into place one after another, after the reference's BlurText.
+ * A line whose words rise into place one after another, after the reference's BlurText (no per-word blur: too costly on phones).
  * Words wrapped in *asterisks* render in italic serif, a shade brighter.
  */
 const BlurWords = ({
@@ -38,8 +38,8 @@ const BlurWords = ({
           <motion.span
             key={i}
             className="inline-block whitespace-pre"
-            initial={reduceMotion ? false : { opacity: 0, filter: "blur(10px)", y: 30 }}
-            animate={show ? { opacity: 1, filter: "blur(0px)", y: 0 } : {}}
+            initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+            animate={show ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease: OUT, delay: start + i * step }}
           >
             {italic ? <span className="text-white/95">{word}</span> : word}
@@ -54,7 +54,7 @@ const BlurWords = ({
 /**
  * The introduction, matched to sarang-space.site's Hero.jsx: an accent label, "Hey, I'm"
  * as an outlined italic serif ghost behind the name in Inter Black, letters rising in one
- * by one, three paragraphs that blur in word by word and get quieter, then Explore. The
+ * by one, three paragraphs that rise in word by word and get quieter, then Explore. The
  * original photo is pinned on the right and pushes in as you scroll; the whole block lifts
  * and fades as it leaves.
  */
@@ -256,19 +256,6 @@ const Hero = () => {
             {`${PROFILE.first}.`}
           </motion.span>
         </h1>
-
-        {/* Proof for the skim reader: where, how far, and what for, before any paragraph */}
-        <motion.ul {...rise(1.2)} className="-mt-4 mb-10 flex flex-wrap gap-2 max-w-3xl" aria-label="Highlights">
-          {PROFILE.proof.map((fact) => (
-            <li
-              key={fact}
-              className="inline-flex items-center gap-2 rounded-pill border border-white/15 bg-white/[0.03] px-3.5 py-1.5 text-[12px] md:text-[13px] text-white/80"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
-              {fact}
-            </li>
-          ))}
-        </motion.ul>
 
         <div className="max-w-lg flex flex-col gap-6">
           <BlurWords

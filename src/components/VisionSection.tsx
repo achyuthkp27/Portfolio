@@ -1,122 +1,59 @@
-import { motion, useReducedMotionConfig, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useInView, useReducedMotionConfig } from "framer-motion";
 import { useRef } from "react";
 import { PROFILE } from "@/data/profile";
-import { clamp01, pad2 as pad } from "@/lib/format";
+import { pad2 as pad } from "@/lib/format";
 
 const PRINCIPLES = PROFILE.principles;
 const N = PRINCIPLES.length;
+const OUT = [0.16, 1, 0.3, 1] as const;
 
 /**
- * (How I think): a fly-through. Each principle starts as a speck in the distance, rushes
- * toward you, holds at reading size while its note fades in, then blows past and the next
- * one appears far away. Only the words move; the ground stays still. Reduced motion gets
- * the principles as a plain list.
+ * (How I think): three principles, one per screen-height row. Each flies in once from the
+ * distance (small, blurred, faded) to reading size the moment it reaches the screen, its
+ * note following a beat later, and then stays. Nothing is tied to scroll position, so a
+ * fast scroll still lands on three readable lines. Reduced motion shows them in place.
  */
-const VisionSection = () => {
-  const reduceMotion = useReducedMotionConfig();
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  // One unit per principle, with a little lead-in and run-out
-  const units = useTransform(p, (v) => v * (N + 0.2) - 0.1);
-  const counter = useTransform(units, (u) => pad(Math.min(N, Math.max(1, Math.floor(u) + 1))));
+const VisionSection = () => (
+  <section id="vision" data-reveal-skip aria-label="How I think" className="theme-dark text-snow relative">
+    <p className="t-label relative text-center pt-24 md:pt-32">How I think</p>
+    <ol className="relative">
+      {PRINCIPLES.map((pr, i) => (
+        <Principle key={pr.title} index={i} title={pr.title} note={pr.note} />
+      ))}
+    </ol>
+  </section>
+);
 
-  if (reduceMotion) {
-    return (
-      <section id="vision" className="theme-dark text-snow py-24 px-6 md:px-10 lg:px-12">
-        <p className="t-label text-center mb-12">How I think</p>
-        <ul className="max-w-4xl mx-auto space-y-12 text-center">
-          {PRINCIPLES.map((pr) => (
-            <li key={pr.title}>
-              <p className="font-display font-semibold uppercase leading-[0.95] text-5xl md:text-7xl">{pr.title}</p>
-              <p className="t-body text-muted mt-4 max-w-xl mx-auto">{pr.note}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    );
-  }
-
+const Principle = ({ index, title, note }: { index: number; title: string; note: string }) => {
+  const still = useReducedMotionConfig();
+  const ref = useRef<HTMLLIElement>(null);
+  const seen = useInView(ref, { once: true, margin: "0px 0px -30% 0px" });
+  const on = still || seen;
   return (
-    <section
-      id="vision"
+    <li
       ref={ref}
-      data-reveal-skip
-      data-glass-off
-      aria-label="How I think"
-      className="theme-dark text-snow relative"
-      style={{ height: `${N * 130 + 100}vh` }}
+      className="min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-center px-6 py-16 text-center"
     >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
-        {/* Crosshair: two faint hairlines through the centre, the stage the principles fly through */}
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-snow/[0.08]" />
-          <div className="absolute top-0 bottom-0 left-1/2 w-px bg-snow/[0.08]" />
-        </div>
-        <p className="t-label absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10">How I think</p>
-
-        {PRINCIPLES.map((pr, i) => (
-          <Principle key={pr.title} index={i} title={pr.title} note={pr.note} units={units} />
-        ))}
-
-        <div
-          aria-hidden="true"
-          className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 font-mono text-[13px] tracking-[0.2em]"
-        >
-          <motion.span className="text-emerald-400 tabular-nums">{counter}</motion.span>
-          <span className="w-10 h-px bg-snow/25" />
-          <span className="text-snow/60">{pad(N)}</span>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-/** One principle on its own stretch of the timeline: far, near, through */
-const Principle = ({
-  index,
-  title,
-  note,
-  units,
-}: {
-  index: number;
-  title: string;
-  note: string;
-  units: MotionValue<number>;
-}) => {
-  // t runs 0 → 1 across this principle's unit: approach 0–0.4, hold 0.4–0.7, pass through 0.7–1
-  const t = useTransform(units, (u) => u - index);
-  const scale = useTransform(t, (v) => {
-    if (v <= 0.4) return 0.08 + 0.92 * Math.pow(clamp01(v / 0.4), 2.2);
-    if (v <= 0.7) return 1;
-    return 1 + Math.pow(clamp01((v - 0.7) / 0.3), 2) * 7;
-  });
-  const opacity = useTransform(t, (v) => {
-    if (v < 0) return 0;
-    if (v <= 0.15) return clamp01(v / 0.15);
-    if (v <= 0.78) return 1;
-    return 1 - clamp01((v - 0.78) / 0.14);
-  });
-  const blur = useTransform(t, (v) => (v > 0.75 ? `blur(${clamp01((v - 0.75) / 0.2) * 10}px)` : "blur(0px)"));
-  const noteOpacity = useTransform(t, (v) =>
-    v < 0.38 || v > 0.76 ? 0 : Math.min(clamp01((v - 0.38) / 0.1), clamp01((0.76 - v) / 0.08)),
-  );
-  const noteY = useTransform(noteOpacity, (o) => (1 - o) * 16);
-  const visibility = useTransform(opacity, (o) => (o < 0.01 ? "hidden" : "visible"));
-  return (
-    <motion.div
-      style={{ opacity, visibility }}
-      className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center pointer-events-none"
-    >
+      <p className="font-mono text-[13px] tracking-[0.2em] text-emerald-400 mb-6">
+        {pad(index + 1)} / {pad(N)}
+      </p>
       <motion.p
-        style={{ scale, filter: blur }}
+        initial={still ? false : { opacity: 0, scale: 0.2, filter: "blur(14px)" }}
+        animate={on ? { opacity: 1, scale: 1, filter: "blur(0px)" } : undefined}
+        transition={{ duration: 1.1, ease: OUT }}
         className="font-display font-semibold uppercase leading-[0.95] tracking-[-0.005em] text-[13vw] md:text-[8vw] lg:text-[min(8rem,15vh)] max-w-[14ch] text-balance will-change-transform"
       >
         {title}
       </motion.p>
-      <motion.p style={{ opacity: noteOpacity, y: noteY }} className="t-body text-snow/70 mt-6 md:mt-8 max-w-xl">
+      <motion.p
+        initial={still ? false : { opacity: 0, y: 16 }}
+        animate={on ? { opacity: 1, y: 0 } : undefined}
+        transition={{ duration: 0.7, ease: OUT, delay: 0.45 }}
+        className="t-body text-snow/70 mt-6 md:mt-8 max-w-xl"
+      >
         {note}
       </motion.p>
-    </motion.div>
+    </li>
   );
 };
 

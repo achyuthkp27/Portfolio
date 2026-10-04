@@ -2,7 +2,7 @@ import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { useMotionOff } from "@/lib/motionPreference";
 import { AnimatePresence } from "framer-motion";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { HelmetProvider } from "react-helmet-async";
 
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -84,6 +84,25 @@ const DeferredExperience = () => {
   );
 };
 
+/**
+ * While the splash covers the page, the page behind it can't take focus or clicks, so a
+ * keyboard user tabbing during the splash doesn't land on links they can't see. The splash
+ * itself is untouched and still shows on every visit.
+ */
+const InertWhileLoading = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading } = useLoading();
+  const ref = useRef<HTMLDivElement>(null);
+  // Set as a DOM property: this React version's types don't know the inert attribute yet
+  useEffect(() => {
+    if (ref.current) ref.current.inert = isLoading;
+  }, [isLoading]);
+  return (
+    <div ref={ref} className="contents">
+      {children}
+    </div>
+  );
+};
+
 const App = () => {
   const motionOff = useMotionOff();
   return (
@@ -93,27 +112,29 @@ const App = () => {
           {/* PROTECTED: opening splash screen. Required on every visit and device — never remove. See CLAUDE.md. */}
           <PremiumLoader />
           <MotionConfig reducedMotion={motionOff ? "always" : "user"}>
-            <HashRouter>
-              {/* Skip to main content. A button, because "#main-content" would be a route under HashRouter. */}
-              <button
-                type="button"
-                onClick={() => {
-                  const main = document.getElementById("main-content");
-                  main?.focus();
-                  main?.scrollIntoView();
-                }}
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:bg-snow focus:text-night focus:px-4 focus:py-2 focus:rounded-sm focus:text-sm"
-              >
-                Skip to content
-              </button>
-              {/* One Lenis instance for everything: nav, overlays, and pages share it */}
-              <SmoothScroll>
-                <KeyboardShortcuts />
-                <DeferredExperience />
-                <Navigation />
-                <AnimatedRoutes />
-              </SmoothScroll>
-            </HashRouter>
+            <InertWhileLoading>
+              <HashRouter>
+                {/* Skip to main content. A button, because "#main-content" would be a route under HashRouter. */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const main = document.getElementById("main-content");
+                    main?.focus();
+                    main?.scrollIntoView();
+                  }}
+                  className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:bg-snow focus:text-night focus:px-4 focus:py-2 focus:rounded-sm focus:text-sm"
+                >
+                  Skip to content
+                </button>
+                {/* One Lenis instance for everything: nav, overlays, and pages share it */}
+                <SmoothScroll>
+                  <KeyboardShortcuts />
+                  <DeferredExperience />
+                  <Navigation />
+                  <AnimatedRoutes />
+                </SmoothScroll>
+              </HashRouter>
+            </InertWhileLoading>
           </MotionConfig>
         </LoadingProvider>
       </HelmetProvider>

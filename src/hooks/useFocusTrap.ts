@@ -30,7 +30,8 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, active
     });
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Tab" || !containerRef.current) return;
+      // A control inside the dialog that used Tab itself (the terminal's completion) wins
+      if (e.key !== "Tab" || e.defaultPrevented || !containerRef.current) return;
       const items = focusables();
       if (items.length === 0) {
         e.preventDefault();

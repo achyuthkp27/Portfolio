@@ -105,7 +105,8 @@ const Row = ({
               aria-controls={panel}
               className="text-left font-body font-medium tracking-[-0.02em] text-[26px] md:text-[34px] leading-tight"
             >
-              <motion.span style={{ opacity: isOpen ? 1 : fill }} aria-label={service.title} className="inline-block">
+              <span className="sr-only">{service.title}</span>
+              <motion.span style={{ opacity: isOpen ? 1 : fill }} aria-hidden="true" className="inline-block">
                 {service.title.split(" ").map((word, w, words) => (
                   <span key={w} aria-hidden="true" className="inline-block whitespace-nowrap">
                     {[...word].map((ch, c) => {

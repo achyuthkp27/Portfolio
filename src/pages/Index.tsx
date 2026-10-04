@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { LazySection } from "@/components/ui/LazySection";
 import { DUR } from "@/lib/motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import SEO from "@/components/SEO";
 
 const WorkSection = lazy(() => import("@/components/WorkSection"));
 const FocusSection = lazy(() => import("@/components/FocusSection"));
@@ -41,6 +42,7 @@ const Index = () => {
       transition={{ duration: DUR.base }}
       className="bg-night"
     >
+      <SEO />
       <main id="main-content" tabIndex={-1} className="relative z-10 outline-none">
         <Hero />
         {/* Reserved heights are the sections' measured heights (desktop, then phone) so the page
@@ -48,22 +50,22 @@ const Index = () => {
         <LazySection minHeight="320vh">
           <FocusSection />
         </LazySection>
-        <LazySection sectionId="about" minHeight="1800px" minHeightMobile="3150px">
+        <LazySection sectionId="about" minHeight="1770px" minHeightMobile="3020px">
           <AboutSection />
         </LazySection>
-        <LazySection sectionId="work" minHeight="6950px" minHeightMobile="9200px">
+        <LazySection sectionId="work" minHeight="2710px" minHeightMobile="3460px">
           <WorkSection />
         </LazySection>
-        <LazySection sectionId="services" minHeight="1320px" minHeightMobile="1550px">
+        <LazySection sectionId="services" minHeight="1290px" minHeightMobile="1460px">
           <ServicesSection />
         </LazySection>
-        <LazySection sectionId="vision" minHeight="490vh">
+        <LazySection sectionId="vision" minHeight="2310px" minHeightMobile="1890px">
           <VisionSection />
         </LazySection>
         <LazySection sectionId="experience" minHeight="2410px" minHeightMobile="3430px">
           <ExperienceSection />
         </LazySection>
-        <LazySection sectionId="open-source" minHeight="1030px" minHeightMobile="1750px">
+        <LazySection sectionId="open-source" minHeight="1355px" minHeightMobile="3365px">
           <OpenSourceSection />
         </LazySection>
         <LazySection sectionId="contact" minHeight="320vh">

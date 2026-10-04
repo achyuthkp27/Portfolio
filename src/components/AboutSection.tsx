@@ -55,12 +55,15 @@ const AboutSection = () => {
   }, []);
   const time = useLocalTime(PROFILE.timeZone);
   const [latest, setLatest] = useState<GitHubRepo | null>(null);
+  const [latestDone, setLatestDone] = useState(false);
   useEffect(() => {
     const c = new AbortController();
     fetchLatestRepositories(12, c.signal).then((r) => {
       // Newest by push date, not the featured ordering the list uses
       const newest = [...r].sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at))[0];
-      if (!c.signal.aborted && newest) setLatest(newest);
+      if (c.signal.aborted) return;
+      if (newest) setLatest(newest);
+      setLatestDone(true);
     });
     return () => c.abort();
   }, []);
@@ -252,7 +255,9 @@ const AboutSection = () => {
                       {time.time.split(":")[0]}
                       <span className="clock-colon">:</span>
                       {time.time.split(":")[1]}
-                      <span className="t-heading text-xl md:text-2xl text-muted ml-2">{time.period}</span>
+                      <span data-no-split className="t-heading text-xl md:text-2xl text-muted ml-2">
+                        {time.period}
+                      </span>
                     </p>
                     <p className="t-caps text-muted text-[12px] mt-2">{PROFILE.city.split(",")[0]} · IST</p>
                   </div>
@@ -296,7 +301,21 @@ const AboutSection = () => {
                     </span>
                   </a>
                 ) : (
-                  <p className="mt-6 t-figure text-xs text-muted">Fetching…</p>
+                  <p className="mt-6 t-figure text-xs text-muted">
+                    {latestDone ? (
+                      // GitHub didn't answer (rate limit, offline): point at the profile instead of waiting forever
+                      <a
+                        href={PROFILE.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-4 hover:text-snow"
+                      >
+                        See it on GitHub
+                      </a>
+                    ) : (
+                      "Fetching…"
+                    )}
+                  </p>
                 )}
               </motion.div>
             </div>

@@ -50,6 +50,8 @@ const TotpDemo = () => {
   if (!isTotpSupported()) return null;
 
   const key = `${counterRef.current}:${code}`;
+  // Nothing to submit until the first code has been generated
+  const ready = counterRef.current !== null && /^\d+$/.test(code);
 
   const submit = () => {
     if (usedCodes.current.has(key)) {
@@ -68,8 +70,9 @@ const TotpDemo = () => {
   return (
     <div ref={rootRef} data-reveal-skip className="w-full max-w-md">
       <div
+        role="img"
         className="flex justify-center gap-1.5 md:gap-2 mb-3"
-        aria-label={`Current code ${code.split("").join(" ")}`}
+        aria-label={ready ? `Current code ${code.split("").join(" ")}` : "Generating code"}
       >
         {code.split("").map((digit, i) => (
           <span
@@ -95,14 +98,16 @@ const TotpDemo = () => {
         <button
           type="button"
           onClick={submit}
-          className="px-3 py-2 rounded-sm text-xs md:text-[13px] font-body font-medium border border-emerald-400/60 text-emerald-200 hover:bg-emerald-400/10 transition-colors duration-fast"
+          disabled={!ready}
+          className="disabled:opacity-40 disabled:pointer-events-none px-3 py-2 rounded-sm text-xs md:text-[13px] font-body font-medium border border-emerald-400/60 text-emerald-200 hover:bg-emerald-400/10 transition-colors duration-fast"
         >
           Submit this code
         </button>
         <button
           type="button"
           onClick={submitWrong}
-          className="px-3 py-2 rounded-sm text-xs md:text-[13px] font-body font-medium border border-line text-snow/80 hover:bg-snow/5 transition-colors duration-fast"
+          disabled={!ready}
+          className="disabled:opacity-40 disabled:pointer-events-none px-3 py-2 rounded-sm text-xs md:text-[13px] font-body font-medium border border-line text-snow/80 hover:bg-snow/5 transition-colors duration-fast"
         >
           Submit a wrong code
         </button>

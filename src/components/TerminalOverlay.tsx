@@ -6,6 +6,7 @@ import { projects } from "@/data/projects";
 import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 import { useSmoothScroll } from "@/context/smoothScroll";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 interface TerminalOverlayProps {
   forceOpen?: boolean;
@@ -268,14 +269,12 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
     };
   }, [isRaining]);
 
-  const scrollToContact = () => {
+  const goTo = useSectionScroll();
+  const scrollToContact = useCallback(() => {
     setIsOpen(false);
-    // Deliberately untracked: fires after unmount but touches no React state —
-    // it only scrolls the page once the overlay is gone.
-    setTimeout(() => {
-      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-    }, 300);
-  };
+    // Works from any route: goes home first when the terminal was opened on a project page
+    setTimeout(() => goTo("contact"), 300);
+  }, [goTo]);
 
   const handleCommand = useCallback(
     (e?: React.FormEvent, manualCmd?: string) => {
@@ -617,7 +616,7 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
       setHistory((prev) => [...prev, ...newHistory]);
       setInput("");
     },
-    [input, githubRepos, theme, streamLines],
+    [input, githubRepos, theme, streamLines, scrollToContact],
   );
 
   // Stable ref so clickable help commands always call the latest handler

@@ -17,9 +17,10 @@ export interface Project {
   title: string;
   description: string;
   category?: ProjectCategory;
-  problem: string;
-  solution: string;
-  outcome: string;
+  /** Problem, approach and outcome: left out where there is nothing specific and true to say */
+  problem?: string;
+  solution?: string;
+  outcome?: string;
   tags: string[];
   featured?: boolean;
   icon: LucideIcon;
@@ -33,9 +34,9 @@ export interface Project {
 export const projects: Project[] = [
   {
     slug: "corporate-banking-microservices",
-    title: "Corporate Banking Microservices",
+    title: "Retail, Mobile & Corporate Banking",
     description:
-      "Spring Boot services within a 30+ microservice estate powering retail, mobile, and corporate online banking.",
+      "Spring Boot services in a 30+ microservice estate powering retail, mobile, and corporate online banking for hundreds of corporate clients.",
     category: "Backend",
     problem:
       "Corporate clients needed new banking modules on a platform serving hundreds of organizations, under strict compliance requirements",
@@ -118,6 +119,22 @@ export const projects: Project[] = [
     icon: Database,
   },
   {
+    slug: "aegis-ai",
+    title: "AegisAI, a GenAI platform for banking operations",
+    description:
+      "A multi-tenant GenAI platform on Spring AI: a compliance copilot that answers only from internal documents with citations, dispute agents with human approval, an OAuth2-secured MCP server, and guardrails on every model call.",
+    category: "AI",
+    problem: "Bank staff can't paste policies and statements into a model that may invent answers or leak them",
+    solution:
+      "Built a copilot that cites its sources, Kafka-triggered agents that draft dispute resolutions for a human to approve, and a guardrail pipeline for PII, prompt injection, and output validation",
+    outcome: "Open source; a sovereign mode runs fully local with zero data egress",
+    tags: ["Spring AI", "MCP", "Agents", "RAG", "pgvector", "Guardrails"],
+    icon: ShieldCheck,
+    featured: true,
+    repo: "https://github.com/achyuthkp27/spring-ai-langchain4j",
+    origin: "Own time · open source",
+  },
+  {
     slug: "voxos",
     title: "VoxOs, a voice agent for the Mac",
     description:
@@ -150,3 +167,22 @@ export const projects: Project[] = [
     origin: "Own time · open source",
   },
 ];
+
+/** What the Work section shows, by slug: applied AI as one card, VoxOs, then the banking systems as rows */
+export const WORK = {
+  ai: ["aegis-ai", "llm-banking-chatbot", "kairo-offline-ai-bank"],
+  spotlight: "voxos",
+  more: [
+    "corporate-banking-microservices",
+    "totp-authentication-system",
+    "card-tokenization",
+    "video-kyc-onboarding",
+    "elk-observability-rollout",
+  ],
+} as const;
+
+export const projectBySlug = (slug: string) => {
+  const found = projects.find((p) => p.slug === slug);
+  if (!found) throw new Error(`Unknown project: ${slug}`);
+  return found;
+};

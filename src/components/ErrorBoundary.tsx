@@ -10,6 +10,15 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
+/**
+ * A lazy chunk that no longer exists, usually because a deploy replaced it. Chrome, Safari
+ * and Firefox each word this differently.
+ */
+const isChunkLoadError = (error: Error | null) =>
+  !!error &&
+  (error.name === "ChunkLoadError" ||
+    /Loading chunk|MIME type|dynamically imported module|Importing a module script failed/i.test(error.message));
+
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -25,11 +34,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     console.error("Error caught by boundary:", error, errorInfo);
 
     // Check if it's a chunk load error (common during new deployments)
-    const isChunkError =
-      error.name === "ChunkLoadError" ||
-      error.message.includes("Loading chunk") ||
-      error.message.includes("MIME type") ||
-      error.message.includes("Failed to fetch dynamically imported module");
+    const isChunkError = isChunkLoadError(error);
 
     if (isChunkError) {
       console.log("Chunk load error detected. Attempting to recover...");
@@ -45,6 +50,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   handleReset = () => {
+    // A failed lazy import is remembered by React.lazy, so only a reload can fetch the new chunk
+    if (isChunkLoadError(this.state.error)) {
+      window.location.reload();
+      return;
+    }
     this.setState({ hasError: false, error: null });
   };
 

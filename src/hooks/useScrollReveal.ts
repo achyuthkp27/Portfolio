@@ -75,8 +75,13 @@ export function useScrollReveal(root: RefObject<HTMLElement | null>) {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
+          const el = entry.target as HTMLElement;
+          el.classList.add("is-in");
+          io.unobserve(el);
+          // Once revealed, drop the CSS transition so it can't smooth Framer's own per-frame
+          // transforms a second time (layout rows lagging, scroll-linked y easing late)
+          const delay = parseFloat(el.style.getPropertyValue("--reveal-delay")) || 0;
+          window.setTimeout(() => el.classList.add("reveal-done"), delay + 900);
         });
       },
       { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
