@@ -19,7 +19,7 @@
     --accent-950: 166 91% 9%;
 
     /* Palette */
-    --night: 120 6% 3%;
+    --night: 0 0% 0%;
     --graphite: 0 0% 9%;
     --snow: 0 0% 100%;
     --stone: 0 0% 96%;
@@ -476,17 +476,8 @@
     transform: translateY(-3px);
   }
 }
-.log-stream {
-  animation: log-stream 18s linear infinite;
-}
-@keyframes log-stream {
-  to {
-    transform: translateY(-50%);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .typing-dot,
-  .log-stream {
+  .typing-dot {
     animation: none;
   }
 }
@@ -495,6 +486,23 @@
 .grain {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
+}
+
+/* Film grain over the whole page, after patrickjane.framer.website: a still, tiled noise
+   texture at low opacity, above everything and never in the way of a click */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 154px 154px;
+  opacity: 0.1;
+}
+@media print {
+  .film-grain {
+    display: none;
+  }
 }
 
 /* The footer's "Animations off" switch: the same stillness the OS setting gives */

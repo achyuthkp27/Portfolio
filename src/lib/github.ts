@@ -67,13 +67,27 @@ export const resetSnapshotForTests = () => {
 
 /** Repos the owner wants first, in this order, ahead of the rest by last update. */
 export const FEATURED_REPOS = ["VoxOs", "spring-ai-langchain4j", "kairo-offline-ai-bank", "forge-fit"];
-/** Repos that never show: the profile README repo carries nothing worth listing. */
-export const HIDDEN_REPOS = new Set(["achyuthkp27"]);
+/**
+ * Repos that never show, lowercase: the profile README repo, and college-era projects that
+ * don't reflect the work today. They stay on GitHub; the site just doesn't list them.
+ */
+export const HIDDEN_REPOS = new Set([
+  "achyuthkp27",
+  "tableau",
+  "covid19-data-analysis",
+  "hotel-management-system",
+  "walltrendz",
+  "rebc",
+  "tekspy",
+  "jarvis",
+  "oldportfolio",
+  "ryver_technologies",
+]);
 
 /** Featured first in their given order, then everything else as GitHub returned it, hidden ones dropped. */
 export function arrangeRepositories(repos: GitHubRepo[]): GitHubRepo[] {
   const rank = new Map(FEATURED_REPOS.map((name, i) => [name.toLowerCase(), i]));
-  const kept = repos.filter((r) => !HIDDEN_REPOS.has(r.name.toLowerCase()) && !HIDDEN_REPOS.has(r.name));
+  const kept = repos.filter((r) => !HIDDEN_REPOS.has(r.name.toLowerCase()));
   const featured = kept
     .filter((r) => rank.has(r.name.toLowerCase()))
     .sort((a, b) => rank.get(a.name.toLowerCase())! - rank.get(b.name.toLowerCase())!);

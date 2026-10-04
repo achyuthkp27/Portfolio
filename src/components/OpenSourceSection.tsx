@@ -44,7 +44,7 @@ const Row = ({
       />
       <span className="min-w-0">
         <span className="block t-heading text-2xl md:text-3xl text-snow break-words max-w-full">{title}</span>
-        {sub && <span className="block t-body text-muted mt-1 line-clamp-2">{sub}</span>}
+        {sub && <span className="t-body text-muted mt-1 line-clamp-2">{sub}</span>}
       </span>
       <span className="flex items-center gap-4 shrink-0 t-figure text-xs text-muted">
         <ScrambleNumber value={meta} />
@@ -56,7 +56,7 @@ const Row = ({
     </>
   );
   const cls =
-    "group relative flex items-baseline justify-between gap-6 py-5 md:py-6 px-3 -ml-3 rounded-sm hover:bg-snow/[0.03] transition-colors duration-fast";
+    "group relative flex flex-col-reverse items-start gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 py-5 md:py-6 px-3 -ml-3 rounded-sm hover:bg-snow/[0.03] transition-colors duration-fast";
   return to ? (
     <Link to={to} className={cls}>
       {inner}

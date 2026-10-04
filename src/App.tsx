@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 import PremiumLoader from "@/components/PremiumLoader";
+import { FilmGrain } from "@/components/ui/FilmGrain";
 import SmoothScroll from "./components/ui/SmoothScroll";
 import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
@@ -111,6 +112,8 @@ const App = () => {
         <LoadingProvider>
           {/* PROTECTED: opening splash screen. Required on every visit and device — never remove. See CLAUDE.md. */}
           <PremiumLoader />
+          {/* Film grain over everything but the About section, splash included */}
+          <FilmGrain />
           <MotionConfig reducedMotion={motionOff ? "always" : "user"}>
             <InertWhileLoading>
               <HashRouter>
