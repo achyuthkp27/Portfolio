@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { prefersReducedMotion } from "@/lib/motionPreference";
+import { prefersReducedMotion, useMotionOff } from "@/lib/motionPreference";
 
 /**
  * Drifting smoke for a dark card, rendered on a canvas: layered value noise, domain-warped
@@ -31,7 +31,8 @@ const fbm = (x: number, y: number) => {
   let v = 0,
     amp = 0.5,
     f = 1;
-  for (let i = 0; i < 4; i++) {
+  // Three octaves: a fourth is invisible under the canvas blur
+  for (let i = 0; i < 3; i++) {
     v += amp * noise(x * f, y * f);
     amp *= 0.5;
     f *= 2.1;
@@ -41,14 +42,17 @@ const fbm = (x: number, y: number) => {
 
 export const Smoke = ({ className = "" }: { className?: string }) => {
   const ref = useRef<HTMLCanvasElement>(null);
+  // Live, so the footer switch freezes the smoke without a reload
+  const motionOff = useMotionOff();
 
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const W = 96,
-      H = 128;
+    // A quarter of the pixels the blur would ever show; upscaling hides the difference
+    const W = 48,
+      H = 64;
     canvas.width = W;
     canvas.height = H;
     const img = ctx.createImageData(W, H);
@@ -56,7 +60,7 @@ export const Smoke = ({ className = "" }: { className?: string }) => {
     const reduce = prefersReducedMotion();
 
     let raf = 0;
-    let visible = true;
+    let onScreen = false;
     let last = 0;
 
     const draw = (t: number) => {
@@ -83,32 +87,38 @@ export const Smoke = ({ className = "" }: { className?: string }) => {
       ctx.putImageData(img, 0, 0);
     };
 
+    // About 15 fps is plenty for slow smoke; the loop only exists while it can be seen
     const loop = (t: number) => {
-      if (visible && t - last > 40) {
+      if (t - last > 66) {
         last = t;
         draw(t);
       }
       raf = requestAnimationFrame(loop);
+    };
+    const sync = () => {
+      const run = onScreen && document.visibilityState === "visible";
+      if (run && !raf) raf = requestAnimationFrame(loop);
+      if (!run && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
     };
 
     draw(0);
     if (reduce) return;
 
     const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting && document.visibilityState === "visible";
+      onScreen = e.isIntersecting;
+      sync();
     });
     io.observe(canvas);
-    const onVis = () => {
-      visible = document.visibilityState === "visible";
-    };
-    document.addEventListener("visibilitychange", onVis);
-    raf = requestAnimationFrame(loop);
+    document.addEventListener("visibilitychange", sync);
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      document.removeEventListener("visibilitychange", onVis);
+      document.removeEventListener("visibilitychange", sync);
     };
-  }, []);
+  }, [motionOff]);
 
   return (
     <div aria-hidden="true" className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>

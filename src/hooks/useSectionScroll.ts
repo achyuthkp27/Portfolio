@@ -11,6 +11,15 @@ const ARRIVED_PX = 120;
 
 const isHome = (pathname: string) => pathname === "/" || pathname === "";
 
+/** Distance from the viewport top to where a section should land: its top, or its last screen when marked data-scroll-end */
+const aimOffset = (element: Element) => {
+  const rect = element.getBoundingClientRect();
+  if (element instanceof HTMLElement && element.dataset.scrollEnd !== undefined) {
+    return rect.top + Math.max(0, element.offsetHeight - window.innerHeight);
+  }
+  return rect.top;
+};
+
 /**
  * Scrolls to a home-page section by id, from any route.
  *
@@ -36,12 +45,14 @@ export function useSectionScroll() {
 
   const scrollToElement = useCallback(
     (element: Element) => {
+      // A pinned scroll sequence marked data-scroll-end lands on its finished state, not its start
+      const y = window.scrollY + aimOffset(element);
       if (lenis) {
         // After a route change Lenis still knows the previous page's height and would clamp the scroll
         lenis.resize();
-        lenis.scrollTo(element as HTMLElement, { duration: 1.2 });
+        lenis.scrollTo(y, { duration: 1.2 });
       } else {
-        element.scrollIntoView({ behavior: "smooth" });
+        window.scrollTo({ top: y, behavior: "smooth" });
       }
     },
     [lenis],
@@ -58,12 +69,12 @@ export function useSectionScroll() {
       if (!initial) return;
       scrollToElement(initial);
 
-      let lastY = initial.getBoundingClientRect().top + window.scrollY;
+      let lastY = aimOffset(initial) + window.scrollY;
       let ticks = 0;
       const interval = window.setInterval(() => {
         const current = document.getElementById(id);
         if (current) {
-          const viewportTop = current.getBoundingClientRect().top;
+          const viewportTop = aimOffset(current);
           const y = viewportTop + window.scrollY;
           const shifted = Math.abs(y - lastY) > SHIFT_THRESHOLD_PX;
           // Also re-aim if a scroll finished short of the target (e.g. clamped by a stale page height)

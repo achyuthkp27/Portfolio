@@ -11,6 +11,7 @@
   :root {
     /* Emerald: the only accent, used sparingly for status and focus */
     --accent-100: 152 81% 96%;
+    --accent-200: 149 80% 90%;
     --accent-300: 156 72% 67%;
     --accent-400: 158 64% 52%;
     --accent-500: 160 84% 39%;
@@ -22,6 +23,11 @@
     --graphite: 0 0% 9%;
     --snow: 0 0% 100%;
     --stone: 0 0% 96%;
+    /* The pale ground shared by the belief, who-I-am and contact sections, and its inks */
+    --pale: 150 22% 95%;
+    --pale-ink: 160 45% 22%;
+    --pale-soft: 160 15% 40%;
+    --pale-grid: 160 30% 20%;
 
     /* Default theme: dark */
     --bg: var(--night);
@@ -165,15 +171,6 @@
   /* Figures: tabular mono for counters and dates */
   .t-figure {
     @apply font-mono tabular-nums;
-  }
-  /* Marquee */
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
   }
 }
 
@@ -365,7 +362,8 @@
 }
 .reveal.is-in {
   opacity: 1;
-  filter: blur(0);
+  /* none, not blur(0): blur(0) would leave a filter layer on every revealed element */
+  filter: none;
   transform: none;
 }
 /* Split text: the container only fades; its letters or words write themselves in,
@@ -380,21 +378,20 @@
 }
 .rv-u {
   display: inline-block;
-  /* The blur filter clips each unit to its own box; pad it so descenders and accents survive */
+  /* Room inside each inline-block unit so descenders and accents are never cut */
   padding: 0.08em 0.01em 0.22em;
   margin-bottom: -0.22em;
   opacity: 0;
-  filter: blur(8px);
+  /* No per-letter blur: with ~2,000 letters on the page, hundreds of blur layers ran at once
+     on phones. The block-level .reveal keeps its blur; letters rise and fade. */
   transform: translateY(0.18em);
   transition:
     opacity 0.55s var(--ease),
-    filter 0.55s var(--ease),
     transform 0.55s var(--ease);
   transition-delay: calc(var(--reveal-delay, 0ms) + var(--u, 0) * var(--step, 20ms));
 }
 .reveal.is-in .rv-u {
   opacity: 1;
-  filter: blur(0);
   transform: none;
 }
 
@@ -460,27 +457,7 @@
   }
 }
 
-/* Work stages: KYC ring and scan line, typing dots, log stream */
-.kyc-ring {
-  background: conic-gradient(from 0deg, transparent 0 70%, hsl(153 60% 62% / 0.9) 100%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 2px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 2px));
-  animation: kyc-ring 3s linear infinite;
-}
-@keyframes kyc-ring {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.kyc-scan {
-  animation: kyc-scan 2.6s ease-in-out infinite alternate;
-  top: 20%;
-}
-@keyframes kyc-scan {
-  to {
-    top: 80%;
-  }
-}
+/* Work stages: typing dots, log stream */
 .typing-dot {
   animation: typing-dot 1s ease-in-out infinite;
 }
@@ -504,45 +481,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .kyc-ring,
-  .kyc-scan,
   .typing-dot,
   .log-stream {
-    animation: none;
-  }
-}
-
-/* Platform card: pulses moving along the bus, services lighting as they draw from it */
-.bus-flow {
-  background: linear-gradient(90deg, transparent 0%, hsl(153 60% 62% / 0.25) 50%, transparent 100%);
-  background-size: 40% 100%;
-  background-repeat: no-repeat;
-  animation: bus-flow 2.4s linear infinite;
-}
-@keyframes bus-flow {
-  from {
-    background-position: -40% 0;
-  }
-  to {
-    background-position: 140% 0;
-  }
-}
-.svc-pip {
-  animation: svc-pip 2.4s ease-in-out infinite;
-}
-@keyframes svc-pip {
-  0%,
-  70%,
-  100% {
-    background-color: hsl(0 0% 100% / 0.14);
-  }
-  80% {
-    background-color: hsl(153 60% 62% / 0.9);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bus-flow,
-  .svc-pip {
     animation: none;
   }
 }
@@ -567,4 +507,152 @@ html[data-motion="off"] .reveal .rv-u {
   opacity: 1 !important;
   filter: none !important;
   transform: none !important;
+}
+
+/* About bento: the pointer's emerald spotlight. The grid sets --spot-o; each card gets its own
+   --mx/--my so one light spills across neighbouring borders. Mouse only. */
+.spot::before,
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spot-o, 0);
+  transition: opacity 0.4s ease;
+}
+.spot::before {
+  z-index: 3;
+  padding: 1px;
+  background: radial-gradient(
+    280px circle at var(--mx, -999px) var(--my, -999px),
+    hsl(158 64% 52% / 0.75),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.spot::after {
+  z-index: 0;
+  background: radial-gradient(
+    420px circle at var(--mx, -999px) var(--my, -999px),
+    hsl(158 64% 52% / 0.07),
+    transparent 65%
+  );
+}
+.spot-light::after {
+  background: radial-gradient(
+    420px circle at var(--mx, -999px) var(--my, -999px),
+    hsl(158 64% 40% / 0.12),
+    transparent 65%
+  );
+}
+@media (hover: hover) and (pointer: fine) {
+  .spot {
+    transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .spot:hover {
+    translate: 0 -4px;
+  }
+}
+
+/* Local time: the colon ticks like a clock */
+@keyframes clock-colon {
+  50% {
+    opacity: 0.2;
+  }
+}
+.clock-colon {
+  animation: clock-colon 1s steps(1) infinite;
+}
+
+/* Loading rows: a soft light sweeps across placeholder bars */
+@keyframes skeleton-sweep {
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, hsl(0 0% 100% / 0.04) 25%, hsl(0 0% 100% / 0.1) 50%, hsl(0 0% 100% / 0.04) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.4s linear infinite;
+}
+
+/* Award: four-point sparkles round the trophy, each twinkling on its own beat */
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  30% {
+    opacity: 0;
+    transform: scale(0.3) rotate(90deg);
+  }
+}
+.sparkle {
+  opacity: 0;
+  background: currentColor;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 4px hsl(158 64% 52% / 0.9));
+  animation: sparkle 3.6s ease-in-out infinite;
+}
+
+/* Record: a light that passes across "Award" every few seconds */
+@keyframes text-shine {
+  0%,
+  60% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -20% 0;
+  }
+}
+.text-shine {
+  color: hsl(158 64% 52%);
+  background: linear-gradient(100deg, hsl(158 64% 52%) 40%, hsl(150 80% 85%) 50%, hsl(158 64% 52%) 60%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-shine 5s ease-in-out infinite;
+}
+
+/* Contact: a detail switching on like a fluorescent tube */
+@keyframes flicker-on {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  12% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  24% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+  46% {
+    opacity: 0.4;
+  }
+  52%,
+  100% {
+    opacity: 1;
+  }
+}
+.flicker-on {
+  animation: flicker-on 0.9s linear both;
 }

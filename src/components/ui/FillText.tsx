@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { useRef, type ElementType } from "react";
+import { Fragment, useRef, type ElementType } from "react";
 
 const Word = ({
   word,
@@ -16,7 +16,7 @@ const Word = ({
   const end = start + 1 / total;
   const opacity = useTransform(progress, [start, end], [0.22, 1]);
   return (
-    <motion.span style={{ opacity }} className="inline-block mr-[0.28em]">
+    <motion.span style={{ opacity }} className="inline-block">
       {word}
     </motion.span>
   );
@@ -46,9 +46,13 @@ export const FillText = ({
   const words = text.split(" ");
   return (
     <div ref={ref} className="relative" data-no-split>
-      <Tag className={className} aria-label={text}>
+      {/* Real spaces between the words, so copy, find-in-page and screen readers read whole words */}
+      <Tag className={className}>
         {words.map((w, i) => (
-          <Word key={i} word={w} index={i} total={words.length} progress={scrollYProgress} />
+          <Fragment key={i}>
+            {i > 0 && " "}
+            <Word word={w} index={i} total={words.length} progress={scrollYProgress} />
+          </Fragment>
         ))}
       </Tag>
     </div>

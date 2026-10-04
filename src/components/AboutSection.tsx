@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
+import { motion, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { FillText } from "./ui/FillText";
-import { PROFILE, SERVICES } from "@/data/profile";
+import { DrawRule } from "./ui/DrawRule";
+import { PROFILE } from "@/data/profile";
 import ExperienceTimer from "./ui/ExperienceTimer";
 import ScrambleNumber from "./ui/ScrambleNumber";
 import { Smoke } from "./ui/Smoke";
@@ -10,22 +11,48 @@ import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useLocalTime } from "@/hooks/useLocalTime";
 import { fetchLatestRepositories, type GitHubRepo } from "@/lib/github";
 import { reveal } from "@/lib/motion";
-import { Curve } from "./ui/Curve";
+import { monthDay } from "@/lib/format";
 
 const STATEMENT =
   "I spent five years building the systems that move money. Now I build the AI that works on top of them, with the same standards.";
 
-const card = "relative rounded-lg border border-line bg-tile overflow-hidden";
+const card = "spot relative rounded-lg border border-line bg-tile overflow-hidden";
+
+/** The pale ground of the belief section above, continued behind this sheet's top corners */
+const PALE = "hsl(var(--pale))";
 
 /**
  * (Who I am): a bento after spector.framer.website. A founder card with the portrait and
  * bio, a vertical label strip, a tall dark card with the live counter over drifting smoke,
- * a principle card, a phases card, and two counts.
+ * a principle card, the story with a way to the work, the services count, local time and
+ * availability, and the latest public push.
  */
-const monthDay = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
 
 const AboutSection = () => {
   const scrollTo = useSectionScroll();
+
+  // One pointer lights every card's border near it, so the glow crosses the gaps between cards
+  const frame = useRef(0);
+  const onSpotMove = useCallback((e: PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse") return;
+    const grid = e.currentTarget;
+    const { clientX: x, clientY: y } = e;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      // Measure every card first, then write: interleaving would force a layout per card
+      const cards = [...grid.querySelectorAll<HTMLElement>(".spot")];
+      const rects = cards.map((el) => el.getBoundingClientRect());
+      cards.forEach((el, i) => {
+        el.style.setProperty("--mx", `${x - rects[i].left}px`);
+        el.style.setProperty("--my", `${y - rects[i].top}px`);
+      });
+      grid.style.setProperty("--spot-o", "1");
+    });
+  }, []);
+  const onSpotLeave = useCallback((e: PointerEvent<HTMLDivElement>) => {
+    cancelAnimationFrame(frame.current);
+    e.currentTarget.style.setProperty("--spot-o", "0");
+  }, []);
   const time = useLocalTime(PROFILE.timeZone);
   const [latest, setLatest] = useState<GitHubRepo | null>(null);
   useEffect(() => {
@@ -38,10 +65,31 @@ const AboutSection = () => {
     return () => c.abort();
   }, []);
 
+  // The sheet rises out of the pale section as an inset rounded card, opens to full bleed,
+  // then closes back into a card as it leaves. Clip-path keeps the copy unscaled and crisp.
+  const reduceMotion = useReducedMotionConfig();
+  const sheet = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: enter } = useScroll({ target: sheet, offset: ["start end", "start 0.15"] });
+  const { scrollYProgress: leave } = useScroll({ target: sheet, offset: ["end 0.95", "end 0.35"] });
+  const clipPath = useTransform([enter, leave], ([a, b]: number[]) => {
+    if (reduceMotion) return "inset(0 0 0 0 round 32px 32px 0 0)";
+    const open = Math.min(1, Math.max(0, a));
+    const close = Math.min(1, Math.max(0, b));
+    // Wide screens start well inset so the opening reads; narrow ones stay inside the copy's padding
+    const inset = window.innerWidth >= 1024 ? 7 : 2.5;
+    const side = Math.max((1 - open) * inset, close * inset);
+    const top = 64 - open * 32;
+    const bottom = close * 56;
+    return `inset(0 ${side}vw 0 ${side}vw round ${top}px ${top}px ${bottom}px ${bottom}px)`;
+  });
+
   return (
-    <section id="about" className="theme-dark bg-night text-snow scroll-mt-16">
-      <Curve className="-mb-px" />
-      <div className="bg-graphite px-6 md:px-10 lg:px-12 py-16 lg:py-24">
+    <section
+      id="about"
+      className="theme-dark text-snow scroll-mt-16"
+      style={{ background: `linear-gradient(to bottom, ${PALE} 0, ${PALE} 50%, hsl(var(--night)) 50%)` }}
+    >
+      <motion.div ref={sheet} style={{ clipPath }} className="bg-graphite px-6 md:px-10 lg:px-12 py-20 lg:py-32">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -57,7 +105,11 @@ const AboutSection = () => {
               className="t-statement text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl max-w-6xl"
             />
 
-            <div className="mt-16 lg:mt-24 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-3 md:gap-4">
+            <div
+              onPointerMove={onSpotMove}
+              onPointerLeave={onSpotLeave}
+              className="mt-16 lg:mt-24 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-3 md:gap-4"
+            >
               {/* Founder card */}
               <motion.div {...reveal()} className={`${card} md:col-span-6 lg:col-span-5 p-6 md:p-8 flex flex-col`}>
                 <span className="flex items-center gap-2 t-figure text-xs text-emerald-300">
@@ -113,7 +165,7 @@ const AboutSection = () => {
                 </div>
                 <div className="relative">
                   <p className="t-heading text-3xl md:text-4xl">Production first</p>
-                  <span className="block w-10 h-px bg-snow/30 mx-auto my-4" aria-hidden="true" />
+                  <DrawRule center className="w-10 bg-snow/30 my-4" />
                   <p className="t-body text-snow/70 text-[15px]">
                     Five years of backend systems, now applied to AI that ships.
                   </p>
@@ -123,51 +175,43 @@ const AboutSection = () => {
               {/* Principle card */}
               <motion.div
                 {...reveal(0.15)}
-                className={`${card} md:col-span-3 lg:col-span-3 p-6 md:p-8 flex flex-col text-center`}
+                className={`${card} md:col-span-3 lg:col-span-3 p-6 md:p-8 flex flex-col justify-center text-center`}
               >
-                <h3 className="t-heading text-3xl md:text-4xl">
+                {/* Concentric hairlines rippling out from the top-left corner */}
+                <svg
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  preserveAspectRatio="xMinYMin slice"
+                  viewBox="0 0 400 600"
+                >
+                  {/* Clustered at the top-left, each arc whole within the card, fading outward */}
+                  {[110, 190, 280, 380].map((r, i) => (
+                    <circle
+                      key={r}
+                      cx="-30"
+                      cy="-40"
+                      r={r}
+                      fill="none"
+                      stroke={`hsl(0 0% 100% / ${0.09 - i * 0.015})`}
+                      strokeWidth="1"
+                    />
+                  ))}
+                </svg>
+                <h3 className="relative t-heading text-3xl md:text-4xl">
                   Reliable systems.
                   <br />
                   <span className="text-emerald-400">Useful AI.</span>
                 </h3>
-                <span className="block w-10 h-px bg-line mx-auto my-5" aria-hidden="true" />
-                <p className="t-body text-snow/70 text-[15px]">
+                <DrawRule center className="w-10 relative bg-line my-5" />
+                <p className="relative t-body text-snow/70 text-[15px]">
                   Correctness, security, and observability stay in scope from the first commit to the last.
                 </p>
-                <ul className="mt-auto pt-8 grid grid-cols-5 gap-1.5 items-end h-24">
-                  {SERVICES.map((s, i) => (
-                    <li key={s.title} className="flex flex-col justify-end h-full">
-                      <motion.span
-                        initial={{ scaleY: 0 }}
-                        whileInView={{ scaleY: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 + i * 0.07 }}
-                        className={`block w-full rounded-sm origin-bottom ${i === 0 ? "bg-emerald-400" : "bg-snow/20"}`}
-                        style={{ height: `${100 - i * 12}%` }}
-                        aria-hidden="true"
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-
-              {/* Phases */}
-              <motion.div {...reveal(0.2)} className={`${card} md:col-span-3 lg:col-span-3 p-6 md:p-8`}>
-                <p className="t-label mb-6">How work moves</p>
-                <ol className="space-y-3">
-                  {PROFILE.phases.map((p, i) => (
-                    <li key={p} className="flex items-baseline gap-4 border-t border-line pt-3">
-                      <span className="t-figure text-xs text-emerald-300">{String(i + 1).padStart(2, "0")}</span>
-                      <span className="t-heading text-2xl">{p}</span>
-                    </li>
-                  ))}
-                </ol>
               </motion.div>
 
               {/* Story + actions */}
-              <motion.div {...reveal(0.25)} className={`${card} md:col-span-3 lg:col-span-5 p-6 md:p-8 flex flex-col`}>
+              <motion.div {...reveal(0.25)} className={`${card} md:col-span-6 lg:col-span-8 p-6 md:p-8 flex flex-col`}>
                 <h3 className="t-heading text-3xl md:text-4xl">Same platform, higher bar</h3>
-                <span className="block w-10 h-px bg-line mt-5 mb-5" aria-hidden="true" />
+                <DrawRule className="w-10 bg-line mt-5 mb-5" />
                 <p className="t-body text-snow/70">
                   I started at FIS Global, was promoted to Senior Software Engineer, and moved with the same platform
                   and client to Cognizant. The interesting problems now sit where reliable systems meet AI: models that
@@ -176,7 +220,7 @@ const AboutSection = () => {
                 <button
                   type="button"
                   onClick={() => scrollTo("work")}
-                  className="group mt-auto pt-8 inline-flex items-center gap-3 t-heading text-2xl hover:text-emerald-300 transition-colors duration-fast self-start"
+                  className="group mt-auto pt-8 inline-flex items-center gap-3 t-heading text-2xl self-start"
                 >
                   See the work{" "}
                   <ArrowRight
@@ -190,13 +234,13 @@ const AboutSection = () => {
               <motion.div
                 {...reveal(0.3)}
                 data-reveal-skip
-                className="relative rounded-lg overflow-hidden md:col-span-6 lg:col-span-4 bg-snow p-6 md:p-8 flex flex-col"
+                className="spot spot-light group relative rounded-lg overflow-hidden md:col-span-6 lg:col-span-4 bg-snow p-6 md:p-8 flex flex-col"
               >
                 <p className="relative t-heading text-3xl md:text-4xl text-night">Services in the estate</p>
                 <p className="relative t-wordmark leading-none text-[6rem] md:text-[7.5rem] mt-auto pt-8 text-night">
                   <ScrambleNumber value="30" suffix="+" suffixClassName="text-emerald-500 plus-pulse" />
                 </p>
-                <span className="relative block w-10 h-px bg-night/40 mt-4" aria-hidden="true" />
+                <DrawRule className="w-10 relative bg-night/40 mt-4" />
               </motion.div>
 
               {/* Local time and availability */}
@@ -204,7 +248,12 @@ const AboutSection = () => {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="t-label">Local time</p>
-                    <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5">{time}</p>
+                    <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5">
+                      {time.time.split(":")[0]}
+                      <span className="clock-colon">:</span>
+                      {time.time.split(":")[1]}
+                      <span className="t-heading text-xl md:text-2xl text-muted ml-2">{time.period}</span>
+                    </p>
                     <p className="t-caps text-muted text-[12px] mt-2">{PROFILE.city.split(",")[0]} · IST</p>
                   </div>
                   <div className="text-right">
@@ -235,15 +284,13 @@ const AboutSection = () => {
                     className="group mt-6 flex items-end justify-between gap-6 min-w-0"
                   >
                     <span className="min-w-0">
-                      <span className="block t-heading text-2xl md:text-3xl break-words group-hover:text-snow/80 transition-colors duration-fast">
-                        {latest.name}
-                      </span>
+                      <span className="block t-heading text-2xl md:text-3xl break-words">{latest.name}</span>
                       <span className="block t-body text-muted mt-1 line-clamp-2">{latest.description}</span>
                     </span>
                     <span className="shrink-0 flex items-center gap-3 t-figure text-xs text-muted">
                       {monthDay(latest.updated_at)}
                       <ArrowUpRight
-                        className="w-4 h-4 group-hover:text-emerald-300 transition-colors duration-fast"
+                        className="w-4 h-4 group-hover:text-emerald-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition duration-fast"
                         aria-hidden="true"
                       />
                     </span>
@@ -255,8 +302,7 @@ const AboutSection = () => {
             </div>
           </div>
         </motion.div>
-      </div>
-      <Curve flip className="-mt-px" />
+      </motion.div>
     </section>
   );
 };

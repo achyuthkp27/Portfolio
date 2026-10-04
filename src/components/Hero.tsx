@@ -1,175 +1,312 @@
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDownRight } from "lucide-react";
 import { useLoading } from "@/hooks/useLoading";
-import { useLocalTime } from "@/hooks/useLocalTime";
 import { PROFILE } from "@/data/profile";
-import { DUR, EASE } from "@/lib/motion";
+
+const base = import.meta.env.BASE_URL;
 import ExperienceTimer from "./ui/ExperienceTimer";
-import ScrambleNumber from "./ui/ScrambleNumber";
-import { PillButton } from "./ui/Pill";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 
-/** Small fact tiles that drift in from the edges as the visitor scrolls, where the reference floats photographs. */
-const TILES = [
-  { label: "Based in", value: "Bengaluru", side: "left", top: "18%", depth: 1 },
-  { label: "Since", value: "Jul 2021", side: "right", top: "26%", depth: 0.7 },
-  { label: "Audited platform", value: "PCI-DSS · SOX", side: "left", top: "58%", depth: 0.55 },
-  { label: "Now building", value: "AI products", side: "right", top: "62%", depth: 0.9 },
-] as const;
+const OUT = [0.16, 1, 0.3, 1] as const;
 
 /**
- * The introduction: name as the eyebrow, a two-line statement in Antonio over an emerald
- * aura, one line, two actions, and a proof row with the live counter. The stage shrinks
- * into a card as Work slides over it; facts drift in from the edges as the page moves.
+ * A line whose words blur up into place one after another, after the reference's BlurText.
+ * Words wrapped in *asterisks* render in italic serif, a shade brighter.
  */
-const Hero = () => {
-  const { isLoading } = useLoading();
-  const reduceMotion = useReducedMotion();
-  const time = useLocalTime(PROFILE.timeZone);
-  const scrollTo = useSectionScroll();
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -80]);
-  const titleScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 1.6]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const tileIn = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
-  // The whole stage pulls away into a rounded, dimming card as the next section slides over it
-  const stageScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 0.9]);
-  const stageRadius = useTransform(scrollYProgress, [0, 0.6], [0, reduceMotion ? 0 : 28]);
-  const stageDim = useTransform(scrollYProgress, [0.2, 1], [0, reduceMotion ? 0 : 0.55]);
-
-  const enter = (delay: number) => ({
-    initial: { opacity: 0, y: 12 },
-    animate: !isLoading ? { opacity: 1, y: 0 } : {},
-    transition: { duration: DUR.base, ease: EASE, delay },
-  });
-
+const BlurWords = ({
+  text,
+  start,
+  step,
+  className,
+  show,
+}: {
+  text: string;
+  start: number;
+  step: number;
+  className: string;
+  show: boolean;
+}) => {
+  const reduceMotion = useReducedMotionConfig();
   return (
-    <section ref={ref} data-reveal-skip className="theme-dark relative min-h-screen bg-night text-snow">
-      <motion.div
-        style={{ scale: stageScale, borderRadius: stageRadius }}
-        className="sticky top-0 min-h-screen overflow-hidden flex flex-col bg-night origin-center will-change-transform"
-      >
-        <motion.div
-          style={{ opacity: stageDim }}
-          aria-hidden="true"
-          className="absolute inset-0 z-20 bg-night pointer-events-none"
-        />
-        {/* Drifting facts */}
-        {!reduceMotion && TILES.map((tile) => <FactTile key={tile.label} tile={tile} progress={tileIn} />)}
-
-        {/* Emerald depth behind the statement */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_50%_45%_at_50%_42%,hsl(var(--accent-500)/0.16),transparent_70%)]"
-        />
-        <motion.div
-          aria-hidden="true"
-          className="absolute z-0 w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] rounded-full pointer-events-none mix-blend-screen motion-reduce:hidden"
-          style={{
-            background:
-              "radial-gradient(circle, hsl(var(--accent-400)/0.14) 0%, hsl(var(--accent-500)/0.05) 40%, transparent 65%)",
-          }}
-          animate={{ x: ["-20vw", "20vw", "-20vw"], y: ["-10vh", "15vh", "-10vh"] }}
-          transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-6 text-center">
-          <motion.div
-            style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
-            className="w-full origin-center will-change-transform"
+    <p className={className}>
+      {text.split(" ").map((raw, i) => {
+        const italic = raw.startsWith("*");
+        const match = raw.replace(/^\*/, "").match(/^(.*?)\*?([.,;:!?]*)$/);
+        const word = match?.[1] ?? raw;
+        const punctuation = match?.[2] ?? "";
+        return (
+          <motion.span
+            key={i}
+            className="inline-block whitespace-pre"
+            initial={reduceMotion ? false : { opacity: 0, filter: "blur(10px)", y: 30 }}
+            animate={show ? { opacity: 1, filter: "blur(0px)", y: 0 } : {}}
+            transition={{ duration: 0.5, ease: OUT, delay: start + i * step }}
           >
-            <motion.p {...enter(0.05)} className="t-label mb-5 md:mb-7 inline-flex items-center gap-3">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-              {PROFILE.name} · {PROFILE.title}
-            </motion.p>
-            <h1 className="px-4">
-              {PROFILE.headline.map((line, i) => (
-                <motion.span
-                  key={line}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={!isLoading ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: DUR.slow, ease: EASE, delay: 0.15 + i * 0.1 }}
-                  className="t-wordmark block leading-[1.02] pb-[0.06em] text-[16vw] sm:text-[13vw] lg:text-[10.5vw] xl:text-[9.5vw] bg-gradient-to-b from-snow to-snow/60 bg-clip-text text-transparent"
-                >
-                  {line}
-                </motion.span>
-              ))}
-            </h1>
-            <motion.p {...enter(0.5)} className="t-caps text-snow/80 max-w-2xl mx-auto mt-6 md:mt-8">
-              {PROFILE.tagline}
-            </motion.p>
-            <motion.div {...enter(0.6)} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <PillButton onClick={() => scrollTo("work")}>See the work</PillButton>
-              <PillButton tone="outline" onClick={() => scrollTo("contact")}>
-                Get in touch
-              </PillButton>
-            </motion.div>
-          </motion.div>
-
-          {/* Proof row: the live counter and three figures */}
-          <motion.dl
-            {...enter(0.75)}
-            className="relative w-full max-w-[1400px] mt-12 lg:mt-14 pt-7 border-t border-line grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8 text-center lg:text-left"
-          >
-            <div className="lg:border-r border-line">
-              <ExperienceTimer startDate={PROFILE.careerStart} compact />
-            </div>
-            {PROFILE.numbers.map((n, i) => (
-              <div
-                key={n.label}
-                className={`flex flex-col ${i < PROFILE.numbers.length - 1 ? "lg:border-r border-line" : ""}`}
-              >
-                <dd className="t-wordmark leading-none text-5xl md:text-6xl order-1">
-                  <ScrambleNumber value={n.value.replace(/\D/g, "")} suffix={n.value.replace(/\d/g, "")} />
-                </dd>
-                <dt className="t-caps text-muted text-[12px] md:text-[13px] mt-3 order-2">{n.label}</dt>
-              </div>
-            ))}
-          </motion.dl>
-
-        </div>
-
-        <motion.div
-          {...enter(0.8)}
-          className="relative z-10 flex items-center justify-between px-6 md:px-10 lg:px-12 pb-6 text-[13px] md:text-[14px] font-medium uppercase tracking-[0.04em] text-muted"
-        >
-          <span className="hidden sm:inline-flex items-center gap-2.5 text-snow">
-            <span className="live-dot" aria-hidden="true" />
-            Open to opportunities
-          </span>
-          <span className="inline-flex items-center gap-2 mx-auto sm:mx-0">
-            Scroll to explore <ArrowDownRight className="w-4 h-4" aria-hidden="true" />
-          </span>
-          <span className="hidden sm:inline t-figure normal-case tracking-normal">
-            {PROFILE.city.split(",")[0]} {time} IST
-          </span>
-        </motion.div>
-      </motion.div>
-    </section>
+            {italic ? <span className="text-white/95">{word}</span> : word}
+            {punctuation}{" "}
+          </motion.span>
+        );
+      })}
+    </p>
   );
 };
 
-const FactTile = ({
-  tile,
-  progress,
-}: {
-  tile: (typeof TILES)[number];
-  progress: ReturnType<typeof useTransform<number, number>>;
-}) => {
-  const from = tile.side === "left" ? -160 * tile.depth : 160 * tile.depth;
-  const x = useTransform(progress, [0, 1], [from, 0]);
-  const opacity = useTransform(progress, [0, 0.35, 1], [0, 0.6, 1]);
+/**
+ * The introduction, matched to sarang-space.site's Hero.jsx: an accent label, "Hey, I'm"
+ * as an outlined italic serif ghost behind the name in Inter Black, letters rising in one
+ * by one, three paragraphs that blur in word by word and get quieter, then Explore. The
+ * original photo is pinned on the right and pushes in as you scroll; the whole block lifts
+ * and fades as it leaves.
+ */
+const Hero = () => {
+  const { isLoading } = useLoading();
+  const reduceMotion = useReducedMotionConfig();
+  const scrollTo = useSectionScroll();
+  const ref = useRef<HTMLElement>(null);
+  const show = !isLoading;
+  const orbOn = useInView(ref, { margin: "200px 0px" });
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["end 0.6", "end 0.1"] });
+  // The photo moves with the page: a slow push-in, a drift up and to the left, a gentle dim
+  const { scrollYProgress: through } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  // As the copy scrolls away, the figure glides in from the right and stops short of the centre, clear of the copy
+  const toCentre = (v: number) => {
+    const t = Math.min(1, v / 0.55);
+    return t * t * (3 - 2 * t);
+  };
+  const photoScale = useTransform(through, (v) => (reduceMotion ? 0.9 : 0.9 + toCentre(v) * 0.08));
+  const photoX = useTransform(through, (v) => (reduceMotion ? "0vw" : `${toCentre(v) * -15}vw`));
+  const photoY = useTransform(through, () => "0%");
+  const photoDim = useTransform(through, (v) => (reduceMotion ? 1 : 1 - v * 0.35));
+  const fadeOut = useTransform(scrollYProgress, (v) => (reduceMotion ? 1 : 1 - v));
+  const lift = useTransform(scrollYProgress, (v) => (reduceMotion ? 0 : v * -50));
+
+  const rise = (delay: number, y = 20) => ({
+    initial: reduceMotion ? false : { opacity: 0, y },
+    animate: show ? { opacity: 1, y: 0 } : {},
+    transition: { duration: 1, ease: OUT, delay },
+  });
+
   return (
-    <motion.div
-      style={{ x, opacity, top: tile.top, [tile.side]: "4%" }}
-      aria-hidden="true"
-      className="absolute hidden md:block rounded-md bg-tile/90 border border-line px-5 py-4 min-w-[170px] pointer-events-none"
+    <motion.section
+      ref={ref}
+      data-reveal-skip
+      style={{ opacity: fadeOut, y: lift }}
+      className="theme-dark relative min-h-[135vh] flex flex-col pt-[36svh] pb-[20vh] px-6 sm:px-10 md:px-24 text-white"
     >
-      <p className="text-[11px] uppercase tracking-[0.08em] text-muted">{tile.label}</p>
-      <p className="t-heading text-2xl mt-1.5">{tile.value}</p>
-    </motion.div>
+      {/* The original photo, pinned to the right while the copy scrolls over it */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+        <div className="sticky top-0 h-screen overflow-hidden">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={show ? { opacity: 1 } : {}}
+            transition={{ duration: 1.4, ease: OUT, delay: 0.2 }}
+            className="absolute inset-y-0 right-0 z-[1] w-full md:w-[64%]"
+          >
+            <motion.picture
+              style={{ scale: photoScale, x: photoX, y: photoY, opacity: photoDim }}
+              className="absolute inset-0 block origin-[70%_100%] will-change-transform [mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [-webkit-mask-composite:source-in]"
+            >
+              <img
+                src={`${base}images/avatar-cutout.webp`}
+                alt=""
+                width={1672}
+                height={941}
+                // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
+                {...{ fetchpriority: "high" }}
+                className="w-full h-full object-cover object-[70%_top] opacity-40 md:opacity-100"
+              />
+            </motion.picture>
+          </motion.div>
+          {/* The light from the earlier hero: a soft emerald orb on a wide orbit, lingering behind the
+              copy on the left and passing behind the figure on the right */}
+          {/* Mounted only while the hero is near the screen: its endless orbit otherwise keeps
+              the animation loop running for the whole visit */}
+          {orbOn && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                className="w-[46vw] h-[46vw] max-w-[700px] max-h-[700px] shrink-0 rounded-full motion-reduce:hidden"
+                style={{
+                  background:
+                    "radial-gradient(circle, hsl(var(--accent-400)/0.34) 0%, hsl(var(--accent-500)/0.12) 38%, transparent 66%)",
+                }}
+                animate={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        x: [
+                          "-48.0vw",
+                          "-47.48vw",
+                          "-45.95vw",
+                          "-43.44vw",
+                          "-40.05vw",
+                          "-35.85vw",
+                          "-31.0vw",
+                          "-25.63vw",
+                          "-19.9vw",
+                          "-14.0vw",
+                          "-8.1vw",
+                          "-2.37vw",
+                          "3.0vw",
+                          "7.85vw",
+                          "12.05vw",
+                          "15.44vw",
+                          "17.95vw",
+                          "19.48vw",
+                          "20.0vw",
+                          "19.48vw",
+                          "17.95vw",
+                          "15.44vw",
+                          "12.05vw",
+                          "7.85vw",
+                          "3.0vw",
+                          "-2.37vw",
+                          "-8.1vw",
+                          "-14.0vw",
+                          "-19.9vw",
+                          "-25.63vw",
+                          "-31.0vw",
+                          "-35.85vw",
+                          "-40.05vw",
+                          "-43.44vw",
+                          "-45.95vw",
+                          "-47.48vw",
+                          "-48.0vw",
+                        ],
+                        y: [
+                          "0.0vh",
+                          "-3.13vh",
+                          "-6.16vh",
+                          "-9.0vh",
+                          "-11.57vh",
+                          "-13.79vh",
+                          "-15.59vh",
+                          "-16.91vh",
+                          "-17.73vh",
+                          "-18.0vh",
+                          "-17.73vh",
+                          "-16.91vh",
+                          "-15.59vh",
+                          "-13.79vh",
+                          "-11.57vh",
+                          "-9.0vh",
+                          "-6.16vh",
+                          "-3.13vh",
+                          "-0.0vh",
+                          "3.13vh",
+                          "6.16vh",
+                          "9.0vh",
+                          "11.57vh",
+                          "13.79vh",
+                          "15.59vh",
+                          "16.91vh",
+                          "17.73vh",
+                          "18.0vh",
+                          "17.73vh",
+                          "16.91vh",
+                          "15.59vh",
+                          "13.79vh",
+                          "11.57vh",
+                          "9.0vh",
+                          "6.16vh",
+                          "3.13vh",
+                          "0.0vh",
+                        ],
+                      }
+                }
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  ease: "linear",
+                  times: [
+                    0.0, 0.0727, 0.1393, 0.1967, 0.2444, 0.2835, 0.3157, 0.3426, 0.3654, 0.3851, 0.4023, 0.4177, 0.4317,
+                    0.4445, 0.4565, 0.4679, 0.4788, 0.4895, 0.5, 0.5105, 0.5212, 0.5321, 0.5435, 0.5555, 0.5683, 0.5823,
+                    0.5977, 0.6149, 0.6346, 0.6574, 0.6843, 0.7165, 0.7556, 0.8033, 0.8607, 0.9273, 1.0,
+                  ],
+                }}
+              />
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-night to-transparent" />
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-5xl">
+        <motion.p
+          {...rise(0.4)}
+          className="text-[10px] md:text-xs text-emerald-400 tracking-[0.2em] uppercase font-bold mb-6"
+        >
+          {PROFILE.title} · Backend &amp; AI
+        </motion.p>
+
+        <h1 className="font-body font-black tracking-tighter leading-[0.75] mb-12 flex flex-col text-[clamp(3.6rem,12vw,11rem)]">
+          <motion.span
+            {...rise(0.6, 90)}
+            className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)]"
+          >
+            Hey, I&apos;m
+          </motion.span>
+          {/* The name arrives whole: one soft rise out of a blur, no per-letter tumble */}
+          <motion.span
+            className="block -mt-2 md:-mt-6 pb-[0.12em]"
+            initial={reduceMotion ? false : { opacity: 0, y: 28, filter: "blur(12px)" }}
+            animate={show ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+            transition={{ duration: 1.1, ease: OUT, delay: 0.75 }}
+          >
+            {`${PROFILE.first}.`}
+          </motion.span>
+        </h1>
+
+        {/* Proof for the skim reader: where, how far, and what for, before any paragraph */}
+        <motion.ul {...rise(1.2)} className="-mt-4 mb-10 flex flex-wrap gap-2 max-w-3xl" aria-label="Highlights">
+          {PROFILE.proof.map((fact) => (
+            <li
+              key={fact}
+              className="inline-flex items-center gap-2 rounded-pill border border-white/15 bg-white/[0.03] px-3.5 py-1.5 text-[12px] md:text-[13px] text-white/80"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
+              {fact}
+            </li>
+          ))}
+        </motion.ul>
+
+        <div className="max-w-lg flex flex-col gap-6">
+          <BlurWords
+            show={show}
+            start={1.4}
+            step={0.03}
+            className="text-base md:text-[17px] text-white/60 font-medium leading-[1.6]"
+            text="I build *reliable* backend systems and *useful* AI. Five years on a *regulated* banking platform taught me what production demands: correctness, security, and code that *holds* up."
+          />
+          <BlurWords
+            show={show}
+            start={1.7}
+            step={0.022}
+            className="text-xs md:text-sm text-white/40 font-light leading-relaxed"
+            text="I mainly work with Java, Spring Boot, Kafka, and Python, and today I lead backend API architecture for a *banking* *platform*."
+          />
+          <BlurWords
+            show={show}
+            start={1.9}
+            step={0.015}
+            className="text-xs md:text-sm text-white/30 font-light leading-relaxed"
+            text="On my own time I build AI that *verifies* who it's talking to, and an *on-device* banking assistant where the model never leaves the phone."
+          />
+
+          <motion.div {...rise(2.2)} className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <button
+              type="button"
+              onClick={() => scrollTo("about")}
+              className="text-[10px] text-white/40 hover:text-white tracking-[0.4em] uppercase font-medium transition-colors"
+            >
+              Explore ↓
+            </button>
+            <span className="h-3 w-px bg-white/15" aria-hidden="true" />
+            <ExperienceTimer startDate={PROFILE.careerStart} inline />
+          </motion.div>
+        </div>
+      </div>
+    </motion.section>
   );
 };
 

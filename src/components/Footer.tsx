@@ -102,11 +102,7 @@ const Footer = () => {
       <div aria-hidden="true" className="relative h-[29vw] md:h-[26vw] lg:h-[24vw] overflow-hidden select-none">
         <span
           className="absolute left-1/2 -translate-x-1/2 top-[0.02em] font-body font-semibold tracking-[-0.05em] leading-[0.86] whitespace-nowrap text-[32vw] md:text-[29vw] lg:text-[27vw] text-transparent bg-clip-text"
-          style={{
-            backgroundImage: "radial-gradient(circle at center, hsl(0 0% 100% / 0.2) 0.9px, transparent 1.2px)",
-            backgroundSize: "6px 6px",
-            WebkitTextStroke: "1px hsl(0 0% 100% / 0.05)",
-          }}
+          style={DOTS}
         >
           {PROFILE.first}
         </span>
@@ -116,3 +112,9 @@ const Footer = () => {
 };
 
 export default Footer;
+
+const DOTS = {
+  backgroundImage: "radial-gradient(circle at center, hsl(0 0% 100% / 0.2) 0.9px, transparent 1.2px)",
+  backgroundSize: "6px 6px",
+  WebkitTextStroke: "1px hsl(0 0% 100% / 0.05)",
+} as const;

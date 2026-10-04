@@ -99,7 +99,7 @@ export const projects: Project[] = [
     slug: "llm-banking-chatbot",
     title: "LLM Banking Chatbot APIs",
     description: "Conversational AI integration for automated query handling and identity validation.",
-    category: "Backend",
+    category: "AI",
     problem: "Routine account queries and password-change flows consumed support capacity",
     solution: "Built LLM-powered chatbot APIs covering account detail retrieval and identity validation",
     outcome: "Automated handling of routine banking queries in production",

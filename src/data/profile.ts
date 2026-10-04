@@ -11,7 +11,8 @@ export const PROFILE = {
   resumeDownloadName: "achyuth-kp-resume.pdf",
   city: "Bengaluru, India",
   timeZone: "Asia/Kolkata",
-  careerStart: new Date("2021-07-26"),
+  // Midnight in Bengaluru, not UTC: a bare date string would start the clock at 05:30 IST and on 25 July in the US
+  careerStart: new Date("2021-07-26T00:00:00+05:30"),
   /** The hero statement, two lines in Antonio */
   headline: ["Reliable systems.", "Useful AI."],
   /** The hero line under the statement */
@@ -39,23 +40,20 @@ export const PROFILE = {
       note: "Trends pass. Fundamentals, taste, and reliability compound. I choose the thing that will still make sense in five years.",
     },
   ],
-  /** On the record: dated facts, one row each */
-  record: [
-    { year: "Apr 2026", title: "Software Engineer, First Citizens Bank platform", org: "Cognizant" },
-    { year: "2024", title: "Above & Beyond Individual Award", org: "FIS Global" },
-    { year: "2026", title: "Promoted to Senior Software Engineer", org: "FIS Global" },
-    { year: "2021", title: "B.E. Computer Science & Engineering", org: "Sri Siddhartha Institute of Technology" },
-  ],
+  /** The hero's proof line: verifiable facts only, each one shown in full under Experience */
+  proof: ["FIS Global → Cognizant", "Promoted to Senior Software Engineer", "Above & Beyond Award, 2024"],
+  /** Closes the Experience list */
+  education: {
+    year: "2021",
+    title: "B.E. Computer Science & Engineering",
+    org: "Sri Siddhartha Institute of Technology",
+  },
   /** Real counts, not claims */
   numbers: [
     { value: "30+", label: "Services in the estate" },
     { value: "3", label: "Banking channels" },
     { value: String(projects.length), label: "Case studies on this page" },
   ],
-  /** How work moves, as four phases; the About card lists them */
-  phases: ["Learn", "Build", "Ship", "Verify"],
-  /** The stack, for the marquee */
-  stack: ["Java", "Python", "React", "Spring Boot", "LLMs", "AI"],
 } as const;
 
 /** What I do: five services with the real stack behind each */

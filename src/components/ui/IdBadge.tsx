@@ -2,7 +2,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   AnimatePresence,
   motion,
-  useReducedMotion,
+  useReducedMotionConfig,
   useScroll,
   useSpring,
   useTransform,
@@ -33,7 +33,7 @@ export const IdBadge = ({
   target: React.RefObject<HTMLElement>;
   className?: string;
 }) => {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionConfig();
   const wide = useMediaQuery("(min-width: 1024px)");
   const { scrollYProgress } = useScroll({ target, offset: ["start 0.55", "start 0.08"] });
   const drop = useTransform(scrollYProgress, [0, 1], reduceMotion || !wide ? [0, 0] : [-520, 0]);

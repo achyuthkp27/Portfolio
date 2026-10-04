@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { prefersReducedMotion } from "@/lib/motionPreference";
+import { prefersReducedMotion, useMotionOff } from "@/lib/motionPreference";
 import Lenis from "lenis";
 import { SmoothScrollContext } from "@/context/smoothScroll";
 import { useMobile } from "@/hooks/useMobile";
@@ -9,6 +9,8 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
   const [lenis, setLenis] = useState<Lenis | null>(null);
   const isMobile = useMobile();
   const isLowEnd = useLowEndDevice();
+  // Live: the footer switch turns smooth scrolling off (and back on) without a reload
+  const motionOff = useMotionOff();
 
   useEffect(() => {
     const reduceMotion = prefersReducedMotion();
@@ -45,7 +47,7 @@ export const SmoothScroll = ({ children }: { children: ReactNode }) => {
       lenisInstance.destroy();
       setLenis(null);
     };
-  }, [isMobile, isLowEnd]);
+  }, [isMobile, isLowEnd, motionOff]);
 
   return <SmoothScrollContext.Provider value={{ lenis }}>{children}</SmoothScrollContext.Provider>;
 };

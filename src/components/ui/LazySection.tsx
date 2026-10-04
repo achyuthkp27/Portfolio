@@ -1,5 +1,5 @@
 import { useInView } from "react-intersection-observer";
-import { Suspense, ReactNode, useEffect, useState } from "react";
+import { Suspense, ReactNode, useEffect, useState, type CSSProperties } from "react";
 
 interface LazySectionProps {
   children: ReactNode;
@@ -11,7 +11,12 @@ interface LazySectionProps {
   sectionId?: string;
   /** Approximate rendered height of this section. Prevents CLS by reserving vertical space in the placeholder. */
   minHeight?: string;
+  /** The same below 768px, where most sections stack and run much taller */
+  minHeightMobile?: string;
 }
+
+/** Reserved height as CSS variables, so phones and desktops each get their own without a JS media query */
+const RESERVE = "min-h-[var(--mh-sm)] md:min-h-[var(--mh)]";
 
 /**
  * Wraps a lazy-loaded component and only renders it (triggering the network request)
@@ -34,7 +39,9 @@ export const LazySection = ({
   rootMargin = "100% 0px",
   sectionId,
   minHeight = "600px",
+  minHeightMobile = minHeight,
 }: LazySectionProps) => {
+  const vars = { "--mh": minHeight, "--mh-sm": minHeightMobile } as CSSProperties;
   const { ref, inView: near } = useInView({
     triggerOnce: true,
     threshold,
@@ -52,15 +59,13 @@ export const LazySection = ({
   const inView = near || idle;
 
   return (
-    <div ref={ref} className={`relative ${className}`} style={{ minHeight: inView ? undefined : minHeight }}>
+    <div ref={ref} className={`relative ${inView ? "" : RESERVE} ${className}`} style={vars}>
       {inView ? (
-        <Suspense
-          fallback={fallback || <div style={{ minHeight }} className="w-full animate-pulse bg-white/5 rounded-xl" />}
-        >
+        <Suspense fallback={fallback || <div className={`w-full animate-pulse bg-white/5 rounded-xl ${RESERVE}`} />}>
           {children}
         </Suspense>
       ) : (
-        fallback || <div id={sectionId} style={{ minHeight }} className="w-full" />
+        fallback || <div id={sectionId} className={`w-full ${RESERVE}`} />
       )}
     </div>
   );

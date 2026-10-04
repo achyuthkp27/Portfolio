@@ -1,4 +1,4 @@
-import { Building2, Briefcase, GraduationCap, type LucideIcon } from "lucide-react";
+import { Building2, Briefcase, type LucideIcon } from "lucide-react";
 
 export interface Experience {
   company: string;
@@ -13,6 +13,8 @@ export interface Experience {
   platform?: string;
   /** How this role began, when it continued something rather than started it */
   handoff?: string;
+  /** Shows the award card in this role */
+  award?: boolean;
   achievements: string[];
   technologies: string[];
 }
@@ -44,6 +46,7 @@ export const experiences: Experience[] = [
     icon: Building2,
     color: "primary",
     platform: "First Citizens Bank platform",
+    award: true,
     achievements: [
       "Designed, built, and maintained Spring Boot microservices across a 30+ service estate powering Retail, Mobile, and Corporate Online Banking for hundreds of corporate clients, and delivered three major corporate banking modules end to end.",
       "Implemented a maker-checker authorization framework enforcing dual-approval controls on financial transactions to meet PCI-DSS and SOX compliance and audit requirements.",
@@ -69,17 +72,5 @@ export const experiences: Experience[] = [
       "Docker",
       "AWS",
     ],
-  },
-  {
-    company: "Aniworks",
-    role: "Software Development Intern",
-    period: "Jul 2020 – Aug 2020",
-    type: "internship",
-    icon: GraduationCap,
-    color: "accent",
-    achievements: [
-      "Built hands-on experience across web development, artificial intelligence, and machine learning through team projects and technical presentations.",
-    ],
-    technologies: ["Web Development", "AI/ML", "Python"],
   },
 ];

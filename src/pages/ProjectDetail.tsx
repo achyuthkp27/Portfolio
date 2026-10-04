@@ -15,10 +15,10 @@ import { PillLink } from "@/components/ui/Pill";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
+import { monthDay } from "@/lib/format";
 
 const longDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-const monthDay = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
 
 /**
  * A split row, after Spector's lab: the story on the left in a tall card, a large visual
@@ -143,9 +143,7 @@ const CommitTimeline = ({ commits }: { commits: RepoExtras["commits"] }) => (
             <span className="t-figure text-[11px] text-muted">{c.sha}</span>
             <span className="t-figure text-[11px] text-muted">{monthDay(c.date)}</span>
           </span>
-          <span className="block t-body text-snow/90 mt-1 group-hover:text-snow transition-colors duration-fast">
-            {c.message}
-          </span>
+          <span className="block t-body text-snow/90 mt-1">{c.message}</span>
         </a>
       </motion.li>
     ))}

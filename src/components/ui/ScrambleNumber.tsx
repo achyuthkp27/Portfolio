@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { prefersReducedMotion } from "@/lib/motionPreference";
+import { prefersReducedMotion, useMotionOff } from "@/lib/motionPreference";
 
 interface ScrambleNumberProps {
   /** The final text. Only its digits scramble; letters and punctuation stay put. */
@@ -36,6 +36,8 @@ const ScrambleNumber = ({
   // The real value is in the HTML from the first paint; the scramble is purely visual
   const [display, setDisplay] = useState(value);
   const [done, setDone] = useState(false);
+  // Re-checked live, so turning animations off mid-scramble settles it at once
+  const motionOff = useMotionOff();
 
   useEffect(() => {
     const el = ref.current;
@@ -91,11 +93,16 @@ const ScrambleNumber = ({
       io.disconnect();
       cancelAnimationFrame(raf);
     };
-  }, [value, durationMs]);
+  }, [value, durationMs, motionOff]);
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    <Tag ref={ref as any} className={className} aria-label={`${value}${suffix}`} dateTime={dateTime}>
+    <Tag ref={ref as any} className={className} dateTime={dateTime}>
+      {/* Screen readers get the real value as text; a label on a plain span is not read reliably */}
+      <span className="sr-only">
+        {value}
+        {suffix}
+      </span>
       <span aria-hidden="true" className="tabular-nums">
         {display}
       </span>

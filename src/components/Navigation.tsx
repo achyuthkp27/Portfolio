@@ -100,7 +100,7 @@ const Navigation = () => {
 
   const resumeHref = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   const link = (active: boolean) =>
-    `group/roll relative block overflow-hidden font-body text-[14px] font-medium uppercase tracking-[0.03em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
+    `group/link relative block font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
@@ -125,7 +125,7 @@ const Navigation = () => {
             {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
           </button>
 
-          <ul className="hidden md:flex items-center gap-8 lg:gap-10 absolute left-1/2 -translate-x-1/2">
+          <ul className="hidden md:flex items-center gap-8 lg:gap-11 ml-auto mr-4 lg:mr-6">
             {NAV_ITEMS.map((item) => (
               <li key={item.id}>
                 <button
@@ -134,15 +134,15 @@ const Navigation = () => {
                   aria-current={activeSection === item.id ? "location" : undefined}
                   className={link(activeSection === item.id)}
                 >
-                  <span className="block transition-transform duration-base ease-out group-hover/roll:-translate-y-full">
-                    {item.label}
-                  </span>
+                  {item.label}
+                  {/* Hover and the current section show as a hairline under the label, never by
+                      moving the text (no clipped roll: CLAUDE.md) */}
                   <span
                     aria-hidden="true"
-                    className="absolute inset-x-0 top-full block transition-transform duration-base ease-out group-hover/roll:-translate-y-full"
-                  >
-                    {item.label}
-                  </span>
+                    className={`absolute left-0 right-[0.28em] -bottom-2 h-px bg-emerald-400 origin-left transition-transform duration-base ease-out ${
+                      activeSection === item.id ? "scale-x-100" : "scale-x-0 group-hover/link:scale-x-100"
+                    }`}
+                  />
                 </button>
               </li>
             ))}
@@ -161,9 +161,13 @@ const Navigation = () => {
                 <span>K</span>
               </button>
             )}
-            <PillButton size="sm" className="hidden md:inline-flex" onClick={() => goTo("contact")}>
+            <button
+              type="button"
+              onClick={() => goTo("contact")}
+              className="hidden md:inline-flex items-center h-9 px-5 rounded-full bg-emerald-400 text-black text-[12px] font-semibold tracking-[0.12em] hover:bg-emerald-300 transition-colors duration-fast"
+            >
               Let's talk
-            </PillButton>
+            </button>
             <button
               type="button"
               onClick={() => setIsMenuOpen((open) => !open)}
@@ -232,6 +236,15 @@ const Navigation = () => {
                 Résumé
               </PillLink>
             </motion.div>
+            {/* The X in the bar sits outside this dialog's focus trap, so keyboard users get
+                their own close button here; it shows only when focused */}
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(false)}
+              className="sr-only focus:not-sr-only focus:mt-8 focus:inline-flex focus:items-center focus:h-11 focus:px-5 focus:rounded-full focus:border focus:border-line focus:text-[13px] focus:font-medium focus:uppercase focus:tracking-[0.03em]"
+            >
+              Close menu
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

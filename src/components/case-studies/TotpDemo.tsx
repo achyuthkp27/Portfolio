@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useInView } from "framer-motion";
 import { TOTP_STEP_SECONDS, counterFor, generateTotp, isTotpSupported } from "@/lib/totp";
 
 // Public demo secret. Real enrolment keeps this AES-256-GCM encrypted server-side.
@@ -16,9 +17,12 @@ const TotpDemo = () => {
   const [verdict, setVerdict] = useState<Verdict>(null);
   const usedCodes = useRef(new Set<string>());
   const counterRef = useRef<number | null>(null);
+  // The clock only ticks while the demo can be seen; it catches up the moment it returns
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rootRef, { margin: "100px 0px" });
 
   useEffect(() => {
-    if (!isTotpSupported()) return;
+    if (!isTotpSupported() || !inView) return;
     let cancelled = false;
 
     const tick = async () => {
@@ -41,7 +45,7 @@ const TotpDemo = () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, []);
+  }, [inView]);
 
   if (!isTotpSupported()) return null;
 
@@ -62,7 +66,7 @@ const TotpDemo = () => {
   };
 
   return (
-    <div data-reveal-skip className="w-full max-w-md">
+    <div ref={rootRef} data-reveal-skip className="w-full max-w-md">
       <div
         className="flex justify-center gap-1.5 md:gap-2 mb-3"
         aria-label={`Current code ${code.split("").join(" ")}`}

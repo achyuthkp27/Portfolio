@@ -9,7 +9,7 @@ interface SectionHeaderProps {
   className?: string;
 }
 
-/** Section opener in the reference's voice: a slash label, a condensed uppercase title, an uppercase line. */
+/** Section opener in the reference's voice: a small accent label, a heavy title, and an optional muted line. */
 export const SectionHeader = ({ label, title, description, align = "left", className = "" }: SectionHeaderProps) => {
   const isCenter = align === "center";
   return (
