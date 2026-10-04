@@ -140,7 +140,7 @@ const ContactSection = () => {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <motion.h2
               style={{ scale: headScale, y: headY }}
-              className={`relative font-display font-semibold uppercase leading-[0.9] tracking-[-0.005em] text-[24vw] md:text-[min(15rem,26vh)] whitespace-nowrap will-change-transform`}
+              className={`relative font-display font-semibold uppercase leading-[0.9] tracking-[-0.005em] text-[24vw] md:text-[min(15rem,26vh,20vw)] whitespace-nowrap will-change-transform`}
             >
               Let&apos;s talk.
             </motion.h2>
@@ -221,6 +221,8 @@ const Fact = ({
   const pointerEvents = useTransform(opacity, (o) => (o > 0.5 ? "auto" : "none"));
   const visibility = useTransform(opacity, (o) => (o < 0.05 ? "hidden" : "visible"));
   const edge = `calc(50% + ${CARD_W} / 2 + clamp(20px, 4vw, 64px))`;
+  // The room between the card and the screen edge, so a long fact wraps instead of running off at 1024px
+  const room = `calc(50% - ${CARD_W} / 2 - clamp(20px, 4vw, 64px) - 24px)`;
   // Once it has slid in, it flickers on like a tube catching; scrolling back puts it out again
   const [lit, setLit] = useState(() => appear.get() > 0.6);
   useMotionValueEvent(appear, "change", (a) => setLit(a > 0.6));
@@ -232,6 +234,7 @@ const Fact = ({
         pointerEvents,
         visibility,
         top: fact.top,
+        maxWidth: room,
         ...(fact.side === "left" ? { right: edge } : { left: edge }),
       }}
       className={`absolute hidden lg:block ${fact.side === "left" ? "text-right" : "text-left"}`}
@@ -256,7 +259,9 @@ const Fact = ({
             {fact.value}
           </p>
         ) : (
-          <div className="mt-2 flex gap-5 t-heading text-[1.6rem] text-night">
+          <div
+            className={`mt-2 flex flex-wrap gap-x-5 gap-y-1 t-heading text-[1.6rem] text-night ${fact.side === "left" ? "justify-end" : ""}`}
+          >
             {SOCIALS.map(({ label, href }) => (
               <ExternalLink key={label} href={href} className="group inline-flex items-center gap-1">
                 {label}
