@@ -112,7 +112,7 @@ const ExperienceSection = () => {
                     onClick={() => toggle(i)}
                     aria-expanded={isOpen}
                     aria-controls={panel}
-                    className="mt-4 text-[13px] font-medium uppercase tracking-[0.03em] text-muted hover:text-snow transition-colors duration-fast"
+                    className="mt-1 py-3 text-[13px] font-medium uppercase tracking-[0.03em] text-muted hover:text-snow transition-colors duration-fast"
                   >
                     {isOpen ? "Show less" : `Show ${hidden} more`}
                   </button>

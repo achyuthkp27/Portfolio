@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
+import { pad2 } from "@/lib/format";
 
 interface ExperienceTimerProps {
   startDate: Date;
@@ -61,15 +62,12 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
   const hh = Math.floor(diff / 3600000) % 24;
   const mm = Math.floor(diff / 60000) % 60;
   const ss = Math.floor(diff / 1000) % 60;
-  const pad = (n: number) => n.toString().padStart(2, "0");
+  const readout = `${years}y ${months}m ${days}d · ${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
 
   if (inline) {
     return (
-      <div ref={ref} className="text-[10px] tracking-[0.4em] uppercase font-medium text-white/40">
-        In production for{" "}
-        <span className="font-mono tracking-[0.08em] text-white/70">
-          {years}y {months}m {days}d · {pad(hh)}:{pad(mm)}:{pad(ss)}
-        </span>
+      <div ref={ref} className="text-[11px] lg:text-[10px] tracking-[0.4em] uppercase font-medium text-white/50">
+        In production for <span className="font-mono tracking-[0.08em] text-white/70">{readout}</span>
       </div>
     );
   }
@@ -83,7 +81,7 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
         </p>
         <p className="t-caps text-muted text-[12px] md:text-[13px] mt-3 order-2">Years in engineering</p>
         <p className="t-figure text-[11px] text-emerald-300/80 mt-1.5 order-3" aria-hidden="true">
-          {years}y {months}m {days}d · {pad(hh)}:{pad(mm)}:{pad(ss)}
+          {readout}
         </p>
       </div>
     );
@@ -96,7 +94,7 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
       </p>
       <p className="t-caps text-muted mt-6">Years building production systems</p>
       <p className="t-figure text-xs text-muted mt-2" aria-hidden="true">
-        {years}y {months}m {days}d · {pad(hh)}:{pad(mm)}:{pad(ss)}
+        {readout}
       </p>
     </div>
   );

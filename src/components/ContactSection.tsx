@@ -7,12 +7,14 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Check, Copy } from "lucide-react";
-import { PROFILE } from "@/data/profile";
+import { ArrowDown, Check, Copy } from "lucide-react";
+import { PROFILE, SOCIALS } from "@/data/profile";
 import { useLocalTime } from "@/hooks/useLocalTime";
 import { useSmoothScroll } from "@/context/smoothScroll";
 import { PillLink, PillButton } from "./ui/Pill";
+import { ExternalLink, HoverArrow } from "./ui/ExternalLink";
 import { clamp01 } from "@/lib/format";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 /** The small card the page opens on, before it grows to fill the screen */
 const CARD_W = "min(440px, 86vw)";
@@ -27,6 +29,7 @@ const CARD_H = "min(320px, 56vh)";
  */
 const ContactSection = () => {
   const reduceMotion = useReducedMotionConfig();
+  const wide = useMediaQuery("(min-width: 1024px)");
   const time = useLocalTime(PROFILE.timeZone);
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -166,33 +169,15 @@ const ContactSection = () => {
               </PillButton>
             </div>
             {/* Reduced motion has no side details floating round a card, so they sit here instead */}
-            {reduceMotion && (
+            {/* Phones and tablets have no room beside the card, and reduced motion has no card: the time and status
+                sit here. The links are not repeated; the footer right below carries them. */}
+            {(reduceMotion || !wide) && (
               <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-snow/70">
                 <li>
                   {PROFILE.city.split(",")[0]} · {time.time} {time.period} IST
                 </li>
                 <li className="inline-flex items-center gap-2">
                   <span className="live-dot" aria-hidden="true" /> Open to opportunities
-                </li>
-                {[
-                  ["LinkedIn", PROFILE.links.linkedin],
-                  ["GitHub", PROFILE.links.github],
-                  ["Medium", PROFILE.links.medium],
-                ].map(([name, href]) => (
-                  <li key={name}>
-                    <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-snow">
-                      {name}
-                    </a>
-                  </li>
-                ))}
-                <li>
-                  <a
-                    href={`${import.meta.env.BASE_URL}${PROFILE.resume}`}
-                    download={PROFILE.resumeDownloadName}
-                    className="hover:text-snow"
-                  >
-                    Résumé (PDF)
-                  </a>
                 </li>
               </ul>
             )}
@@ -272,24 +257,11 @@ const Fact = ({
           </p>
         ) : (
           <div className="mt-2 flex gap-5 t-heading text-[1.6rem] text-night">
-            {[
-              ["LinkedIn", PROFILE.links.linkedin],
-              ["GitHub", PROFILE.links.github],
-              ["Medium", PROFILE.links.medium],
-            ].map(([name, href]) => (
-              <a
-                key={name}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-1"
-              >
-                {name}
-                <ArrowUpRight
-                  className="w-4 h-4 transition-transform duration-fast group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  aria-hidden="true"
-                />
-              </a>
+            {SOCIALS.map(({ label, href }) => (
+              <ExternalLink key={label} href={href} className="group inline-flex items-center gap-1">
+                {label}
+                <HoverArrow />
+              </ExternalLink>
             ))}
           </div>
         )}

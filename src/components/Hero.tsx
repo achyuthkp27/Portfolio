@@ -1,3 +1,4 @@
+import { ArrowDown } from "lucide-react";
 import { motion, useInView, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
 import { useCallback, useRef, useState } from "react";
 import { useLoading } from "@/hooks/useLoading";
@@ -6,6 +7,7 @@ import { PROFILE } from "@/data/profile";
 const base = import.meta.env.BASE_URL;
 import ExperienceTimer from "./ui/ExperienceTimer";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const OUT = [0.16, 1, 0.3, 1] as const;
 
@@ -83,8 +85,10 @@ const Hero = () => {
     const t = Math.min(1, v / 0.55);
     return t * t * (3 - 2 * t);
   };
+  const wide = useMediaQuery("(min-width: 1024px)");
   const photoScale = useTransform(through, (v) => (reduceMotion ? 0.9 : 0.9 + toCentre(v) * 0.08));
-  const photoX = useTransform(through, (v) => (reduceMotion ? "0vw" : `${toCentre(v) * -15}vw`));
+  // The sideways glide is for the wide layout only; on phones the figure stays put above the copy
+  const photoX = useTransform(through, (v) => (reduceMotion || !wide ? "0vw" : `${toCentre(v) * -15}vw`));
   const photoY = useTransform(through, () => "0%");
   const photoDim = useTransform(through, (v) => (reduceMotion ? 1 : 1 - v * 0.35));
   const fadeOut = useTransform(scrollYProgress, (v) => (reduceMotion ? 1 : 1 - v));
@@ -101,12 +105,16 @@ const Hero = () => {
       ref={ref}
       data-reveal-skip
       style={{ opacity: fadeOut, y: lift }}
-      className="theme-dark relative min-h-[135vh] flex flex-col pt-[36svh] pb-[20vh] px-6 sm:px-10 md:px-24 text-white"
+      className="theme-dark relative min-h-[135vh] flex flex-col pt-[52svh] lg:pt-[36svh] pb-[20vh] px-6 sm:px-10 md:px-24 text-white"
     >
       {/* The original photo, pinned to the right while the copy scrolls over it */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
         <div className="sticky top-0 h-screen overflow-hidden">
-          <div className="absolute inset-y-0 right-0 z-[1] w-full md:w-[64%]">
+          {/* Phones and iPad portrait: the figure sits whole in the top of the screen, the copy below it.
+              Wide screens: pinned to the right while the copy scrolls over it. */}
+          <div className="absolute top-0 right-0 z-[1] w-full h-[60svh] lg:h-auto lg:inset-y-0 lg:w-[64%]">
+            {/* Phones: the frame cuts the sweater at the left edge, so that edge fades to the ground */}
+            <div className="lg:hidden absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-night via-night/70 to-transparent pointer-events-none" />
             <motion.picture
               style={{ scale: photoScale, x: photoX, y: photoY, opacity: photoDim }}
               className="absolute inset-0 block origin-[70%_100%] will-change-transform [mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [-webkit-mask-composite:source-in]"
@@ -128,14 +136,13 @@ const Hero = () => {
                   height={941}
                   // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
                   {...{ fetchpriority: "high" }}
-                  className="w-full h-full object-cover object-[70%_top] opacity-40 md:opacity-100"
+                  className="w-full h-full object-cover object-[74%_18%] lg:object-[70%_top]"
                 />
               </motion.div>
               {/* An emerald outline traced from the cutout's edge draws itself first, then gives way
                   to the photo. Both halves start at the crown and meet the frame together; the SVG animates on its own, so it mounts only when the draw should start. */}
               {!reduceMotion && show && photoReady && (
-                // Dimmed on phones to match the photo, which sits at 40% behind the copy there
-                <div className="absolute inset-0 opacity-40 md:opacity-100">
+                <div className="absolute inset-0">
                   <motion.img
                     src={`${base}images/avatar-outline.svg`}
                     alt=""
@@ -144,7 +151,7 @@ const Hero = () => {
                     initial={{ opacity: 1 }}
                     animate={{ opacity: 0 }}
                     transition={{ duration: 1.8, ease: "easeInOut", delay: 3.4 }}
-                    className="absolute inset-0 w-full h-full object-cover object-[70%_top]"
+                    className="absolute inset-0 w-full h-full object-cover object-[74%_18%] lg:object-[70%_top]"
                   />
                 </div>
               )}
@@ -155,7 +162,8 @@ const Hero = () => {
           {/* Mounted only while the hero is near the screen: its endless orbit otherwise keeps
               the animation loop running for the whole visit */}
           {orbOn && (
-            <div className="absolute inset-0 flex items-center justify-center">
+            // Desktop only: on phones the orb wanders over the copy and the portrait
+            <div className="absolute inset-0 hidden lg:flex items-center justify-center">
               <motion.div
                 className="w-[46vw] h-[46vw] max-w-[700px] max-h-[700px] shrink-0 rounded-full motion-reduce:hidden"
                 style={{
@@ -266,7 +274,7 @@ const Hero = () => {
       <div className="relative z-10 max-w-5xl">
         <motion.p
           {...rise(0.4)}
-          className="text-[10px] md:text-xs text-emerald-400 tracking-[0.2em] uppercase font-bold mb-6"
+          className="text-[12px] md:text-xs text-emerald-400 tracking-[0.2em] uppercase font-bold mb-6"
         >
           {PROFILE.title} · Backend &amp; AI
         </motion.p>
@@ -316,9 +324,11 @@ const Hero = () => {
             <button
               type="button"
               onClick={() => scrollTo("about")}
-              className="text-[10px] text-white/40 hover:text-white tracking-[0.4em] uppercase font-medium transition-colors"
+              className="py-3 -my-3 text-[11px] lg:text-[10px] text-white/50 hover:text-white tracking-[0.4em] uppercase font-medium transition-colors"
             >
-              Explore ↓
+              <span className="inline-flex items-center gap-2">
+                Explore <ArrowDown className="w-3 h-3" aria-hidden="true" />
+              </span>
             </button>
             <span className="h-3 w-px bg-white/15" aria-hidden="true" />
             <ExperienceTimer startDate={PROFILE.careerStart} inline />

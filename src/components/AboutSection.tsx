@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import { motion, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { FillText } from "./ui/FillText";
 import { DrawRule } from "./ui/DrawRule";
 import { PROFILE } from "@/data/profile";
 import ExperienceTimer from "./ui/ExperienceTimer";
 import ScrambleNumber from "./ui/ScrambleNumber";
 import { Smoke } from "./ui/Smoke";
+import { ExternalLink, HoverArrow } from "./ui/ExternalLink";
+import { Portrait } from "./ui/Portrait";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useLocalTime } from "@/hooks/useLocalTime";
 import { fetchLatestRepositories, type GitHubRepo } from "@/lib/github";
 import { reveal } from "@/lib/motion";
-import { monthDay } from "@/lib/format";
+import { clamp01, monthDay } from "@/lib/format";
 
 const STATEMENT =
   "I spent five years building the systems that move money. Now I build the AI that works on top of them, with the same standards.";
@@ -76,8 +78,8 @@ const AboutSection = () => {
   const { scrollYProgress: leave } = useScroll({ target: sheet, offset: ["end 0.95", "end 0.35"] });
   const clipPath = useTransform([enter, leave], ([a, b]: number[]) => {
     if (reduceMotion) return "inset(0 0 0 0 round 32px 32px 0 0)";
-    const open = Math.min(1, Math.max(0, a));
-    const close = Math.min(1, Math.max(0, b));
+    const open = clamp01(a);
+    const close = clamp01(b);
     // Wide screens start well inset so the opening reads; narrow ones stay inside the copy's padding
     const inset = window.innerWidth >= 1024 ? 7 : 2.5;
     const side = Math.max((1 - open) * inset, close * inset);
@@ -122,18 +124,11 @@ const AboutSection = () => {
                 <span className="block w-10 h-px bg-line mt-5 mb-5" aria-hidden="true" />
                 <p className="t-body text-snow/80 max-w-md">{PROFILE.intro}</p>
                 <div className="mt-auto pt-8 flex items-center gap-5">
-                  <picture className="shrink-0">
-                    <source srcSet={`${import.meta.env.BASE_URL}images/portrait.webp`} type="image/webp" />
-                    <img
-                      src={`${import.meta.env.BASE_URL}images/portrait.jpg`}
-                      alt="Achyuth KP"
-                      width={593}
-                      height={640}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-24 h-24 md:w-28 md:h-28 rounded-md object-cover object-top border border-line"
-                    />
-                  </picture>
+                  <Portrait
+                    alt={PROFILE.name}
+                    pictureClassName="shrink-0"
+                    className="w-24 h-24 md:w-28 md:h-28 rounded-md object-cover object-top border border-line"
+                  />
                   <div>
                     <p className="font-body text-lg font-medium">{PROFILE.name}</p>
                     <p className="t-caps text-muted text-[12px] mt-1">
@@ -251,7 +246,7 @@ const AboutSection = () => {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="t-label">Local time</p>
-                    <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5">
+                    <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5 whitespace-nowrap">
                       {time.time.split(":")[0]}
                       <span className="clock-colon">:</span>
                       {time.time.split(":")[1]}
@@ -282,10 +277,8 @@ const AboutSection = () => {
               >
                 <p className="t-label mb-auto">Latest on GitHub</p>
                 {latest ? (
-                  <a
+                  <ExternalLink
                     href={latest.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="group mt-6 flex items-end justify-between gap-6 min-w-0"
                   >
                     <span className="min-w-0">
@@ -294,24 +287,19 @@ const AboutSection = () => {
                     </span>
                     <span className="shrink-0 flex items-center gap-3 t-figure text-xs text-muted">
                       {monthDay(latest.updated_at)}
-                      <ArrowUpRight
-                        className="w-4 h-4 group-hover:text-emerald-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition duration-fast"
-                        aria-hidden="true"
-                      />
+                      <HoverArrow accent />
                     </span>
-                  </a>
+                  </ExternalLink>
                 ) : (
                   <p className="mt-6 t-figure text-xs text-muted">
                     {latestDone ? (
                       // GitHub didn't answer (rate limit, offline): point at the profile instead of waiting forever
-                      <a
+                      <ExternalLink
                         href={PROFILE.links.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="underline underline-offset-4 hover:text-snow"
                       >
                         See it on GitHub
-                      </a>
+                      </ExternalLink>
                     ) : (
                       "Fetching…"
                     )}

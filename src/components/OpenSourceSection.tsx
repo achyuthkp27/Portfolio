@@ -6,6 +6,7 @@ import { fetchLatestRepositories, GitHubRepo } from "@/lib/github";
 import { posts } from "@/data/writing";
 import { PROFILE } from "@/data/profile";
 import { PillButton } from "./ui/Pill";
+import { ExternalLink, HoverArrow } from "./ui/ExternalLink";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { DUR, EASE, reveal } from "@/lib/motion";
 import { monthYear } from "@/lib/format";
@@ -44,10 +45,7 @@ const Row = ({
       </span>
       <span className="flex items-center gap-4 shrink-0 t-figure text-xs text-muted">
         <ScrambleNumber value={meta} />
-        <ArrowUpRight
-          className="w-4 h-4 transition-transform duration-fast group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          aria-hidden="true"
-        />
+        <HoverArrow />
       </span>
     </>
   );
@@ -58,9 +56,9 @@ const Row = ({
       {inner}
     </Link>
   ) : (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+    <ExternalLink href={href} className={cls}>
       {inner}
-    </a>
+    </ExternalLink>
   );
 };
 
@@ -126,14 +124,12 @@ const OpenSourceSection = () => {
               Experiments
             </motion.h2>
           </div>
-          <a
+          <ExternalLink
             href={PROFILE.links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 t-figure text-xs uppercase tracking-[0.18em] text-snow/70 hover:text-snow transition-colors"
+            className="py-3 -my-3 inline-flex items-center gap-1.5 t-figure text-xs uppercase tracking-[0.18em] text-snow/70 hover:text-snow transition-colors"
           >
             Every repo on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-          </a>
+          </ExternalLink>
         </div>
 
         {isLoading ? (
@@ -144,15 +140,13 @@ const OpenSourceSection = () => {
           // GitHub rate-limited or offline, with no build snapshot to fall back on
           <p className="border-t border-line pt-6 t-body text-muted">
             GitHub isn&apos;t answering right now.{" "}
-            <a
+            <ExternalLink
               href={PROFILE.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-snow underline underline-offset-4 decoration-line"
             >
               See every repo on GitHub
               <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-            </a>
+            </ExternalLink>
           </p>
         ) : (
           <>
@@ -197,22 +191,17 @@ const OpenSourceSection = () => {
               .sort((a, b) => b.published.localeCompare(a.published))
               .map((p, i) => (
                 <motion.li key={p.url} {...rowIn(i)} className="bg-night">
-                  <a
+                  <ExternalLink
                     href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="group flex flex-col h-full p-5 md:p-6 hover:bg-snow/[0.03] transition-colors duration-fast"
                   >
                     <span className="flex items-center justify-between t-figure text-[11px] text-muted">
                       {monthYear(`${p.published}T00:00:00Z`)}
-                      <ArrowUpRight
-                        className="w-4 h-4 group-hover:text-emerald-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition"
-                        aria-hidden="true"
-                      />
+                      <HoverArrow accent />
                     </span>
                     <span className="mt-4 t-heading text-xl md:text-2xl text-snow">{p.title}</span>
                     <span className="mt-2 t-body text-[14px] text-muted line-clamp-3">{p.takeaway}</span>
-                  </a>
+                  </ExternalLink>
                 </motion.li>
               ))}
           </ol>

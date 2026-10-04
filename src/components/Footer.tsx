@@ -2,16 +2,12 @@ import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useSmoothScroll } from "@/context/smoothScroll";
 import { hasKeyboardAndPointer, isMacPlatform } from "@/lib/shortcuts";
-import { PROFILE } from "@/data/profile";
+import { PROFILE, SOCIALS } from "@/data/profile";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
+import { ExternalLink, HoverArrow } from "@/components/ui/ExternalLink";
 import { setMotionOff, useMotionOff } from "@/lib/motionPreference";
 
-const LINKS = [
-  { label: "LinkedIn", href: PROFILE.links.linkedin },
-  { label: "GitHub", href: PROFILE.links.github },
-  { label: "Medium", href: PROFILE.links.medium },
-  { label: "Résumé", href: `${import.meta.env.BASE_URL}${PROFILE.resume}` },
-];
+const LINKS = [...SOCIALS, { label: "Résumé", href: `${import.meta.env.BASE_URL}${PROFILE.resume}` }];
 
 const kbd =
   "inline-flex h-6 min-w-6 items-center justify-center rounded-sm border border-line px-1.5 font-mono text-[11px] leading-none text-snow/80";
@@ -47,21 +43,21 @@ const Footer = () => {
           <ul className="flex flex-wrap items-center gap-6">
             {LINKS.map((l) => (
               <li key={l.label}>
-                <a
+                <ExternalLink
                   href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
+                  className="group inline-flex items-center gap-1 py-3 -my-3 text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
                 >
-                  {l.label} ↗
-                </a>
+                  {l.label}
+                  {/* An SVG, not the ↗ character: iOS draws that as a blue emoji */}
+                  <HoverArrow />
+                </ExternalLink>
               </li>
             ))}
           </ul>
           <button
             type="button"
             onClick={backToTop}
-            className="inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
+            className="py-3 -my-3 inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.03em] text-snow/70 hover:text-snow transition-colors duration-fast"
           >
             Scroll to top <ArrowUp className="w-4 h-4" aria-hidden="true" />
           </button>
@@ -82,7 +78,7 @@ const Footer = () => {
               type="button"
               onClick={() => setMotionOff(!motionOff)}
               aria-pressed={motionOff}
-              className="inline-flex items-center gap-2 hover:text-snow transition-colors duration-fast"
+              className="py-3 -my-3 inline-flex items-center gap-2 hover:text-snow transition-colors duration-fast"
             >
               <span
                 aria-hidden="true"
@@ -99,9 +95,9 @@ const Footer = () => {
       </div>
 
       {/* The name, dot-matrix filled, cut by the bottom edge of the page */}
-      <div aria-hidden="true" className="relative h-[29vw] md:h-[26vw] lg:h-[24vw] overflow-hidden select-none">
+      <div aria-hidden="true" className="relative h-[22vw] md:h-[26vw] lg:h-[24vw] overflow-hidden select-none">
         <span
-          className="absolute left-1/2 -translate-x-1/2 top-[0.02em] font-body font-semibold tracking-[-0.05em] leading-[0.86] whitespace-nowrap text-[32vw] md:text-[29vw] lg:text-[27vw] text-transparent bg-clip-text"
+          className="absolute left-1/2 -translate-x-1/2 top-[0.02em] font-body font-semibold tracking-[-0.05em] leading-[0.86] whitespace-nowrap text-[25vw] md:text-[29vw] lg:text-[27vw] text-transparent bg-clip-text"
           style={DOTS}
         >
           {PROFILE.first}

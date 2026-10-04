@@ -107,7 +107,7 @@ const Navigation = () => {
 
   const resumeHref = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   const link = (active: boolean) =>
-    `group/link relative block font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
+    `group/link relative block py-3 -my-3 font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
@@ -123,11 +123,11 @@ const Navigation = () => {
           }`}
           aria-hidden="true"
         />
-        <div className="relative flex items-center justify-between gap-6 px-6 md:px-10 lg:px-12 h-[72px] md:h-[76px]">
+        <div className="relative flex items-center justify-between gap-4 md:gap-6 px-6 md:px-10 lg:px-12 h-[72px] md:h-[76px] min-w-0">
           <button
             type="button"
             onClick={() => goTo("top")}
-            className="t-heading text-[22px] md:text-2xl whitespace-nowrap flex items-baseline gap-1.5"
+            className="py-3 -my-3 t-heading text-[22px] md:text-2xl whitespace-nowrap flex items-baseline gap-1.5"
           >
             {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
           </button>

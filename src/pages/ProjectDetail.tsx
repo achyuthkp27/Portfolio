@@ -12,10 +12,24 @@ import {
   type RepoExtras,
 } from "@/lib/github";
 import { PillLink } from "@/components/ui/Pill";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
 import { monthDay } from "@/lib/format";
+
+/** Small emerald dot and label above each row's title */
+const Kicker = ({ children }: { children: ReactNode }) => (
+  <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
+    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+    {children}
+  </div>
+);
+
+/** What a GitHub-backed visual shows while it loads, or when GitHub sent nothing for it */
+const VisualPending = ({ loaded }: { loaded: boolean }) => (
+  <p className="t-figure text-xs text-muted text-center">{loaded ? "Not available right now." : "Loading…"}</p>
+);
 
 const longDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -44,10 +58,7 @@ const SplitRow = ({
   <motion.section {...reveal()} className="rounded-lg bg-tile border border-line p-7 md:p-10 lg:p-12 min-w-0">
     <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-12 gap-y-6 items-end">
       <div className="min-w-0">
-        <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-          {meta}
-        </div>
+        <Kicker>{meta}</Kicker>
         <h2 className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">{title}</h2>
         <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
         {by && <p className="t-body mt-5 text-muted">{by}</p>}
@@ -138,13 +149,13 @@ const CommitTimeline = ({ commits }: { commits: RepoExtras["commits"] }) => (
         >
           <GitCommitHorizontal className="w-3 h-3 m-[1.5px] text-muted" />
         </span>
-        <a href={c.url} target="_blank" rel="noopener noreferrer" className="group block">
+        <ExternalLink href={c.url} className="group block">
           <span className="flex items-baseline justify-between gap-4">
             <span className="t-figure text-[11px] text-muted">{c.sha}</span>
             <span className="t-figure text-[11px] text-muted">{monthDay(c.date)}</span>
           </span>
           <span className="block t-body text-snow/90 mt-1">{c.message}</span>
-        </a>
+        </ExternalLink>
       </motion.li>
     ))}
   </ol>
@@ -226,7 +237,7 @@ const ProjectDetail = () => {
         <div className="flex flex-wrap items-center justify-center gap-4">
           {unavailable && slug && (
             <PillLink
-              href={`https://github.com/achyuthkp27/${encodeURIComponent(slug)}`}
+              href={`${PROFILE.links.github}/${encodeURIComponent(slug)}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -327,9 +338,7 @@ const ProjectDetail = () => {
             extras?.languages.length ? (
               <LanguageRing languages={extras.languages} />
             ) : (
-              <p className="t-figure text-xs text-muted text-center">
-                {extras ? "Not available right now." : "Loading…"}
-              </p>
+              <VisualPending loaded={!!extras} />
             )
           }
         />
@@ -340,13 +349,7 @@ const ProjectDetail = () => {
           title="Recent commits"
           body="The last five commits on the default branch, newest first. Each links to its diff on GitHub."
           visual={
-            extras?.commits.length ? (
-              <CommitTimeline commits={extras.commits} />
-            ) : (
-              <p className="t-figure text-xs text-muted text-center">
-                {extras ? "Not available right now." : "Loading…"}
-              </p>
-            )
+            extras?.commits.length ? <CommitTimeline commits={extras.commits} /> : <VisualPending loaded={!!extras} />
           }
         />
 
@@ -356,19 +359,15 @@ const ProjectDetail = () => {
           className="rounded-lg bg-tile p-7 md:p-10 lg:p-12 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)] gap-10 lg:gap-16 min-w-0"
         >
           <div className="lg:sticky lg:top-32 self-start">
-            <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" /> Readme
-            </div>
+            <Kicker>Readme</Kicker>
             <h2 className="t-statement text-4xl md:text-6xl mt-6">As it reads on GitHub</h2>
             <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
-            <a
+            <ExternalLink
               href={`${project.html_url}#readme`}
-              target="_blank"
-              rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-2 t-label hover:opacity-70 transition-opacity duration-fast"
             >
               Open on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-            </a>
+            </ExternalLink>
           </div>
           <div className="readme min-w-0 overflow-hidden" onClick={onReadmeClick}>
             {extras?.readme ? (

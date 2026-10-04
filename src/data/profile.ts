@@ -54,6 +54,13 @@ export const PROFILE = {
   ],
 } as const;
 
+/** The public profiles, in the order the site lists them */
+export const SOCIALS = [
+  { label: "LinkedIn", href: PROFILE.links.linkedin },
+  { label: "GitHub", href: PROFILE.links.github },
+  { label: "Medium", href: PROFILE.links.medium },
+] as const;
+
 /** What I do: five services with the real stack behind each */
 export const SERVICES: { title: string; blurb: string; stack: string[]; proof: { label: string; href: string }[] }[] = [
   {

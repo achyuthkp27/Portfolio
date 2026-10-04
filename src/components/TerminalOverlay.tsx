@@ -493,8 +493,8 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
             text: (
               <div className="my-2 flex flex-col gap-1.5">
                 {[
-                  { label: "github", value: "achyuthkp27", href: "https://github.com/achyuthkp27" },
-                  { label: "linkedin", value: "kpachyuth", href: "https://www.linkedin.com/in/kpachyuth" },
+                  { label: "github", value: "achyuthkp27", href: PROFILE.links.github },
+                  { label: "linkedin", value: "kpachyuth", href: PROFILE.links.linkedin },
                   { label: "email", value: PROFILE.email, href: `mailto:${PROFILE.email}` },
                 ].map((node) => (
                   <a
