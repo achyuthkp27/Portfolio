@@ -12,7 +12,7 @@ const SITE_URL = "https://achyuthkp27.github.io/Portfolio/";
 
 const DEFAULT_TITLE = "Achyuth KP | Software Engineer | Backend systems & AI products";
 const DEFAULT_DESCRIPTION =
-  "Achyuth KP, Software Engineer building reliable backend systems and AI-powered products: Java, Spring Boot, Kafka, Spring AI, and LangChain4j, proven on a regulated banking platform.";
+  "Achyuth KP, Software Engineer building card, payment, and authentication systems for a bank, plus AI-powered products: Java, Spring Boot, Kafka, Python, Spring AI, LangChain4j, and Azure OpenAI.";
 
 /**
  * Per-route meta. index.html carries the same tags marked data-rh, so Helmet replaces them

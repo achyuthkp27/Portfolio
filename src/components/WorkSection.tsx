@@ -6,8 +6,8 @@ import { pad2 } from "@/lib/format";
 import { ExternalLink } from "./ui/ExternalLink";
 import { StackBody, StackCard, StackHead, StackIntro, StackMiddle, StackTags, StackTile } from "./ui/StackCard";
 
-/** Every project, in order: applied AI first, then the banking platform underneath it */
-const ORDER = [...WORK.ai, WORK.spotlight, ...WORK.more];
+/** Every project, in order: the banking systems first, then applied AI, then VoxOs */
+const ORDER = [...WORK.banking, ...WORK.ai, WORK.spotlight];
 
 const SourceLink = ({ href }: { href: string }) => (
   <ExternalLink
@@ -20,7 +20,7 @@ const SourceLink = ({ href }: { href: string }) => (
 
 /** Problem, approach and outcome, where there is something specific and true to say */
 const Story = ({ study }: { study: Project }) => {
-  // Phones fold the story behind one tap so nine cards don't make an endless page; md and up show it
+  // Phones fold the story behind one tap so eleven cards don't make an endless page; md and up show it
   const [open, setOpen] = useState(false);
   const parts = (
     [
@@ -66,15 +66,15 @@ const WorkSection = () => (
       label="My work"
       title={
         <>
-          AI on top of
+          Systems that move money,
           <br />
-          systems that move money.
+          and the AI on top.
         </>
       }
     >
       <p>
-        AI I&apos;ve shipped at a bank and built on my own time, then the banking systems underneath it.{" "}
-        <span className="text-snow">Client specifics are generalised and no metrics are invented.</span>
+        The card, payment, and alerting systems I have built at a bank, then AI I&apos;ve shipped there and built on my
+        own time. <span className="text-snow">Client specifics are generalised and no metrics are invented.</span>
       </p>
       <ExternalLink
         href={PROFILE.links.github}

@@ -311,7 +311,7 @@ const Hero = () => {
             start={1.7}
             step={0.022}
             className="text-xs md:text-sm text-white/40 font-light leading-relaxed"
-            text="I mainly work with Java, Spring Boot, Kafka, and Python, and today I lead backend API architecture for a *banking* *platform*."
+            text="I mainly work with Java, Spring Boot, Kafka, and Python, and today I own cards, payments, and an LLM assistant for a *banking* *platform*."
           />
           <BlurWords
             show={show}

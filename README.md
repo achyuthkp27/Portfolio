@@ -4,17 +4,15 @@
 
 A personal brand site for a backend engineer, live at **[achyuthkp27.github.io/Portfolio](https://achyuthkp27.github.io/Portfolio)**.
 
-Five years building secure banking microservices for retail, mobile, and corporate channels. The site introduces the person first, then shows the work: a condensed-type editorial layout (Antonio for display, Inter for reading) on near-black, with slash labels, pill buttons, and one accent colour.
+Five years building card, payment, and authentication systems for First Citizens Bank (Trinidad and Tobago and Barbados): Card on File tokenization, virtual cards and the first Google Pay launch in Trinidad and Tobago, and a production LLM banking assistant. The site introduces the person first, then shows the work: a condensed-type editorial layout (Antonio for display, Inter for reading) on near-black, with slash labels, pill buttons, and one accent colour.
 
 ## What's on the site
 
 - **Splash screen** — a word flip that ends on the name, shown on every visit and device. It is protected: see [`CLAUDE.md`](CLAUDE.md).
 - **Hero** — the name at wordmark scale with one uppercase line; it zooms and fades as you scroll while fact tiles drift in from the edges.
-- **Work** — seven sticky-stacking cards from a regulated banking platform, each with a diagram or live demo as its artwork, plus problem, approach, and outcome. Client specifics are generalized and no metrics are invented.
-- **Trace** — one corporate wire transfer as a span waterfall.
+- **Work** — eleven sticky-stacking cards: the banking systems first (Card on File, virtual cards and Google Pay, the duplicate alerts fix, multi-region APIs, the microservice estate, TOTP, observability), then applied AI and VoxOs. Each has a problem, approach, and outcome. Client specifics are generalized and no metrics are invented.
 - **Who I am** — a statement that fills in as you read it, the bio, and a live years-of-experience counter.
 - **Services, stack, numbers, principles, record** — a two-column accordion of what I do, a marquee of the stack, real counts, five principles as tilted cards, and dated highlights.
-- **Interactive demos** — a maker-checker approval flow (try approving your own transfer) and a real RFC 6238 TOTP generator with replay rejection, verified against the RFC test vectors.
 - **Open source and writing** — public repos from the GitHub API and early Medium explainers, as row lists.
 - **Contact** — a closing statement with the address as the control. No form, because there is no server.
 - **Footer** — the first name at wordmark scale, filled with a dot matrix and clipped by the page edge.
@@ -63,12 +61,11 @@ The service worker activates new versions immediately, so a normal reload picks 
 ```
 src/
 ├── components/
-│   ├── case-studies/   # interactive maker-checker and TOTP demos, trace waterfall
-│   └── ui/             # Pill, SectionHeader, CommandMenu, SmoothScroll, …
+│   └── ui/             # Pill, StackCard, AwardCard, CommandMenu, SmoothScroll, …
 ├── context/            # LoadingContext (splash screen state)
 ├── data/               # profile, case studies, experience, nav, splash words
 ├── hooks/              # useSectionScroll, useFocusTrap, useMobile, …
-├── lib/                # GitHub client, TOTP, shortcuts, motion vocabulary, analytics
+├── lib/                # GitHub client, shortcuts, motion vocabulary, analytics
 ├── pages/              # Index, ProjectDetail, NotFound
 └── test/               # test setup
 scripts/                # build-time GitHub snapshot

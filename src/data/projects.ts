@@ -1,7 +1,9 @@
 import {
   Server,
+  CreditCard,
+  BellOff,
+  Globe,
   Database,
-  MessageSquare,
   HardDrive,
   ShieldCheck,
   Bot,
@@ -36,12 +38,12 @@ export const projects: Project[] = [
     slug: "corporate-banking-microservices",
     title: "Retail, Mobile & Corporate Banking",
     description:
-      "Spring Boot services in a 30+ microservice estate powering retail, mobile, and corporate online banking for hundreds of corporate clients.",
+      "Spring Boot services in a 30+ microservice estate powering Retail Internet Banking, Corporate Internet Banking, and Mobile Banking for retail customers and hundreds of corporate clients.",
     category: "Backend",
     problem:
       "Corporate clients needed new banking modules on a platform serving hundreds of organizations, under strict compliance requirements",
     solution:
-      "Designed and delivered three corporate banking modules end to end: REST APIs, Kafka event flows, and PostgreSQL persistence",
+      "Designed and delivered three major corporate banking modules: REST APIs, Kafka event flows, and PostgreSQL persistence",
     outcome: "Modules shipped to production and in daily use by corporate banking customers",
     tags: ["Spring Boot", "Kafka", "PostgreSQL", "Redis", "Microservices"],
     icon: Server,
@@ -50,12 +52,12 @@ export const projects: Project[] = [
   {
     slug: "maker-checker-authorization",
     title: "Maker-Checker Authorization Framework",
-    description: "Dual-approval controls on financial transactions for compliance and audit requirements.",
+    description: "Dual-approval controls on financial transactions in Corporate Internet Banking.",
     category: "Backend",
-    problem: "Financial transactions required enforced four-eyes approval to satisfy PCI-DSS and SOX audit controls",
+    problem: "Financial transactions needed a second person to approve them before they went through",
     solution: "Built a reusable maker-checker framework applied across corporate banking transaction flows",
-    outcome: "Compliance controls enforced platform-wide; passed client audit cycles",
-    tags: ["Spring Boot", "Spring Security", "PCI-DSS", "SOX"],
+    outcome: "No financial transaction in Corporate Internet Banking goes through on one person's approval",
+    tags: ["Spring Boot", "Spring Security", "Maker-checker", "Audit"],
     icon: ShieldCheck,
     featured: true,
   },
@@ -74,47 +76,83 @@ export const projects: Project[] = [
   },
   {
     slug: "card-tokenization",
-    title: "Card on File Tokenization",
+    title: "Card on File Network Tokenization",
     description:
-      "Credit card tokenization for Mastercard and Visa, plus virtual card services and JWT/JWE/JWS API security.",
+      "Issuer-side Visa and Mastercard network tokenization, built as primary owner and taken to production in 3 months.",
     category: "Backend",
-    problem: "Storing raw card data carries PCI-DSS scope and breach risk",
-    solution: "Integrated network tokenization so merchants hold tokens, never PANs; secured APIs with JWT/JWE/JWS",
-    outcome: "Card data taken out of scope; tokenized payments live for both networks",
-    tags: ["Java", "Spring Boot", "JWE/JWS", "Mastercard", "Visa"],
+    problem:
+      "Merchants and wallets need network tokens in place of real card numbers, and the issuing bank has to answer the networks' provisioning and lifecycle calls",
+    solution:
+      "Designed and built the issuer-side services that handle Visa and Mastercard provisioning and token lifecycle calls, secured with JWT, JWE, and JWS",
+    outcome: "Live in production for both networks, 3 months from start",
+    tags: ["Java", "Spring Boot", "Network tokenization", "Visa", "Mastercard", "JWE/JWS"],
     icon: HardDrive,
     featured: true,
   },
   {
-    slug: "video-kyc-onboarding",
-    title: "Video KYC Onboarding",
-    description: "Real-time remote customer verification over WebRTC and WebSockets.",
-    category: "Full-stack",
-    problem: "Branch-only KYC slowed customer onboarding",
-    solution: "Engineered real-time video verification with WebRTC signaling over WebSockets",
-    outcome: "Remote onboarding shipped; also delivered WhatsApp banking on the same channel stack",
-    tags: ["WebRTC", "WebSockets", "Spring Boot", "ReactJS"],
-    icon: MessageSquare,
+    slug: "virtual-cards-google-pay",
+    title: "Virtual Cards and Google Pay, the first launch in Trinidad and Tobago",
+    description:
+      "In-app virtual cards with secure card number and CVV reveal and wallet provisioning, which powered the first Google Pay launch in Trinidad and Tobago.",
+    category: "Backend",
+    problem: "Customers wanted a card they could use the moment they asked for it, on the phone and in Google Pay",
+    solution:
+      "As primary backend owner, built virtual card issuance, secure card number and CVV reveal, and wallet provisioning in 3 months, inside a 6-month program with the UI and vendor teams",
+    outcome:
+      "Powered the bank's Google Pay launch, the first in Trinidad and Tobago. Apple Pay provisioning is now in rollout",
+    tags: ["Java", "Spring Boot", "Kafka", "PostgreSQL", "Google Pay", "Apple Pay"],
+    icon: CreditCard,
+    featured: true,
+  },
+  {
+    slug: "duplicate-alerts-race-condition",
+    title: "Duplicate Alerts, Fixed at the Root",
+    description:
+      "A race condition sent customers the same SMS, email, and push alert more than once. Fixed with locking, claim-and-deliver, and idempotent sends.",
+    category: "Backend",
+    problem:
+      "Several scheduler instances picked up the same pending alerts, so Infobip delivered duplicates. The bank paid for every extra message, and customers reported double debits that never happened",
+    solution:
+      "Added scheduler locking, row-level locks when fetching alerts, claim-and-deliver status updates, and idempotent sends, so each alert is claimed by one worker and sent once",
+    outcome: "Duplicate vendor charges and false double-debit reports stopped",
+    tags: ["Java", "Spring Boot", "PostgreSQL", "Distributed locking", "Idempotency", "Infobip"],
+    icon: BellOff,
+    featured: true,
+  },
+  {
+    slug: "multi-region-apis",
+    title: "One API, Two Countries",
+    description: "A single set of APIs serving Trinidad and Tobago and Barbados, each region on its own database.",
+    category: "Backend",
+    problem:
+      "The bank runs in two countries with separate data, and duplicating every API per region doubles the work and the drift",
+    solution: "Resolved the region from the access token and routed each request to that region's database",
+    outcome: "One codebase and one set of contracts for both countries",
+    tags: ["Spring Boot", "Spring Security", "OAuth2", "PostgreSQL", "Multi-region"],
+    icon: Globe,
   },
   {
     slug: "llm-banking-chatbot",
-    title: "LLM Banking Chatbot APIs",
-    description: "Conversational AI integration for automated query handling and identity validation.",
+    title: "LLM Banking Assistant",
+    description:
+      "A production banking assistant on Spring AI and Azure OpenAI that answers customer FAQs and checks who it is talking to before it touches an account.",
     category: "AI",
-    problem: "Routine account queries and password-change flows consumed support capacity",
-    solution: "Built LLM-powered chatbot APIs covering account detail retrieval and identity validation",
-    outcome: "Automated handling of routine banking queries in production",
-    tags: ["Spring AI", "LangChain4j", "Java", "LLM"],
+    problem: "Routine questions, account lookups, and password resets took up support agents' time",
+    solution:
+      "Designed and launched an assistant that answers FAQs and handles account lookup and identity validation before password resets",
+    outcome: "In production, resolving routine requests without a support agent",
+    tags: ["Spring AI", "Azure OpenAI", "LangChain4j", "Java", "LLM"],
     icon: Bot,
   },
   {
     slug: "elk-observability-rollout",
-    title: "ELK + Kafka Observability Rollout",
-    description: "Centralized logging and cross-service tracing for a 30+ service estate.",
+    title: "ELK + Kafka Observability",
+    description: "Centralized logging and cross-service search for a 30+ service estate.",
     category: "Infrastructure",
     problem: "Production triage meant grepping scattered logs across on-prem services",
-    solution: "Led end-to-end ELK Stack rollout with Kafka transport and searchable cross-service traces",
-    outcome: "Team-wide searchable logs; measurably faster production triage",
+    solution:
+      "Set up the ELK Stack with Kafka as the log transport, so every service's logs land in one searchable place",
+    outcome: "Production issues are traced from one search across all services",
     tags: ["Elasticsearch", "Logstash", "Kibana", "Kafka"],
     icon: Database,
   },
@@ -168,17 +206,19 @@ export const projects: Project[] = [
   },
 ];
 
-/** What the Work section shows, by slug: applied AI as one card, VoxOs, then the banking systems as rows */
+/** What the Work section shows, by slug: the banking systems first, then applied AI as one card, then VoxOs */
 export const WORK = {
-  ai: ["aegis-ai", "llm-banking-chatbot", "kairo-offline-ai-bank"],
-  spotlight: "voxos",
-  more: [
+  banking: [
+    "card-tokenization",
+    "virtual-cards-google-pay",
+    "duplicate-alerts-race-condition",
+    "multi-region-apis",
     "corporate-banking-microservices",
     "totp-authentication-system",
-    "card-tokenization",
-    "video-kyc-onboarding",
     "elk-observability-rollout",
   ],
+  ai: ["llm-banking-chatbot", "aegis-ai", "kairo-offline-ai-bank"],
+  spotlight: "voxos",
 } as const;
 
 export const projectBySlug = (slug: string) => {

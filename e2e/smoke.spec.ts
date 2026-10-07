@@ -29,7 +29,7 @@ test("work shows every project as a stacked card", async ({ page }) => {
   await page.locator("#work").first().scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "AegisAI" })).toBeAttached({ timeout: 15_000 });
   await expect(page.locator("#case-card-tokenization")).toBeAttached();
-  await expect(page.locator("#work ol > li")).toHaveCount(9);
+  await expect(page.locator("#work ol > li")).toHaveCount(11);
   expect(errors).toEqual([]);
 });
 

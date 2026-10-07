@@ -418,8 +418,20 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
                   },
                   { group: "DATA & MESSAGING", items: ["PostgreSQL", "Redis", "Kafka", "NATS JetStream", "MinIO"] },
                   {
+                    group: "PAYMENTS",
+                    items: ["Visa · Mastercard tokenization", "Google Pay", "Apple Pay", "Montran"],
+                  },
+                  {
                     group: "SECURITY & AI",
-                    items: ["JWT / JWE", "OAuth2", "TOTP / MFA", "PCI-DSS / SOX", "Spring AI", "LangChain4j"],
+                    items: [
+                      "JWT / JWE",
+                      "OAuth2",
+                      "TOTP / MFA",
+                      "Maker-checker",
+                      "Spring AI",
+                      "Azure OpenAI",
+                      "LangChain4j",
+                    ],
                   },
                   { group: "FRONTEND", items: ["ReactJS", "JavaScript"] },
                   {
@@ -456,12 +468,12 @@ export default function TerminalOverlay({ forceOpen = false, onClose }: Terminal
           newHistory.push({
             type: "output",
             text: (
-              <pre className="my-2 text-[11px] sm:text-xs leading-relaxed whitespace-pre overflow-x-auto">{`* 2026 ── cognizant · associate software engineer
+              <pre className="my-2 text-[11px] sm:text-xs leading-relaxed whitespace-pre overflow-x-auto">{`* 2026 ── cognizant · software engineer
 │         merge: fis-global → cognizant (client rebadge)
 * 2026 ── fis global · senior software engineer
 │         tag: above-and-beyond-award (q1 2024)
 * 2021 ── fis global · software engineer
-│         retail · mobile · corporate banking
+│         retail · corporate · mobile banking · trinidad and tobago · barbados
 * 2020 ── aniworks · software development intern
 │
 * init ── b.e. computer science, class of 2021`}</pre>
