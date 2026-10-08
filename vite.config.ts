@@ -52,7 +52,9 @@ export default defineConfig(({ command, isPreview }) => ({
     },
   },
   build: {
-    modulePreload: false,
+    // Preload each chunk's imports in parallel: the entry's vendors as <link rel="modulepreload"> in the
+    // HTML, and a lazy section's shared chunks alongside it, instead of discovering them one hop at a time
+    modulePreload: { polyfill: true },
     rolldownOptions: {
       output: {
         // Stable, cacheable vendor chunks. Groups match on node_modules paths (Rolldown has no object form).

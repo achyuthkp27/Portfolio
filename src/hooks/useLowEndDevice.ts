@@ -15,15 +15,17 @@ export const useLowEndDevice = () => {
       connection?: { effectiveType?: string; saveData?: boolean };
     };
 
-    const cores = typeof navigatorAny.hardwareConcurrency === "number" ? navigatorAny.hardwareConcurrency : 4;
-    const memory = typeof navigatorAny.deviceMemory === "number" ? navigatorAny.deviceMemory : 4;
+    // Unreported counts as capable: Safari and Firefox never report memory
+    const cores = typeof navigatorAny.hardwareConcurrency === "number" ? navigatorAny.hardwareConcurrency : 8;
+    const memory = typeof navigatorAny.deviceMemory === "number" ? navigatorAny.deviceMemory : 8;
     const effectiveType = navigatorAny.connection?.effectiveType || "";
 
+    // Budget laptops report 4 threads or 4 GB; smooth scrolling stalls on them, so they keep native scrolling.
     // "3g" is excluded on purpose: browsers report it for many ordinary connections,
-    // and it says nothing about whether the device can render the 3D scene.
+    // and it says nothing about what the device can render.
     const lowEnd =
-      cores <= 2 ||
-      memory <= 2 ||
+      cores <= 4 ||
+      memory <= 4 ||
       navigatorAny.connection?.saveData === true ||
       effectiveType === "slow-2g" ||
       effectiveType === "2g";

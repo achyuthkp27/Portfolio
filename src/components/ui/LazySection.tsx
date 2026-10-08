@@ -1,5 +1,27 @@
 import { useInView } from "react-intersection-observer";
-import { Suspense, ReactNode, useEffect, useState, type CSSProperties } from "react";
+import { Suspense, ReactNode, useCallback, useEffect, useState, type CSSProperties } from "react";
+
+type IdleWindow = Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+
+/**
+ * Sections waiting to mount on idle, in page order. One mounts per idle callback, so the
+ * page never takes them all in a single long task that would stall a slow laptop mid-scroll.
+ */
+const idleQueue: Array<() => void> = [];
+let draining = false;
+const drainIdleQueue = () => {
+  const w = window as IdleWindow;
+  const next = () => {
+    const mount = idleQueue.shift();
+    mount?.();
+    if (idleQueue.length) schedule();
+    else draining = false;
+  };
+  const schedule = () => (w.requestIdleCallback ? w.requestIdleCallback(next, { timeout: 2000 }) : window.setTimeout(next, 50));
+  if (draining) return;
+  draining = true;
+  schedule();
+};
 
 interface LazySectionProps {
   children: ReactNode;
@@ -49,17 +71,37 @@ export const LazySection = ({
   });
   const [idle, setIdle] = useState(false);
   useEffect(() => {
-    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const mount = () => setIdle(true);
     const t = window.setTimeout(() => {
-      if (w.requestIdleCallback) w.requestIdleCallback(() => setIdle(true), { timeout: 2000 });
-      else setIdle(true);
+      idleQueue.push(mount);
+      drainIdleQueue();
     }, 4000);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      const i = idleQueue.indexOf(mount);
+      if (i >= 0) idleQueue.splice(i, 1);
+    };
   }, []);
   const inView = near || idle;
 
+  // Well off screen, the section's looping CSS animations pause (see [data-offscreen] in index.css),
+  // so a visitor reading elsewhere isn't paying for sparkles and blinking lights they can't see
+  const { ref: visibleRef, inView: visible } = useInView({ rootMargin: "50% 0px", initialInView: true });
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      ref(node);
+      visibleRef(node);
+    },
+    [ref, visibleRef],
+  );
+
   return (
-    <div ref={ref} className={`relative ${inView ? "" : RESERVE} ${className}`} style={vars}>
+    <div
+      ref={setRefs}
+      data-offscreen={visible ? undefined : ""}
+      className={`relative ${inView ? "" : RESERVE} ${className}`}
+      style={vars}
+    >
       {inView ? (
         <Suspense fallback={fallback || <div className={`w-full animate-pulse bg-white/5 rounded-xl ${RESERVE}`} />}>
           {children}

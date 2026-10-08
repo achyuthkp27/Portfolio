@@ -412,6 +412,28 @@
   }
 }
 
+/* A lazy section well off screen (LazySection sets the attribute): its looping animations
+   pause until it comes back near the viewport, so unseen loops don't keep the page busy.
+   Named classes, not *: toggling the attribute then restyles only these few elements.
+   A new infinite animation belongs in this list. */
+[data-offscreen]
+  :is(
+    .plus-pulse,
+    .live-dot,
+    .trophy-gloss,
+    .vox-bar,
+    .typing-dot,
+    .clock-colon,
+    .skeleton,
+    .sparkle,
+    .text-shine,
+    .animate-ping,
+    .animate-pulse
+  ),
+[data-offscreen] .live-dot::after {
+  animation-play-state: paused;
+}
+
 /* A specular band that sweeps across the glass award every few seconds */
 .trophy-gloss {
   background: linear-gradient(

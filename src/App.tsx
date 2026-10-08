@@ -9,14 +9,16 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PremiumLoader from "@/components/PremiumLoader";
 import { FilmGrain } from "@/components/ui/FilmGrain";
 import SmoothScroll from "./components/ui/SmoothScroll";
-import Navigation from "@/components/Navigation";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
 import { LoadingProvider } from "./context/LoadingContext";
 import { useLoading } from "@/hooks/useLoading";
 import { useMobile } from "@/hooks/useMobile";
 import { useIdleMount } from "@/hooks/useIdleMount";
 
+// The page loads in its own chunk, in parallel with the splash: the splash only needs React and
+// framer-motion, so it paints sooner, and the page arrives while the splash still covers it
+const Index = lazy(() => import("./pages/Index"));
+const Navigation = lazy(() => import("@/components/Navigation"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const Analytics = import.meta.env.PROD ? lazy(() => import("@/components/Analytics")) : null;
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
@@ -39,7 +41,14 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Index />} />
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={null}>
+              <Index />
+            </Suspense>
+          }
+        />
         <Route
           path="/project/:slug"
           element={
@@ -48,7 +57,14 @@ const AnimatedRoutes = () => {
             </Suspense>
           }
         />
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={null}>
+              <NotFound />
+            </Suspense>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -133,7 +149,9 @@ const App = () => {
                 <SmoothScroll>
                   <KeyboardShortcuts />
                   <DeferredExperience />
-                  <Navigation />
+                  <Suspense fallback={null}>
+                    <Navigation />
+                  </Suspense>
                   <AnimatedRoutes />
                 </SmoothScroll>
               </HashRouter>
