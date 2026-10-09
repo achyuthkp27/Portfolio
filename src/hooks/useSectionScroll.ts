@@ -11,13 +11,55 @@ const ARRIVED_PX = 120;
 
 const isHome = (pathname: string) => pathname === "/" || pathname === "";
 
-/** Distance from the viewport top to where a section should land: its top, or its last screen when marked data-scroll-end */
-const aimOffset = (element: Element) => {
-  const rect = element.getBoundingClientRect();
-  if (element instanceof HTMLElement && element.dataset.scrollEnd !== undefined) {
-    return rect.top + Math.max(0, element.offsetHeight - window.innerHeight);
+/** Where a pinned card rests under the nav when its sticky top cannot be read */
+const FALLBACK_PIN_PX = 76;
+
+/**
+ * The element's viewport top as if nothing in its chain were stuck. A sticky element (or one
+ * inside one) reports where it is pinned, not where it sits in the flow, so every sticky box in
+ * the chain is made static (which also drops its top offset) for one synchronous measurement and
+ * restored before the browser paints.
+ */
+const inFlowTop = (element: Element) => {
+  const stuck: { el: HTMLElement; value: string; priority: string }[] = [];
+  for (let node: Element | null = element; node && node !== document.body; node = node.parentElement) {
+    if (node instanceof HTMLElement && getComputedStyle(node).position === "sticky") {
+      stuck.push({
+        el: node,
+        value: node.style.getPropertyValue("position"),
+        priority: node.style.getPropertyPriority("position"),
+      });
+    }
   }
-  return rect.top;
+  if (stuck.length === 0) return element.getBoundingClientRect().top;
+  for (const { el } of stuck) el.style.setProperty("position", "static", "important");
+  const top = element.getBoundingClientRect().top;
+  for (const { el, value, priority } of stuck) {
+    if (value) el.style.setProperty("position", value, priority);
+    else el.style.removeProperty("position");
+  }
+  return top;
+};
+
+/** How far below the viewport top a sticky element rests once pinned: its own sticky top */
+const pinOffset = (element: Element) => {
+  const top = parseFloat(getComputedStyle(element).top);
+  // A card taller than the screen pins above the viewport top; land it with its head under the nav instead
+  return Number.isFinite(top) && top >= 0 ? top : FALLBACK_PIN_PX;
+};
+
+/**
+ * Distance from the viewport top to where a section should land: its top, or its last screen when
+ * marked data-scroll-end. A sticky target (a stacked work card) lands where it pins, measured from
+ * its place in the flow, so the card asked for is the one on top, not whichever card is stuck there.
+ */
+const aimOffset = (element: Element) => {
+  const top = inFlowTop(element);
+  if (getComputedStyle(element).position === "sticky") return top - pinOffset(element);
+  if (element instanceof HTMLElement && element.dataset.scrollEnd !== undefined) {
+    return top + Math.max(0, element.offsetHeight - window.innerHeight);
+  }
+  return top;
 };
 
 /**
@@ -91,8 +133,13 @@ export function useSectionScroll() {
         if (++ticks >= TRACK_MAX_TICKS) cancel();
       }, TRACK_INTERVAL_MS);
 
-      // The visitor taking over the scroll ends the tracking
-      const stop = () => cancel();
+      // The visitor taking over the scroll ends the tracking. The keypress or click that asked for
+      // this scroll can still be dispatching while these listeners go on (Enter in the quick menu),
+      // so anything that happened before tracking started is ignored.
+      const startedAt = performance.now();
+      const stop = (event: Event) => {
+        if (event.timeStamp > startedAt) cancel();
+      };
       window.addEventListener("wheel", stop, { passive: true });
       window.addEventListener("touchstart", stop, { passive: true });
       window.addEventListener("keydown", stop);

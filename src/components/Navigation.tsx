@@ -73,6 +73,13 @@ const Navigation = () => {
       { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
     );
     const rescan = () => {
+      // Sections can unmount (lazy pages swap under HashRouter): drop stale targets first
+      targets.forEach((element, id) => {
+        if (element.isConnected) return;
+        observer.unobserve(element);
+        targets.delete(id);
+        crossing.delete(id);
+      });
       NAV_ITEMS.forEach(({ id }) => {
         const element = document.querySelector(`main #${id}`);
         if (!element || targets.get(id) === element) return;
@@ -91,8 +98,9 @@ const Navigation = () => {
       timer = setTimeout(rescan, 300);
     });
     rescan();
-    const main = document.getElementById("main-content");
-    if (main) domObserver.observe(main, { childList: true, subtree: true });
+    // Watch the whole body: the lazy page (and its <main>) can mount after this nav does,
+    // and a <main> from a previous route may already be on its way out
+    domObserver.observe(document.body, { childList: true, subtree: true });
     return () => {
       if (timer) clearTimeout(timer);
       observer.disconnect();
@@ -100,14 +108,29 @@ const Navigation = () => {
     };
   }, [isHomePage]);
 
+  // From the open phone menu, the scroll waits until the menu has closed: the scroll lock has to
+  // release first, or the paused smooth scroller ignores it. This effect is declared after the
+  // scroll lock, so the lock's cleanup has already run when it fires.
+  const pendingSection = useRef<string | null>(null);
+  useEffect(() => {
+    if (isMenuOpen) return;
+    const id = pendingSection.current;
+    pendingSection.current = null;
+    if (id) scrollToSection(id);
+  }, [isMenuOpen, scrollToSection]);
+
   const goTo = (id: string) => {
-    setIsMenuOpen(false);
-    scrollToSection(id);
+    if (isMenuOpen) {
+      pendingSection.current = id;
+      setIsMenuOpen(false);
+    } else {
+      scrollToSection(id);
+    }
   };
 
   const resumeHref = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   const link = (active: boolean) =>
-    `group/link relative block py-3 -my-3 font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
+    `group/link relative block py-3 -my-3 before:absolute before:content-[''] before:-inset-y-1 before:inset-x-0 font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
@@ -171,7 +194,7 @@ const Navigation = () => {
             <button
               type="button"
               onClick={() => goTo("contact")}
-              className="hidden md:inline-flex items-center h-9 px-5 rounded-full bg-emerald-400 text-black text-[12px] font-semibold tracking-[0.12em] hover:bg-emerald-300 transition-colors duration-fast"
+              className="relative hidden md:inline-flex items-center h-9 px-5 rounded-full before:absolute before:content-[''] before:-inset-y-[5px] before:inset-x-0 bg-emerald-400 text-black text-[12px] font-semibold tracking-[0.12em] hover:bg-emerald-300 transition-colors duration-fast"
             >
               Let's talk
             </button>
@@ -180,7 +203,7 @@ const Navigation = () => {
               onClick={() => setIsMenuOpen((open) => !open)}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
-              className="md:hidden relative w-11 h-10 -mr-2 flex flex-col items-end justify-center gap-[6px]"
+              className="md:hidden relative w-11 h-11 -mr-2 flex flex-col items-end justify-center gap-[6px]"
             >
               <span
                 className={`block h-[2px] bg-current transition-all duration-base ease-out ${isMenuOpen ? "w-6 translate-y-[4px] rotate-45" : "w-8"}`}

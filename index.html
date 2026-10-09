@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" type="image/webp" href="/images/logo.webp" />
+<link rel="icon" type="image/webp" sizes="64x64" href="/images/favicon-64.webp" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="canonical" href="https://achyuthkp27.github.io/Portfolio/" />
 
@@ -64,17 +64,9 @@
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Single non-render-blocking font load (consolidated from two requests) -->
-<link
-  href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;600;700&family=Inter:wght@300;400;500;600;800;900&family=Playfair+Display:ital,wght@0,400;1,400;1,500&family=Mrs+Saint+Delafield&family=JetBrains+Mono:wght@400;500&display=swap"
-  rel="stylesheet"
-  media="print"
-  onload="this.media='all'">
-<noscript>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;600;700&family=Inter:wght@300;400;500;600;800;900&family=Playfair+Display:ital,wght@0,400;1,400;1,500&family=Mrs+Saint+Delafield&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-</noscript>
+<!-- Fonts are self-hosted (src/assets/fonts.css). Antonio is preloaded: the splash's words are set in it,
+     so they paint in the right face from the first frame. The rest load as text needs them. -->
+<link rel="preload" href="/src/assets/fonts/antonio-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
   /* Critical CSS — inlined to unblock FCP */

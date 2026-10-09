@@ -90,13 +90,13 @@ const ServiceRow = ({ service, index }: { service: Service; index: number }) => 
           {service.proof.length > 0 && (
             <>
               <p className="mt-8 t-figure text-[12px] text-muted">Where it shipped</p>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-1.5">
                 {service.proof.map((p) => (
                   <li key={p.href + p.label}>
                     <button
                       type="button"
                       onClick={() => scrollTo(p.href.replace(/^#/, ""))}
-                      className="group inline-flex items-center gap-2 py-1.5 -my-1.5 text-left text-[14px] text-snow/65 hover:text-snow transition-colors duration-fast"
+                      className="group inline-flex items-center gap-2 min-h-11 text-left text-[14px] text-snow/65 hover:text-snow transition-colors duration-fast"
                     >
                       <span className="h-1 w-1 rounded-full bg-emerald-400" aria-hidden="true" />
                       {p.label}

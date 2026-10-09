@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { pad2 } from "@/lib/format";
+import { elapsedSince } from "@/lib/elapsed";
 
 interface ExperienceTimerProps {
   startDate: Date;
@@ -43,25 +44,7 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
   }, []);
 
   // Count calendar years, months and days on the Bengaluru calendar, the same for every visitor
-  const now = new Date();
-  const IST_MS = 5.5 * 3600000;
-  const n = new Date(now.getTime() + IST_MS);
-  const s = new Date(startDate.getTime() + IST_MS);
-  let years = n.getUTCFullYear() - s.getUTCFullYear();
-  let months = n.getUTCMonth() - s.getUTCMonth();
-  let days = n.getUTCDate() - s.getUTCDate();
-  if (days < 0) {
-    months -= 1;
-    days += new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), 0)).getUTCDate();
-  }
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  const diff = now.getTime() - startDate.getTime();
-  const hh = Math.floor(diff / 3600000) % 24;
-  const mm = Math.floor(diff / 60000) % 60;
-  const ss = Math.floor(diff / 1000) % 60;
+  const { years, months, days, hours: hh, minutes: mm, seconds: ss } = elapsedSince(startDate, new Date());
   const readout = `${years}y ${months}m ${days}d · ${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
 
   if (inline) {

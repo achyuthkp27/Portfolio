@@ -1,4 +1,3 @@
-import { projects } from "./projects";
 /** The person, as the site introduces them. Facts only; nothing here is invented. */
 export const PROFILE = {
   name: "Achyuth KP",
@@ -46,12 +45,6 @@ export const PROFILE = {
     title: "B.E. Computer Science & Engineering",
     org: "Sri Siddhartha Institute of Technology",
   },
-  /** Real counts, not claims */
-  numbers: [
-    { value: "30+", label: "Services in the estate" },
-    { value: "3", label: "Banking channels" },
-    { value: String(projects.length), label: "Case studies on this page" },
-  ],
 } as const;
 
 /** The public profiles, in the order the site lists them */

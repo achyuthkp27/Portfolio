@@ -1,22 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { AnalyticsContext, initPostHog, type PostHogClient } from "@/lib/analyticsClient";
-
+/**
+ * Kept so the app shell's wrapper stays stable. It no longer starts PostHog: <Analytics />
+ * (its own lazy chunk, mounted shortly after the splash) does, keeping it off the critical path.
+ * Read the client with `useAnalytics` from "@/lib/analyticsClient".
+ */
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  const [client, setClient] = useState<PostHogClient | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    void initPostHog().then((posthogClient) => {
-      if (mounted) setClient(posthogClient);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const value = useMemo(() => client, [client]);
-
-  return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;
+  return <>{children}</>;
 }

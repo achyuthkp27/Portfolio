@@ -1,19 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import { useAnalytics } from "@/lib/analyticsClient";
+import { initPostHog, useAnalytics } from "@/lib/analyticsClient";
+import { createPageviewTracker } from "@/lib/analyticsPageviews";
 
-/** Sends a PostHog pageview per route. Renders nothing; PostHog stays off without a key. */
+/**
+ * Starts PostHog and sends one pageview per route: the current route as soon as PostHog is ready
+ * (even when that is a while after landing), then each HashRouter route change. Renders nothing.
+ */
 const Analytics = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const posthog = useAnalytics();
+  const track = useMemo(() => (posthog ? createPageviewTracker(posthog) : null), [posthog]);
 
   useEffect(() => {
-    if (!posthog) return;
-    posthog.capture("$pageview", {
-      $current_url: window.location.href,
-      $pathname: location.pathname,
-    });
-  }, [location, posthog]);
+    void initPostHog();
+  }, []);
+
+  useEffect(() => {
+    track?.(pathname);
+  }, [track, pathname]);
 
   return null;
 };

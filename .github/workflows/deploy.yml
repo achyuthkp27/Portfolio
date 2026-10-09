@@ -31,6 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       # Nothing deploys unless lint, types, and tests pass (includes the splash-screen guard test)
+      - name: Format check
+        run: npm run format:check
       - name: Lint
         run: npm run lint
       - name: Type-check
@@ -42,6 +44,11 @@ jobs:
         env:
           # Lets the build-time GitHub snapshot use the higher authenticated rate limit
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PostHog project key (public by design). Set it under Settings > Secrets and variables >
+          # Actions > Variables. Unset means analytics is left out of the build entirely.
+          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
+          # Optional, same place (e.g. https://eu.i.posthog.com). Empty uses the code's default host.
+          VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
       # Browser smoke test of the real build: blocks a deploy that builds but renders a blank or broken page
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

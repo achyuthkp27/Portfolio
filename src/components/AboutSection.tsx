@@ -242,8 +242,8 @@ const AboutSection = () => {
               </motion.div>
 
               {/* Local time and availability */}
-              <motion.div {...reveal(0.35)} className={`${card} md:col-span-2 lg:col-span-4 p-6 md:p-8 flex flex-col`}>
-                <div className="flex items-start justify-between gap-4">
+              <motion.div {...reveal(0.35)} className={`${card} md:col-span-3 lg:col-span-4 p-6 md:p-8 flex flex-col`}>
+                <div className="flex flex-row md:flex-col min-[1400px]:flex-row items-start justify-between gap-4 md:gap-0 min-[1400px]:gap-4">
                   <div>
                     <p className="t-label">Local time</p>
                     <p className="t-wordmark leading-none text-5xl md:text-6xl t-figure mt-5 whitespace-nowrap">
@@ -256,9 +256,9 @@ const AboutSection = () => {
                     </p>
                     <p className="t-caps text-muted text-[12px] mt-2">{PROFILE.city.split(",")[0]} · IST</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right md:text-left min-[1400px]:text-right md:mt-8 min-[1400px]:mt-0">
                     <p className="t-label">Status</p>
-                    <p className="flex items-center justify-end gap-2.5 t-heading text-2xl md:text-3xl mt-5">
+                    <p className="flex items-center justify-end md:justify-start min-[1400px]:justify-end gap-2.5 t-heading text-2xl md:text-3xl mt-5">
                       <span className="relative flex h-2.5 w-2.5">
                         <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
                         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
@@ -273,7 +273,7 @@ const AboutSection = () => {
               {/* Latest public push */}
               <motion.div
                 {...reveal(0.4)}
-                className={`${card} md:col-span-4 lg:col-span-8 p-6 md:p-8 flex flex-col min-w-0`}
+                className={`${card} md:col-span-3 lg:col-span-8 p-6 md:p-8 flex flex-col min-w-0`}
               >
                 <p className="t-label mb-auto">Latest on GitHub</p>
                 {latest ? (

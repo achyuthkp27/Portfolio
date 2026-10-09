@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, GitCommitHorizontal } from "lucide-react";
-import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import SEO from "@/components/SEO";
 import {
   fetchLatestRepositories,
@@ -17,6 +17,7 @@ import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { PROFILE } from "@/data/profile";
 import { DUR, EASE, reveal } from "@/lib/motion";
 import { monthDay } from "@/lib/format";
+import { demoteReadmeHeadings } from "@/lib/readmeHtml";
 
 /** Small emerald dot and label above each row's title */
 const Kicker = ({ children }: { children: ReactNode }) => (
@@ -45,9 +46,12 @@ const SplitRow = ({
   body,
   children,
   visual,
+  titleAs: TitleTag = "h2",
 }: {
   meta: ReactNode;
   title: ReactNode;
+  /** The page's first row carries the page title, so it renders as the h1 */
+  titleAs?: "h1" | "h2";
   by?: ReactNode;
   body?: ReactNode;
   children?: ReactNode;
@@ -59,7 +63,9 @@ const SplitRow = ({
     <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-12 gap-y-6 items-end">
       <div className="min-w-0">
         <Kicker>{meta}</Kicker>
-        <h2 className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">{title}</h2>
+        <TitleTag className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">
+          {title}
+        </TitleTag>
         <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
         {by && <p className="t-body mt-5 text-muted">{by}</p>}
       </div>
@@ -189,6 +195,8 @@ const ProjectDetail = () => {
   const [more, setMore] = useState<GitHubRepo[]>([]);
   const project = result?.status === "ok" ? result.repo : null;
   const isLoading = result === null;
+  // README headings sit under the page's h1 and the "As it reads on GitHub" h2
+  const readmeHtml = useMemo(() => (extras?.readme ? demoteReadmeHeadings(extras.readme) : null), [extras?.readme]);
 
   useEffect(() => {
     if (!slug) {
@@ -288,6 +296,7 @@ const ProjectDetail = () => {
 
         {/* Row 1: the repository */}
         <SplitRow
+          titleAs="h1"
           meta={<>Last commit {longDate(project.updated_at)}</>}
           title={project.name}
           by={
@@ -369,9 +378,9 @@ const ProjectDetail = () => {
               Open on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
             </ExternalLink>
           </div>
-          <div className="readme min-w-0 overflow-hidden" onClick={onReadmeClick}>
-            {extras?.readme ? (
-              <div dangerouslySetInnerHTML={{ __html: extras.readme }} />
+          <div className="readme min-w-0" onClick={onReadmeClick}>
+            {readmeHtml ? (
+              <div dangerouslySetInnerHTML={{ __html: readmeHtml }} />
             ) : (
               <p className="t-figure text-xs text-muted">
                 {extras ? "The README could not be loaded right now. It is on GitHub." : "Loading README…"}

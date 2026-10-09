@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Achyuth KP</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #000;
+        color: #a3a3a3;
+        font: 14px/1.5 system-ui, sans-serif;
+      }
+      a {
+        color: #fff;
+      }
+      p {
+        padding: 24px;
+      }
+    </style>
+    <script>
+      // The site routes with HashRouter, but it once used path routes, so old links such as
+      // /Portfolio/project/VoxOs land here, on GitHub Pages' 404. Send them to the same route under
+      // the hash: /Portfolio/#/project/VoxOs. The query string is kept (HashRouter reads it after the
+      // hash); an old #fragment is dropped, since the hash now holds the route. Anything else goes home.
+      function mapToHashRoute(pathname, search) {
+        var base = "/Portfolio/";
+        if (pathname.indexOf(base) !== 0) return base;
+        var rest = pathname.slice(base.length).replace(/^\/+|\/+$/g, "");
+        if (!rest || rest === "index.html") return base;
+        return base + "#/" + rest + (search || "");
+      }
+      window.location.replace(mapToHashRoute(window.location.pathname, window.location.search));
+    </script>
+  </head>
+  <body>
+    <noscript><p>This page has moved. <a href="/Portfolio/">Go to the homepage</a>.</p></noscript>
+  </body>
+</html>

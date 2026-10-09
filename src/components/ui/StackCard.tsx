@@ -1,11 +1,67 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { useSmoothScroll } from "@/context/smoothScroll";
 
 /** The dashed rule the stacked sections share */
 export const DASH = "border-dashed border-snow/[0.12]";
 
 /** The nav's height: where a card pins */
 const PIN = 76;
+/** Room left around a focused control when the page is moved to show it */
+const FOCUS_GAP = 8;
+/** Focus this soon after a pointer press came from that press, not from the keyboard */
+const POINTER_FOCUS_MS = 500;
+
+let lastPointerDown = 0;
+if (typeof document !== "undefined") {
+  document.addEventListener("pointerdown", () => (lastPointerDown = performance.now()), {
+    capture: true,
+    passive: true,
+  });
+}
+
+/**
+ * Where to scroll so a control inside a pinned card sits on screen, below the nav and clear of
+ * the next card sliding over it. Every position is the in-flow document offset (as if nothing
+ * were sticky). Returns the allowed scrollY nearest to `current`, or null if none fits.
+ * Exported for its tests.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const uncoveredScroll = ({
+  current,
+  viewport,
+  cardTop,
+  pin,
+  nextTop,
+  focusTop,
+  focusBottom,
+}: {
+  current: number;
+  viewport: number;
+  /** The card's in-flow top, and the offset it pins at */
+  cardTop: number;
+  pin: number;
+  /** The next card's in-flow top, or Infinity when this card is the last */
+  nextTop: number;
+  focusTop: number;
+  focusBottom: number;
+}): number | null => {
+  const stick = cardTop - pin; // from this scrollY on, the card holds still
+  const ranges: [number, number][] = [];
+  // Before the card pins, everything scrolls together and the next card is still below it
+  ranges.push([Math.max(0, focusBottom + FOCUS_GAP - viewport), Math.min(focusTop - PIN - FOCUS_GAP, stick)]);
+  // Once pinned the control stays put on screen, until the next card's top reaches its bottom
+  if (pin + focusTop - cardTop >= PIN && pin + focusBottom - cardTop <= viewport) {
+    ranges.push([stick, nextTop - pin - (focusBottom - cardTop) - FOCUS_GAP]);
+  }
+  let best: number | null = null;
+  for (const [lo, hi] of ranges) {
+    if (lo > hi) continue;
+    const y = Math.min(hi, Math.max(lo, current));
+    if (best === null || Math.abs(y - current) < Math.abs(best - current)) best = y;
+  }
+  return best === null ? null : Math.round(best);
+};
 
 /**
  * One card in a section's stack, after reelio.framer.media's services: a full-width row on a
@@ -16,11 +72,68 @@ const PIN = 76;
  */
 export const StackCard = ({ index, id, children }: { index: number; id?: string; children: ReactNode }) => {
   const ref = useRef<HTMLLIElement>(null);
+  const { lenis } = useSmoothScroll();
+  const lenisRef = useRef(lenis);
+  lenisRef.current = lenis;
+
+  // WCAG 2.4.11: a control tabbed to inside a pinned card can sit under the next card. Move the page, at once, to where it shows.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    let frame = 0;
+    const check = (target: HTMLElement) => {
+      if (!desktop.matches || !el.contains(target) || document.activeElement !== target) return;
+      const next = el.nextElementSibling instanceof HTMLElement ? el.nextElementSibling : null;
+      const rect = target.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return;
+      const nextRect = next?.getBoundingClientRect();
+      const covered = !!nextRect && nextRect.top < rect.bottom && nextRect.bottom > rect.top;
+      if (!covered && rect.top >= PIN && rect.bottom <= window.innerHeight) return;
+      // Measure in-flow positions with sticky off for a moment; it's put back before the browser paints
+      const cards = next ? [el, next] : [el];
+      const saved = cards.map((c) => c.style.position);
+      cards.forEach((c) => (c.style.position = "static"));
+      const y = window.scrollY;
+      const cardTop = el.getBoundingClientRect().top + y;
+      const nextTop = next ? next.getBoundingClientRect().top + y : Infinity;
+      const focus = target.getBoundingClientRect();
+      cards.forEach((c, i) => (c.style.position = saved[i]));
+      const pin = parseFloat(el.style.getPropertyValue("--pin")) || PIN;
+      const to = uncoveredScroll({
+        current: y,
+        viewport: window.innerHeight,
+        cardTop,
+        pin,
+        nextTop,
+        focusTop: focus.top + y,
+        focusBottom: focus.bottom + y,
+      });
+      if (to === null || Math.abs(to - y) < 1) return;
+      const smooth = lenisRef.current;
+      if (smooth) smooth.scrollTo(to, { immediate: true, force: true });
+      else window.scrollTo({ top: to, behavior: "instant" });
+    };
+    const onFocusIn = (e: FocusEvent) => {
+      if (!desktop.matches || performance.now() - lastPointerDown < POINTER_FOCUS_MS) return;
+      if (!(e.target instanceof HTMLElement)) return;
+      const target = e.target;
+      // After the browser's own scroll-into-view for the focus has run
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => check(target));
+    };
+    el.addEventListener("focusin", onFocusIn);
+    return () => {
+      cancelAnimationFrame(frame);
+      el.removeEventListener("focusin", onFocusIn);
+    };
+  }, []);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const fit = () => {
-      el.style.top = `${Math.min(PIN, window.innerHeight - el.offsetHeight)}px`;
+      el.style.setProperty("--pin", `${Math.min(PIN, window.innerHeight - el.offsetHeight)}px`);
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -35,8 +148,8 @@ export const StackCard = ({ index, id, children }: { index: number; id?: string;
     <li
       ref={ref}
       id={id}
-      className={`relative lg:sticky bg-night border-t scroll-mt-20 ${DASH}`}
-      style={{ zIndex: index + 1, top: PIN }}
+      className={`relative lg:sticky lg:top-[var(--pin)] bg-night border-t scroll-mt-20 ${DASH}`}
+      style={{ zIndex: index + 1, "--pin": `${PIN}px` } as CSSProperties}
     >
       <div aria-hidden="true" className="absolute inset-x-0 top-0 max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="relative">
@@ -66,7 +179,7 @@ export const StackCard = ({ index, id, children }: { index: number; id?: string;
 export const StackHead = ({ kicker, title, foot }: { kicker: string; title: string; foot?: ReactNode }) => (
   <div className={`p-6 md:p-10 lg:py-16 lg:border-r ${DASH}`}>
     <p className="t-figure text-[12px] text-muted">{kicker}</p>
-    <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem] break-words">
+    <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem] lg:text-[clamp(1.75rem,2.6vw,2.75rem)] break-words">
       {title}
     </h3>
     {foot}

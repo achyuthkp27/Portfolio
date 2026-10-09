@@ -138,7 +138,9 @@ const FocusSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
             </div>
             <div className="flex flex-col-reverse items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-              <p className="font-signature text-[2.6rem] md:text-[3.4rem] leading-none text-snow -mb-2 shrink-0">{PROFILE.first}</p>
+              <p className="font-signature text-[2.6rem] md:text-[3.4rem] leading-none text-snow -mb-2 shrink-0">
+                {PROFILE.first}
+              </p>
               <p className="sm:text-right text-[14px] md:text-[15px] leading-[1.55] text-snow/85 sm:max-w-[230px]">
                 Reliable systems are built through clear thinking, small verified steps, and decisions that still make
                 sense at 2 AM.
@@ -167,7 +169,10 @@ const Stat = ({
   const t = useTransform(progress, (v) => (still ? 1 : clamp01((v - start) / 0.12)));
   const opacity = useTransform(t, (k) => k);
   const y = useTransform(t, (k) => (1 - k) * 40);
-  const edge = `calc(50% + ${CARD_W} / 2 + clamp(16px, 3vw, 48px))`;
+  const gap = "clamp(16px, 3vw, 48px)";
+  const edge = `calc(50% + ${CARD_W} / 2 + ${gap})`;
+  // The room between the card's gap and the viewport edge, less a 24px inset, so labels wrap rather than touch the edge
+  const room = `calc((100% - ${CARD_W}) / 2 - ${gap} - 24px)`;
   return (
     <motion.div
       style={{
@@ -175,6 +180,7 @@ const Stat = ({
         y,
         ...("top" in stat ? { top: stat.top } : { bottom: stat.bottom }),
         ...(stat.side === "left" ? { right: edge } : { left: edge }),
+        maxWidth: room,
       }}
       className={`absolute hidden lg:block ${stat.side === "left" ? "text-right" : "text-left"}`}
     >

@@ -12,7 +12,7 @@ const ORDER = [...WORK.banking, ...WORK.ai, WORK.spotlight];
 const SourceLink = ({ href }: { href: string }) => (
   <ExternalLink
     href={href}
-    className="inline-flex items-center gap-1.5 rounded-pill bg-emerald-400 text-night px-3.5 py-1.5 text-[13px] font-medium hover:bg-emerald-300 transition-colors duration-fast"
+    className="relative inline-flex items-center gap-1.5 rounded-pill bg-emerald-400 text-night px-3.5 py-1.5 text-[13px] font-medium hover:bg-emerald-300 transition-colors duration-fast before:absolute before:content-[''] before:-inset-y-[7px] before:inset-x-0"
   >
     Source <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
   </ExternalLink>
@@ -89,7 +89,7 @@ const WorkSection = () => (
         <StackCard key={study.slug} index={i} id={`case-${study.slug}`}>
           <StackHead
             kicker={`${pad2(i + 1)} · ${study.category ?? "Backend"}`}
-            title={study.title.split(",")[0]}
+            title={study.cardTitle ?? study.title}
             foot={study.origin && <p className="mt-3 t-figure text-[12px] text-emerald-300">{study.origin}</p>}
           />
           <StackMiddle>

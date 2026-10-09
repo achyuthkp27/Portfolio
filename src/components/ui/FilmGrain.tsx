@@ -54,7 +54,7 @@ export const FilmGrain = () => {
       ref={ref}
       aria-hidden="true"
       className="film-grain"
-      style={{ backgroundImage: `url(${import.meta.env.BASE_URL}images/noise.png)` }}
+      style={{ backgroundImage: `url(${import.meta.env.BASE_URL}images/noise.webp)` }}
     />
   );
 };

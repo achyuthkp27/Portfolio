@@ -17,6 +17,7 @@ export type ProjectCategory = "Backend" | "Infrastructure" | "Full-stack" | "Dev
 export interface Project {
   slug: string; // URL friendly identifier
   title: string;
+  cardTitle?: string; // The shorter title the Work card shows; falls back to title
   description: string;
   category?: ProjectCategory;
   /** Problem, approach and outcome: left out where there is nothing specific and true to say */
@@ -92,6 +93,7 @@ export const projects: Project[] = [
   {
     slug: "virtual-cards-google-pay",
     title: "Virtual Cards and Google Pay, the first launch in Trinidad and Tobago",
+    cardTitle: "Virtual Cards and Google Pay",
     description:
       "In-app virtual cards with secure card number and CVV reveal and wallet provisioning, which powered the first Google Pay launch in Trinidad and Tobago.",
     category: "Backend",
@@ -159,6 +161,7 @@ export const projects: Project[] = [
   {
     slug: "aegis-ai",
     title: "AegisAI, a GenAI platform for banking operations",
+    cardTitle: "AegisAI",
     description:
       "A multi-tenant GenAI platform on Spring AI: a compliance copilot that answers only from internal documents with citations, dispute agents with human approval, an OAuth2-secured MCP server, and guardrails on every model call.",
     category: "AI",
@@ -175,6 +178,7 @@ export const projects: Project[] = [
   {
     slug: "voxos",
     title: "VoxOs, a voice agent for the Mac",
+    cardTitle: "VoxOs",
     description:
       "A macOS menu-bar app in Swift that turns speech into text and actions: dictation into any field, shell commands, and app control, all transcribed on the Mac. macOS 14.4 and up, GPL-3.0.",
     category: "AI",
@@ -191,6 +195,7 @@ export const projects: Project[] = [
   {
     slug: "kairo-offline-ai-bank",
     title: "Kairo, an offline-first AI bank",
+    cardTitle: "Kairo",
     description:
       "A mobile banking app whose assistant runs on the phone. Qwen answers questions about your accounts, finds transactions by meaning, flags odd charges, and plans bills, with nothing sent to a server.",
     category: "AI",

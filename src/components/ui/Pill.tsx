@@ -22,33 +22,16 @@ const pillClass = (tone: Tone, size: PillStyleProps["size"]) =>
       : tone === "dark"
         ? "bg-night text-snow hover:bg-graphite"
         : "border border-line text-fg hover:border-fg/60",
-    size === "sm" ? "h-9 px-4 text-[12px]" : size === "lg" ? "h-14 px-8 text-[15px]" : "h-11 px-6 text-[13px]",
+    size === "sm"
+      ? // 36px pill; the invisible ::before stretches the tap target to 46px without changing the look
+        "relative h-9 px-4 text-[12px] before:absolute before:content-[''] before:-inset-y-[5px] before:inset-x-0"
+      : size === "lg"
+        ? "h-14 px-8 text-[15px]"
+        : "h-11 px-6 text-[13px]",
   ].join(" ");
 
-/** Splits a plain string label so each letter can lift on hover with a small stagger */
-const Letters = ({ text }: { text: string }) => (
-  <span aria-hidden="true" className="inline-flex">
-    {text.split("").map((ch, i) => (
-      <span
-        key={i}
-        className="inline-block transition-transform duration-base ease-out group-hover/pill:-translate-y-[2px]"
-        style={{ transitionDelay: `${i * 14}ms` }}
-      >
-        {ch === " " ? "\u00A0" : ch}
-      </span>
-    ))}
-  </span>
-);
-
-const Label = ({ children }: { children: ReactNode }) =>
-  typeof children === "string" ? (
-    <>
-      <span className="sr-only">{children}</span>
-      <Letters text={children} />
-    </>
-  ) : (
-    <>{children}</>
-  );
+/** Label text stays still on hover; hover feedback lives on the background and the arrow */
+const Label = ({ children }: { children: ReactNode }) => <>{children}</>;
 
 const Arrow = () => (
   <ArrowUpRight
@@ -79,12 +62,3 @@ export const PillLink = forwardRef<HTMLAnchorElement, PillLinkProps>(
   ),
 );
 PillLink.displayName = "PillLink";
-
-/** Small outline chip, for categories and tags */
-export const Chip = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <span
-    className={`inline-flex items-center h-8 px-3.5 rounded-pill border border-line text-[13px] font-body text-fg/85 whitespace-nowrap ${className}`}
-  >
-    {children}
-  </span>
-);

@@ -164,105 +164,12 @@ const Hero = () => {
           {orbOn && (
             // Desktop only: on phones the orb wanders over the copy and the portrait
             <div className="absolute inset-0 hidden lg:flex items-center justify-center">
-              <motion.div
-                className="w-[46vw] h-[46vw] max-w-[700px] max-h-[700px] shrink-0 rounded-full motion-reduce:hidden"
+              <div
+                // The orbit itself is a CSS animation (.hero-orb in index.css), so it costs no main-thread work
+                className={`w-[46vw] h-[46vw] max-w-[700px] max-h-[700px] shrink-0 rounded-full motion-reduce:hidden${reduceMotion ? "" : " hero-orb"}`}
                 style={{
                   background:
                     "radial-gradient(circle, hsl(var(--accent-400)/0.34) 0%, hsl(var(--accent-500)/0.12) 38%, transparent 66%)",
-                }}
-                animate={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        x: [
-                          "-48.0vw",
-                          "-47.48vw",
-                          "-45.95vw",
-                          "-43.44vw",
-                          "-40.05vw",
-                          "-35.85vw",
-                          "-31.0vw",
-                          "-25.63vw",
-                          "-19.9vw",
-                          "-14.0vw",
-                          "-8.1vw",
-                          "-2.37vw",
-                          "3.0vw",
-                          "7.85vw",
-                          "12.05vw",
-                          "15.44vw",
-                          "17.95vw",
-                          "19.48vw",
-                          "20.0vw",
-                          "19.48vw",
-                          "17.95vw",
-                          "15.44vw",
-                          "12.05vw",
-                          "7.85vw",
-                          "3.0vw",
-                          "-2.37vw",
-                          "-8.1vw",
-                          "-14.0vw",
-                          "-19.9vw",
-                          "-25.63vw",
-                          "-31.0vw",
-                          "-35.85vw",
-                          "-40.05vw",
-                          "-43.44vw",
-                          "-45.95vw",
-                          "-47.48vw",
-                          "-48.0vw",
-                        ],
-                        y: [
-                          "0.0vh",
-                          "-3.13vh",
-                          "-6.16vh",
-                          "-9.0vh",
-                          "-11.57vh",
-                          "-13.79vh",
-                          "-15.59vh",
-                          "-16.91vh",
-                          "-17.73vh",
-                          "-18.0vh",
-                          "-17.73vh",
-                          "-16.91vh",
-                          "-15.59vh",
-                          "-13.79vh",
-                          "-11.57vh",
-                          "-9.0vh",
-                          "-6.16vh",
-                          "-3.13vh",
-                          "-0.0vh",
-                          "3.13vh",
-                          "6.16vh",
-                          "9.0vh",
-                          "11.57vh",
-                          "13.79vh",
-                          "15.59vh",
-                          "16.91vh",
-                          "17.73vh",
-                          "18.0vh",
-                          "17.73vh",
-                          "16.91vh",
-                          "15.59vh",
-                          "13.79vh",
-                          "11.57vh",
-                          "9.0vh",
-                          "6.16vh",
-                          "3.13vh",
-                          "0.0vh",
-                        ],
-                      }
-                }
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  ease: "linear",
-                  times: [
-                    0.0, 0.0727, 0.1393, 0.1967, 0.2444, 0.2835, 0.3157, 0.3426, 0.3654, 0.3851, 0.4023, 0.4177, 0.4317,
-                    0.4445, 0.4565, 0.4679, 0.4788, 0.4895, 0.5, 0.5105, 0.5212, 0.5321, 0.5435, 0.5555, 0.5683, 0.5823,
-                    0.5977, 0.6149, 0.6346, 0.6574, 0.6843, 0.7165, 0.7556, 0.8033, 0.8607, 0.9273, 1.0,
-                  ],
                 }}
               />
             </div>
@@ -285,7 +192,7 @@ const Hero = () => {
             className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)]"
           >
             Hey, I&apos;m
-          </motion.span>
+          </motion.span>{" "}
           {/* The name arrives whole: one soft rise out of a blur, no per-letter tumble */}
           <motion.span
             className="block -mt-2 md:-mt-6 pb-[0.26em] -mb-[0.14em]"

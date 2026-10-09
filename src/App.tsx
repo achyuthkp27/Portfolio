@@ -20,13 +20,15 @@ const Index = lazy(() => import("./pages/Index"));
 const Navigation = lazy(() => import("@/components/Navigation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
-const Analytics = import.meta.env.PROD ? lazy(() => import("@/components/Analytics")) : null;
+// Production builds with a PostHog key only: without one there is no Analytics chunk and no request
+const Analytics =
+  import.meta.env.PROD && import.meta.env.VITE_POSTHOG_KEY ? lazy(() => import("@/components/Analytics")) : null;
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
 import { GlassEdge } from "@/components/ui/GlassEdge";
 const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
-const CommandMenu = lazy(() =>
-  import("@/components/ui/CommandMenu").then((module) => ({ default: module.CommandMenu })),
-);
+// Only the shortcut and open state load up front; the menu's panel (cmdk) is its own chunk
+import { CommandMenu } from "@/components/ui/CommandMenu";
+import { preloadCommandMenu } from "@/components/ui/loadCommandMenuPanel";
 
 const RouteLoader = () => (
   <div className="min-h-screen flex items-center justify-center">
@@ -78,9 +80,36 @@ const KeyboardShortcuts = () => {
   const isMobile = useMobile();
   if (isMobile) return null;
   return (
-    <Suspense fallback={null}>
+    <>
       <CommandMenu />
-      <TerminalTrigger />
+      <Suspense fallback={null}>
+        <TerminalTrigger />
+      </Suspense>
+    </>
+  );
+};
+
+/** Once the page has settled, fetch the quick menu's panel on idle so its first open is instant. */
+const PrefetchCommandMenu = () => {
+  useEffect(() => {
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(preloadCommandMenu, { timeout: 4000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(preloadCommandMenu, 1000);
+    return () => clearTimeout(id);
+  }, []);
+  return null;
+};
+
+/** PostHog starts ~2s after the splash ends (or on first interaction), in its own chunk. */
+const DeferredAnalytics = () => {
+  const { isLoading } = useLoading();
+  const isReady = useIdleMount(!isLoading && Analytics !== null, 2000, 3000);
+  if (!isReady || !Analytics) return null;
+  return (
+    <Suspense fallback={null}>
+      <Analytics />
     </Suspense>
   );
 };
@@ -94,8 +123,8 @@ const DeferredExperience = () => {
 
   return (
     <Suspense fallback={null}>
-      {Analytics ? <Analytics /> : null}
       {!isMobile && <ScrollProgress />}
+      {!isMobile && <PrefetchCommandMenu />}
       <GlassEdge />
     </Suspense>
   );
@@ -148,6 +177,7 @@ const App = () => {
                 {/* One Lenis instance for everything: nav, overlays, and pages share it */}
                 <SmoothScroll>
                   <KeyboardShortcuts />
+                  <DeferredAnalytics />
                   <DeferredExperience />
                   <Suspense fallback={null}>
                     <Navigation />

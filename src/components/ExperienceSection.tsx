@@ -54,7 +54,7 @@ const ExperienceSection = () => {
               {/* Period and company */}
               <div className={`p-6 md:p-10 lg:py-16 lg:border-r ${DASH}`}>
                 <p className="t-figure text-[12px] text-muted">{exp.period}</p>
-                <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem]">
+                <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem] lg:text-[clamp(1.75rem,2.6vw,2.75rem)]">
                   {exp.company}
                 </h3>
                 {exp.platform && <p className="mt-3 t-figure text-[12px] text-emerald-300">{exp.platform}</p>}
@@ -133,7 +133,7 @@ const ExperienceSection = () => {
         <StackCard index={experiences.length}>
           <div className={`p-6 md:p-10 lg:py-16 lg:border-r ${DASH}`}>
             <p className="t-figure text-[12px] text-muted">{PROFILE.education.year}</p>
-            <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem]">
+            <h3 className="mt-3 font-body font-medium tracking-[-0.03em] leading-[1.05] text-[2.25rem] md:text-[2.75rem] lg:text-[clamp(1.75rem,2.6vw,2.75rem)]">
               Education
             </h3>
           </div>

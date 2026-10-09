@@ -1,18 +1,11 @@
-import { Building2, Briefcase, type LucideIcon } from "lucide-react";
-
 export interface Experience {
   company: string;
   role: string;
   period: string;
-  type: "full-time" | "internship" | "contract";
-  icon: LucideIcon;
-  color: string;
   /** The employer's mark, under public/images, for the ID badge */
   logo?: { src: string; dark?: string; width: number; height: number };
   /** Roles sharing a platform form one unbroken lane on the rail, across employers */
   platform?: string;
-  /** How this role began, when it continued something rather than started it */
-  handoff?: string;
   /** Shows the award card in this role */
   award?: boolean;
   achievements: string[];
@@ -24,12 +17,8 @@ export const experiences: Experience[] = [
     company: "Cognizant Technology Solutions",
     role: "Software Engineer · Client: First Citizens Bank",
     period: "Apr 2026 – Present",
-    type: "full-time",
     logo: { src: "images/cognizant-logo.png", dark: "images/cognizant-logo-white.png", width: 416, height: 84 },
-    icon: Briefcase,
-    color: "primary",
     platform: "First Citizens Bank platform",
-    handoff: "Client-driven rebadge: same platform, same team, same client",
     achievements: [
       "Own Card on File, virtual cards, and the LLM banking assistant on the bank's next-generation Java 21, Spring Boot 3.5, and Kafka platform, shipping enhancements across Retail Internet Banking, Corporate Internet Banking, and Mobile Banking.",
       "Extend virtual card wallet provisioning from Google Pay to Apple Pay, now in rollout.",
@@ -50,10 +39,7 @@ export const experiences: Experience[] = [
     company: "FIS Global",
     role: "Software Engineer → Senior Software Engineer · Client: First Citizens Bank",
     period: "Jul 2021 – Apr 2026",
-    type: "full-time",
     logo: { src: "images/fis-logo.png", width: 422, height: 178 },
-    icon: Building2,
-    color: "primary",
     platform: "First Citizens Bank platform",
     award: true,
     achievements: [

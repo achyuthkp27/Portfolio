@@ -1,5 +1,6 @@
 import { useInView } from "react-intersection-observer";
-import { Suspense, ReactNode, useCallback, useEffect, useState, type CSSProperties } from "react";
+import { Component, Suspense, ReactNode, useCallback, useEffect, useState, type CSSProperties } from "react";
+import { isChunkLoadError, reloadOnce } from "@/components/ErrorBoundary";
 
 type IdleWindow = Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
 
@@ -17,7 +18,8 @@ const drainIdleQueue = () => {
     if (idleQueue.length) schedule();
     else draining = false;
   };
-  const schedule = () => (w.requestIdleCallback ? w.requestIdleCallback(next, { timeout: 2000 }) : window.setTimeout(next, 50));
+  const schedule = () =>
+    w.requestIdleCallback ? w.requestIdleCallback(next, { timeout: 2000 }) : window.setTimeout(next, 50);
   if (draining) return;
   draining = true;
   schedule();
@@ -39,6 +41,29 @@ interface LazySectionProps {
 
 /** Reserved height as CSS variables, so phones and desktops each get their own without a JS media query */
 const RESERVE = "min-h-[var(--mh-sm)] md:min-h-[var(--mh)]";
+
+/**
+ * Keeps a failing section to itself: it renders as its empty placeholder, at the reserved height so
+ * the page doesn't jump, and the rest of the page carries on. A chunk lost to a deploy reloads the
+ * page once to fetch the new one, under the same 10-second guard as the root boundary.
+ */
+class SectionBoundary extends Component<{ children: ReactNode; sectionId?: string }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Section failed to render:", error);
+    if (isChunkLoadError(error)) reloadOnce();
+  }
+
+  render() {
+    if (this.state.failed) return <div id={this.props.sectionId} className={`w-full ${RESERVE}`} />;
+    return this.props.children;
+  }
+}
 
 /**
  * Wraps a lazy-loaded component and only renders it (triggering the network request)
@@ -103,9 +128,11 @@ export const LazySection = ({
       style={vars}
     >
       {inView ? (
-        <Suspense fallback={fallback || <div className={`w-full animate-pulse bg-white/5 rounded-xl ${RESERVE}`} />}>
-          {children}
-        </Suspense>
+        <SectionBoundary sectionId={sectionId}>
+          <Suspense fallback={fallback || <div className={`w-full animate-pulse bg-white/5 rounded-xl ${RESERVE}`} />}>
+            {children}
+          </Suspense>
+        </SectionBoundary>
       ) : (
         fallback || <div id={sectionId} className={`w-full ${RESERVE}`} />
       )}

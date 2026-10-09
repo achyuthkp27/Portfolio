@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
+import { seoShell } from "./vite/seoShell.ts";
 
 /**
  * The site is served from https://achyuthkp27.github.io/Portfolio/, so every build
@@ -22,9 +23,13 @@ export default defineConfig(({ command, isPreview }) => ({
   },
   plugins: [
     react(),
+    // Build only: a plain HTML copy of the content in #root, for crawlers and no-JS readers
+    seoShell(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["images/logo.webp", "apple-touch-icon.png"],
+      includeAssets: ["images/favicon-64.webp", "apple-touch-icon.png"],
+      // Install prompts fetch the manifest icons themselves; precaching them cost ~174 KB on every first visit
+      includeManifestIcons: false,
       manifest: {
         name: "Achyuth KP | Software Engineer",
         short_name: "Achyuth KP",
@@ -43,6 +48,28 @@ export default defineConfig(({ command, isPreview }) => ({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Matched on the pathname so the routes work under the /Portfolio/ base and at the dev root alike
+        runtimeCaching: [
+          {
+            // Self-hosted fonts carry a content hash, so a cached copy never goes stale
+            urlPattern: ({ url }) => url.pathname.endsWith(".woff2"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "fonts",
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Images keep their names across deploys: serve the cached copy, refresh it in the background
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes("/images/"),
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "images",
+              expiration: { maxEntries: 60 },
+            },
+          },
+        ],
       },
     }),
   ],

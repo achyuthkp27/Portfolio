@@ -18,6 +18,9 @@ const MIN_STEP_MS = 14;
  * carrying its index so CSS can stagger it. Spaces stay as bare text so lines still wrap.
  * Only text that React never updates is split: a single text child, no aria-hidden, outside
  * any `data-no-split` or `data-reveal-skip` subtree, and never a button or link.
+ * Screen readers would read the units one letter at a time, so they sit in one inline
+ * aria-hidden wrapper beside a visually hidden copy of the original text. An aria-label would
+ * not do: ARIA ignores names on p, li, dt, dd and span.
  */
 const split = (el: HTMLElement): number => {
   if (el.childNodes.length !== 1 || el.firstChild?.nodeType !== Node.TEXT_NODE) return 0;
@@ -25,12 +28,14 @@ const split = (el: HTMLElement): number => {
   const text = el.textContent ?? "";
   if (!text.trim()) return 0;
   const byLetter = text.length <= LETTER_LIMIT;
-  const frag = document.createDocumentFragment();
+  // Plain inline span: no box of its own, so the units lay out exactly as if unwrapped
+  const visual = document.createElement("span");
+  visual.setAttribute("aria-hidden", "true");
   let index = 0;
   text.split(/(\s+)/).forEach((chunk) => {
     if (!chunk) return;
     if (/^\s+$/.test(chunk)) {
-      frag.appendChild(document.createTextNode(chunk));
+      visual.appendChild(document.createTextNode(chunk));
       return;
     }
     const word = document.createElement("span");
@@ -48,10 +53,12 @@ const split = (el: HTMLElement): number => {
       word.style.setProperty("--u", String(index++));
       word.textContent = chunk;
     }
-    frag.appendChild(word);
+    visual.appendChild(word);
   });
-  el.setAttribute("aria-label", text);
-  el.replaceChildren(frag);
+  const copy = document.createElement("span");
+  copy.className = "sr-only select-none"; // Copying a selection takes the visible letters, not this copy too
+  copy.textContent = text;
+  el.replaceChildren(visual, copy);
   el.style.setProperty("--step", `${Math.max(MIN_STEP_MS, Math.min(28, SEQUENCE_MS / Math.max(index, 1)))}ms`);
   return index;
 };

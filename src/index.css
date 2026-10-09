@@ -51,26 +51,10 @@
       -1px 1px 0.5px hsl(0 0% 27% / 0.02), -3px 3px 1px hsl(0 0% 27% / 0.03), -6px 7px 2px hsl(0 0% 27% / 0.04),
       -12px 13px 4px hsl(0 0% 27% / 0.05), -23px 25px 8px hsl(0 0% 27% / 0.06);
 
-    /* Legacy names used by the terminal */
+    /* Used by the error screen (ErrorBoundary) */
     --background: var(--night);
-    --foreground: var(--snow);
-    --card: var(--graphite);
-    --card-foreground: var(--snow);
-    --popover: var(--graphite);
-    --popover-foreground: var(--snow);
-    --primary: var(--snow);
-    --primary-foreground: var(--night);
-    --secondary: var(--graphite);
-    --secondary-foreground: var(--snow);
-    --muted-foreground: 0 0% 70%;
-    --accent: var(--graphite);
-    --accent-foreground: var(--snow);
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 100% / 0.12;
-    --input: 0 0% 100% / 0.12;
-    --ring: var(--accent-400);
-    --radius: var(--radius-sm);
 
     --font-display: "Antonio", "Inter", sans-serif;
     --font-body: "Inter", sans-serif;
@@ -247,25 +231,33 @@
   color: hsl(0 0% 100% / 0.82);
   line-height: 1.6;
 }
-.readme h1,
-.readme h2,
-.readme h3 {
+/* README headings are demoted two levels in the markup (see lib/readmeHtml) and keep their
+   original level in data-h, so they are styled by that level; the bare tags cover any without it */
+.readme [data-h="1"],
+.readme [data-h="2"],
+.readme [data-h="3"],
+.readme h1:not([data-h]),
+.readme h2:not([data-h]),
+.readme h3:not([data-h]) {
   font-family: var(--font-display);
   text-transform: uppercase;
   line-height: 1;
   color: hsl(var(--snow));
   margin: 2rem 0 0.9rem;
 }
-.readme h1 {
+.readme [data-h="1"],
+.readme h1:not([data-h]) {
   font-size: 2.6rem;
   margin-top: 0;
 }
-.readme h2 {
+.readme [data-h="2"],
+.readme h2:not([data-h]) {
   font-size: 2rem;
   padding-top: 1.25rem;
   border-top: 1px solid hsl(var(--line));
 }
-.readme h3 {
+.readme [data-h="3"],
+.readme h3:not([data-h]) {
   font-size: 1.5rem;
 }
 .readme p,
@@ -284,6 +276,7 @@
   margin: 0.3rem 0;
 }
 .readme a {
+  overflow-wrap: break-word;
   color: hsl(var(--snow));
   text-decoration: underline;
   text-decoration-color: hsl(var(--line));
@@ -293,6 +286,7 @@
   text-decoration-color: hsl(var(--accent-400));
 }
 .readme code {
+  overflow-wrap: break-word;
   font-family: var(--font-mono);
   font-size: 0.85em;
   background: hsl(0 0% 100% / 0.06);
@@ -336,6 +330,10 @@
 .readme img {
   max-width: 100%;
   border-radius: var(--radius-sm);
+}
+/* A width attribute shrunk by max-width keeps its aspect ratio; a lone height attribute still applies */
+.readme img[width] {
+  height: auto;
 }
 .readme blockquote {
   border-left: 2px solid hsl(var(--accent-400));
@@ -385,18 +383,46 @@
   /* Room inside each inline-block unit so descenders and accents are never cut */
   padding: 0.08em 0.01em 0.22em;
   margin-bottom: -0.22em;
-  opacity: 0;
-  /* No per-letter blur: with ~2,000 letters on the page, hundreds of blur layers ran at once
-     on phones. The block-level .reveal keeps its blur; letters rise and fade. */
-  transform: translateY(0.18em);
-  transition:
-    opacity 0.55s var(--ease),
-    transform 0.55s var(--ease);
-  transition-delay: calc(var(--reveal-delay, 0ms) + var(--u, 0) * var(--step, 20ms));
 }
+/* At rest a unit carries no opacity, transform or transition: its .reveal block is opacity 0 until
+   .is-in, which hides it. Thousands of units each held at opacity 0 with a transform became their
+   own paint layers and made every scroll frame's hit-testing slow, even far from any text.
+   On reveal each unit plays once; the backwards fill holds it hidden and low through its delay.
+   No per-letter blur: hundreds of blur layers at once were too much for phones. */
 .reveal.is-in .rv-u {
-  opacity: 1;
-  transform: none;
+  animation: rv-in 0.55s var(--ease) backwards;
+  animation-delay: calc(var(--reveal-delay, 0ms) + var(--u, 0) * var(--step, 20ms));
+}
+@keyframes rv-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.18em);
+  }
+}
+/* Low-end laptops and desktops only (data-perf="low", see useLowEndDevice): text still fades in, but as
+   one block. Its letters show with it instead of each animating on its own layer, which slow laptops can't
+   keep up with. On phones and tablets, low-end mode drops only the blur below; the letters still animate. */
+@media (hover: hover) and (pointer: fine) {
+  html[data-perf="low"] .reveal .rv-u {
+    animation: none;
+  }
+}
+/* Reduced motion switched on after the text was split: letters simply show with their block.
+   !important beats the keyframes without removing them, so switching motion back on later doesn't
+   replay every letter already on the page (the "Animations off" rule below works the same way). */
+@media (prefers-reduced-motion: reduce) {
+  .reveal .rv-u {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+/* Low-end machines: no frosted blur (the bottom glass band, the nav, the award card, overlays). Each
+   blur is redrawn every frame as the page scrolls under it, which integrated graphics can't keep up
+   with. Their tinted backgrounds stay, so they still read the same; only the blur goes. */
+html[data-perf="low"] [class*="backdrop-blur"],
+html[data-perf="low"] [style*="backdrop-filter"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 /* Scroll-scrubbed kinetic text is set up in the component; only the reduced-motion
@@ -417,19 +443,7 @@
    Named classes, not *: toggling the attribute then restyles only these few elements.
    A new infinite animation belongs in this list. */
 [data-offscreen]
-  :is(
-    .plus-pulse,
-    .live-dot,
-    .trophy-gloss,
-    .vox-bar,
-    .typing-dot,
-    .clock-colon,
-    .skeleton,
-    .sparkle,
-    .text-shine,
-    .animate-ping,
-    .animate-pulse
-  ),
+  :is(.plus-pulse, .live-dot, .trophy-gloss, .clock-colon, .sparkle, .text-shine, .animate-ping, .animate-pulse),
 [data-offscreen] .live-dot::after {
   animation-play-state: paused;
 }
@@ -464,42 +478,127 @@
   }
 }
 
-/* VoxOs waveform bars */
-.vox-bar {
-  animation: vox-bar 1.1s ease-in-out infinite alternate;
-  transform-origin: bottom;
+/* The hero's emerald orb: its slow orbit runs as a CSS animation on the compositor, so the
+   main thread does no work per frame. The path and timing match the earlier Framer orbit. */
+.hero-orb {
+  will-change: transform;
+  animation: hero-orb 20s linear infinite;
 }
-@keyframes vox-bar {
-  from {
-    transform: scaleY(0.35);
+@keyframes hero-orb {
+  0% {
+    transform: translate(-48vw, 0vh);
   }
-  to {
-    transform: scaleY(1);
+  7.27% {
+    transform: translate(-47.48vw, -3.13vh);
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .vox-bar {
-    animation: none;
+  13.93% {
+    transform: translate(-45.95vw, -6.16vh);
   }
-}
-
-/* Work stages: typing dots, log stream */
-.typing-dot {
-  animation: typing-dot 1s ease-in-out infinite;
-}
-@keyframes typing-dot {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: translateY(0);
+  19.67% {
+    transform: translate(-43.44vw, -9vh);
+  }
+  24.44% {
+    transform: translate(-40.05vw, -11.57vh);
+  }
+  28.35% {
+    transform: translate(-35.85vw, -13.79vh);
+  }
+  31.57% {
+    transform: translate(-31vw, -15.59vh);
+  }
+  34.26% {
+    transform: translate(-25.63vw, -16.91vh);
+  }
+  36.54% {
+    transform: translate(-19.9vw, -17.73vh);
+  }
+  38.51% {
+    transform: translate(-14vw, -18vh);
+  }
+  40.23% {
+    transform: translate(-8.1vw, -17.73vh);
+  }
+  41.77% {
+    transform: translate(-2.37vw, -16.91vh);
+  }
+  43.17% {
+    transform: translate(3vw, -15.59vh);
+  }
+  44.45% {
+    transform: translate(7.85vw, -13.79vh);
+  }
+  45.65% {
+    transform: translate(12.05vw, -11.57vh);
+  }
+  46.79% {
+    transform: translate(15.44vw, -9vh);
+  }
+  47.88% {
+    transform: translate(17.95vw, -6.16vh);
+  }
+  48.95% {
+    transform: translate(19.48vw, -3.13vh);
   }
   50% {
-    opacity: 1;
-    transform: translateY(-3px);
+    transform: translate(20vw, 0vh);
+  }
+  51.05% {
+    transform: translate(19.48vw, 3.13vh);
+  }
+  52.12% {
+    transform: translate(17.95vw, 6.16vh);
+  }
+  53.21% {
+    transform: translate(15.44vw, 9vh);
+  }
+  54.35% {
+    transform: translate(12.05vw, 11.57vh);
+  }
+  55.55% {
+    transform: translate(7.85vw, 13.79vh);
+  }
+  56.83% {
+    transform: translate(3vw, 15.59vh);
+  }
+  58.23% {
+    transform: translate(-2.37vw, 16.91vh);
+  }
+  59.77% {
+    transform: translate(-8.1vw, 17.73vh);
+  }
+  61.49% {
+    transform: translate(-14vw, 18vh);
+  }
+  63.46% {
+    transform: translate(-19.9vw, 17.73vh);
+  }
+  65.74% {
+    transform: translate(-25.63vw, 16.91vh);
+  }
+  68.43% {
+    transform: translate(-31vw, 15.59vh);
+  }
+  71.65% {
+    transform: translate(-35.85vw, 13.79vh);
+  }
+  75.56% {
+    transform: translate(-40.05vw, 11.57vh);
+  }
+  80.33% {
+    transform: translate(-43.44vw, 9vh);
+  }
+  86.07% {
+    transform: translate(-45.95vw, 6.16vh);
+  }
+  92.73% {
+    transform: translate(-47.48vw, 3.13vh);
+  }
+  100% {
+    transform: translate(-48vw, 0vh);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .typing-dot {
+  .hero-orb {
     animation: none;
   }
 }
@@ -535,6 +634,9 @@ html[data-motion="off"] *::after {
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
+}
+html[data-motion="off"] .hero-orb {
+  animation: none !important;
 }
 html[data-motion="off"] .reveal,
 html[data-motion="off"] .reveal .rv-u {
@@ -601,18 +703,6 @@ html[data-motion="off"] .reveal .rv-u {
 }
 .clock-colon {
   animation: clock-colon 1s steps(1) infinite;
-}
-
-/* Loading rows: a soft light sweeps across placeholder bars */
-@keyframes skeleton-sweep {
-  to {
-    background-position: -200% 0;
-  }
-}
-.skeleton {
-  background: linear-gradient(90deg, hsl(0 0% 100% / 0.04) 25%, hsl(0 0% 100% / 0.1) 50%, hsl(0 0% 100% / 0.04) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-sweep 1.4s linear infinite;
 }
 
 /* Award: four-point sparkles round the trophy, each twinkling on its own beat */
