@@ -43,9 +43,11 @@ type Layout = {
   wallScale: number;
 };
 
-const measure = (): Layout => {
-  const W = window.innerWidth;
-  const H = window.innerHeight;
+/** Sizes from the pinned stage itself: on iOS the window's height follows the address bar, while
+ * the stage is a full screen tall, and mixing the two put the WORK reveal 40px off */
+const measure = (stage?: HTMLElement | null): Layout => {
+  const W = stage?.clientWidth || window.innerWidth;
+  const H = stage?.clientHeight || window.innerHeight;
   const wide = W >= 768;
   // One copy per project on wide screens; phones keep seven so the letters never touch
   const copies = wide ? 11 : 7;
@@ -117,7 +119,8 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   // without shrinking. A card that changes scale is drawn again in full each frame on iOS, and
   // 28 swaying 3D letters behind it took the frames the deck needed.
   const still = useRef(isTouchFirst());
-  const [layout, setLayout] = useState<Layout>(measure);
+  const stage = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<Layout>(() => measure());
   const layoutRef = useRef(layout);
   layoutRef.current = layout;
   const { lenis } = useSmoothScroll();
@@ -164,7 +167,8 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
     // hold still and are wiped into view from the bottom up: two moving layers, nothing redrawn.
     // Once the capsule stops, the wall's own copy takes over and nothing is clipped at rest.
     const rising = o < SETTLED;
-    const edge = H / 2 + capY - capH / 2 + 14;
+    // Measured from the stage's centre, where the capsule and the letters are anchored
+    const edge = capY - capH / 2 + 14;
     if (reveal.current) {
       put(reveal.current, "opacity", rising ? "1" : "0");
       put(reveal.current, "transform", `translate(-50%, ${edge.toFixed(1)}px)`);
@@ -223,7 +227,9 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   useMotionValueEvent(p, "change", draw);
   useEffect(() => {
     draw(p.get());
-    const onResize = () => setLayout(measure());
+    const onResize = () => setLayout(measure(stage.current));
+    // Once mounted, measure the stage itself rather than the window
+    onResize();
     const offResize = onLayoutResize(onResize);
     return () => offResize();
     // Draws from refs; p is stable
@@ -278,7 +284,7 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
         )),
       )}
 
-      <div className="sticky top-0 h-screen overflow-hidden bg-night">
+      <div ref={stage} className="sticky top-0 h-screen overflow-hidden bg-night">
         {/* Square cells round the capsule, giving way to a field of dots once it opens */}
         <div
           ref={gridLayer}
@@ -309,7 +315,7 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
         <div
           ref={reveal}
           aria-hidden="true"
-          className="absolute left-1/2 top-0 h-screen overflow-hidden"
+          className="absolute left-1/2 top-1/2 h-screen overflow-hidden"
           style={{ width: capW }}
         >
           <div ref={revealInner} className="absolute left-1/2 top-0 h-screen w-screen -ml-[50vw]">
@@ -320,7 +326,8 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
                   fontSize: font,
                   transform: `translate(-50%, -50%) translateY(${(r - 1.5) * layout.rowGap}px)`,
                 }}
-                className="absolute left-1/2 top-1/2 font-display font-semibold uppercase leading-none text-emerald-400"
+                // The contents' top is the stage's centre (see draw), where the wall's letters sit too
+                className="absolute left-1/2 top-0 font-display font-semibold uppercase leading-none text-emerald-400"
               >
                 {letter}
               </span>
