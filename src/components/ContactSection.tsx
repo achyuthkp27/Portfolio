@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
+  useInView,
   useMotionValueEvent,
   useReducedMotionConfig,
   useScroll,
@@ -15,6 +16,7 @@ import { PillLink, PillButton } from "./ui/Pill";
 import { ExternalLink, HoverArrow } from "./ui/ExternalLink";
 import { clamp01 } from "@/lib/format";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useWarpGrid } from "@/hooks/useWarpGrid";
 
 /** The small card the page opens on, before it grows to fill the screen */
 const CARD_W = "min(440px, 86vw)";
@@ -22,10 +24,11 @@ const CARD_H = "min(320px, 56vh)";
 
 /**
  * The closing, as the bookend of What I believe: that section shrank a full-screen panel
- * into a card on the pale grid; this one starts as a small dark card on the same grid, with
- * the ways to reach me floating around it, and grows until it fills the screen and swallows
- * them. One heading carries it: "Let's talk." sits small in the card and grows with it until
- * it owns the screen; only then do the line and the two actions arrive under it.
+ * into a card on the pale grid; this one starts as a small dark card on a grid of square cells,
+ * with the ways to reach me floating around it, and grows until it fills the screen and
+ * swallows them. One heading carries it: "Let's talk." sits small in the card and grows with
+ * it until it owns the screen; only then do the line and the two actions arrive under it.
+ * Linger, and the grid starts to ripple.
  */
 const ContactSection = () => {
   const reduceMotion = useReducedMotionConfig();
@@ -33,6 +36,8 @@ const ContactSection = () => {
   const time = useLocalTime(PROFILE.timeZone);
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const onScreen = useInView(ref);
+  const grid = useRef<HTMLCanvasElement>(null);
 
   const [copied, setCopied] = useState(false);
   useEffect(() => {
@@ -45,7 +50,7 @@ const ContactSection = () => {
       await navigator.clipboard.writeText(PROFILE.email);
       setCopied(true);
     } catch {
-      // Clipboard blocked: the address is selectable text, and the mail link still works
+      // Clipboard blocked: the address stays on screen to read, and the mail link still works
     }
   };
   const mailto = `mailto:${PROFILE.email}?subject=${encodeURIComponent("Hello from your portfolio")}`;
@@ -69,6 +74,12 @@ const ContactSection = () => {
   const clipPath = useTransform(grow, (k) => {
     const s = 1 - k;
     return `inset(calc((100% - ${CARD_H}) / 2 * ${s}) calc((100% - ${CARD_W}) / 2 * ${s}) round ${20 * s}px)`;
+  });
+  useWarpGrid({
+    canvas: grid,
+    progress: p,
+    active: onScreen,
+    still: !!reduceMotion,
   });
   // One heading carries the whole sequence: small inside the card, then growing with it
   const headScale = useTransform(grow, (k) => 0.3 + 0.7 * k);
@@ -123,11 +134,8 @@ const ContactSection = () => {
         )}
         {/* The pale ground lights up around the card once the section has pinned: no hard edge with the dark page above */}
         <motion.div aria-hidden="true" style={{ opacity: paleIn }} className="absolute inset-0 bg-pale" />
-        {/* The same faint grid as What I believe */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 [background-image:linear-gradient(hsl(var(--pale-grid)/0.07)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--pale-grid)/0.07)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(45%_55%_at_50%_50%,black,transparent)] [-webkit-mask-image:radial-gradient(45%_55%_at_50%_50%,black,transparent)]"
-        />
+        {/* Square cells on the pale ground, which ripple when you linger */}
+        <canvas ref={grid} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" />
 
         {/* Ways to reach me, floating around the card until it grows over them */}
         {facts.map((fact, i) => (
@@ -240,7 +248,7 @@ const Fact = ({
       className={`absolute hidden lg:block ${fact.side === "left" ? "text-right" : "text-left"}`}
     >
       <div className={lit ? "flicker-on" : "opacity-0"} style={{ animationDelay: `${index * 0.12}s` }}>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-night/55">{fact.label}</p>
+        <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-night/55">{fact.label}</p>
         {fact.href ? (
           <a
             href={fact.href}
