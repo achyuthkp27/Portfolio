@@ -49,7 +49,7 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
 
   if (inline) {
     return (
-      <div ref={ref} className="text-[11px] lg:text-[10px] tracking-[0.4em] uppercase font-medium text-white/50">
+      <div ref={ref} className="text-[13px] lg:text-[12px] tracking-[0.4em] uppercase font-medium text-white/50">
         In production for <span className="font-mono tracking-[0.08em] text-white/70">{readout}</span>
       </div>
     );
@@ -63,7 +63,7 @@ const ExperienceTimer = ({ startDate, compact = false, inline = false }: Experie
           <ScrambleNumber value={String(years)} suffix="+" />
         </p>
         <p className="t-caps text-muted text-[12px] md:text-[13px] mt-3 order-2">Years in engineering</p>
-        <p className="t-figure text-[11px] text-emerald-300/80 mt-1.5 order-3" aria-hidden="true">
+        <p className="t-figure text-[13px] text-emerald-300/80 mt-1.5 order-3" aria-hidden="true">
           {readout}
         </p>
       </div>

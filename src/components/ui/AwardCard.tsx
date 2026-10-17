@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import {
   motion,
+  useInView,
   useMotionValue,
   useReducedMotionConfig,
   useScroll,
@@ -26,9 +27,12 @@ const SPARKLES = [
 const Trophy = ({
   spin,
   pointer,
+  landed,
 }: {
   spin: MotionValue<number>;
   pointer: { x: MotionValue<number>; y: MotionValue<number> };
+  /** True once the card is high enough on screen for the fall to be seen */
+  landed: boolean;
 }) => {
   const reduceMotion = useReducedMotionConfig();
   // A slight lean, as if catching the light, that settles square at 2024; the drop does the rest
@@ -45,9 +49,9 @@ const Trophy = ({
   return (
     <motion.div
       initial={reduceMotion ? false : { y: -420, rotate: -8, opacity: 0 }}
-      whileInView={{ y: 0, rotate: 0, opacity: 1 }}
-      // Drop only once the card has settled high on screen, so the fall is seen, not missed while it slides in
-      viewport={{ once: true, margin: "0px 0px -55% 0px" }}
+      // Drop only once the card has settled high on screen, so the fall is seen, not missed while it slides in.
+      // The card decides, not the trophy: the trophy's own box starts 420px up and would trigger early.
+      animate={landed || reduceMotion ? { y: 0, rotate: 0, opacity: 1 } : undefined}
       transition={{
         y: { type: "spring", stiffness: 150, damping: 11, mass: 1.2 },
         rotate: { type: "spring", stiffness: 90, damping: 7, mass: 1 },
@@ -100,7 +104,7 @@ const Trophy = ({
             decoding="async"
             className="relative w-[84px] h-auto"
           />
-          <p className="relative t-figure text-[10px] text-snow/60 mt-1 tracking-[0.2em]">Global</p>
+          <p className="relative t-figure text-[12px] text-snow/60 mt-1 tracking-[0.2em]">Global</p>
           <p className="relative mt-7 text-[12px] font-medium text-snow/90">Critical project delivery</p>
           <p className="relative t-figure text-sm text-snow/60 mt-1 mb-1">2024</p>
         </div>
@@ -152,6 +156,7 @@ export const AwardCard = () => {
   }, []);
   // The trophy leans while the card rises and is square by the time it reaches the middle
   const { scrollYProgress: spin } = useScroll({ target: ref, offset: ["start end", "center center"] });
+  const landed = useInView(ref, { once: true, margin: "0px 0px -40% 0px" });
   const onMove = (e: PointerEvent<HTMLDivElement>) => {
     if (reduceMotion || e.pointerType !== "mouse") return;
     const r = e.currentTarget.getBoundingClientRect();
@@ -177,7 +182,7 @@ export const AwardCard = () => {
     >
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-screen" />
       <div className="relative flex flex-col justify-center min-w-0">
-        <p className="t-figure text-[11px] uppercase tracking-[0.2em] text-emerald-200/70">
+        <p className="t-figure text-[13px] uppercase tracking-[0.2em] text-emerald-200/70">
           Individual recognition · Q1 2024
         </p>
         <h4 className="t-heading text-3xl md:text-4xl mt-4">
@@ -193,7 +198,7 @@ export const AwardCard = () => {
         className={`relative flex items-end ${side ? "justify-end min-h-[330px]" : "mt-6 justify-center h-[260px]"}`}
       >
         <div className={`origin-bottom ${side ? "" : "scale-[0.7]"}`}>
-          <Trophy spin={spin} pointer={pointer} />
+          <Trophy spin={spin} pointer={pointer} landed={landed} />
         </div>
       </div>
     </div>
