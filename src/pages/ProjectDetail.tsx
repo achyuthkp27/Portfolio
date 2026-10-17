@@ -19,67 +19,53 @@ import { DUR, EASE, reveal } from "@/lib/motion";
 import { monthDay } from "@/lib/format";
 import { demoteReadmeHeadings } from "@/lib/readmeHtml";
 
-/** Small emerald dot and label above each row's title */
-const Kicker = ({ children }: { children: ReactNode }) => (
-  <div className="flex items-center gap-2.5 t-figure text-xs text-muted">
-    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-    {children}
-  </div>
-);
+/** The homepage's card: hairline border, a faint light from the top, an inset highlight */
+const CARD =
+  "relative rounded-2xl border border-snow/[0.12] bg-night bg-[linear-gradient(180deg,hsl(0_0%_100%/0.045),transparent_45%)] shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08)]";
+
+/** The slash label above each row's title, as the homepage labels its sections */
+const Kicker = ({ children }: { children: ReactNode }) => <p className="t-label">{children}</p>;
 
 /** What a GitHub-backed visual shows while it loads, or when GitHub sent nothing for it */
 const VisualPending = ({ loaded }: { loaded: boolean }) => (
-  <p className="t-figure text-xs text-muted text-center">{loaded ? "Not available right now." : "Loading…"}</p>
+  <p className="t-figure text-[13px] text-muted text-center">{loaded ? "Not available right now." : "Loading…"}</p>
 );
 
 const longDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
 /**
- * A split row, after Spector's lab: the story on the left in a tall card, a large visual
- * on the right, edge to edge. Rows stack with a thin gap between them.
+ * One row of the page, in the homepage's language: the label, an Antonio title and a short line
+ * on the left, held in view on wide screens, and the visual in a card on the right. Phones and
+ * tablets stack the two.
  */
-const SplitRow = ({
+const Row = ({
   meta,
   title,
-  by,
   body,
   children,
   visual,
-  titleAs: TitleTag = "h2",
 }: {
   meta: ReactNode;
   title: ReactNode;
-  /** The page's first row carries the page title, so it renders as the h1 */
-  titleAs?: "h1" | "h2";
-  by?: ReactNode;
   body?: ReactNode;
   children?: ReactNode;
   visual: ReactNode;
-  /** Kept for call sites; every row now stacks its copy over its visual in one card */
-  flip?: boolean;
 }) => (
-  <motion.section {...reveal()} className="rounded-lg bg-tile border border-line p-7 md:p-10 lg:p-12 min-w-0">
-    <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-12 gap-y-6 items-end">
-      <div className="min-w-0">
-        <Kicker>{meta}</Kicker>
-        <TitleTag className="t-statement text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 break-words">
-          {title}
-        </TitleTag>
-        <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
-        {by && <p className="t-body mt-5 text-muted">{by}</p>}
-      </div>
-      <div className="min-w-0 lg:pb-2">
-        {body && <p className="t-body text-snow/80 max-w-md lg:ml-auto">{body}</p>}
-        {children}
-      </div>
+  <motion.section
+    {...reveal()}
+    className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-x-16 gap-y-8 py-16 lg:py-24 border-t border-line min-w-0"
+  >
+    <div className="min-w-0 lg:sticky lg:top-32 self-start">
+      <Kicker>{meta}</Kicker>
+      <h2 className="t-statement text-[clamp(2.2rem,4.4vw,4.25rem)] leading-[1.02] mt-6 break-words text-balance">
+        {title}
+      </h2>
+      {body && <p className="t-body text-snow/70 mt-6 max-w-md">{body}</p>}
+      {children}
     </div>
-    <div className="relative mt-10 md:mt-12 rounded-md bg-night border border-line overflow-hidden min-h-[320px] flex items-center justify-center p-6 md:p-10">
-      <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,hsl(0_0%_100%/0.07),transparent_70%)]"
-        aria-hidden="true"
-      />
-      <div className="relative w-full">{visual}</div>
+    <div className={`${CARD} min-w-0 min-h-[280px] flex items-center justify-center p-6 md:p-10`}>
+      <div className="relative w-full min-w-0">{visual}</div>
     </div>
   </motion.section>
 );
@@ -128,7 +114,7 @@ const LanguageRing = ({ languages }: { languages: RepoExtras["languages"] }) => 
               />
               {l.name}
             </span>
-            <span className="t-figure text-sm text-muted">{(l.share * 100).toFixed(1)}%</span>
+            <span className="t-figure text-[13px] md:text-sm text-muted">{(l.share * 100).toFixed(1)}%</span>
           </li>
         ))}
       </ul>
@@ -157,10 +143,10 @@ const CommitTimeline = ({ commits }: { commits: RepoExtras["commits"] }) => (
         </span>
         <ExternalLink href={c.url} className="group block">
           <span className="flex items-baseline justify-between gap-4">
-            <span className="t-figure text-[11px] text-muted">{c.sha}</span>
-            <span className="t-figure text-[11px] text-muted">{monthDay(c.date)}</span>
+            <span className="t-figure text-[13px] text-emerald-300/90">{c.sha}</span>
+            <span className="t-figure text-[13px] text-muted">{monthDay(c.date)}</span>
           </span>
-          <span className="block t-body text-snow/90 mt-1">{c.message}</span>
+          <span className="block t-body text-snow/85 mt-1 break-words">{c.message}</span>
         </ExternalLink>
       </motion.li>
     ))}
@@ -222,8 +208,8 @@ const ProjectDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="theme-dark min-h-screen flex items-center justify-center">
-        <span role="status" className="t-figure text-xs text-muted">
+      <div className="theme-dark min-h-screen flex items-center justify-center px-6">
+        <span role="status" className="t-figure text-[13px] text-muted">
           Loading repository…
         </span>
       </div>
@@ -233,16 +219,17 @@ const ProjectDetail = () => {
   if (!project) {
     const unavailable = result?.status === "unavailable";
     return (
-      <div className="theme-dark min-h-screen flex items-center justify-center flex-col px-6 text-center">
-        <h1 className="t-statement text-4xl md:text-6xl mb-4">
+      <div className="theme-dark min-h-screen flex flex-col justify-center max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-28 pb-16">
+        <p className="t-label mb-8">Open source</p>
+        <h1 className="t-statement text-[clamp(2.6rem,6.6vw,7.5rem)] leading-[1.02] max-w-5xl break-words text-balance">
           {unavailable ? "GitHub isn't responding right now" : "Repository not found"}
         </h1>
-        <p className="max-w-md t-body text-muted mb-8">
+        <p className="max-w-xl t-body text-snow/70 text-[17px] md:text-[19px] mt-8 mb-10">
           {unavailable
             ? "GitHub limits how often a browser can ask for repository details. Try again in a few minutes, or open it on GitHub directly."
             : "There's no public repository with that name."}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           {unavailable && slug && (
             <PillLink
               href={`${PROFILE.links.github}/${encodeURIComponent(slug)}`}
@@ -252,8 +239,15 @@ const ProjectDetail = () => {
               Open on GitHub
             </PillLink>
           )}
-          <Link to="/" className="t-body hover:opacity-70 inline-flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to home
+          <Link
+            to="/"
+            className="group inline-flex items-center gap-2 h-11 px-6 rounded-pill border border-line text-[13px] font-medium uppercase tracking-[0.02em] hover:border-fg/60 transition-colors duration-base"
+          >
+            <ArrowLeft
+              className="w-4 h-4 transition-transform duration-fast group-hover:-translate-x-0.5"
+              aria-hidden="true"
+            />
+            Back to home
           </Link>
         </div>
       </div>
@@ -276,66 +270,83 @@ const ProjectDetail = () => {
       <main
         id="main-content"
         tabIndex={-1}
-        className="min-h-screen px-3 md:px-4 pt-24 md:pt-28 pb-16 space-y-1.5 outline-none"
+        className="min-h-screen max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-24 md:pt-28 pb-24 outline-none"
       >
-        <div className="px-4 md:px-8 pb-6 flex items-center justify-between gap-6">
+        <div className="flex items-center justify-between gap-6 pb-12 md:pb-16">
           <button
             type="button"
             onClick={() => navigate(`/?scrollTo=${slug}`)}
             aria-label="Back to projects"
-            className="group inline-flex items-center gap-2 t-label hover:opacity-70 transition-opacity duration-fast"
+            data-magnetic
+            className="group inline-flex items-center gap-2 h-11 px-5 rounded-pill border border-line text-[13px] font-medium uppercase tracking-[0.02em] hover:border-fg/60 transition-colors duration-base"
           >
             <ArrowLeft
-              className="w-4 h-4 transition-transform duration-fast group-hover:-translate-x-1"
+              className="w-4 h-4 transition-transform duration-fast group-hover:-translate-x-0.5"
               aria-hidden="true"
             />
             Back to open source
           </button>
-          <p className="t-caps text-muted hidden sm:block">Open source · {PROFILE.name}</p>
+          <p className="t-figure text-[13px] text-muted hidden sm:block">Open source · {PROFILE.name}</p>
         </div>
 
-        {/* Row 1: the repository */}
-        <SplitRow
-          titleAs="h1"
-          meta={<>Last commit {longDate(project.updated_at)}</>}
-          title={project.name}
-          by={
-            <>
-              by <span className="text-snow">{PROFILE.name}</span>
-            </>
-          }
-          body={project.description || "No description on GitHub yet. The README has the details."}
-          visual={
-            <div className="text-center">
-              <p className="t-label text-muted">Stars</p>
-              <p className="t-wordmark leading-none text-[6rem] md:text-[9rem]">
-                <ScrambleNumber value={String(project.stargazers_count)} />
+        {/* The repository: its name at the scale of the screen, the facts beside it */}
+        <motion.section {...reveal()} className="pb-16 lg:pb-24 min-w-0">
+          <Kicker>Last commit {longDate(project.updated_at)}</Kicker>
+          <h1 className="t-statement text-[clamp(2.8rem,8vw,8.5rem)] leading-[1.02] mt-6 break-words">
+            {project.name}
+          </h1>
+          <div className="mt-10 lg:mt-14 grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] gap-x-16 gap-y-10 items-start">
+            <div className="min-w-0">
+              <p className="t-body text-snow/70 text-[17px] md:text-[19px] max-w-xl">
+                {project.description || "No description on GitHub yet. The README has the details."}
               </p>
-              <div className="mt-6 flex items-center justify-center gap-8 t-figure text-xs text-muted">
-                <span>{project.forks_count} forks</span>
-                <span>{project.language || "Mixed"}</span>
-                {project.topics?.slice(0, 3).map((t) => (
-                  <span key={t}>#{t}</span>
-                ))}
+              <p className="t-figure text-[13px] text-muted mt-5">
+                by <span className="text-snow">{PROFILE.name}</span>
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <PillLink href={project.html_url} target="_blank" rel="noopener noreferrer">
+                  View source
+                </PillLink>
+                {project.homepage && (
+                  <PillLink tone="outline" href={project.homepage} target="_blank" rel="noopener noreferrer">
+                    Live site
+                  </PillLink>
+                )}
               </div>
             </div>
-          }
-        >
-          <div className="mt-8 flex flex-wrap gap-3">
-            <PillLink href={project.html_url} target="_blank" rel="noopener noreferrer">
-              View source
-            </PillLink>
-            {project.homepage && (
-              <PillLink tone="outline" href={project.homepage} target="_blank" rel="noopener noreferrer">
-                Live site
-              </PillLink>
-            )}
+            <div className={`${CARD} p-6 md:p-8 min-w-0`}>
+              <p className="t-label">Stars</p>
+              <p className="t-wordmark leading-none text-[5rem] md:text-[7rem] mt-4">
+                <ScrambleNumber value={String(project.stargazers_count)} />
+              </p>
+              <dl className="mt-6 pt-5 border-t border-snow/10 grid grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <dt className="t-figure text-[13px] uppercase tracking-[0.16em] text-emerald-300">Forks</dt>
+                  <dd className="t-heading text-2xl mt-1">{project.forks_count}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="t-figure text-[13px] uppercase tracking-[0.16em] text-emerald-300">Language</dt>
+                  <dd className="t-heading text-2xl mt-1 break-words">{project.language || "Mixed"}</dd>
+                </div>
+              </dl>
+              {!!project.topics?.length && (
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {project.topics.slice(0, 6).map((t) => (
+                    <li
+                      key={t}
+                      className="rounded-pill border border-line px-3 py-1 text-[13px] text-snow/75 break-words"
+                    >
+                      #{t}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-        </SplitRow>
+        </motion.section>
 
         {/* Row 2: languages */}
-        <SplitRow
-          flip
+        <Row
           meta="Languages"
           title="What it's written in"
           body={
@@ -353,7 +364,7 @@ const ProjectDetail = () => {
         />
 
         {/* Row 3: commits */}
-        <SplitRow
+        <Row
           meta="History"
           title="Recent commits"
           body="The last five commits on the default branch, newest first. Each links to its diff on GitHub."
@@ -365,24 +376,29 @@ const ProjectDetail = () => {
         {/* Row 4: README, full width */}
         <motion.section
           {...reveal()}
-          className="rounded-lg bg-tile p-7 md:p-10 lg:p-12 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)] gap-10 lg:gap-16 min-w-0"
+          className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-x-16 gap-y-8 py-16 lg:py-24 border-t border-line min-w-0"
         >
-          <div className="lg:sticky lg:top-32 self-start">
+          <div className="lg:sticky lg:top-32 self-start min-w-0">
             <Kicker>Readme</Kicker>
-            <h2 className="t-statement text-4xl md:text-6xl mt-6">As it reads on GitHub</h2>
-            <span className="block w-14 h-px bg-emerald-400 mt-5" aria-hidden="true" />
+            <h2 className="t-statement text-[clamp(2.2rem,4.4vw,4.25rem)] leading-[1.02] mt-6 break-words text-balance">
+              As it reads on GitHub
+            </h2>
             <ExternalLink
               href={`${project.html_url}#readme`}
-              className="mt-6 inline-flex items-center gap-2 t-label hover:opacity-70 transition-opacity duration-fast"
+              className="group mt-6 inline-flex items-center gap-2 py-2 t-figure text-[13px] uppercase tracking-[0.16em] text-snow/80"
             >
-              Open on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+              Open on GitHub{" "}
+              <ArrowUpRight
+                className="w-4 h-4 text-emerald-300 transition-transform duration-fast group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                aria-hidden="true"
+              />
             </ExternalLink>
           </div>
-          <div className="readme min-w-0" onClick={onReadmeClick}>
+          <div className={`${CARD} readme min-w-0 p-6 md:p-10`} onClick={onReadmeClick}>
             {readmeHtml ? (
               <div dangerouslySetInnerHTML={{ __html: readmeHtml }} />
             ) : (
-              <p className="t-figure text-xs text-muted">
+              <p className="t-figure text-[13px] text-muted">
                 {extras ? "The README could not be loaded right now. It is on GitHub." : "Loading README…"}
               </p>
             )}
@@ -390,14 +406,13 @@ const ProjectDetail = () => {
         </motion.section>
 
         {/* Row 5: clone and more */}
-        <SplitRow
-          flip
+        <Row
           meta="Next"
           title="More repositories"
           body="Other public work on the same account."
           visual={
             <div className="max-w-lg mx-auto w-full">
-              <pre className="mb-6 rounded-sm bg-tile border border-line p-4 overflow-x-auto max-w-full t-figure text-xs text-snow/80">
+              <pre className="mb-6 rounded-lg border border-line p-4 overflow-x-auto max-w-full t-figure text-[13px] text-snow/80">
                 <span className="text-emerald-400">$ </span>git clone {project.html_url}.git
               </pre>
               <ol className="divide-y divide-line">
@@ -405,10 +420,10 @@ const ProjectDetail = () => {
                   <li key={r.name}>
                     <Link
                       to={`/project/${r.name}`}
-                      className="group flex items-baseline justify-between gap-4 py-3 -mx-2 px-2 rounded-sm hover:bg-snow/[0.03] transition-colors duration-fast"
+                      className="group flex items-baseline justify-between gap-4 py-3.5 -mx-2 px-2 rounded-md hover:bg-snow/[0.03] transition-colors duration-fast"
                     >
                       <span className="t-heading text-xl md:text-2xl break-words">{r.name}</span>
-                      <span className="shrink-0 flex items-center gap-2 t-figure text-[11px] text-muted">
+                      <span className="shrink-0 flex items-center gap-2 t-figure text-[13px] text-muted">
                         {r.language}
                         <ArrowUpRight
                           className="w-3.5 h-3.5 group-hover:text-emerald-300 transition-colors duration-fast"
