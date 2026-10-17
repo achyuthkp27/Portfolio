@@ -1,6 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import { motion, useInView, useMotionValue, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ParticlePortrait from "./ui/ParticlePortrait";
 import { photoHandoff } from "@/lib/photoHandoff";
 import { useLoading } from "@/hooks/useLoading";
@@ -46,87 +46,12 @@ const BlurWords = ({
             animate={show ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease: OUT, delay: start + i * step }}
           >
-            {italic ? (
-              // A highlighted word lights up emerald under the pointer, its underline drawing in
-              <span className="relative text-white/95 transition-colors duration-300 hover:text-emerald-300 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:bg-emerald-400 after:origin-left after:scale-x-0 after:transition-transform after:duration-500 hover:after:scale-x-100">
-                {word}
-              </span>
-            ) : (
-              word
-            )}
+            {italic ? <span className="text-white/95">{word}</span> : word}
             {punctuation}{" "}
           </motion.span>
         );
       })}
     </p>
-  );
-};
-
-/**
- * The name, letter by letter. Under a mouse the letters nearest the pointer rise a little and
- * warm to emerald, a wave that follows it across the word and settles when it leaves. Touch
- * screens and reduced motion get the plain word.
- */
-const HoverName = ({ text }: { text: string }) => {
-  const letters = useRef<(HTMLSpanElement | null)[]>([]);
-  const fine = useMediaQuery("(hover: hover) and (pointer: fine)");
-  const reduceMotion = useReducedMotionConfig();
-  const pointer = useRef<number | null>(null);
-  const lift = useRef<number[]>([]);
-  const raf = useRef(0);
-
-  const tick = useCallback(() => {
-    raf.current = 0;
-    const els = letters.current;
-    let moving = false;
-    els.forEach((el, i) => {
-      if (!el) return;
-      const box = el.getBoundingClientRect();
-      const reach = box.height * 0.55;
-      const px = pointer.current;
-      const want = px === null ? 0 : Math.exp(-Math.pow((box.left + box.width / 2 - px) / reach, 2));
-      const have = lift.current[i] ?? 0;
-      const next = have + (want - have) * 0.16;
-      lift.current[i] = next;
-      if (Math.abs(want - next) > 0.002) moving = true;
-      el.style.transform = next > 0.002 ? `translateY(${-0.07 * next}em)` : "";
-      el.style.color =
-        next > 0.002 ? `color-mix(in srgb, hsl(var(--accent-400)) ${Math.round(next * 100)}%, currentColor)` : "";
-    });
-    if (moving || pointer.current !== null) raf.current = requestAnimationFrame(tick);
-  }, []);
-  const wake = () => {
-    if (!raf.current) raf.current = requestAnimationFrame(tick);
-  };
-  useEffect(() => () => cancelAnimationFrame(raf.current), []);
-
-  if (!fine || reduceMotion) return <>{text}</>;
-  return (
-    <span
-      onPointerMove={(e) => {
-        pointer.current = e.clientX;
-        wake();
-      }}
-      onPointerLeave={() => {
-        pointer.current = null;
-        wake();
-      }}
-    >
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">
-        {[...text].map((ch, i) => (
-          <span
-            key={i}
-            ref={(el) => {
-              letters.current[i] = el;
-            }}
-            className="inline-block origin-bottom will-change-transform"
-          >
-            {ch}
-          </span>
-        ))}
-      </span>
-    </span>
   );
 };
 
@@ -290,11 +215,10 @@ const Hero = () => {
           {PROFILE.title} · Backend &amp; AI
         </motion.p>
 
-        <h1 className="group/name font-body font-black tracking-tighter leading-[0.75] mb-12 flex flex-col text-[clamp(3.6rem,12vw,11rem)]">
-          {/* Hovering the heading sweeps a band of emerald light through the outlined greeting */}
+        <h1 className="font-body font-black tracking-tighter leading-[0.75] mb-12 flex flex-col text-[clamp(3.6rem,12vw,11rem)]">
           <motion.span
             {...rise(0.6, 90)}
-            className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)] bg-[linear-gradient(100deg,transparent_38%,hsl(var(--accent-400)/0.7)_50%,transparent_62%)] bg-[length:300%_100%] bg-[position:100%_0] bg-clip-text transition-[background-position] duration-[1400ms] ease-out group-hover/name:bg-[position:0%_0]"
+            className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)]"
           >
             Hey, I&apos;m
           </motion.span>{" "}
@@ -306,7 +230,7 @@ const Hero = () => {
             animate={show ? { opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } } : {}}
             transition={{ duration: 1.1, ease: OUT, delay: 0.75 }}
           >
-            <HoverName text={`${PROFILE.first}.`} />
+            {`${PROFILE.first}.`}
           </motion.span>
         </h1>
 
