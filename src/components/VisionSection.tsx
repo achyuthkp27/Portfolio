@@ -21,7 +21,7 @@ const MAX_LAG = 0.45;
 /**
  * (How I think): a fly-through. Each principle starts as a speck in the distance, rushes
  * toward you, holds at reading size while its note fades in, then blows past and the next
- * one appears far away. Only the words move; the ground stays still. The shown position
+ * one appears far away. The corridor around them streams past as they come. The shown position
  * chases the scroll at a capped speed, so a fast flick can't skip a principle before it has
  * fully appeared. Reduced motion gets the principles as a plain list.
  */
@@ -76,15 +76,19 @@ const VisionSection = () => {
       style={{ height: `${N * 160 + 100}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
-        {/* Crosshair: two faint hairlines through the centre, the stage the principles fly through */}
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-snow/[0.08]" />
-          <div className="absolute top-0 bottom-0 left-1/2 w-px bg-snow/[0.08]" />
-        </div>
+        <Corridor units={units} />
         <p className="t-label absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10">How I think</p>
 
         {PRINCIPLES.map((pr, i) => (
-          <Principle key={pr.title} index={i} title={pr.title} note={pr.note} units={units} />
+          <Principle
+            key={pr.title}
+            index={i}
+            title={pr.title}
+            note={pr.note}
+            units={units}
+            first={i === 0}
+            last={i === N - 1}
+          />
         ))}
 
         <div
@@ -100,20 +104,76 @@ const VisionSection = () => {
   );
 };
 
+/** Grid spacing of the corridor's walls, floor and ceiling, in px */
+const CELL = 96;
+/** Cells the corridor travels per principle */
+const CELLS_PER_UNIT = 5;
+
+/**
+ * The stage the principles fly through, after wodniack.dev's grid room: a floor, a ceiling and
+ * two walls drawn as faint grids in perspective, meeting at the centre of the screen. The grid
+ * streams toward you as the scene moves, so the ground travels with each principle instead of
+ * standing still. Each plane moves a child by transform, wrapped to one cell, so it never repaints.
+ */
+const Corridor = ({ units }: { units: MotionValue<number> }) => {
+  // How far into the current cell the grid has travelled, 0 → CELL
+  const travel = useTransform(units, (u) => {
+    const d = u * CELLS_PER_UNIT * CELL;
+    return ((d % CELL) + CELL) % CELL;
+  });
+  const toward = useTransform(travel, (d) => d - CELL);
+  const away = useTransform(travel, (d) => -d);
+  const grid =
+    "absolute [background-image:linear-gradient(to_right,hsl(0_0%_100%/0.15)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_100%/0.15)_1px,transparent_1px)] [background-size:96px_96px]";
+  return (
+    <div aria-hidden="true" className="absolute inset-0 pointer-events-none [perspective:520px]">
+      {/* Floor: laid back from the bottom edge, its far edge fading out at the centre */}
+      <div className="absolute inset-x-0 bottom-0 h-[160vh] origin-bottom [transform:rotateX(90deg)] overflow-hidden [mask-image:linear-gradient(to_top,black_10%,transparent_75%)]">
+        <motion.div style={{ y: toward }} className={`${grid} inset-x-0 -top-[96px] bottom-0`} />
+      </div>
+      {/* Ceiling */}
+      <div className="absolute inset-x-0 top-0 h-[160vh] origin-top [transform:rotateX(-90deg)] overflow-hidden [mask-image:linear-gradient(to_bottom,black_10%,transparent_75%)]">
+        <motion.div style={{ y: away }} className={`${grid} inset-x-0 top-0 -bottom-[96px]`} />
+      </div>
+      {/* Left wall */}
+      <div className="absolute inset-y-0 left-0 w-[160vh] origin-left [transform:rotateY(90deg)] overflow-hidden [mask-image:linear-gradient(to_left,transparent_25%,black_90%)]">
+        <motion.div style={{ x: away }} className={`${grid} inset-y-0 left-0 -right-[96px]`} />
+      </div>
+      {/* Right wall */}
+      <div className="absolute inset-y-0 right-0 w-[160vh] origin-right [transform:rotateY(-90deg)] overflow-hidden [mask-image:linear-gradient(to_right,transparent_25%,black_90%)]">
+        <motion.div style={{ x: toward }} className={`${grid} inset-y-0 -left-[96px] right-0`} />
+      </div>
+      {/* Where the corridor meets: a soft emerald light at the vanishing point */}
+      <div className="absolute left-1/2 top-1/2 w-[46vmin] h-[46vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,hsl(var(--accent-500)/0.16),transparent_65%)]" />
+    </div>
+  );
+};
+
 /** One principle on its own stretch of the timeline: far, near, through */
 const Principle = ({
   index,
   title,
   note,
   units,
+  first = false,
+  last = false,
 }: {
   index: number;
   title: string;
   note: string;
   units: MotionValue<number>;
+  /** The first is already standing as the section arrives, and the last stays and leaves with the
+   * page, so the section neither opens nor ends on an empty corridor */
+  first?: boolean;
+  last?: boolean;
 }) => {
   // t runs 0 → 1 across this principle's unit: approach 0–0.3, a long hold 0.3–0.75, pass 0.75–1
-  const t = useTransform(units, (u) => u - index);
+  const t = useTransform(units, (u) => {
+    const v = u - index;
+    if (first && v < 0.36) return 0.36;
+    if (last && v > 0.7) return 0.7;
+    return v;
+  });
   const scale = useTransform(t, (v) => {
     if (v <= 0.3) return 0.08 + 0.92 * Math.pow(clamp01(v / 0.3), 2.2);
     if (v <= 0.75) return 1;
