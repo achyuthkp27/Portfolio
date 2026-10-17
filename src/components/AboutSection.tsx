@@ -287,9 +287,10 @@ const AboutSection = () => {
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="max-w-[1400px] mx-auto">
-            <motion.p {...reveal()} className="t-label mb-8">
+            {/* The section's heading, set as its label, so heading navigation finds it */}
+            <motion.h2 {...reveal()} className="t-label mb-8">
               Who I am
-            </motion.p>
+            </motion.h2>
             <FillText
               text={STATEMENT}
               className="t-statement text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl max-w-6xl"
@@ -320,6 +321,14 @@ const AboutSection = () => {
                 ref={grid}
                 onPointerMove={onSpotMove}
                 onPointerLeave={onSpotLeave}
+                // Keyboard: a focused link or button must be visible, so focus inside the bento
+                // finishes the deal at once and every card stands in place
+                onFocus={() => {
+                  if (dealt.current && landed.current.size >= cards.current.length) return;
+                  dealt.current = true;
+                  cards.current.forEach((_, i) => landed.current.add(i));
+                  apply();
+                }}
                 className={`relative grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-3 md:gap-4 ${zooms ? "sticky top-[15vh]" : ""}`}
               >
                 {/* Founder card */}

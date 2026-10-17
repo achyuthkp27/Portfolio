@@ -224,9 +224,19 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
     });
   };
 
-  useMotionValueEvent(p, "change", draw);
+  // Where the scene really is, read from the track's position. The scroll tracker below only
+  // says when to draw: after an instant jump (a focused control bringing its card forward) it can
+  // report a stale value, which drew the deck for the wrong moment and hid the focused card.
+  const progressNow = () => {
+    const el = track.current;
+    if (!el) return p.get();
+    const box = el.getBoundingClientRect();
+    const vh = stage.current?.clientHeight || window.innerHeight;
+    return clamp01(-box.top / Math.max(1, box.height - vh));
+  };
+  useMotionValueEvent(p, "change", () => draw(progressNow()));
   useEffect(() => {
-    draw(p.get());
+    draw(progressNow());
     const onResize = () => setLayout(measure(stage.current));
     // Once mounted, measure the stage itself rather than the window
     onResize();
@@ -248,7 +258,7 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
       deckFit.current = Math.min(1, room / Math.max(1, tallest));
       const shown = tallest * deckFit.current;
       deckTop.current = Math.max(nav + DECK * PEEK, (layout.H - shown + DECK * PEEK) / 2);
-      draw(p.get());
+      draw(progressNow());
     };
     sizeDeck();
     // Card heights depend on the fonts, which may still be loading
@@ -261,11 +271,14 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   const bringToFront = (i: number) => {
     const el = track.current;
     if (!el) return;
-    const s = p.get() * screens;
+    const s = progressNow() * screens;
     if (Math.abs(s - momentOf(i)) < 0.2) return;
-    const y = el.getBoundingClientRect().top + window.scrollY + momentOf(i) * window.innerHeight;
+    const vh = stage.current?.clientHeight || window.innerHeight;
+    const y = el.getBoundingClientRect().top + window.scrollY + momentOf(i) * vh;
     if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
     else window.scrollTo({ top: y, behavior: "instant" });
+    // Draw for where the page now is, without waiting for the scroll tracker
+    requestAnimationFrame(() => draw(progressNow()));
   };
 
   const { copies, font, capW, capH } = layout;

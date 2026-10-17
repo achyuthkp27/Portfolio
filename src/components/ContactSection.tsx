@@ -127,7 +127,8 @@ const ContactSection = () => {
             type="button"
             onFocus={() => requestAnimationFrame(() => requestAnimationFrame(jumpToEnd))}
             onClick={jumpToEnd}
-            className="sr-only"
+            // Visible while focused, like the skip link: a focused control is never invisible
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-20 focus:z-[300] focus:rounded-sm focus:bg-snow focus:px-4 focus:py-2 focus:text-sm focus:text-night"
           >
             Show contact options
           </button>

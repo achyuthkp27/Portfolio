@@ -46,7 +46,8 @@ const IndexRow = ({ repo, index, active }: { repo: GitHubRepo; index: number; ac
   >
     <span
       className={`t-figure text-[13px] tabular-nums pt-[0.55em] md:pt-[0.9em] transition-colors duration-500 ${
-        active ? "text-emerald-300" : "text-snow/40"
+        // Dimmed rows still read: 50% clears AA contrast for small text on black
+        active ? "text-emerald-300" : "text-snow/50"
       }`}
     >
       {pad2(index + 1)}
@@ -55,7 +56,8 @@ const IndexRow = ({ repo, index, active }: { repo: GitHubRepo; index: number; ac
       <span className="flex items-start justify-between gap-3 md:gap-6">
         <span
           className={`block t-heading text-[clamp(1.7rem,6.2vw,6.25rem)] leading-[0.95] break-words min-w-0 transition-colors duration-500 ${
-            active ? "text-snow" : "text-snow/25"
+            // 40% clears AA's 3:1 for large text on black, so a dimmed name stays legible
+            active ? "text-snow" : "text-snow/40"
           }`}
         >
           {repo.name}

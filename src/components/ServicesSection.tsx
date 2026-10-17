@@ -226,11 +226,20 @@ const ServicesScene = () => {
     });
   };
 
-  useMotionValueEvent(p, "change", draw);
+  // Where the scene really is, read from the track's position. The scroll tracker only says when
+  // to draw: after an instant jump (a focused control bringing its service forward) it can report
+  // a stale value, which drew the wrong service and hid the focused panel.
+  const progressNow = () => {
+    const el = track.current;
+    if (!el) return p.get();
+    const box = el.getBoundingClientRect();
+    return Math.min(1, Math.max(0, -box.top / Math.max(1, box.height - window.innerHeight)));
+  };
+  useMotionValueEvent(p, "change", () => draw(progressNow()));
   useEffect(() => {
     const redo = () => {
       layout();
-      draw(p.get());
+      draw(progressNow());
     };
     redo();
     // Panel heights depend on the display font, which may still be loading
@@ -252,11 +261,13 @@ const ServicesScene = () => {
     const y = momentOf(i);
     if (lenis) lenis.scrollTo(y, { immediate, force: true });
     else window.scrollTo({ top: y, behavior: immediate ? "instant" : "smooth" });
+    // Draw for where the page now is, without waiting for the scroll tracker
+    if (immediate) requestAnimationFrame(() => draw(progressNow()));
   };
   // Keyboard: a control on a service that isn't showing brings that service to the stage
   const onPanelFocus = (i: number) => (e: FocusEvent) => {
     if (e.target === e.currentTarget) return;
-    if (Math.abs(positionAt(p.get()) - i) > 0.25) goTo(i, true);
+    if (Math.abs(positionAt(progressNow()) - i) > 0.25) goTo(i, true);
   };
 
   return (

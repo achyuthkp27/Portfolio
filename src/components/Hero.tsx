@@ -246,14 +246,15 @@ const Hero = () => {
             show={show}
             start={1.7}
             step={0.022}
-            className="text-xs md:text-sm text-white/40 font-light leading-relaxed"
+            className="text-xs md:text-sm text-white/55 font-light leading-relaxed"
             text="I mainly work with Java, Spring Boot, Kafka, and Python, and today I own cards, payments, and an LLM assistant for a *banking* *platform*."
           />
           <BlurWords
             show={show}
             start={1.9}
             step={0.015}
-            className="text-xs md:text-sm text-white/30 font-light leading-relaxed"
+            // The quieter lines step down from the first but still clear AA contrast for small text
+            className="text-xs md:text-sm text-white/50 font-light leading-relaxed"
             text="On my own time I build AI that *verifies* who it's talking to, and an *on-device* banking assistant where the model never leaves the phone."
           />
 

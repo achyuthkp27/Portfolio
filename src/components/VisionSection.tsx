@@ -53,7 +53,7 @@ const VisionSection = () => {
   if (reduceMotion) {
     return (
       <section id="vision" className="theme-dark text-snow py-24 px-6 md:px-10 lg:px-12">
-        <p className="t-label text-center mb-12">How I think</p>
+        <h2 className="t-label text-center mb-12">How I think</h2>
         <ul className="max-w-4xl mx-auto space-y-12 text-center">
           {PRINCIPLES.map((pr) => (
             <li key={pr.title}>
@@ -78,7 +78,8 @@ const VisionSection = () => {
     >
       <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
         <Corridor units={units} />
-        <p className="t-label absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10">How I think</p>
+        {/* The section's heading, set as its label, so heading navigation finds it */}
+        <h2 className="t-label absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10">How I think</h2>
 
         {PRINCIPLES.map((pr, i) => (
           <Principle
