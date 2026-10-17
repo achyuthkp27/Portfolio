@@ -1,6 +1,8 @@
 import { ArrowDown } from "lucide-react";
-import { motion, useInView, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { motion, useInView, useMotionValue, useReducedMotionConfig, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import ParticlePortrait from "./ui/ParticlePortrait";
+import { photoHandoff } from "@/lib/photoHandoff";
 import { useLoading } from "@/hooks/useLoading";
 import { PROFILE } from "@/data/profile";
 
@@ -44,12 +46,87 @@ const BlurWords = ({
             animate={show ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease: OUT, delay: start + i * step }}
           >
-            {italic ? <span className="text-white/95">{word}</span> : word}
+            {italic ? (
+              // A highlighted word lights up emerald under the pointer, its underline drawing in
+              <span className="relative text-white/95 transition-colors duration-300 hover:text-emerald-300 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:bg-emerald-400 after:origin-left after:scale-x-0 after:transition-transform after:duration-500 hover:after:scale-x-100">
+                {word}
+              </span>
+            ) : (
+              word
+            )}
             {punctuation}{" "}
           </motion.span>
         );
       })}
     </p>
+  );
+};
+
+/**
+ * The name, letter by letter. Under a mouse the letters nearest the pointer rise a little and
+ * warm to emerald, a wave that follows it across the word and settles when it leaves. Touch
+ * screens and reduced motion get the plain word.
+ */
+const HoverName = ({ text }: { text: string }) => {
+  const letters = useRef<(HTMLSpanElement | null)[]>([]);
+  const fine = useMediaQuery("(hover: hover) and (pointer: fine)");
+  const reduceMotion = useReducedMotionConfig();
+  const pointer = useRef<number | null>(null);
+  const lift = useRef<number[]>([]);
+  const raf = useRef(0);
+
+  const tick = useCallback(() => {
+    raf.current = 0;
+    const els = letters.current;
+    let moving = false;
+    els.forEach((el, i) => {
+      if (!el) return;
+      const box = el.getBoundingClientRect();
+      const reach = box.height * 0.55;
+      const px = pointer.current;
+      const want = px === null ? 0 : Math.exp(-Math.pow((box.left + box.width / 2 - px) / reach, 2));
+      const have = lift.current[i] ?? 0;
+      const next = have + (want - have) * 0.16;
+      lift.current[i] = next;
+      if (Math.abs(want - next) > 0.002) moving = true;
+      el.style.transform = next > 0.002 ? `translateY(${-0.07 * next}em)` : "";
+      el.style.color =
+        next > 0.002 ? `color-mix(in srgb, hsl(var(--accent-400)) ${Math.round(next * 100)}%, currentColor)` : "";
+    });
+    if (moving || pointer.current !== null) raf.current = requestAnimationFrame(tick);
+  }, []);
+  const wake = () => {
+    if (!raf.current) raf.current = requestAnimationFrame(tick);
+  };
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  if (!fine || reduceMotion) return <>{text}</>;
+  return (
+    <span
+      onPointerMove={(e) => {
+        pointer.current = e.clientX;
+        wake();
+      }}
+      onPointerLeave={() => {
+        pointer.current = null;
+        wake();
+      }}
+    >
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">
+        {[...text].map((ch, i) => (
+          <span
+            key={i}
+            ref={(el) => {
+              letters.current[i] = el;
+            }}
+            className="inline-block origin-bottom will-change-transform"
+          >
+            {ch}
+          </span>
+        ))}
+      </span>
+    </span>
   );
 };
 
@@ -70,12 +147,18 @@ const Hero = () => {
   // The photo fades in only once it has decoded, so a slow download never pops it in mid-fade
   const [photoReady, setPhotoReady] = useState(false);
   const markReady = useCallback(() => setPhotoReady(true), []);
+  const photoEl = useRef<HTMLImageElement | null>(null);
   const photoRef = useCallback(
     (img: HTMLImageElement | null) => {
+      photoEl.current = img;
       if (img?.complete) markReady();
     },
     [markReady],
   );
+  // 1 once the particle twin is drawing; the photo only hands over to it then, so without WebGL nothing changes
+  const particlesLive = useMotionValue(0);
+  const particlesReady = useCallback(() => particlesLive.set(1), [particlesLive]);
+  const particlesFailed = useCallback(() => particlesLive.set(0), [particlesLive]);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["end 0.6", "end 0.1"] });
   // The photo moves with the page: a slow push-in, a drift up and to the left, a gentle dim
@@ -91,6 +174,8 @@ const Hero = () => {
   const photoX = useTransform(through, (v) => (reduceMotion || !wide ? "0vw" : `${toCentre(v) * -15}vw`));
   const photoY = useTransform(through, () => "0%");
   const photoDim = useTransform(through, (v) => (reduceMotion ? 1 : 1 - v * 0.35));
+  // As the page scrolls, the photo dissolves into its particle twin, which then streams apart
+  const photoSolid = useTransform([through, particlesLive], ([v, live]: number[]) => 1 - live * photoHandoff(v));
   const fadeOut = useTransform(scrollYProgress, (v) => (reduceMotion ? 1 : 1 - v));
   const lift = useTransform(scrollYProgress, (v) => (reduceMotion ? 0 : v * -50));
 
@@ -119,25 +204,28 @@ const Hero = () => {
               style={{ scale: photoScale, x: photoX, y: photoY, opacity: photoDim }}
               className="absolute inset-0 block origin-[70%_100%] will-change-transform [mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_top,transparent,black_18%),linear-gradient(to_left,transparent,black_14%)] [-webkit-mask-composite:source-in]"
             >
-              {/* The photo fades in once its silhouette has been drawn (about 2.3s) */}
-              <motion.div
-                className="absolute inset-0"
-                initial={reduceMotion ? false : { opacity: 0 }}
-                animate={show && photoReady ? { opacity: 1 } : {}}
-                transition={{ duration: 3, ease: OUT, delay: 2.2 }}
-              >
-                <img
-                  ref={photoRef}
-                  onLoad={markReady}
-                  onError={markReady}
-                  src={`${base}images/avatar-cutout.webp`}
-                  alt=""
-                  width={1672}
-                  height={941}
-                  // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
-                  {...{ fetchpriority: "high" }}
-                  className="w-full h-full object-cover object-[74%_18%] lg:object-[70%_top]"
-                />
+              {/* The photo fades in once its silhouette has been drawn (about 2.3s), and on scroll
+                  fades out under its particle twin (the outer layer) */}
+              <motion.div className="absolute inset-0" style={{ opacity: photoSolid }}>
+                <motion.div
+                  className="absolute inset-0"
+                  initial={reduceMotion ? false : { opacity: 0 }}
+                  animate={show && photoReady ? { opacity: 1 } : {}}
+                  transition={{ duration: 3, ease: OUT, delay: 2.2 }}
+                >
+                  <img
+                    ref={photoRef}
+                    onLoad={markReady}
+                    onError={markReady}
+                    src={`${base}images/avatar-cutout.webp`}
+                    alt=""
+                    width={1672}
+                    height={941}
+                    // React 18 only knows the lowercase attribute; the camelCase prop logs a warning
+                    {...{ fetchpriority: "high" }}
+                    className="w-full h-full object-cover object-[74%_18%] lg:object-[70%_top]"
+                  />
+                </motion.div>
               </motion.div>
               {/* An emerald outline traced from the cutout's edge draws itself first, then gives way
                   to the photo. Both halves start at the crown and meet the frame together; the SVG animates on its own, so it mounts only when the draw should start. */}
@@ -157,6 +245,22 @@ const Hero = () => {
               )}
             </motion.picture>
           </div>
+          {/* The photo's particle twin: drawn over the whole screen so the points can stream past the
+              photo's frame. Mounted once the photo is in, never under reduced motion. */}
+          {!reduceMotion && show && photoReady && (
+            <div className="absolute inset-0 z-[1]">
+              <ParticlePortrait
+                src={`${base}images/avatar-cutout.webp`}
+                photo={photoEl}
+                progress={through}
+                dim={photoDim}
+                running={orbOn}
+                fadeLeft={wide ? 0 : 96}
+                onReady={particlesReady}
+                onFailure={particlesFailed}
+              />
+            </div>
+          )}
           {/* The light from the earlier hero: a soft emerald orb on a wide orbit, lingering behind the
               copy on the left and passing behind the figure on the right */}
           {/* Mounted only while the hero is near the screen: its endless orbit otherwise keeps
@@ -186,10 +290,11 @@ const Hero = () => {
           {PROFILE.title} · Backend &amp; AI
         </motion.p>
 
-        <h1 className="font-body font-black tracking-tighter leading-[0.75] mb-12 flex flex-col text-[clamp(3.6rem,12vw,11rem)]">
+        <h1 className="group/name font-body font-black tracking-tighter leading-[0.75] mb-12 flex flex-col text-[clamp(3.6rem,12vw,11rem)]">
+          {/* Hovering the heading sweeps a band of emerald light through the outlined greeting */}
           <motion.span
             {...rise(0.6, 90)}
-            className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)]"
+            className="block font-serif italic font-normal tracking-[-0.01em] text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)] bg-[linear-gradient(100deg,transparent_38%,hsl(var(--accent-400)/0.7)_50%,transparent_62%)] bg-[length:300%_100%] bg-[position:100%_0] bg-clip-text transition-[background-position] duration-[1400ms] ease-out group-hover/name:bg-[position:0%_0]"
           >
             Hey, I&apos;m
           </motion.span>{" "}
@@ -201,7 +306,7 @@ const Hero = () => {
             animate={show ? { opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } } : {}}
             transition={{ duration: 1.1, ease: OUT, delay: 0.75 }}
           >
-            {`${PROFILE.first}.`}
+            <HoverName text={`${PROFILE.first}.`} />
           </motion.span>
         </h1>
 
@@ -232,7 +337,7 @@ const Hero = () => {
             <button
               type="button"
               onClick={() => scrollTo("about")}
-              className="py-3 -my-3 text-[11px] lg:text-[10px] text-white/50 hover:text-white tracking-[0.4em] uppercase font-medium transition-colors"
+              className="py-3 -my-3 text-[13px] lg:text-[12px] text-white/50 hover:text-white tracking-[0.4em] uppercase font-medium transition-colors"
             >
               <span className="inline-flex items-center gap-2">
                 Explore <ArrowDown className="w-3 h-3" aria-hidden="true" />
