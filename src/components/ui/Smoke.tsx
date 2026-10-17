@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { prefersReducedMotion, useMotionOff } from "@/lib/motionPreference";
+import { isTouchFirst } from "@/lib/viewport";
 
 /**
  * Drifting smoke for a dark card, rendered on a canvas: layered value noise, domain-warped
@@ -105,7 +106,9 @@ export const Smoke = ({ className = "" }: { className?: string }) => {
     };
 
     draw(0);
-    if (reduce) return;
+    // Phones get the one still frame: the canvas sits under a CSS blur and a blend mode, and iOS
+    // redraws both in full on every update, which stalled scrolling past it
+    if (reduce || isTouchFirst()) return;
 
     const io = new IntersectionObserver(([e]) => {
       onScreen = e.isIntersecting;

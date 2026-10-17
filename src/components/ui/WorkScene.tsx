@@ -6,6 +6,7 @@ import { clamp01 } from "@/lib/format";
 import { phase } from "@/lib/phase";
 import { DotField } from "./DotField";
 import { WorkCard, WorkGroupCard } from "./WorkCard";
+import { onLayoutResize } from "@/lib/viewport";
 
 const WORD = ["W", "O", "R", "K"] as const;
 /** Screens of scroll before the first card faces you: the capsule rises, opens, and becomes the wall */
@@ -195,8 +196,8 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   useEffect(() => {
     draw(p.get());
     const onResize = () => setLayout(measure());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const offResize = onLayoutResize(onResize);
+    return () => offResize();
     // Draws from refs; p is stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

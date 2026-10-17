@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useInView, useReducedMotionConfig } from "framer-motion";
+import { isTouchFirst } from "@/lib/viewport";
 
 /** Brightness steps the dots are drawn in */
 const LEVELS = 12;
@@ -39,9 +40,10 @@ export const DotField = ({
     if (!canvas || !ctx) return;
     const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent-400").trim() || "158 64% 52%";
     let raf = 0;
+    const touch = isTouchFirst();
 
     const paint = (now: number) => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = touch ? 1 : Math.min(window.devicePixelRatio || 1, 2);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       if (!w || !h) return;
@@ -77,10 +79,15 @@ export const DotField = ({
       });
     };
 
+    // Phones redraw at half rate: the dots move slowly, and the frames go to scrolling instead
+    let drawn = 0;
     const frame = (now: number) => {
       raf = 0;
       if (document.hidden) return;
-      paint(now);
+      if (!touch || now - drawn > 32) {
+        drawn = now;
+        paint(now);
+      }
       raf = requestAnimationFrame(frame);
     };
     const start = () => {

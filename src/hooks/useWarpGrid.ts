@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { MotionValue } from "framer-motion";
+import { onLayoutResize } from "@/lib/viewport";
 
 /** Seconds without scrolling before the grid starts to wave */
 const IDLE_AFTER = 2.2;
@@ -142,7 +143,7 @@ export const useWarpGrid = ({
     const onVisibility = () => {
       if (!document.hidden) start();
     };
-    window.addEventListener("resize", onResize);
+    const offResize = onLayoutResize(onResize);
     document.addEventListener("visibilitychange", onVisibility);
     size();
     paint(performance.now());
@@ -151,7 +152,7 @@ export const useWarpGrid = ({
     return () => {
       cancelAnimationFrame(raf);
       unsubscribe();
-      window.removeEventListener("resize", onResize);
+      offResize();
       document.removeEventListener("visibilitychange", onVisibility);
     };
     // The canvas is stable for the section's life

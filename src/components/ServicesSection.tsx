@@ -7,6 +7,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { clamp01, pad2 } from "@/lib/format";
 import { ease } from "@/lib/phase";
+import { onLayoutResize } from "@/lib/viewport";
 
 type Service = (typeof SERVICES)[number];
 
@@ -234,8 +235,8 @@ const ServicesScene = () => {
     redo();
     // Panel heights depend on the display font, which may still be loading
     document.fonts?.ready.then(redo);
-    window.addEventListener("resize", redo);
-    return () => window.removeEventListener("resize", redo);
+    const offResize = onLayoutResize(redo);
+    return () => offResize();
     // Draws from refs; p is stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

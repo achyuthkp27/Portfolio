@@ -8,6 +8,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { AwardCard } from "./ui/AwardCard";
 import { PROFILE } from "@/data/profile";
 import { PlatformZoom, ShippingSince } from "./ui/ExperienceScenes";
+import { onLayoutResize } from "@/lib/viewport";
 
 /** Achievements shown per role on phones and tablets before "Show more" */
 const VISIBLE = 3;
@@ -114,10 +115,10 @@ const ExperienceSection = () => {
     // The rail's length follows the roles' height, which changes with fonts, "Show more" and the award
     const ro = new ResizeObserver(update);
     if (box) ro.observe(box);
-    window.addEventListener("resize", update);
+    const offResize = onLayoutResize(update);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", update);
+      offResize();
     };
   }, [update, open]);
 

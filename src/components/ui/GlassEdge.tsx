@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { onLayoutResize } from "@/lib/viewport";
 
 /**
  * A frosted band fixed to the bottom of the viewport, after neiden.framer.media: whatever
  * scrolls under it softens and fades, so the page always ends in glass rather than a
  * hard edge. It steps aside while the work cards or any `data-glass-off` section (the
  * belief, vision and contact scenes) are under it, since those must read unblurred.
- * Pointer events pass through; nothing sits inside it.
+ * Pointer events pass through; nothing sits inside it. Phones get the fade without the blur:
+ * re-blurring everything that scrolls under it, every frame, was too much for them.
  */
 export const GlassEdge = () => {
   const [hidden, setHidden] = useState(false);
@@ -47,18 +49,18 @@ export const GlassEdge = () => {
       if (!pending) pending = window.setTimeout(() => ((pending = 0), observeNew()), 200);
     });
     mo.observe(document.body, { childList: true, subtree: true });
-    addEventListener("resize", build);
+    const offResize = onLayoutResize(build);
     return () => {
       io?.disconnect();
       mo.disconnect();
       window.clearTimeout(pending);
-      removeEventListener("resize", build);
+      offResize();
     };
   }, []);
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 h-24 md:h-32 backdrop-blur-sm md:backdrop-blur-xl [mask-image:linear-gradient(to_top,black_25%,transparent)] [-webkit-mask-image:linear-gradient(to_top,black_25%,transparent)] transition-opacity duration-slow ${hidden ? "opacity-0" : "opacity-100"}`}
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 h-24 md:h-32 [@media(pointer:fine)]:backdrop-blur-xl [mask-image:linear-gradient(to_top,black_25%,transparent)] [-webkit-mask-image:linear-gradient(to_top,black_25%,transparent)] transition-opacity duration-slow ${hidden ? "opacity-0" : "opacity-100"}`}
     >
       <div className="absolute inset-0 bg-gradient-to-t from-night/60 to-transparent" />
     </div>

@@ -7,9 +7,10 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { PROFILE } from "@/data/profile";
 import { clamp01, pad2 as pad } from "@/lib/format";
+import { isTouchFirst } from "@/lib/viewport";
 
 const PRINCIPLES = PROFILE.principles;
 const N = PRINCIPLES.length;
@@ -128,21 +129,24 @@ const Corridor = ({ units }: { units: MotionValue<number> }) => {
   return (
     <div aria-hidden="true" className="absolute inset-0 pointer-events-none [perspective:520px]">
       {/* Floor: laid back from the bottom edge, its far edge fading out at the centre */}
-      <div className="absolute inset-x-0 bottom-0 h-[160vh] origin-bottom [transform:rotateX(90deg)] overflow-hidden [mask-image:linear-gradient(to_top,black_10%,transparent_75%)]">
+      <div className="absolute inset-x-0 bottom-0 h-[160vh] origin-bottom [transform:rotateX(90deg)] overflow-hidden">
         <motion.div style={{ y: toward }} className={`${grid} inset-x-0 -top-[96px] bottom-0`} />
       </div>
       {/* Ceiling */}
-      <div className="absolute inset-x-0 top-0 h-[160vh] origin-top [transform:rotateX(-90deg)] overflow-hidden [mask-image:linear-gradient(to_bottom,black_10%,transparent_75%)]">
+      <div className="absolute inset-x-0 top-0 h-[160vh] origin-top [transform:rotateX(-90deg)] overflow-hidden">
         <motion.div style={{ y: away }} className={`${grid} inset-x-0 top-0 -bottom-[96px]`} />
       </div>
       {/* Left wall */}
-      <div className="absolute inset-y-0 left-0 w-[160vh] origin-left [transform:rotateY(90deg)] overflow-hidden [mask-image:linear-gradient(to_left,transparent_25%,black_90%)]">
+      <div className="absolute inset-y-0 left-0 w-[160vh] origin-left [transform:rotateY(90deg)] overflow-hidden">
         <motion.div style={{ x: away }} className={`${grid} inset-y-0 left-0 -right-[96px]`} />
       </div>
       {/* Right wall */}
-      <div className="absolute inset-y-0 right-0 w-[160vh] origin-right [transform:rotateY(-90deg)] overflow-hidden [mask-image:linear-gradient(to_right,transparent_25%,black_90%)]">
+      <div className="absolute inset-y-0 right-0 w-[160vh] origin-right [transform:rotateY(-90deg)] overflow-hidden">
         <motion.div style={{ x: toward }} className={`${grid} inset-y-0 -left-[96px] right-0`} />
       </div>
+      {/* The far end fades into the dark: one still layer over the vanishing point, in place of a
+          mask on each moving plane, which Safari repaints every frame */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_58%_at_50%_50%,hsl(var(--night))_0%,hsl(var(--night)/0.85)_22%,transparent_60%)]" />
       {/* Where the corridor meets: a soft emerald light at the vanishing point */}
       <div className="absolute left-1/2 top-1/2 w-[46vmin] h-[46vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,hsl(var(--accent-500)/0.16),transparent_65%)]" />
     </div>
@@ -167,6 +171,7 @@ const Principle = ({
   first?: boolean;
   last?: boolean;
 }) => {
+  const touch = useMemo(isTouchFirst, []);
   // t runs 0 → 1 across this principle's unit: approach 0–0.3, a long hold 0.3–0.75, pass 0.75–1
   const t = useTransform(units, (u) => {
     const v = u - index;
@@ -186,7 +191,8 @@ const Principle = ({
     return 1 - clamp01((v - 0.82) / 0.12);
   });
   // "none" at rest: WebKit clips a filtered element's glyphs to its box, which cut the descenders
-  const blur = useTransform(t, (v) => (v > 0.8 ? `blur(${clamp01((v - 0.8) / 0.16) * 10}px)` : "none"));
+  // Phones skip the blur: an animated filter on type this large stalls their scrolling
+  const blur = useTransform(t, (v) => (v > 0.8 && !touch ? `blur(${clamp01((v - 0.8) / 0.16) * 10}px)` : "none"));
   const noteOpacity = useTransform(t, (v) =>
     v < 0.28 || v > 0.8 ? 0 : Math.min(clamp01((v - 0.28) / 0.08), clamp01((0.8 - v) / 0.06)),
   );

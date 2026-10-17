@@ -81,14 +81,6 @@
 
   body {
     @apply bg-night text-snow antialiased;
-    /* One hairline grid under the whole page, fixed to the screen so it runs on unbroken from
-       section to section; any section without a background of its own sits on it. The scenes
-       that draw their own grid use the same cell, a twelfth of the width (a sixth on phones). */
-    background-image:
-      linear-gradient(to right, hsl(0 0% 100% / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(0 0% 100% / 0.045) 1px, transparent 1px);
-    background-size: calc(100vw / 6) calc(100vw / 6);
-    background-attachment: fixed;
     font-family: var(--font-body);
     font-weight: 400;
     /* No overflow on body: it must not become a scroll container, or position: sticky
@@ -99,8 +91,25 @@
     font-feature-settings: "ss01", "cv11";
   }
 
+  /* One hairline grid under the whole page, fixed to the screen so it runs on unbroken from
+     section to section; any section without a background of its own sits on it. The scenes that
+     draw their own grid use the same cell, a twelfth of the width (a sixth on phones). It is its
+     own fixed layer, not a fixed background: browsers repaint a fixed background on every scroll
+     frame, a layer they just leave in place. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, hsl(0 0% 100% / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(0 0% 100% / 0.045) 1px, transparent 1px);
+    background-size: calc(100vw / 6) calc(100vw / 6);
+    transform: translateZ(0);
+  }
   @media (min-width: 768px) {
-    body {
+    body::before {
       background-size: calc(100vw / 12) calc(100vw / 12);
     }
   }
@@ -450,6 +459,26 @@
   .reveal .rv-u {
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+/* Phones and tablets: text fades up as one block, with no blur and no letter-by-letter writing.
+   Every blurred block waiting below the fold is its own filter layer, and hundreds of letters
+   animating at once as a section arrives competed with the scroll for frames, even on fast phones. */
+@media (pointer: coarse) {
+  .reveal {
+    filter: none;
+  }
+  .reveal .rv-u {
+    animation: none;
+  }
+}
+/* Phones and tablets: no frosted blur. Each blur is redrawn every frame as the page scrolls under
+   it; the nav's background is near solid anyway, so it reads the same without. */
+@media (pointer: coarse) {
+  [class*="backdrop-blur"],
+  [style*="backdrop-filter"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 }
 /* Low-end machines: no frosted blur (the bottom glass band, the nav, the award card, overlays). Each

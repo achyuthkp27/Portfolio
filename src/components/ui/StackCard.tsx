@@ -1,6 +1,7 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useSmoothScroll } from "@/context/smoothScroll";
+import { onLayoutResize } from "@/lib/viewport";
 
 /** The dashed rule the stacked sections share */
 export const DASH = "border-dashed border-snow/[0.12]";
@@ -138,10 +139,10 @@ export const StackCard = ({ index, id, children }: { index: number; id?: string;
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
-    window.addEventListener("resize", fit);
+    const offResize = onLayoutResize(fit);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", fit);
+      offResize();
     };
   }, []);
   return (

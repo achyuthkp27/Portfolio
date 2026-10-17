@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { isTouchFirst } from "@/lib/viewport";
 
 /** Sections the grain leaves clean, by id */
 const CLEAR = ["about"];
@@ -12,7 +13,9 @@ export const FilmGrain = () => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    // Phones keep the grain whole: re-cutting a full-screen mask on every scroll frame made iOS
+    // repaint the whole screen as it scrolled
+    if (!el || isTouchFirst()) return;
     let raf = 0;
     let last = "";
     const paint = () => {

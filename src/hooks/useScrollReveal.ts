@@ -77,6 +77,9 @@ export function useScrollReveal(root: RefObject<HTMLElement | null>) {
     const host = root.current;
     if (!host) return;
     if (prefersReducedMotion()) return;
+    // Phones and tablets reveal each block as a whole (see index.css), so their text is left
+    // unsplit: thousands of letter spans were weight the page carried for nothing
+    const whole = window.matchMedia("(pointer: coarse)").matches;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -103,8 +106,8 @@ export function useScrollReveal(root: RefObject<HTMLElement | null>) {
       const index = siblings.indexOf(el);
       el.style.setProperty("--reveal-delay", `${Math.min(index * STAGGER_MS, MAX_DELAY_MS)}ms`);
       // Split the element's own text, or the static text leaves inside it
-      let units = split(el);
-      if (units === 0) {
+      let units = whole ? 0 : split(el);
+      if (units === 0 && !whole) {
         el.querySelectorAll<HTMLElement>(SPLIT_LEAVES).forEach((leaf) => {
           units += split(leaf);
         });
