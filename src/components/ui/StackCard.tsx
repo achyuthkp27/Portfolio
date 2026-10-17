@@ -219,7 +219,7 @@ export const StackTile = ({
       />
     )}
     {children}
-    {caption && <p className="absolute left-5 bottom-5 right-5 t-figure text-[11px] text-snow/50">{caption}</p>}
+    {caption && <p className="absolute left-5 bottom-5 right-5 t-figure text-[13px] text-snow/50">{caption}</p>}
   </div>
 );
 
@@ -238,9 +238,9 @@ export const StackTags = ({ items }: { items: readonly string[] }) => (
 export const StackIntro = ({ label, title, children }: { label: string; title: ReactNode; children: ReactNode }) => (
   <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pt-24 lg:pt-32 pb-16 lg:pb-20">
     <p className="t-label mb-10 lg:mb-14">{label}</p>
-    <div className="grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 items-end">
-      <h2 className="t-statement text-5xl md:text-7xl lg:text-[5.5rem]">{title}</h2>
-      <div className="t-body text-snow/60 text-[17px] md:text-[19px] max-w-md xl:justify-self-end">{children}</div>
-    </div>
+    {/* The title set large, each line whole on wide screens, with room between lines for the
+        comma's tail; the note follows under it from the same edge */}
+    <h2 className="t-statement text-[clamp(2.6rem,6.6vw,7.5rem)] leading-[1.02] text-balance">{title}</h2>
+    <div className="mt-8 lg:mt-10 t-body text-snow/70 text-[17px] md:text-[19px] max-w-xl">{children}</div>
   </div>
 );

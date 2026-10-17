@@ -20,7 +20,7 @@ test("home page renders the splash screen, then the site", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("work shows every project as a stacked card", async ({ page }) => {
+test("work shows every project on the deck", async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto("./");
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
@@ -29,7 +29,9 @@ test("work shows every project as a stacked card", async ({ page }) => {
   await page.locator("#work").first().scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "AegisAI" })).toBeAttached({ timeout: 15_000 });
   await expect(page.locator("#case-card-tokenization")).toBeAttached();
-  await expect(page.locator("#work ol > li")).toHaveCount(11);
+  // Eleven projects on six cards: related ones share a card
+  await expect(page.locator("#work ol > li")).toHaveCount(6);
+  await expect(page.locator("#work ol h3")).toHaveCount(11);
   expect(errors).toEqual([]);
 });
 

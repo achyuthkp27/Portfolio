@@ -1,115 +1,79 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useReducedMotionConfig } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ArrowUpRight } from "lucide-react";
 import { projectBySlug, WORK, type Project } from "@/data/projects";
 import { PROFILE } from "@/data/profile";
-import { pad2 } from "@/lib/format";
 import { ExternalLink } from "./ui/ExternalLink";
-import { StackBody, StackCard, StackHead, StackIntro, StackMiddle, StackTags, StackTile } from "./ui/StackCard";
+import { StackIntro } from "./ui/StackCard";
+import { StoryDialog, WorkCard } from "./ui/WorkCard";
+import { WorkScene } from "./ui/WorkScene";
 
 /** Every project, in order: the banking systems first, then applied AI, then VoxOs */
 const ORDER = [...WORK.banking, ...WORK.ai, WORK.spotlight];
-
-const SourceLink = ({ href }: { href: string }) => (
-  <ExternalLink
-    href={href}
-    className="relative inline-flex items-center gap-1.5 rounded-pill bg-emerald-400 text-night px-3.5 py-1.5 text-[13px] font-medium hover:bg-emerald-300 transition-colors duration-fast before:absolute before:content-[''] before:-inset-y-[7px] before:inset-x-0"
-  >
-    Source <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-  </ExternalLink>
-);
-
-/** Problem, approach and outcome, where there is something specific and true to say */
-const Story = ({ study }: { study: Project }) => {
-  // Phones fold the story behind one tap so eleven cards don't make an endless page; md and up show it
-  const [open, setOpen] = useState(false);
-  const parts = (
-    [
-      ["Problem", study.problem],
-      ["Approach", study.solution],
-      ["Outcome", study.outcome],
-    ] as const
-  ).filter(([, detail]) => detail);
-  if (!parts.length) return null;
-  const id = `story-${study.slug}`;
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-controls={id}
-        className="md:hidden mt-3 py-3 inline-flex items-center gap-2 t-figure text-[12px] uppercase tracking-[0.16em] text-emerald-300"
-      >
-        {open ? "Hide the build" : "How it was built"}
-        <span aria-hidden="true">{open ? "−" : "+"}</span>
-      </button>
-      <dl id={id} className={`mt-6 space-y-4 ${open ? "" : "hidden"} md:block`}>
-        {parts.map(([term, detail]) => (
-          <div key={term}>
-            <dt className="t-figure text-[11px] uppercase tracking-[0.16em] text-muted">{term}</dt>
-            <dd className="mt-1 text-[15px] leading-relaxed text-snow/75">{detail}.</dd>
-          </div>
-        ))}
-      </dl>
-    </>
-  );
-};
+/** How the deck shares cards: related projects sit on one card, in the same order */
+const GROUPS = [
+  ["card-tokenization", "virtual-cards-google-pay"],
+  ["duplicate-alerts-race-condition"],
+  ["multi-region-apis", "corporate-banking-microservices"],
+  ["totp-authentication-system", "elk-observability-rollout"],
+  ["llm-banking-chatbot", "aegis-ai", "kairo-offline-ai-bank"],
+  ["voxos"],
+];
 
 /**
- * (Selected work), in the same card stack as Experience: a short header,
- * then one card per project — number, category and title; the project's mark; then what it
- * is, its story, stack and source. Each card pins and the next slides over it.
+ * (Selected work): a short header, then the WORK capsule that opens into a wall of letters,
+ * with the projects stacking up over it as a deck, related ones sharing a card. Each project
+ * carries its title, what it is, stack and source; "How it was built" opens its story.
+ * Reduced motion, and screens too short for the deck, get the same cards as a plain grid with
+ * the story printed in each.
  */
-const WorkSection = () => (
-  <section id="work" className="theme-dark text-snow relative scroll-mt-16">
-    <StackIntro
-      label="My work"
-      title={
-        <>
-          Systems that move money,
-          <br />
-          and the AI on top.
-        </>
-      }
-    >
-      <p>
-        The card, payment, and alerting systems I have built at a bank, then AI I&apos;ve shipped there and built on my
-        own time. <span className="text-snow">Client specifics are generalised and no metrics are invented.</span>
-      </p>
-      <ExternalLink
-        href={PROFILE.links.github}
-        className="mt-2 py-3 inline-flex items-center gap-1.5 t-figure text-xs uppercase tracking-[0.18em] text-snow/70 hover:text-snow transition-colors"
-      >
-        All code on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-      </ExternalLink>
-    </StackIntro>
+const WorkSection = () => {
+  const reduceMotion = useReducedMotionConfig();
+  // A phone on its side is too short for the pinned deck: it gets the plain list of cards
+  const short = useMediaQuery("(max-height: 560px)");
+  const [story, setStory] = useState<Project | null>(null);
+  const closeStory = useCallback(() => setStory(null), []);
+  const studies = ORDER.map(projectBySlug);
+  const groups = GROUPS.map((slugs) => slugs.map(projectBySlug));
 
-    <ol>
-      {ORDER.map(projectBySlug).map((study, i) => (
-        <StackCard key={study.slug} index={i} id={`case-${study.slug}`}>
-          <StackHead
-            kicker={`${pad2(i + 1)} · ${study.category ?? "Backend"}`}
-            title={study.cardTitle ?? study.title}
-            foot={study.origin && <p className="mt-3 t-figure text-[12px] text-emerald-300">{study.origin}</p>}
-          />
-          <StackMiddle>
-            <StackTile icon={study.icon} caption={study.tags.slice(0, 3).join(" · ")} />
-          </StackMiddle>
-          <StackBody>
-            <p className="t-figure text-[12px] text-muted">What it is</p>
-            <p className="mt-3 text-[18px] md:text-[20px] leading-snug text-snow">{study.description}</p>
-            <Story study={study} />
-            <StackTags items={study.tags} />
-            {study.repo && (
-              <div className="mt-6">
-                <SourceLink href={study.repo} />
-              </div>
-            )}
-          </StackBody>
-        </StackCard>
-      ))}
-    </ol>
-  </section>
-);
+  return (
+    <section id="work" className="theme-dark text-snow relative scroll-mt-16">
+      <StackIntro
+        label="My work"
+        title={
+          <>
+            Systems that move money,
+            <br className="hidden md:block" /> and the AI on top.
+          </>
+        }
+      >
+        <p>
+          The card, payment, and alerting systems I have built at a bank, then AI I&apos;ve shipped there and built on
+          my own time. <span className="text-snow">Client specifics are generalised and no metrics are invented.</span>
+        </p>
+        <ExternalLink
+          href={PROFILE.links.github}
+          className="mt-2 py-3 inline-flex items-center gap-1.5 t-figure text-xs uppercase tracking-[0.18em] text-snow/70 hover:text-snow transition-colors"
+        >
+          All code on GitHub <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+        </ExternalLink>
+      </StackIntro>
+
+      {reduceMotion || short ? (
+        <ol className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 pb-24 lg:pb-32 grid lg:grid-cols-2 gap-x-8 gap-y-12">
+          {studies.map((study, i) => (
+            <li key={study.slug} id={`case-${study.slug}`} className="scroll-mt-24">
+              <WorkCard study={study} index={i} total={studies.length} inline />
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <WorkScene groups={groups} onOpen={setStory} />
+      )}
+      <StoryDialog study={story} onClose={closeStory} />
+    </section>
+  );
+};
 
 export default WorkSection;
