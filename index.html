@@ -23,7 +23,7 @@
 <meta property="og:description" data-rh="true"
   content="Software Engineer behind Card on File tokenization, virtual cards, and the first Google Pay launch in Trinidad and Tobago, plus a production LLM banking assistant." />
 <meta property="og:site_name" content="Achyuth KP" />
-<meta property="og:image" data-rh="true" content="https://achyuthkp27.github.io/Portfolio/og-image.jpg" />
+<meta property="og:image" data-rh="true" content="https://achyuthkp27.github.io/Portfolio/og-image.jpg?v=2" />
 
 <!-- Twitter -->
 <meta name="twitter:card" data-rh="true" content="summary_large_image" />
@@ -31,7 +31,7 @@
 <meta name="twitter:title" data-rh="true" content="Achyuth KP | Software Engineer" />
 <meta name="twitter:description" data-rh="true"
   content="Software Engineer behind Card on File tokenization, virtual cards, and the first Google Pay launch in Trinidad and Tobago, plus a production LLM banking assistant." />
-<meta name="twitter:image" data-rh="true" content="https://achyuthkp27.github.io/Portfolio/og-image.jpg" />
+<meta name="twitter:image" data-rh="true" content="https://achyuthkp27.github.io/Portfolio/og-image.jpg?v=2" />
 
 <!-- Structured data for search engines (visible without JavaScript) -->
 <script type="application/ld+json">
@@ -67,6 +67,9 @@
 <!-- Fonts are self-hosted (src/assets/fonts.css). Antonio is preloaded: the splash's words are set in it,
      so they paint in the right face from the first frame. The rest load as text needs them. -->
 <link rel="preload" href="/src/assets/fonts/antonio-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- The hero photo is the first screen's main image, but it is only requested once the page's script
+     has built the hero; preloading starts it with the page, so it is in by the time the splash lifts. -->
+<link rel="preload" href="/images/avatar-cutout.webp" as="image" type="image/webp" fetchpriority="high">
 
 <style>
   /* Critical CSS — inlined to unblock FCP */

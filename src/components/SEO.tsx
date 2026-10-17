@@ -22,7 +22,7 @@ const DEFAULT_DESCRIPTION =
 const SEO = ({
   title = DEFAULT_TITLE,
   description = DEFAULT_DESCRIPTION,
-  image = `${SITE_URL}og-image.jpg`,
+  image = `${SITE_URL}og-image.jpg?v=2`,
   url = SITE_URL,
   type = "website",
 }: SEOProps) => {
