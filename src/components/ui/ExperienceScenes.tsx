@@ -5,7 +5,7 @@ import ExperienceTimer from "./ExperienceTimer";
 import { PROFILE } from "@/data/profile";
 import { clamp01, pad2 } from "@/lib/format";
 import { phase } from "@/lib/phase";
-import { onLayoutResize } from "@/lib/viewport";
+import { isTouchFirst, onLayoutResize } from "@/lib/viewport";
 
 const base = import.meta.env.BASE_URL;
 
@@ -23,6 +23,8 @@ const TEXT_VANISH = SUN_ABOVE;
 const ROW = 0.108;
 /** The floor is drawn in rows this many px tall; thinner reads smoother */
 const FLOOR_STEP = 2;
+/** Phones draw the floor in coarser rows: a third fewer draws per frame, still smooth at their density */
+const FLOOR_STEP_TOUCH = 3;
 /** The floor runs up until the words would be down to a sixteenth of their size */
 const FLOOR_END = 0.94;
 /** Enough lines for the floor, both walls and the ceiling on any screen */
@@ -44,6 +46,19 @@ const LINES_RUN = 0.28;
 /** The words come in from WORDS_FROM, once the lines are down, sliding WORDS_TRAVEL viewport heights down the floor */
 const WORDS_FROM = 0.68;
 const WORDS_TRAVEL = 0.35;
+
+/** Writes a style only when it changes, so a scroll frame that leaves an element as it was costs nothing */
+const written = new WeakMap<Element, Record<string, string>>();
+const put = (el: HTMLElement | SVGElement, prop: string, value: string) => {
+  const seen = written.get(el) ?? {};
+  if (seen[prop] === value) return;
+  seen[prop] = value;
+  written.set(el, seen);
+  el.style.setProperty(
+    prop.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`),
+    value,
+  );
+};
 
 const wallGrid =
   "[background-image:linear-gradient(to_right,hsl(0_0%_100%/0.16)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_100%/0.16)_1px,transparent_1px)]";
@@ -82,10 +97,11 @@ export const ShippingSince = () => {
   const floorCanvas = useRef<HTMLCanvasElement>(null);
   // The words drawn once, at the screen's width, for the floor to sample
   const picture = useRef<HTMLCanvasElement | null>(null);
+  const touch = useRef(isTouchFirst());
   const wallWords = useRef<HTMLDivElement | null>(null);
   const topWall = useRef<HTMLDivElement>(null);
   const bottomWall = useRef<HTMLDivElement>(null);
-  const rayGroup = useRef<SVGGElement>(null);
+  const rays_ = useRef<SVGSVGElement>(null);
   const rays = useRef<(SVGPolylineElement | null)[]>([]);
   const sun = useRef<HTMLDivElement>(null);
   // Sizes that only change with the screen: set by `layout`, read by every `draw`
@@ -115,6 +131,12 @@ export const ShippingSince = () => {
     // and the ceiling's columns, each from the sun out to where it meets the near edge
     const sunY = -SUN_ABOVE * H;
     const ceiling = -(SUN_ABOVE + CEILING_ABOVE) * H;
+    // The lines sit between the ceiling and the crease; the drawing is sized to that band and
+    // moved as one layer (see draw), so a scroll frame never redraws it
+    if (rays_.current) {
+      rays_.current.setAttribute("viewBox", `0 ${ceiling - 2} ${W} ${-ceiling + 4}`);
+      rays_.current.style.height = `${-ceiling + 4}px`;
+    }
     const columns: number[] = [];
     for (let i = -Math.floor(cx / cell + 1e-6); cx + i * cell <= W + 1e-6; i++) columns.push(cx + i * cell);
     const ends: [number, number][] = [];
@@ -191,26 +213,27 @@ export const ShippingSince = () => {
     const { W, H, dpr, block } = geo.current;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, fc.width, fc.height);
-    fc.style.opacity = String(come);
+    put(fc, "opacity", come.toFixed(3));
     const pic = picture.current;
     if (!pic || !come || !block) return;
     const D = TEXT_VANISH * H;
     const cx = W / 2;
     const u = (g: number) => -D * Math.log(1 - g / D);
-    for (let g = 0; g < FLOOR_END * D; g += FLOOR_STEP) {
+    const step = touch.current ? FLOOR_STEP_TOUCH : FLOOR_STEP;
+    for (let g = 0; g < FLOOR_END * D; g += step) {
       const yBottom = crease - g;
-      const yTop = yBottom - FLOOR_STEP;
+      const yTop = yBottom - step;
       if (yBottom < 0) break;
       if (yTop > H) continue;
       // Picture rows for this screen row: the far edge (higher up) is nearer the words' top
-      const from = top - u(g + FLOOR_STEP);
+      const from = top - u(g + step);
       const to = top - u(g);
       const a = Math.max(0, from);
       const b = Math.min(block, to);
       if (b <= a) continue;
-      const s = 1 - (g + FLOOR_STEP / 2) / D;
-      const y0 = yTop + ((a - from) / (to - from)) * FLOOR_STEP;
-      const y1 = yTop + ((b - from) / (to - from)) * FLOOR_STEP;
+      const s = 1 - (g + step / 2) / D;
+      const y0 = yTop + ((a - from) / (to - from)) * step;
+      const y1 = yTop + ((b - from) / (to - from)) * step;
       ctx.drawImage(
         pic,
         0,
@@ -248,17 +271,30 @@ export const ShippingSince = () => {
     if (wallWords.current) wallWords.current.style.transform = `translateY(${-top}px)`;
     drawFloor(crease, top, come);
     if (topWall.current)
-      topWall.current.style.transform = `translateY(${crease - (SUN_ABOVE + CEILING_ABOVE + 2) * H}px)`;
-    if (bottomWall.current) bottomWall.current.style.transform = `translateY(${crease}px)`;
-    rayGroup.current?.setAttribute("transform", `translate(0 ${crease})`);
+      put(
+        topWall.current,
+        "transform",
+        `translate3d(0, ${(crease - (SUN_ABOVE + CEILING_ABOVE + 2) * H).toFixed(1)}px, 0)`,
+      );
+    if (bottomWall.current) put(bottomWall.current, "transform", `translate3d(0, ${crease.toFixed(1)}px, 0)`);
+    if (rays_.current)
+      put(
+        rays_.current,
+        "transform",
+        `translate3d(0, ${(crease - (SUN_ABOVE + CEILING_ABOVE) * H - 2).toFixed(1)}px, 0)`,
+      );
     rays.current.forEach((line, i) => {
       if (!line || stagger[i] === undefined) return;
       const from = LINES_FROM + stagger[i] * LINES_STAGGER;
-      line.style.strokeDashoffset = String(1 - phase(e, from, from + LINES_RUN));
+      put(line, "strokeDashoffset", (1 - phase(e, from, from + LINES_RUN)).toFixed(4));
     });
     if (sun.current) {
-      sun.current.style.transform = `translate(-50%, -50%) translate(${W / 2}px, ${crease - SUN_ABOVE * H}px) scale(${0.4 + 0.6 * rise})`;
-      sun.current.style.opacity = String(rise);
+      put(
+        sun.current,
+        "transform",
+        `translate(-50%, -50%) translate3d(${W / 2}px, ${(crease - SUN_ABOVE * H).toFixed(1)}px, 0) scale(${(0.4 + 0.6 * rise).toFixed(4)})`,
+      );
+      put(sun.current, "opacity", rise.toFixed(3));
     }
   };
 
@@ -283,8 +319,8 @@ export const ShippingSince = () => {
       <p className="sr-only">Shipping since 2021</p>
       <div ref={stage} aria-hidden="true" className="sticky top-0 h-screen overflow-hidden bg-night">
         {/* The tunnel's lines, all running to the sun */}
-        <svg className="absolute inset-0 w-full h-full">
-          <g ref={rayGroup}>
+        <svg ref={rays_} className="absolute left-0 top-0 w-full will-change-transform">
+          <g>
             {Array.from({ length: RAY_SLOTS }, (_, i) => (
               <polyline
                 key={i}
@@ -305,11 +341,11 @@ export const ShippingSince = () => {
         {/* The wall over the ceiling, ending in the fold, and the wall under the crease */}
         <div
           ref={topWall}
-          className={`absolute inset-x-0 top-0 h-[200vh] bg-night border-b border-white/20 ${wallGrid}`}
+          className={`will-change-transform absolute inset-x-0 top-0 h-[200vh] bg-night border-b border-white/20 ${wallGrid}`}
         />
         <div
           ref={bottomWall}
-          className={`absolute inset-x-0 top-0 h-[200vh] bg-night border-t border-white/20 ${wallGrid}`}
+          className={`will-change-transform absolute inset-x-0 top-0 h-[200vh] bg-night border-t border-white/20 ${wallGrid}`}
         />
         <div
           ref={sun}

@@ -6,7 +6,7 @@ import { clamp01 } from "@/lib/format";
 import { phase } from "@/lib/phase";
 import { DotField } from "./DotField";
 import { WorkCard, WorkGroupCard } from "./WorkCard";
-import { onLayoutResize } from "@/lib/viewport";
+import { isTouchFirst, onLayoutResize } from "@/lib/viewport";
 
 const WORD = ["W", "O", "R", "K"] as const;
 /** Screens of scroll before the first card faces you: the capsule rises, opens, and becomes the wall */
@@ -68,6 +68,21 @@ const measure = (): Layout => {
   };
 };
 
+/** Writes a style only when it changes: a scroll frame that leaves an element as it was costs nothing */
+const written = new WeakMap<HTMLElement, Record<string, string>>();
+const put = (el: HTMLElement, prop: string, value: string) => {
+  const seen = written.get(el) ?? {};
+  if (seen[prop] === value) return;
+  seen[prop] = value;
+  written.set(el, seen);
+  if (prop.startsWith("--")) el.style.setProperty(prop, value);
+  else
+    el.style.setProperty(
+      prop.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`),
+      value,
+    );
+};
+
 /** Where card i lands on the deck, in screens from the top of the scene */
 const momentOf = (i: number) => OPEN + i * GAP;
 
@@ -86,6 +101,9 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   const track = useRef<HTMLDivElement>(null);
   const capsule = useRef<HTMLDivElement>(null);
   const wall = useRef<HTMLDivElement>(null);
+  // The window WORK shows through while the capsule rises, and its counter-moving contents
+  const reveal = useRef<HTMLDivElement>(null);
+  const revealInner = useRef<HTMLDivElement>(null);
   const gridLayer = useRef<HTMLDivElement>(null);
   const dotLayer = useRef<HTMLDivElement>(null);
   const letters = useRef<(HTMLSpanElement | null)[][]>([[], [], [], []]);
@@ -95,6 +113,10 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
   // On a short screen the deck is scaled to fit between the nav and the foot.
   const deckTop = useRef(0);
   const deckFit = useRef(1);
+  // Phones: the letters stop swaying once the wall stands, and stacked cards slide and darken
+  // without shrinking. A card that changes scale is drawn again in full each frame on iOS, and
+  // 28 swaying 3D letters behind it took the frames the deck needed.
+  const still = useRef(isTouchFirst());
   const [layout, setLayout] = useState<Layout>(measure);
   const layoutRef = useRef(layout);
   layoutRef.current = layout;
@@ -129,20 +151,25 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
     // The wall grows to fill the screen once it has flattened, and keeps swaying while the cards pass
     const spread = phase(o, 1.0, 1.5);
     const curve = 1 - phase(o, 1.55, 2.05);
-    const sway = phase(o, 2.2, 2.7);
+    const sway = still.current ? 0 : phase(o, 2.2, 2.7);
     if (wall.current) {
-      wall.current.style.transform = `scale(${1 + phase(o, 2.0, 2.5) * (L.wallScale - 1)})`;
-      // WORK stands in place from the start and shows only inside the rising capsule: a hard edge
-      // at the capsule's top wipes it into view. The edge goes once the capsule has stopped, so
-      // nothing is clipped at rest.
-      const edge = H / 2 + capY - capH / 2 + 14;
-      const wipe = o < SETTLED ? `linear-gradient(to bottom, transparent ${edge}px, #000 ${edge + 1}px)` : "none";
-      wall.current.style.maskImage = wipe;
-      wall.current.style.webkitMaskImage = wipe;
+      put(wall.current, "transform", `scale(${1 + phase(o, 2.0, 2.5) * (L.wallScale - 1)})`);
+
       // The outline copies step back while the projects pass, so the card in front is what you read
       const calm = phase(s, OPEN - 0.7, OPEN - 0.2) * (1 - phase(s, foldFrom, foldFrom + 0.3));
-      wall.current.style.setProperty("--wall-ink", String(0.42 - 0.27 * calm));
+      put(wall.current, "--wall-ink", (0.42 - 0.27 * calm).toFixed(3));
     }
+    // WORK stands in place from the start and shows only inside the rising capsule. A window
+    // rides up with the capsule's top edge while its contents move the other way, so the letters
+    // hold still and are wiped into view from the bottom up: two moving layers, nothing redrawn.
+    // Once the capsule stops, the wall's own copy takes over and nothing is clipped at rest.
+    const rising = o < SETTLED;
+    const edge = H / 2 + capY - capH / 2 + 14;
+    if (reveal.current) {
+      put(reveal.current, "opacity", rising ? "1" : "0");
+      put(reveal.current, "transform", `translate(-50%, ${edge.toFixed(1)}px)`);
+    }
+    if (revealInner.current) put(revealInner.current, "transform", `translateY(${(-edge).toFixed(1)}px)`);
     letters.current.forEach((row, r) =>
       row.forEach((el, i) => {
         if (!el) return;
@@ -154,13 +181,13 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
         const z = radius * (Math.cos(phi) - 1) * curve;
         const turn = (phi * 180 * curve) / Math.PI + sway * Math.sin(s * 2.2 + k * 0.6 + r * 0.9) * 16;
         const y = (r - 1.5) * rowGap + sway * Math.sin(s * 1.7 + k * 0.45 + r) * font * 0.06;
-        el.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px) rotateY(${turn}deg)`;
-        if (k === 0) {
-          // Always there; the capsule's edge decides what shows
-          el.style.opacity = "1";
-        } else {
-          el.style.opacity = String(clamp01(spread * 1.6 - Math.abs(a) * 0.15));
-        }
+        put(
+          el,
+          "transform",
+          `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${turn.toFixed(2)}deg)`,
+        );
+        // The centre column shows through the capsule's window while it rises, then stands here
+        put(el, "opacity", k === 0 ? (rising ? "0" : "1") : clamp01(spread * 1.6 - Math.abs(a) * 0.15).toFixed(3));
       }),
     );
 
@@ -176,19 +203,20 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
       const depth = Math.max(0, (s - m) / GAP);
       const shown = (enter > 0 ? 1 : 0) * (1 - phase(depth, DECK, DECK + 1)) * (1 - exit);
       // Out of view it stays rendered but invisible, so its controls are still in the tab order
-      el.style.opacity = String(shown);
+      put(el, "opacity", shown.toFixed(3));
       if (!shown) {
-        el.style.pointerEvents = "none";
+        put(el, "pointerEvents", "none");
         return;
       }
       const stack = Math.min(depth, DECK + 1);
       const top = deckTop.current;
       const y = (1 - enter) * (L.H - top + 40) + top - stack * PEEK - exit * L.H * 0.5;
-      el.style.transform = `translate(-50%, ${y}px) scale(${(1 - 0.05 * stack) * deckFit.current})`;
-      el.style.zIndex = String(i + 1);
-      el.style.pointerEvents = enter > 0.95 && depth < 0.5 && exit < 0.5 ? "auto" : "none";
+      const scale = (still.current ? 1 : 1 - 0.05 * stack) * deckFit.current;
+      put(el, "transform", `translate(-50%, ${y.toFixed(1)}px) scale(${scale.toFixed(4)})`);
+      put(el, "zIndex", String(i + 1));
+      put(el, "pointerEvents", enter > 0.95 && depth < 0.5 && exit < 0.5 ? "auto" : "none");
       const shade = shades.current[i];
-      if (shade) shade.style.opacity = String(Math.min(0.6, depth * 0.24));
+      if (shade) put(shade, "opacity", Math.min(0.6, depth * 0.24).toFixed(3));
     });
   };
 
@@ -268,8 +296,35 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
           className="absolute left-1/2 top-1/2 rounded-full border border-emerald-400/50 bg-night p-3 shadow-[0_0_0_10px_hsl(var(--night)),0_0_0_11px_hsl(var(--accent-400)/0.35)]"
           style={{ width: capW, height: capH }}
         >
-          <div className="w-full h-full rounded-full overflow-hidden">
-            <DotField gap={22} />
+          <div className="relative w-full h-full rounded-full overflow-hidden">
+            {/* A fixed size, wider than the capsule ever gets, so widening it never resizes the canvas */}
+            <div className="absolute left-1/2 top-0 h-full w-[130vw] -translate-x-1/2">
+              <DotField gap={22} />
+            </div>
+          </div>
+        </div>
+
+        {/* WORK while the capsule rises: a window from the capsule's top edge down, its contents
+            held still against it (see draw) */}
+        <div
+          ref={reveal}
+          aria-hidden="true"
+          className="absolute left-1/2 top-0 h-screen overflow-hidden"
+          style={{ width: capW }}
+        >
+          <div ref={revealInner} className="absolute left-1/2 top-0 h-screen w-screen -ml-[50vw]">
+            {WORD.map((letter, r) => (
+              <span
+                key={letter}
+                style={{
+                  fontSize: font,
+                  transform: `translate(-50%, -50%) translateY(${(r - 1.5) * layout.rowGap}px)`,
+                }}
+                className="absolute left-1/2 top-1/2 font-display font-semibold uppercase leading-none text-emerald-400"
+              >
+                {letter}
+              </span>
+            ))}
           </div>
         </div>
 
