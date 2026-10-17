@@ -10,7 +10,7 @@ import { setMotionOff, useMotionOff } from "@/lib/motionPreference";
 const LINKS = [...SOCIALS, { label: "Résumé", href: `${import.meta.env.BASE_URL}${PROFILE.resume}` }];
 
 const kbd =
-  "inline-flex h-6 min-w-6 items-center justify-center rounded-sm border border-line px-1.5 font-mono text-[11px] leading-none text-snow/80";
+  "inline-flex h-6 min-w-6 items-center justify-center rounded-sm border border-line px-1.5 font-mono text-[13px] leading-none text-snow/80";
 
 /**
  * Footer: wordmark, the social links, scroll to top, then copyright, then the name at
@@ -36,7 +36,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 py-8 border-t border-line">
           <button type="button" onClick={backToTop} className="t-heading text-2xl flex items-baseline gap-1.5">
             {PROFILE.first} <span className="text-muted">{PROFILE.last}</span>
-            <span className="t-figure text-[10px] text-muted -translate-y-2" aria-hidden="true">
+            <span className="t-figure text-[12px] text-muted -translate-y-2" aria-hidden="true">
               ©
             </span>
           </button>

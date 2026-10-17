@@ -130,7 +130,7 @@ const Navigation = () => {
 
   const resumeHref = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   const link = (active: boolean) =>
-    `group/link relative block py-3 -my-3 before:absolute before:content-[''] before:-inset-y-1 before:inset-x-0 font-body text-[11px] font-semibold uppercase tracking-[0.28em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
+    `group/link relative block py-3 -my-3 before:absolute before:content-[''] before:-inset-y-1 before:inset-x-0 font-body text-[12px] font-semibold uppercase tracking-[0.24em] leading-[1.2] transition-colors duration-fast ${active ? "text-snow" : "text-snow/70 hover:text-snow"}`;
 
   return (
     <>
@@ -194,6 +194,7 @@ const Navigation = () => {
             <button
               type="button"
               onClick={() => goTo("contact")}
+              data-magnetic
               className="relative hidden md:inline-flex items-center h-9 px-5 rounded-full before:absolute before:content-[''] before:-inset-y-[5px] before:inset-x-0 bg-emerald-400 text-black text-[12px] font-semibold tracking-[0.12em] hover:bg-emerald-300 transition-colors duration-fast"
             >
               Let's talk

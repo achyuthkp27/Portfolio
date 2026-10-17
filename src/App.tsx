@@ -24,6 +24,7 @@ const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 const Analytics =
   import.meta.env.PROD && import.meta.env.VITE_POSTHOG_KEY ? lazy(() => import("@/components/Analytics")) : null;
 const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
+const Cursor = lazy(() => import("@/components/ui/Cursor"));
 import { GlassEdge } from "@/components/ui/GlassEdge";
 const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
 // Only the shortcut and open state load up front; the menu's panel (cmdk) is its own chunk
@@ -114,6 +115,18 @@ const DeferredAnalytics = () => {
   );
 };
 
+/** The custom cursor takes over as soon as the splash is gone, on desktop only */
+const CursorAfterSplash = () => {
+  const { isLoading } = useLoading();
+  const isMobile = useMobile();
+  if (isLoading || isMobile) return null;
+  return (
+    <Suspense fallback={null}>
+      <Cursor />
+    </Suspense>
+  );
+};
+
 const DeferredExperience = () => {
   const { isLoading } = useLoading();
   const isMobile = useMobile();
@@ -179,6 +192,7 @@ const App = () => {
                   <KeyboardShortcuts />
                   <DeferredAnalytics />
                   <DeferredExperience />
+                  <CursorAfterSplash />
                   <Suspense fallback={null}>
                     <Navigation />
                   </Suspense>

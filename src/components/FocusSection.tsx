@@ -83,7 +83,7 @@ const FocusSection = () => {
             {STATS.map((stat) => (
               <div key={stat.label}>
                 <dd className="t-wordmark leading-none text-5xl md:text-6xl text-[hsl(160_45%_26%)]">{stat.value}</dd>
-                <dt className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[hsl(160_15%_35%)]">
+                <dt className="mt-2 font-mono text-[13px] uppercase tracking-[0.16em] text-[hsl(160_15%_35%)]">
                   {stat.label}
                 </dt>
               </div>
@@ -186,7 +186,7 @@ const Stat = ({
     >
       <p className="t-wordmark leading-none text-[clamp(3.4rem,6.5vw,6.5rem)] text-[hsl(160_45%_26%)]">{stat.value}</p>
       <p
-        className={`mt-3 font-mono text-[11px] md:text-[12px] uppercase tracking-[0.2em] text-[hsl(160_15%_35%)] max-w-[260px] ${stat.side === "left" ? "ml-auto" : ""}`}
+        className={`mt-3 font-mono text-[13px] md:text-[12px] uppercase tracking-[0.2em] text-[hsl(160_15%_35%)] max-w-[260px] ${stat.side === "left" ? "ml-auto" : ""}`}
       >
         {stat.label}
       </p>

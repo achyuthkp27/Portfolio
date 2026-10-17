@@ -64,7 +64,7 @@
   .theme-dark {
     --bg: var(--night);
     --fg: var(--snow);
-    --muted: 0 0% 100% / 0.6;
+    --muted: 0 0% 100% / 0.7;
     --line: 0 0% 100% / 0.12;
     --tile: var(--graphite);
     --tile-fg: var(--snow);
@@ -81,6 +81,14 @@
 
   body {
     @apply bg-night text-snow antialiased;
+    /* One hairline grid under the whole page, fixed to the screen so it runs on unbroken from
+       section to section; any section without a background of its own sits on it. The scenes
+       that draw their own grid use the same cell, a twelfth of the width (a sixth on phones). */
+    background-image:
+      linear-gradient(to right, hsl(0 0% 100% / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(0 0% 100% / 0.045) 1px, transparent 1px);
+    background-size: calc(100vw / 6) calc(100vw / 6);
+    background-attachment: fixed;
     font-family: var(--font-body);
     font-weight: 400;
     /* No overflow on body: it must not become a scroll container, or position: sticky
@@ -89,6 +97,12 @@
     position: relative;
     -webkit-overflow-scrolling: touch;
     font-feature-settings: "ss01", "cv11";
+  }
+
+  @media (min-width: 768px) {
+    body {
+      background-size: calc(100vw / 12) calc(100vw / 12);
+    }
   }
 
   html.lenis,
@@ -113,6 +127,28 @@
   pre,
   kbd {
     font-family: var(--font-mono);
+  }
+
+  /* With the custom cursor on, the system arrow hides; fields you type in keep the text cursor */
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+  html.has-cursor :is(input, textarea, [contenteditable="true"]) {
+    cursor: text !important;
+  }
+
+  /* Nothing on the page can be selected, by the owner's choice; fields you type in still can */
+  html {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   ::selection {

@@ -45,7 +45,7 @@ type PillLinkProps = PillStyleProps & AnchorHTMLAttributes<HTMLAnchorElement>;
 
 export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
   ({ tone = "light", size = "md", className = "", children, arrow = true, ...rest }, ref) => (
-    <button ref={ref} type="button" className={`${pillClass(tone, size)} ${className}`} {...rest}>
+    <button ref={ref} type="button" data-magnetic className={`${pillClass(tone, size)} ${className}`} {...rest}>
       <Label>{children}</Label>
       {arrow && <Arrow />}
     </button>
@@ -55,7 +55,7 @@ PillButton.displayName = "PillButton";
 
 export const PillLink = forwardRef<HTMLAnchorElement, PillLinkProps>(
   ({ tone = "light", size = "md", className = "", children, arrow = true, ...rest }, ref) => (
-    <a ref={ref} className={`${pillClass(tone, size)} ${className}`} {...rest}>
+    <a ref={ref} data-magnetic className={`${pillClass(tone, size)} ${className}`} {...rest}>
       <Label>{children}</Label>
       {arrow && <Arrow />}
     </a>
