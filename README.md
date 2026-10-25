@@ -4,9 +4,9 @@
 
 A personal site for a backend engineer, live at **[achyuthkp27.github.io/Portfolio](https://achyuthkp27.github.io/Portfolio)**.
 
-[![A 60-second tour of the site](public/media/portfolio-video.jpg)](https://achyuthkp27.github.io/Portfolio/media/portfolio-video.mp4)
+https://github.com/user-attachments/assets/05129d46-8ab1-48b7-bc1a-be3742382bd0
 
-▶ [Watch the 60-second tour](https://achyuthkp27.github.io/Portfolio/media/portfolio-video.mp4), with sound. Music: "Cinematic Minimal Orchestral Percussion Trailer" by Gregor Quendel, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+A 60-second tour of the site. Music: "Cinematic Minimal Orchestral Percussion Trailer" by Gregor Quendel, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Five years building card, payment, and authentication systems for First Citizens Bank (Trinidad and Tobago and Barbados): Card on File tokenization, virtual cards and the first Google Pay launch in Trinidad and Tobago, and a production LLM banking assistant. The site is one long scroll story on a dark page grid: Antonio for display, Inter for reading, and emerald as the only accent, used for highlights and never as a background.
 
