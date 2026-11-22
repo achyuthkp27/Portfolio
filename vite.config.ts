@@ -16,7 +16,10 @@ const PAGES_BASE = "/Portfolio/";
 export default defineConfig(({ command, isPreview }) => ({
   base: command === "build" || isPreview ? PAGES_BASE : "/",
   server: {
-    host: "::",
+    // This machine only: listening on every interface made macOS ask, on each start, whether
+    // "node" may accept incoming connections. For a phone on the same Wi-Fi, run
+    // `npm run dev -- --host` to open it to the network for that session.
+    host: "127.0.0.1",
     port: 8080,
   },
   preview: {
