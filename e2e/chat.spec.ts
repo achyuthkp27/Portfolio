@@ -36,7 +36,7 @@ const openChat = async (page: Page) => {
   return { launcher, panel };
 };
 
-test("Ask AI streams an answer whose links jump to the page, and closes with Escape", async ({ page }) => {
+test("Ask AI streams an answer whose links jump to the page", async ({ page }) => {
   await page.route("**/api/chat", (route) =>
     answer(route, "Achyuth is a **Software Engineer**. See his [Experience](section:experience)."),
   );
@@ -49,14 +49,14 @@ test("Ask AI streams an answer whose links jump to the page, and closes with Esc
   await suggestions.first().click();
   await expect(panel.getByText("Tell me about Achyuth.")).toBeVisible();
   await expect(panel.getByText("Software Engineer", { exact: true })).toBeVisible();
-  await expect(panel.getByRole("button", { name: "Experience" })).toBeVisible();
-
-  await page.keyboard.press("Escape");
+  // An in-site link closes the panel and brings its section into view
+  await panel.getByRole("link", { name: "Experience" }).click();
   await expect(panel).toBeHidden();
-  await expect(launcher).toBeFocused();
+  await expect(page.locator("main #experience")).toBeInViewport({ timeout: 10_000 });
+  await expect(launcher).toBeVisible();
 });
 
-test("Ask AI shows the server's error with a retry that recovers", async ({ page }) => {
+test("Ask AI shows the server's error with a retry that recovers, and closes with Escape", async ({ page }) => {
   let calls = 0;
   await page.route("**/api/chat", (route) => {
     calls += 1;
@@ -77,6 +77,10 @@ test("Ask AI shows the server's error with a retry that recovers", async ({ page
 
   await panel.getByRole("button", { name: /Try again/ }).click();
   await expect(panel.getByRole("alert")).toBeHidden();
-  await expect(panel.getByRole("button", { name: "Contact" })).toBeVisible();
+  await expect(panel.getByRole("link", { name: "Contact" })).toBeVisible();
   expect(calls).toBe(2);
+
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(page.getByRole("button", { name: "Ask AI about Achyuth" })).toBeFocused();
 });

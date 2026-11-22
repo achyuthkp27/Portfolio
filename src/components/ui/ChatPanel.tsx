@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useChat } from "@ai-sdk/react";
@@ -185,7 +194,12 @@ const ChatPanel = ({
         </a>
       );
     }
-    const go = () => {
+    // A real link, not a button: it wraps with the text around it (a button wraps as a block),
+    // and a project opens in a new tab with a middle click. A plain click stays in the app.
+    const href = link.kind === "project" ? `#/project/${link.slug}` : "#/";
+    const go = (e: MouseEvent<HTMLAnchorElement>) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
       onClose();
       // After the panel has closed and the page can scroll again
       setTimeout(() => {
@@ -194,9 +208,9 @@ const ChatPanel = ({
       }, 80);
     };
     return (
-      <button key={key} type="button" onClick={go} className={style}>
+      <a key={key} href={href} onClick={go} className={style}>
         {label}
-      </button>
+      </a>
     );
   };
 
