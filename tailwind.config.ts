@@ -40,6 +40,14 @@ export default {
           900: "hsl(var(--accent-900) / <alpha-value>)",
           950: "hsl(var(--accent-950) / <alpha-value>)",
         },
+        // The chat panel's light / dark themes (.chat-light / .chat-dark)
+        chat: {
+          bg: "hsl(var(--chat-bg) / <alpha-value>)",
+          fg: "hsl(var(--chat-fg) / <alpha-value>)",
+          field: "hsl(var(--chat-field) / <alpha-value>)",
+          bubble: "hsl(var(--chat-bubble) / <alpha-value>)",
+          "bubble-fg": "hsl(var(--chat-bubble-fg) / <alpha-value>)",
+        },
         // Legacy names still used by the error page
         background: "hsl(var(--background))",
         destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },

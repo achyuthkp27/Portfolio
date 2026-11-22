@@ -1,0 +1,13 @@
+# Never upload local secrets; Vercel reads the key from its own environment variables
+.env
+.env.*
+!.env.example
+node_modules
+dist
+dev-dist
+test-results
+playwright-report
+.husky
+.github
+e2e
+coverage

@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 import { seoShell } from "./vite/seoShell.ts";
+import { chatApi } from "./vite/chatApi.ts";
 
 /**
  * The site is served from https://achyuthkp27.github.io/Portfolio/, so every build
@@ -23,6 +24,8 @@ export default defineConfig(({ command, isPreview }) => ({
   },
   plugins: [
     react(),
+    // Dev only: POST /api/chat from api/chat.ts, so the assistant works locally (see .env.example)
+    chatApi(),
     // Build only: a plain HTML copy of the content in #root, for crawlers and no-JS readers
     seoShell(),
     VitePWA({

@@ -31,6 +31,8 @@ const ScrollProgress = lazy(() => import("@/components/ui/ScrollProgress"));
 const Cursor = lazy(() => import("@/components/ui/Cursor"));
 import { GlassEdge } from "@/components/ui/GlassEdge";
 const TerminalTrigger = lazy(() => import("@/components/TerminalTrigger"));
+// The "Ask AI" button; its panel and the AI SDK load on first open
+const ChatLauncher = lazy(() => import("@/components/ChatLauncher"));
 // Only the shortcut and open state load up front; the menu's panel (cmdk) is its own chunk
 import { CommandMenu } from "@/components/ui/CommandMenu";
 import { preloadCommandMenu } from "@/components/ui/loadCommandMenuPanel";
@@ -199,6 +201,9 @@ const App = () => {
                   <CursorAfterSplash />
                   <Suspense fallback={null}>
                     <Navigation />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <ChatLauncher />
                   </Suspense>
                   <AnimatedRoutes />
                 </SmoothScroll>

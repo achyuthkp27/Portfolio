@@ -8,6 +8,7 @@ import { PROFILE, SOCIALS } from "@/data/profile";
 import ScrambleNumber from "@/components/ui/ScrambleNumber";
 import { ExternalLink, HoverArrow } from "@/components/ui/ExternalLink";
 import { Crowd } from "@/components/ui/Crowd";
+import { openChat } from "@/lib/chat";
 import { setMotionOff, useMotionOff } from "@/lib/motionPreference";
 
 /** The classic footer's profiles, plus Instagram */
@@ -134,11 +135,27 @@ const CrowdFooter = () => {
         </div>
       </div>
 
-      <Crowd motionOff={motionOff} />
+      <div className="relative">
+        <Crowd motionOff={motionOff} />
+        {/* A quiet invitation by my head that opens the assistant; outside the crowd's own pause
+            button, so the two never interfere */}
+        <button
+          type="button"
+          onClick={() => openChat()}
+          onPointerEnter={() => void import("@/components/ui/ChatPanel")}
+          className="group absolute top-[24%] left-1/2 ml-[clamp(24px,3vw,46px)] inline-flex items-center gap-2 rounded-full rounded-bl-sm bg-night/90 px-3.5 py-2 text-[12px] md:text-[13px] font-medium text-snow shadow-[0_8px_24px_-8px_rgba(0,0,0,0.6)] backdrop-blur-sm hover:bg-night transition-colors"
+        >
+          <span aria-hidden="true" className="relative flex w-2 h-2">
+            <span className="chat-ping absolute inset-0 rounded-full bg-emerald-400" />
+            <span className="relative w-2 h-2 rounded-full bg-emerald-400" />
+          </span>
+          Ask me anything
+        </button>
+      </div>
 
       <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
-        {/* The bottom glass steps aside while this strip is on screen, so it stays readable */}
-        <div data-glass-off className="grid gap-5 py-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        {/* The floating "Ask AI" button and the bottom glass both step aside while this strip is on screen */}
+        <div data-chat-avoid data-glass-off className="grid gap-5 py-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
           <p className="text-[13px] text-snow/75">Finally, some traffic on my website.</p>
           <ul className="flex items-center gap-2.5 lg:justify-center">
             {ICONS.map((p) => (

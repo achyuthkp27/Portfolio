@@ -916,3 +916,70 @@ html[data-motion="off"] .reveal .rv-u {
 [data-motion="off"] .menu-backdrop {
   animation: none !important;
 }
+
+/* "Ask AI" panel: the typing indicator's three dots bob in turn */
+@keyframes chat-dot {
+  0%,
+  60%,
+  100% {
+    transform: none;
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+.chat-dot {
+  animation: chat-dot 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-dot {
+    animation: none;
+  }
+}
+[data-motion="off"] .chat-dot {
+  animation: none;
+}
+
+/* The footer's "Ask me anything" dot: a slow ripple, like a live status light */
+@keyframes chat-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.chat-ping {
+  animation: chat-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-ping {
+    animation: none;
+  }
+}
+[data-motion="off"] .chat-ping {
+  animation: none;
+}
+
+/* "Ask AI" panel themes: light (the default) and dark, from the site's own palette */
+.chat-light {
+  --chat-bg: var(--stone);
+  --chat-fg: var(--night);
+  --chat-field: var(--snow);
+  --chat-bubble: var(--night);
+  --chat-bubble-fg: var(--snow);
+  color-scheme: light;
+}
+.chat-dark {
+  --chat-bg: var(--graphite);
+  --chat-fg: var(--snow);
+  --chat-field: 0 0% 4%;
+  --chat-bubble: var(--snow);
+  --chat-bubble-fg: var(--night);
+  color-scheme: dark;
+}

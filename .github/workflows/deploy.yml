@@ -49,6 +49,10 @@ jobs:
           VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
           # Optional, same place (e.g. https://eu.i.posthog.com). Empty uses the code's default host.
           VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
+          # The "Ask AI" chat endpoint: the Vercel Function's full URL, e.g.
+          # https://your-project.vercel.app/api/chat (same Variables page). Unset, the chat button
+          # still shows but reports that the assistant can't be reached.
+          VITE_CHAT_API_URL: ${{ vars.VITE_CHAT_API_URL }}
       # Browser smoke test of the real build: blocks a deploy that builds but renders a blank or broken page
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

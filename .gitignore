@@ -149,3 +149,4 @@ playwright-report/
 
 # Local agent tooling
 .serena/
+.vercel
