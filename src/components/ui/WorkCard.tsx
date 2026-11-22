@@ -6,6 +6,7 @@ import { pad2 } from "@/lib/format";
 import { ExternalLink } from "./ExternalLink";
 import { PillButton } from "./Pill";
 import { StackTags } from "./StackCard";
+import { FolderTop } from "./FolderTop";
 
 const storyOf = (study: Project) =>
   (
@@ -51,8 +52,9 @@ export const WorkCard = ({
   return (
     <article
       data-tilt={large || undefined}
-      className={`relative h-full flex flex-col rounded-2xl border border-snow/[0.12] bg-night bg-[linear-gradient(180deg,hsl(0_0%_100%/0.045),transparent_45%)] p-6 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08),0_60px_100px_-40px_rgba(0,0,0,0.95)] ${large ? "md:p-11" : "md:p-8"}`}
+      className={`group/folder relative h-full flex flex-col rounded-2xl border border-snow/[0.12] bg-night bg-[linear-gradient(180deg,hsl(0_0%_100%/0.045),transparent_45%)] p-6 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08),0_60px_100px_-40px_rgba(0,0,0,0.95)] ${large ? "md:p-11" : "md:p-8"}`}
     >
+      <FolderTop />
       <span
         aria-hidden="true"
         className="absolute right-5 top-5 md:right-7 md:top-7 grid place-items-center w-12 h-12 md:w-14 md:h-14 rounded-full border border-emerald-400/30 bg-[radial-gradient(circle,hsl(var(--accent-500)/0.22),transparent_70%)]"
@@ -142,8 +144,9 @@ export const WorkGroupCard = ({
   return (
     <article
       data-tilt
-      className="relative h-full flex flex-col rounded-2xl border border-snow/[0.12] bg-night bg-[linear-gradient(180deg,hsl(0_0%_100%/0.045),transparent_45%)] p-6 md:p-11 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08),0_60px_100px_-40px_rgba(0,0,0,0.95)]"
+      className="group/folder relative h-full flex flex-col rounded-2xl border border-snow/[0.12] bg-night bg-[linear-gradient(180deg,hsl(0_0%_100%/0.045),transparent_45%)] p-6 md:p-11 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08),0_60px_100px_-40px_rgba(0,0,0,0.95)]"
     >
+      <FolderTop />
       <p className="t-figure text-[13px] text-muted">
         <span className="text-emerald-300">{pad2(index + 1)}</span> / {pad2(total)} · {categories} · {group.length}{" "}
         projects

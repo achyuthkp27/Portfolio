@@ -845,3 +845,74 @@ html[data-motion="off"] .reveal .rv-u {
 .flicker-on {
   animation: flicker-on 0.9s linear both;
 }
+
+/* Menu sheet (MenuSheet, reel look): slides in from the right; on closing every letter, button
+   and icon (.fall) hops and drops out of it on its own path, then the sheet and backdrop fade */
+.fall {
+  display: inline-block;
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(32px) scale(0.97);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes letter-fall {
+  0% {
+    transform: none;
+  }
+  16% {
+    transform: translate3d(calc(var(--fx) * 0.2), -0.3em, 0) rotate(calc(var(--fr) * 0.15));
+  }
+  100% {
+    transform: translate3d(var(--fx), 110vh, 0) rotate(var(--fr));
+  }
+}
+@keyframes letter-hop {
+  40% {
+    transform: translateY(-0.12em);
+  }
+}
+.menu-sheet[data-state="open"] {
+  animation: sheet-in 0.45s var(--ease) both;
+}
+.menu-backdrop[data-state="open"] {
+  animation: backdrop-in 0.3s ease both;
+}
+.menu-sheet[data-state="open"] .hop:hover .fall {
+  animation: letter-hop 0.42s var(--ease) calc(var(--fi) * 22ms);
+}
+.menu-sheet[data-state="closing"] {
+  pointer-events: none;
+}
+.menu-sheet[data-state="closing"] .fall {
+  animation: letter-fall 0.85s cubic-bezier(0.5, 0, 0.85, 0.4) var(--fd) both;
+}
+/* A keyframe fade, not a transition: switching off the opening animation in the same style
+   change made Chrome skip the transition's delay and hide the sheet before anything fell */
+@keyframes sheet-out {
+  to {
+    opacity: 0;
+  }
+}
+.menu-sheet[data-state="closing"],
+.menu-backdrop[data-state="closing"] {
+  animation: sheet-out 0.3s ease 0.75s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-sheet .fall,
+  .menu-sheet,
+  .menu-backdrop {
+    animation: none !important;
+  }
+}
+[data-motion="off"] .menu-sheet .fall,
+[data-motion="off"] .menu-sheet,
+[data-motion="off"] .menu-backdrop {
+  animation: none !important;
+}

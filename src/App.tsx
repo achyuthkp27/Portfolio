@@ -13,11 +13,15 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { useLoading } from "@/hooks/useLoading";
 import { useMobile } from "@/hooks/useMobile";
 import { useIdleMount } from "@/hooks/useIdleMount";
+import { CLASSIC_LOOK } from "@/lib/look";
 
 // The page loads in its own chunk, in parallel with the splash: the splash only needs React and
 // framer-motion, so it paints sooner, and the page arrives while the splash still covers it
 const Index = lazy(() => import("./pages/Index"));
-const Navigation = lazy(() => import("@/components/Navigation"));
+// While the two looks are compared (src/lib/look.ts): the floating pill, or the original bar
+const Navigation = lazy(() =>
+  CLASSIC_LOOK ? import("@/components/Navigation") : import("@/components/PillNavigation"),
+);
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
 // Production builds with a PostHog key only: without one there is no Analytics chunk and no request

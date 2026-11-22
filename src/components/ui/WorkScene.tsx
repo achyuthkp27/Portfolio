@@ -220,7 +220,10 @@ export const WorkScene = ({ groups, onOpen }: { groups: Project[][]; onOpen: (st
       put(el, "zIndex", String(i + 1));
       put(el, "pointerEvents", enter > 0.95 && depth < 0.5 && exit < 0.5 ? "auto" : "none");
       const shade = shades.current[i];
-      if (shade) put(shade, "opacity", Math.min(0.6, depth * 0.24).toFixed(3));
+      const darkness = Math.min(0.6, depth * 0.24).toFixed(3);
+      if (shade) put(shade, "opacity", darkness);
+      // The folder tops above the card (FolderTop) fade with it
+      put(el, "--shade", darkness);
     });
   };
 

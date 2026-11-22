@@ -2,7 +2,11 @@ import { lazy, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Hero from "@/components/Hero";
-import Footer from "@/components/Footer";
+import ClassicFooter from "@/components/Footer";
+import CrowdFooter from "@/components/CrowdFooter";
+import { CLASSIC_LOOK } from "@/lib/look";
+
+const Footer = CLASSIC_LOOK ? ClassicFooter : CrowdFooter;
 import { LazySection } from "@/components/ui/LazySection";
 import { DUR } from "@/lib/motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -56,9 +60,12 @@ const Index = () => {
         <LazySection sectionId="work" minHeight="calc(661px + 950vh)" minHeightMobile="calc(565px + 950vh)">
           <WorkSection />
         </LazySection>
-        <LazySection sectionId="services" minHeight="calc(616px + 600vh)" minHeightMobile="4629px">
-          <ServicesSection />
-        </LazySection>
+        {/* What I build: left out of the reel look at the owner's request */}
+        {CLASSIC_LOOK && (
+          <LazySection sectionId="services" minHeight="calc(616px + 600vh)" minHeightMobile="4629px">
+            <ServicesSection />
+          </LazySection>
+        )}
         <LazySection sectionId="vision" minHeight="580vh">
           <VisionSection />
         </LazySection>

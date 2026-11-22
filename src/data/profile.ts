@@ -23,6 +23,7 @@ export const PROFILE = {
     github: "https://github.com/achyuthkp27",
     linkedin: "https://www.linkedin.com/in/kpachyuth",
     medium: "https://medium.com/@kpachyuthz",
+    instagram: "https://www.instagram.com/achyuth_kp/",
   },
   /** How I think: who I am and how I work, in five lines */
   principles: [

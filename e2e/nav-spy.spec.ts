@@ -27,11 +27,27 @@ test("nav highlights the section in view", async ({ page }) => {
   await page.goto("./");
   await expect(page.getByTestId("splash-screen")).toBeHidden({ timeout: 6_000 });
 
-  const nav = page.getByRole("navigation");
-  const workLink = nav.getByRole("button", { name: "Work", exact: true });
-  test.skip(!(await workLink.isVisible()), "Desktop nav links are hidden on this viewport");
+  // The pill nav (named "Site") shows the current section beside the name and lists the sections
+  // in its menu sheet; the classic bar (?look=classic) lists them in the bar itself
+  const menuButton = page.getByRole("navigation", { name: "Site" }).getByRole("button", { name: "Open menu" });
+  const pill = await menuButton.isVisible();
 
   await mountAllSections(page);
+  if (pill) {
+    await expect(async () => {
+      await scrollSectionToMiddle(page, "work");
+      await expect(page.getByTestId("current-section")).toHaveText("/ Work", { timeout: 1_500 });
+    }).toPass({ timeout: 15_000 });
+    await menuButton.click();
+    const sheet = page.getByRole("dialog", { name: "Site menu" });
+    await expect(sheet.getByRole("button", { name: "Work", exact: true })).toHaveAttribute("aria-current", "location");
+    await expect(sheet.locator('[aria-current="location"]')).toHaveCount(1);
+    return;
+  }
+
+  const nav = page.getByRole("navigation").first();
+  const workLink = nav.getByRole("button", { name: "Work", exact: true });
+  test.skip(!(await workLink.isVisible()), "Desktop nav links are hidden on this viewport");
   // Late-mounting content above can shift Work after the scroll, so re-aim until it settles
   await expect(async () => {
     await scrollSectionToMiddle(page, "work");
